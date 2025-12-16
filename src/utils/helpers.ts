@@ -98,3 +98,16 @@ export const getInitials = (name: string): string => {
     .slice(0, 2);
 };
 
+export const getImageUrl = (path?: string | null): string | undefined => {
+  if (!path) return undefined;
+  
+  // If it's already a full URL, return as is
+  if (path.startsWith('http://') || path.startsWith('https://')) {
+    return path;
+  }
+  
+  // If it's a relative path, prepend the backend URL
+  const BACKEND_URL = 'https://astrologerapp-production.up.railway.app';
+  return `${BACKEND_URL}${path.startsWith('/') ? path : '/' + path}`;
+};
+

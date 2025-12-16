@@ -1,4 +1,4 @@
-import { cn, getInitials } from '@/utils/helpers';
+import { cn, getInitials, getImageUrl } from '@/utils/helpers';
 
 interface AvatarProps {
   src?: string;
@@ -16,12 +16,18 @@ export const Avatar = ({ src, alt, name, size = 'md', className }: AvatarProps) 
     xl: 'w-16 h-16 text-lg',
   };
 
-  if (src) {
+  const imageUrl = getImageUrl(src);
+
+  if (imageUrl) {
     return (
       <img
-        src={src}
+        src={imageUrl}
         alt={alt || name || 'Avatar'}
         className={cn('rounded-full object-cover', sizeClasses[size], className)}
+        onError={(e) => {
+          // Hide broken image and show initials fallback
+          e.currentTarget.style.display = 'none';
+        }}
       />
     );
   }
