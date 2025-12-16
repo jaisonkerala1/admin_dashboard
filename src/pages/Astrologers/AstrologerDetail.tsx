@@ -30,9 +30,14 @@ export const AstrologerDetail = () => {
       loadAstrologer();
       loadServices();
       loadReviews();
-      loadDiscussions();
     }
   }, [id]);
+
+  useEffect(() => {
+    if (astrologer) {
+      loadDiscussions();
+    }
+  }, [astrologer]);
 
   const loadAstrologer = async () => {
     if (!id) return;
@@ -109,13 +114,14 @@ export const AstrologerDetail = () => {
   };
 
   const loadDiscussions = async () => {
-    if (!id) return;
+    if (!id || !astrologer) return;
     try {
       setDiscussionsLoading(true);
       const response = await discussionsApi.getAll({ 
         page: 1,
         limit: 10, // Show latest 10 discussions
         authorId: id,
+        authorName: astrologer.name, // Also filter by name for backward compatibility
         sortBy: 'createdAt',
         sortOrder: 'desc'
       } as any);
