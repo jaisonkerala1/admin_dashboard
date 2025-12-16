@@ -18,6 +18,7 @@ import {
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Card, Loader, EmptyState, Avatar } from '@/components/common';
+import { LiveStreamViewer } from '@/components/liveStream/LiveStreamViewer';
 import { liveStreamsApi } from '@/api';
 import { LiveStream } from '@/types';
 import { formatDateTime, formatNumber } from '@/utils/formatters';
@@ -314,6 +315,29 @@ const StreamDetailModal = ({
   stream: LiveStream; 
   onClose: () => void;
 }) => {
+  const [showViewer, setShowViewer] = useState(false);
+
+  if (showViewer) {
+    return (
+      <LiveStreamViewer
+        stream={stream}
+        onClose={() => {
+          setShowViewer(false);
+          onClose();
+        }}
+        onEndStream={async () => {
+          try {
+            await liveStreamsApi.end(stream._id, { reason: 'Ended by admin' });
+            setShowViewer(false);
+            onClose();
+          } catch (err) {
+            console.error('Failed to end stream:', err);
+          }
+        }}
+      />
+    );
+  }
+
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center">
@@ -332,19 +356,30 @@ const StreamDetailModal = ({
           </div>
 
           <div className="p-6 space-y-4">
-            {/* Status */}
+            {/* Status & Watch Button */}
             <div className="flex items-center justify-between">
-              {stream.isLive ? (
-                <span className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-md text-sm font-medium">
-                  <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
-                  LIVE NOW
-                </span>
-              ) : (
-                <span className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-800 rounded-md text-sm font-medium border border-gray-200">
-                  <StopCircle className="w-4 h-4" />
-                  Ended
-                </span>
-              )}
+              <div className="flex items-center gap-3">
+                {stream.isLive ? (
+                  <>
+                    <span className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-md text-sm font-medium">
+                      <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
+                      LIVE NOW
+                    </span>
+                    <button
+                      onClick={() => setShowViewer(true)}
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md text-sm font-medium transition-colors"
+                    >
+                      <Play className="w-4 h-4" />
+                      Watch Live
+                    </button>
+                  </>
+                ) : (
+                  <span className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-800 rounded-md text-sm font-medium border border-gray-200">
+                    <StopCircle className="w-4 h-4" />
+                    Ended
+                  </span>
+                )}
+              </div>
               <span className="text-sm text-gray-500">ID: {stream._id.slice(-8)}</span>
             </div>
 
