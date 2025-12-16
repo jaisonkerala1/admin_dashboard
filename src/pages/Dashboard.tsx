@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Users, UserCog, Calendar, DollarSign, AlertCircle, TrendingUp, Radio, Eye, Clock } from 'lucide-react';
+import { Users, UserCog, Calendar, DollarSign, AlertCircle, TrendingUp, Radio, Eye, Clock, Play } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { StatCard, Card, Loader, Avatar } from '@/components/common';
+import { LiveStreamViewer } from '@/components/liveStream/LiveStreamViewer';
 import { dashboardApi, liveStreamsApi } from '@/api';
 import { DashboardStats, LiveStream } from '@/types';
 import { formatCurrency, formatNumber, formatRelativeTime } from '@/utils/formatters';
@@ -15,6 +16,7 @@ export const Dashboard = () => {
   const [error, setError] = useState('');
   const [liveStreams, setLiveStreams] = useState<LiveStream[]>([]);
   const [liveLoading, setLiveLoading] = useState(false);
+  const [selectedStream, setSelectedStream] = useState<LiveStream | null>(null);
 
   useEffect(() => {
     loadStats();
@@ -158,6 +160,13 @@ export const Dashboard = () => {
                         <Clock className="w-4 h-4" />
                         <span>{formatRelativeTime(stream.startedAt || stream.createdAt)}</span>
                       </div>
+                      <button
+                        onClick={() => setSelectedStream(stream)}
+                        className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                      >
+                        <Play className="w-4 h-4" />
+                        <span>Watch</span>
+                      </button>
                     </div>
                   </div>
                 ))}
@@ -281,6 +290,25 @@ export const Dashboard = () => {
           </Card>
         </div>
       ) : null}
+
+      {/* Live Stream Viewer Modal */}
+      {selectedStream && (
+        <LiveStreamViewer
+          stream={selectedStream}
+          onClose={() => setSelectedStream(null)}
+          onEndStream={async () => {
+            try {
+              await liveStreamsApi.end(selectedStream._id, {
+                reason: 'Ended by admin'
+              });
+              setSelectedStream(null);
+              loadLiveStreams(); // Refresh list
+            } catch (err) {
+              console.error('Failed to end stream:', err);
+            }
+          }}
+        />
+      )}
     </MainLayout>
   );
 };
