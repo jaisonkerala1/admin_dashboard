@@ -1,0 +1,66 @@
+export const APP_NAME = 'Astrologer Platform Admin';
+
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+export const ADMIN_SECRET_KEY = import.meta.env.VITE_ADMIN_SECRET_KEY || '';
+
+export const ROUTES = {
+  LOGIN: '/login',
+  DASHBOARD: '/',
+  ASTROLOGERS: '/astrologers',
+  ASTROLOGER_DETAIL: '/astrologers/:id',
+  ASTROLOGER_APPROVALS: '/astrologers/pending-approvals',
+  USERS: '/users',
+  USER_DETAIL: '/users/:id',
+  CONSULTATIONS: '/consultations',
+  CONSULTATION_DETAIL: '/consultations/:id',
+  SERVICES: '/services',
+  SERVICE_DETAIL: '/services/:id',
+  REVIEWS: '/reviews',
+  LIVE_STREAMS: '/live-streams',
+  DISCUSSIONS: '/discussions',
+  ANALYTICS: '/analytics',
+} as const;
+
+export const ASTROLOGER_STATUS = {
+  PENDING: 'pending',
+  APPROVED: 'approved',
+  SUSPENDED: 'suspended',
+  REJECTED: 'rejected',
+} as const;
+
+export const USER_STATUS = {
+  ACTIVE: 'active',
+  BANNED: 'banned',
+  INACTIVE: 'inactive',
+} as const;
+
+export const CONSULTATION_STATUS = {
+  PENDING: 'pending',
+  ACCEPTED: 'accepted',
+  ONGOING: 'ongoing',
+  COMPLETED: 'completed',
+  CANCELLED: 'cancelled',
+  REJECTED: 'rejected',
+} as const;
+
+export const SERVICE_STATUS = {
+  PENDING: 'pending',
+  APPROVED: 'approved',
+  REJECTED: 'rejected',
+  ACTIVE: 'active',
+  INACTIVE: 'inactive',
+} as const;
+
+export const LIVE_STREAM_STATUS = {
+  SCHEDULED: 'scheduled',
+  LIVE: 'live',
+  ENDED: 'ended',
+  CANCELLED: 'cancelled',
+} as const;
+
+export const PAGINATION = {
+  DEFAULT_PAGE: 1,
+  DEFAULT_LIMIT: 20,
+  LIMIT_OPTIONS: [10, 20, 50, 100],
+} as const;
+
