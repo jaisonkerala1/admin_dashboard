@@ -4,6 +4,7 @@ import {
   ConsultationStats,
   UpdateConsultationRequest,
   PaginationParams,
+  ApiResponse,
 } from '@/types';
 
 // Custom response type that matches actual backend response
