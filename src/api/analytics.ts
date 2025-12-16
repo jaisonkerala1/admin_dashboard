@@ -1,12 +1,13 @@
 import apiClient from './client';
-import { ApiResponse, AnalyticsData } from '../types';
+import { AnalyticsData } from '../types';
 
 export const analyticsApi = {
   /**
    * Get complete analytics data
    */
-  getAnalytics: (period: 'daily' | 'weekly' | 'monthly' = 'monthly'): Promise<ApiResponse<AnalyticsData>> => {
-    return apiClient.get(`/admin/analytics?period=${period}`);
+  getAnalytics: async (period: 'daily' | 'weekly' | 'monthly' = 'monthly'): Promise<any> => {
+    const response = await apiClient.get(`/admin/analytics?period=${period}`);
+    return response.data;
   },
 
   /**

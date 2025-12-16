@@ -29,20 +29,17 @@ export const Analytics = () => {
     try {
       setIsLoading(true);
       const response = await analyticsApi.getAnalytics(period);
-      console.log('Analytics API Response:', response);
+      console.log('📦 Analytics API Response:', response);
       
-      // Axios returns response.data, which contains { success, data }
-      // So the actual analytics data is at response.data.data
-      const analyticsData = response.data?.data || response.data;
-      
-      console.log('Analytics Data:', analyticsData);
-      if (analyticsData) {
-        setData(analyticsData);
+      // API returns { success, data: { overview, trends, ... } }
+      if (response?.data) {
+        console.log('✅ Analytics Data:', response.data);
+        setData(response.data);
       } else {
-        console.warn('No data in response:', response);
+        console.warn('⚠️ No data in response:', response);
       }
     } catch (err) {
-      console.error('Failed to load analytics:', err);
+      console.error('❌ Failed to load analytics:', err);
     } finally {
       setIsLoading(false);
     }
