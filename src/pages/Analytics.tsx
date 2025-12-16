@@ -29,8 +29,12 @@ export const Analytics = () => {
     try {
       setIsLoading(true);
       const response = await analyticsApi.getAnalytics(period);
+      console.log('Analytics API Response:', response);
       if (response.data) {
+        console.log('Analytics Data:', response.data);
         setData(response.data);
+      } else {
+        console.warn('No data in response:', response);
       }
     } catch (err) {
       console.error('Failed to load analytics:', err);
@@ -49,9 +53,13 @@ export const Analytics = () => {
     );
   }
 
-  if (!data) {
+  if (!data || !data.overview || !data.trends || !data.topPerformers || !data.distributions) {
     return (
       <MainLayout>
+        <PageHeader
+          title="Analytics"
+          subtitle="Comprehensive platform analytics and insights"
+        />
         <div className="flex items-center justify-center py-20">
           <p className="text-gray-500">No analytics data available</p>
         </div>
@@ -62,28 +70,28 @@ export const Analytics = () => {
   const { overview, trends, topPerformers, distributions } = data;
 
   // Format revenue trend data for charts
-  const revenueTrendData = trends.revenue.map(item => ({
+  const revenueTrendData = (trends.revenue || []).map(item => ({
     date: item._id,
     revenue: item.revenue || 0,
     count: item.count || 0
   }));
 
   // Format growth trend data
-  const growthTrendData = trends.consultations.map((item, index) => ({
+  const growthTrendData = (trends.consultations || []).map((item, index) => ({
     date: item._id,
     consultations: item.count || 0,
-    users: trends.users[index]?.count || 0,
-    astrologers: trends.astrologers[index]?.count || 0
+    users: (trends.users || [])[index]?.count || 0,
+    astrologers: (trends.astrologers || [])[index]?.count || 0
   }));
 
   // Format consultation status distribution for pie chart
-  const consultationStatusData = distributions.consultationStatus.map(item => ({
+  const consultationStatusData = (distributions.consultationStatus || []).map(item => ({
     name: item._id.charAt(0).toUpperCase() + item._id.slice(1),
     value: item.count
   }));
 
   // Format review ratings distribution for bar chart
-  const reviewRatingsData = distributions.reviewRatings.map(item => ({
+  const reviewRatingsData = (distributions.reviewRatings || []).map(item => ({
     rating: `${item._id} ⭐`,
     count: item.count
   }));
