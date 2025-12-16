@@ -529,7 +529,7 @@ export const AstrologerDetail = () => {
                     <div className="flex items-center gap-4 text-sm text-gray-500">
                       <div className="flex items-center gap-1">
                         <ThumbsUp className="w-4 h-4" />
-                        <span>{formatNumber(discussion.likes || 0)}</span>
+                        <span>{formatNumber(discussion.likeCount || 0)}</span>
                       </div>
                       <div className="flex items-center gap-1">
                         <MessageSquare className="w-4 h-4" />
