@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Mail, Phone, Star, Calendar, DollarSign, Clock, CheckCircle, Ban, Package, MessageSquare } from 'lucide-react';
+import { Mail, Phone, Star, Calendar, DollarSign, Clock, CheckCircle, Ban, Package, MessageSquare, FileText, ThumbsUp } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Card, Loader, Avatar, StatusBadge, Modal } from '@/components/common';
-import { astrologersApi, servicesApi, reviewsApi } from '@/api';
-import { Astrologer, Service, Review } from '@/types';
+import { astrologersApi, servicesApi, reviewsApi, discussionsApi } from '@/api';
+import { Astrologer, Service, Review, Discussion } from '@/types';
 import { formatCurrency, formatNumber, formatDateTime } from '@/utils/formatters';
 import { useToastContext } from '@/contexts/ToastContext';
 
@@ -15,9 +15,11 @@ export const AstrologerDetail = () => {
   const [astrologer, setAstrologer] = useState<Astrologer | null>(null);
   const [services, setServices] = useState<Service[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
+  const [discussions, setDiscussions] = useState<Discussion[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [servicesLoading, setServicesLoading] = useState(false);
   const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [discussionsLoading, setDiscussionsLoading] = useState(false);
   const [isApproving, setIsApproving] = useState(false);
   const [isSuspending, setIsSuspending] = useState(false);
   const [showSuspendModal, setShowSuspendModal] = useState(false);
@@ -28,6 +30,7 @@ export const AstrologerDetail = () => {
       loadAstrologer();
       loadServices();
       loadReviews();
+      loadDiscussions();
     }
   }, [id]);
 
@@ -102,6 +105,25 @@ export const AstrologerDetail = () => {
       console.error('Failed to load reviews:', err);
     } finally {
       setReviewsLoading(false);
+    }
+  };
+
+  const loadDiscussions = async () => {
+    if (!id) return;
+    try {
+      setDiscussionsLoading(true);
+      const response = await discussionsApi.getAll({ 
+        page: 1,
+        limit: 10, // Show latest 10 discussions
+        authorId: id,
+        sortBy: 'createdAt',
+        sortOrder: 'desc'
+      } as any);
+      setDiscussions(response.data || []);
+    } catch (err) {
+      console.error('Failed to load discussions:', err);
+    } finally {
+      setDiscussionsLoading(false);
     }
   };
 
@@ -464,6 +486,69 @@ export const AstrologerDetail = () => {
               <div className="text-center py-8">
                 <MessageSquare className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                 <p className="text-gray-500">No reviews yet</p>
+              </div>
+            )}
+          </Card>
+
+          {/* Discussions/Posts */}
+          <Card 
+            title={
+              <div className="flex items-center gap-2">
+                <FileText className="w-5 h-5" />
+                <span>Recent Posts & Discussions</span>
+                <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">
+                  {discussions.length}
+                </span>
+              </div>
+            }
+          >
+            {discussionsLoading ? (
+              <div className="flex justify-center py-8">
+                <Loader size="sm" text="Loading discussions..." />
+              </div>
+            ) : discussions.length > 0 ? (
+              <div className="space-y-4">
+                {discussions.map((discussion) => (
+                  <div
+                    key={discussion._id}
+                    className="p-4 border border-gray-200 rounded-lg hover:bg-blue-50 transition-all"
+                  >
+                    <div className="flex items-start justify-between mb-2">
+                      <h4 className="font-semibold text-gray-900">{discussion.title}</h4>
+                      {discussion.isPinned && (
+                        <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-medium rounded">
+                          Pinned
+                        </span>
+                      )}
+                    </div>
+                    {discussion.content && (
+                      <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                        {discussion.content}
+                      </p>
+                    )}
+                    <div className="flex items-center gap-4 text-sm text-gray-500">
+                      <div className="flex items-center gap-1">
+                        <ThumbsUp className="w-4 h-4" />
+                        <span>{formatNumber(discussion.likes || 0)}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <MessageSquare className="w-4 h-4" />
+                        <span>{formatNumber(discussion.commentCount || 0)}</span>
+                      </div>
+                      <span>{formatDateTime(discussion.createdAt)}</span>
+                      {discussion.category && (
+                        <span className="ml-auto px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded">
+                          {discussion.category}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <FileText className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                <p className="text-gray-500">No discussions posted yet</p>
               </div>
             )}
           </Card>
