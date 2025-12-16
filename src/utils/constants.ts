@@ -1,10 +1,15 @@
 export const APP_NAME = 'Astrologer Platform Admin';
 
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
-export const ADMIN_SECRET_KEY = import.meta.env.VITE_ADMIN_SECRET_KEY || '';
-
-// Backend base URL for images and uploads
+// Backend base URL
 export const BACKEND_URL = 'https://astrologerapp-production.up.railway.app';
+
+// API base URL - use Railway backend in production, proxy in development
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 
+  (import.meta.env.MODE === 'production' 
+    ? 'https://astrologerapp-production.up.railway.app/api'
+    : '/api');
+
+export const ADMIN_SECRET_KEY = import.meta.env.VITE_ADMIN_SECRET_KEY || '';
 
 export const ROUTES = {
   LOGIN: '/login',
