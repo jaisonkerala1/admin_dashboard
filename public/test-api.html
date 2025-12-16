@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Consultations API Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }
+        button { padding: 10px 20px; background: #4F46E5; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #4338CA; }
+        pre { background: #f9f9f9; padding: 15px; border-radius: 4px; overflow-x: auto; }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Consultations API Debug Test</h1>
+        <button onclick="testAPI()">Test API Call</button>
+        <button onclick="testViaProxy()">Test Via Proxy</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const BACKEND_URL = 'https://astrologerapp-production.up.railway.app';
+        const ADMIN_KEY = 'admin123';
+
+        async function testAPI() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>Testing direct API call...</p>';
+            
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/admin/consultations?page=1&limit=2`, {
+                    method: 'GET',
+                    headers: {
+                        'x-admin-key': ADMIN_KEY,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                console.log('Response status:', response.status);
+                console.log('Response headers:', [...response.headers.entries()]);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                console.log('Response data:', data);
+
+                resultDiv.innerHTML = `
+                    <h2 class="success">✅ Success!</h2>
+                    <p><strong>Success:</strong> ${data.success}</p>
+                    <p><strong>Data Count:</strong> ${data.data?.length || 0}</p>
+                    <p><strong>Total:</strong> ${data.pagination?.total || 0}</p>
+                    <h3>Full Response:</h3>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                console.error('API Error:', error);
+                resultDiv.innerHTML = `
+                    <h2 class="error">❌ Error!</h2>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                    <p><strong>Check browser console for more details</strong></p>
+                    <pre>${error.stack}</pre>
+                `;
+            }
+        }
+
+        async function testViaProxy() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>Testing via Vite proxy (/api)...</p>';
+            
+            try {
+                const response = await fetch('/api/admin/consultations?page=1&limit=2', {
+                    method: 'GET',
+                    headers: {
+                        'x-admin-key': ADMIN_KEY,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                console.log('Proxy Response status:', response.status);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                console.log('Proxy Response data:', data);
+
+                resultDiv.innerHTML = `
+                    <h2 class="success">✅ Success via Proxy!</h2>
+                    <p><strong>Success:</strong> ${data.success}</p>
+                    <p><strong>Data Count:</strong> ${data.data?.length || 0}</p>
+                    <p><strong>Total:</strong> ${data.pagination?.total || 0}</p>
+                    <h3>Full Response:</h3>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                console.error('Proxy API Error:', error);
+                resultDiv.innerHTML = `
+                    <h2 class="error">❌ Error via Proxy!</h2>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                    <p><strong>Check browser console for more details</strong></p>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
+

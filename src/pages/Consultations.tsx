@@ -81,13 +81,17 @@ export const Consultations = () => {
       if (search) params.search = search;
       if (filter !== 'all') params.status = filter;
       
+      console.log('🔍 Consultations API request params:', params);
       const response = await consultationsApi.getAll(params);
+      console.log('📦 Consultations API response:', response);
       
       // API returns { success, data: [...], pagination: {...} }
       const consultationsData = response.data || [];
+      console.log('✅ Consultations data:', consultationsData.length, 'items');
       setConsultations(consultationsData);
       
       if (response.pagination) {
+        console.log('📄 Pagination:', response.pagination);
         setPagination(response.pagination);
       }
       
@@ -99,7 +103,7 @@ export const Consultations = () => {
         totalRevenue: revenue
       }));
     } catch (err) {
-      console.error('Failed to load consultations:', err);
+      console.error('❌ Failed to load consultations:', err);
     } finally {
       setIsLoading(false);
     }
