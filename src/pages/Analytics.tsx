@@ -30,9 +30,14 @@ export const Analytics = () => {
       setIsLoading(true);
       const response = await analyticsApi.getAnalytics(period);
       console.log('Analytics API Response:', response);
-      if (response.data) {
-        console.log('Analytics Data:', response.data);
-        setData(response.data);
+      
+      // Axios returns response.data, which contains { success, data }
+      // So the actual analytics data is at response.data.data
+      const analyticsData = response.data?.data || response.data;
+      
+      console.log('Analytics Data:', analyticsData);
+      if (analyticsData) {
+        setData(analyticsData);
       } else {
         console.warn('No data in response:', response);
       }
