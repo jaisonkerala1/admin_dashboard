@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Filter, Eye, CheckCircle, XCircle, UserX } from 'lucide-react';
+import { Search, Filter, Eye, UserX } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Card, Loader, EmptyState, Avatar, StatusBadge } from '@/components/common';

@@ -30,25 +30,27 @@ export const AstrologerDetail = () => {
       const response = await astrologersApi.getById(id);
       const data = response.data;
       
+      if (!data) {
+        setAstrologer(null);
+        return;
+      }
+      
       // Backend now returns properly formatted data with:
       // - specialization, rating, totalReviews, consultationCharge already mapped
-      // - stats object with consultations, earnings, services, reviews
       const mappedAstrologer: Astrologer = {
         ...data,
-        specialization: data.specialization || data.specializations || [],
+        specialization: data.specialization || (data as any).specializations || [],
         languages: data.languages || [],
-        rating: data.rating ?? data.stats?.rating ?? 0,
-        totalReviews: data.totalReviews ?? data.stats?.reviews ?? 0,
+        rating: data.rating ?? 0,
+        totalReviews: data.totalReviews ?? 0,
         consultationCharge: data.consultationCharge || data.ratePerMinute || 0,
         callCharge: data.callCharge || data.ratePerMinute || 0,
         chatCharge: data.chatCharge || data.ratePerMinute || 0,
-        totalEarnings: data.totalEarnings || data.stats?.earnings || 0,
-        totalConsultations: data.totalConsultations || data.stats?.consultations || 0,
+        totalEarnings: data.totalEarnings || 0,
+        totalConsultations: data.totalConsultations || 0,
         isApproved: data.isApproved ?? false,
         isSuspended: data.isSuspended ?? false,
         bio: data.bio || '',
-        awards: data.awards || '',
-        certificates: data.certificates || '',
       };
       
       setAstrologer(mappedAstrologer);

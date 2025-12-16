@@ -22,7 +22,7 @@ export const Dashboard = () => {
     try {
       setIsLoading(true);
       const response = await dashboardApi.getStats();
-      setStats(response.data);
+      setStats(response.data || null);
       setError('');
     } catch (err: any) {
       console.error('Dashboard error:', err);
