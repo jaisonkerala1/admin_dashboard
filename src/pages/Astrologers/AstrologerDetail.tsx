@@ -71,10 +71,10 @@ export const AstrologerDetail = () => {
     try {
       setServicesLoading(true);
       const response = await servicesApi.getAll({ 
-        astrologerId: id,
         page: 1,
-        limit: 100 // Get all services
-      });
+        limit: 100,
+        astrologerId: id
+      } as any);
       setServices(response.data || []);
     } catch (err) {
       console.error('Failed to load services:', err);
@@ -150,6 +150,12 @@ export const AstrologerDetail = () => {
   const getStatus = () => {
     if (astrologer.isSuspended) return 'suspended';
     if (astrologer.isApproved) return 'approved';
+    return 'pending';
+  };
+
+  const getServiceStatus = (service: Service) => {
+    if (service.isDeleted) return 'rejected';
+    if (service.isActive) return 'approved';
     return 'pending';
   };
 
@@ -335,7 +341,7 @@ export const AstrologerDetail = () => {
                   >
                     <div className="flex items-start justify-between mb-2">
                       <h4 className="font-semibold text-gray-900">{service.name}</h4>
-                      <StatusBadge status={service.status} />
+                      <StatusBadge status={getServiceStatus(service)} />
                     </div>
                     {service.description && (
                       <p className="text-sm text-gray-600 mb-3 line-clamp-2">
