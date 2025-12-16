@@ -3,13 +3,24 @@ import {
   Discussion,
   DiscussionStats,
   ModerateDiscussionRequest,
-  PaginatedResponse,
   PaginationParams,
   ApiResponse,
 } from '@/types';
 
+// Custom response type that matches backend
+interface DiscussionsListResponse {
+  success: boolean;
+  data: Discussion[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+}
+
 export const discussionsApi = {
-  getAll: async (params?: PaginationParams): Promise<ApiResponse<PaginatedResponse<Discussion>>> => {
+  getAll: async (params?: PaginationParams): Promise<DiscussionsListResponse> => {
     const response = await apiClient.get('/admin/discussions', { params });
     return response.data;
   },

@@ -1,50 +1,67 @@
 export interface Discussion {
   _id: string;
-  userId: {
-    _id: string;
-    name: string;
-    email: string;
-    profilePicture?: string;
-  };
+  
+  // Author info (may be null)
+  authorId: string | null;
+  authorName: string;
+  authorPhoto?: string | null;
+  authorAvatar?: string | null;
+  authorInitial?: string;
+  
+  // Discussion content
   title: string;
   content: string;
   category: string;
   tags?: string[];
-  images?: string[];
-  likes: number;
-  comments: DiscussionComment[];
-  views: number;
-  isHidden: boolean;
-  hiddenReason?: string;
+  imageUrl?: string | null;
+  attachments?: any[];
+  
+  // Stats
+  likeCount: number;
+  commentCount: number;
+  shareCount: number;
+  viewCount: number;
+  saveCount: number;
+  
+  // Status
+  isPublic: boolean;
+  visibleTo: string;
+  isModerated: boolean;
+  moderatedBy?: string | null;
+  moderatedAt?: string | null;
+  moderationReason?: string | null;
+  isDeleted: boolean;
+  deletedAt?: string | null;
+  isActive: boolean;
   isPinned: boolean;
+  
+  // Engagement arrays
+  likes: any[];
+  likesCount: number;
+  commentsCount: number;
+  visibility: string;
+  
+  // Trending
+  trendingScore: number;
+  lastActivityAt: string;
+  
+  // Timestamps
   createdAt: string;
   updatedAt: string;
 }
 
-export interface DiscussionComment {
-  _id: string;
-  userId: {
-    _id: string;
-    name: string;
-    profilePicture?: string;
-  };
-  content: string;
-  likes: number;
-  isHidden: boolean;
-  hiddenReason?: string;
-  createdAt: string;
-}
-
 export interface DiscussionStats {
   total: number;
-  hidden: number;
+  public: number;
+  moderated: number;
+  pinned: number;
   totalComments: number;
-  hiddenComments: number;
   totalViews: number;
+  totalLikes: number;
 }
 
 export interface ModerateDiscussionRequest {
-  isHidden: boolean;
-  hiddenReason?: string;
+  isModerated?: boolean;
+  isPublic?: boolean;
+  moderationReason?: string;
 }
-
