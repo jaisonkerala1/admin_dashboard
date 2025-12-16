@@ -7,10 +7,6 @@
       "source": "/(.*)",
       "destination": "/index.html"
     }
-  ],
-  "env": {
-    "VITE_API_BASE_URL": "https://astrologerapp-production.up.railway.app/api",
-    "VITE_ADMIN_SECRET_KEY": "admin123"
-  }
+  ]
 }
 
