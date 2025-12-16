@@ -3,13 +3,24 @@ import {
   LiveStream,
   LiveStreamStats,
   EndLiveStreamRequest,
-  PaginatedResponse,
   PaginationParams,
   ApiResponse,
 } from '@/types';
 
+// Custom response type that matches backend
+interface LiveStreamsListResponse {
+  success: boolean;
+  data: LiveStream[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+}
+
 export const liveStreamsApi = {
-  getAll: async (params?: PaginationParams): Promise<ApiResponse<PaginatedResponse<LiveStream>>> => {
+  getAll: async (params?: PaginationParams): Promise<LiveStreamsListResponse> => {
     const response = await apiClient.get('/admin/live-streams', { params });
     return response.data;
   },

@@ -1,27 +1,41 @@
 export interface LiveStream {
   _id: string;
+  
+  // Astrologer reference
   astrologerId: {
     _id: string;
     name: string;
     email: string;
     profilePicture?: string;
   };
+  astrologerName: string;
+  astrologerProfilePicture?: string;
+  astrologerSpecialty?: string;
+  
+  // Stream info
   title: string;
   description?: string;
-  scheduledAt: string;
+  category: string;
+  tags?: string[];
+  
+  // Agora details
+  agoraChannelName: string;
+  
+  // Status
+  isLive: boolean;
+  
+  // Timestamps
   startedAt?: string;
   endedAt?: string;
-  status: 'scheduled' | 'live' | 'ended' | 'cancelled';
-  streamUrl?: string;
-  thumbnailUrl?: string;
+  lastHeartbeat?: string;
+  
+  // Stats
   viewerCount: number;
-  totalViewers: number;
-  peakViewers: number;
-  duration?: number;
-  earnings: number;
-  tags?: string[];
-  isRecorded: boolean;
-  recordingUrl?: string;
+  peakViewerCount: number;
+  totalViews: number;
+  likes: number;
+  
+  // Timestamps
   createdAt: string;
   updatedAt: string;
 }
@@ -29,13 +43,12 @@ export interface LiveStream {
 export interface LiveStreamStats {
   total: number;
   live: number;
-  scheduled: number;
-  totalViewers: number;
-  totalEarnings: number;
-  averageDuration: number;
+  ended: number;
+  totalViews: number;
+  totalLikes: number;
+  peakViewers: number;
 }
 
 export interface EndLiveStreamRequest {
   reason?: string;
 }
-
