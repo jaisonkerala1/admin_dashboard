@@ -43,24 +43,41 @@ export interface LoginResponse {
 
 // Dashboard types
 export interface DashboardStats {
-  totalAstrologers: number;
-  activeAstrologers: number;
-  pendingApprovals: number;
-  suspendedAstrologers: number;
-  totalUsers: number;
-  activeUsers: number;
-  bannedUsers: number;
-  totalConsultations: number;
-  ongoingConsultations: number;
-  completedConsultations: number;
-  totalRevenue: number;
-  monthlyRevenue: number;
-  totalServices: number;
-  activeServices: number;
-  pendingServices: number;
-  totalReviews: number;
-  activeLiveStreams: number;
-  totalDiscussions: number;
+  astrologers: {
+    total: number;
+    active: number;
+    pendingApprovals: number;
+    suspended: number;
+    online: number;
+  };
+  users: {
+    total: number;
+    active: number;
+    banned: number;
+  };
+  consultations: {
+    total: number;
+    completed: number;
+    ongoing: number;
+  };
+  revenue: {
+    total: number;
+    monthly: number;
+  };
+  liveStreams: {
+    active: number;
+  };
+  reviews: {
+    total: number;
+  };
+  services: {
+    total: number;
+    active: number;
+    pending: number;
+  };
+  discussions: {
+    total: number;
+  };
 }
 
 export * from './astrologer';

@@ -17,7 +17,7 @@ export const store = configureStore({
       thunk: false, // Disable thunk since we're using saga
       serializableCheck: false, // Disable serializable check for complex objects
     }).concat(sagaMiddleware),
-  devTools: process.env.NODE_ENV !== 'production',
+  devTools: import.meta.env.MODE !== 'production',
 });
 
 // Run the root saga
