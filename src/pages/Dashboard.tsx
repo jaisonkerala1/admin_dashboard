@@ -49,7 +49,7 @@ export const Dashboard = () => {
         sortOrder: 'desc' 
       });
       // Filter only active streams
-      const activeStreams = response.data.filter((stream: LiveStream) => stream.status === 'live');
+      const activeStreams = response.data.filter((stream: LiveStream) => stream.isLive);
       setLiveStreams(activeStreams);
     } catch (err) {
       console.error('Live streams error:', err);
@@ -152,7 +152,7 @@ export const Dashboard = () => {
                     <div className="flex items-center gap-4 text-sm">
                       <div className="flex items-center gap-1 text-gray-600">
                         <Eye className="w-4 h-4" />
-                        <span className="font-medium">{formatNumber(stream.viewersCount || 0)}</span>
+                        <span className="font-medium">{formatNumber(stream.viewerCount || 0)}</span>
                       </div>
                       <div className="flex items-center gap-1 text-gray-600">
                         <Clock className="w-4 h-4" />
