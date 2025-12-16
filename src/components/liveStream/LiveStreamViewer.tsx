@@ -1,9 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import AgoraRTC, { 
   IAgoraRTCClient, 
-  IAgoraRTCRemoteUser, 
-  ICameraVideoTrack, 
-  IMicrophoneAudioTrack 
+  IAgoraRTCRemoteUser
 } from 'agora-rtc-sdk-ng';
 import { 
   X, 
@@ -34,7 +32,6 @@ export const LiveStreamViewer = ({ stream, onClose, onEndStream }: LiveStreamVie
   const [isMuted, setIsMuted] = useState(false);
   const [remoteUsers, setRemoteUsers] = useState<IAgoraRTCRemoteUser[]>([]);
   const [showEndConfirm, setShowEndConfirm] = useState(false);
-  const [agoraConfig, setAgoraConfig] = useState<{ appId: string; token: string; channelName: string } | null>(null);
   
   const videoRef = useRef<HTMLDivElement>(null);
 
@@ -66,7 +63,6 @@ export const LiveStreamViewer = ({ stream, onClose, onEndStream }: LiveStreamVie
       const data = await response.json();
       const { token, channelName, appId } = data.data;
 
-      setAgoraConfig({ appId, token, channelName });
       await joinChannel(appId, channelName, token);
     } catch (err: any) {
       console.error('Failed to fetch token:', err);
