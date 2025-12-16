@@ -18,6 +18,7 @@ export const ROUTES = {
   CONSULTATION_DETAIL: '/consultations/:id',
   SERVICES: '/services',
   SERVICE_DETAIL: '/services/:id',
+  POOJA_REQUESTS: '/pooja-requests',
   REVIEWS: '/reviews',
   LIVE_STREAMS: '/live-streams',
   DISCUSSIONS: '/discussions',

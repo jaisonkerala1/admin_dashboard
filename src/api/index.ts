@@ -9,4 +9,5 @@ export { reviewsApi } from './reviews';
 export { liveStreamsApi } from './liveStreams';
 export { discussionsApi } from './discussions';
 export { analyticsApi } from './analytics';
+export { poojaRequestsApi } from './poojaRequests';
 
