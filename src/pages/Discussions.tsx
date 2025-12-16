@@ -210,7 +210,7 @@ export const Discussions = () => {
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3 flex-1">
                       <Avatar 
-                        src={discussion.authorPhoto} 
+                        src={discussion.authorPhoto || undefined} 
                         name={discussion.authorName} 
                         size="md" 
                       />
@@ -385,7 +385,7 @@ const DiscussionDetailModal = ({
               <p className="text-xs font-medium text-gray-500 mb-2">Posted By</p>
               <div className="flex items-center gap-3">
                 <Avatar 
-                  src={discussion.authorPhoto}
+                  src={discussion.authorPhoto || undefined}
                   name={discussion.authorName} 
                   size="lg" 
                 />
