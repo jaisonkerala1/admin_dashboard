@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
-import { Card, Loader, EmptyState, Avatar, StatusBadge } from '@/components/common';
+import { Card, Loader, EmptyState, Avatar } from '@/components/common';
 import { consultationsApi } from '@/api';
 import { Consultation } from '@/types';
 import { formatCurrency, formatDateTime, formatDuration } from '@/utils/formatters';
