@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Mail, Phone, Star, Calendar, DollarSign, Clock, CheckCircle, Ban, Package } from 'lucide-react';
+import { Mail, Phone, Star, Calendar, DollarSign, Clock, CheckCircle, Ban, Package, MessageSquare } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Card, Loader, Avatar, StatusBadge, Modal } from '@/components/common';
-import { astrologersApi, servicesApi } from '@/api';
-import { Astrologer, Service } from '@/types';
+import { astrologersApi, servicesApi, reviewsApi } from '@/api';
+import { Astrologer, Service, Review } from '@/types';
 import { formatCurrency, formatNumber, formatDateTime } from '@/utils/formatters';
 import { useToastContext } from '@/contexts/ToastContext';
 
@@ -14,8 +14,10 @@ export const AstrologerDetail = () => {
   const toast = useToastContext();
   const [astrologer, setAstrologer] = useState<Astrologer | null>(null);
   const [services, setServices] = useState<Service[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [servicesLoading, setServicesLoading] = useState(false);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
   const [isApproving, setIsApproving] = useState(false);
   const [isSuspending, setIsSuspending] = useState(false);
   const [showSuspendModal, setShowSuspendModal] = useState(false);
@@ -25,6 +27,7 @@ export const AstrologerDetail = () => {
     if (id) {
       loadAstrologer();
       loadServices();
+      loadReviews();
     }
   }, [id]);
 
@@ -80,6 +83,25 @@ export const AstrologerDetail = () => {
       console.error('Failed to load services:', err);
     } finally {
       setServicesLoading(false);
+    }
+  };
+
+  const loadReviews = async () => {
+    if (!id) return;
+    try {
+      setReviewsLoading(true);
+      const response = await reviewsApi.getAll({ 
+        page: 1,
+        limit: 10, // Show latest 10 reviews
+        astrologerId: id,
+        sortBy: 'createdAt',
+        sortOrder: 'desc'
+      } as any);
+      setReviews(response.data || []);
+    } catch (err) {
+      console.error('Failed to load reviews:', err);
+    } finally {
+      setReviewsLoading(false);
     }
   };
 
@@ -372,6 +394,76 @@ export const AstrologerDetail = () => {
               <div className="text-center py-8">
                 <Package className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                 <p className="text-gray-500">No services offered yet</p>
+              </div>
+            )}
+          </Card>
+
+          {/* Reviews */}
+          <Card 
+            title={
+              <div className="flex items-center gap-2">
+                <MessageSquare className="w-5 h-5" />
+                <span>Recent Reviews</span>
+                <span className="px-2 py-0.5 bg-yellow-100 text-yellow-700 text-xs font-medium rounded-full">
+                  {reviews.length}
+                </span>
+              </div>
+            }
+          >
+            {reviewsLoading ? (
+              <div className="flex justify-center py-8">
+                <Loader size="sm" text="Loading reviews..." />
+              </div>
+            ) : reviews.length > 0 ? (
+              <div className="space-y-4">
+                {reviews.map((review) => (
+                  <div
+                    key={review._id}
+                    className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-all"
+                  >
+                    <div className="flex items-start gap-3">
+                      <Avatar
+                        src={review.userId?.profilePicture}
+                        name={review.clientName || review.userId?.name || 'Anonymous'}
+                        size="md"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between mb-2">
+                          <div>
+                            <p className="font-medium text-gray-900">
+                              {review.clientName || review.userId?.name || 'Anonymous'}
+                            </p>
+                            <div className="flex items-center gap-2 mt-1">
+                              <div className="flex items-center">
+                                {[...Array(5)].map((_, i) => (
+                                  <Star
+                                    key={i}
+                                    className={`w-4 h-4 ${
+                                      i < review.rating
+                                        ? 'text-yellow-400 fill-yellow-400'
+                                        : 'text-gray-300'
+                                    }`}
+                                  />
+                                ))}
+                              </div>
+                              <span className="text-sm text-gray-500">
+                                {formatDateTime(review.createdAt)}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        {review.comment && (
+                          <p className="text-gray-700 text-sm mt-2">{review.comment}</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <MessageSquare className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                <p className="text-gray-500">No reviews yet</p>
               </div>
             )}
           </Card>
