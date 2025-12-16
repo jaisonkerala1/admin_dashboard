@@ -1,5 +1,4 @@
 import apiClient from './client';
-import { AnalyticsData } from '../types';
 
 export const analyticsApi = {
   /**
