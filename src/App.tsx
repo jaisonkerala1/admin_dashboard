@@ -7,7 +7,7 @@ import {
   Users,
   Consultations,
   Services,
-  PoojaRequests,
+  ServiceRequests,
   Reviews,
   LiveStreams,
   Discussions,
@@ -31,7 +31,7 @@ function App() {
           <Route path={ROUTES.USERS} element={<Users />} />
           <Route path={ROUTES.CONSULTATIONS} element={<Consultations />} />
           <Route path={ROUTES.SERVICES} element={<Services />} />
-          <Route path={ROUTES.POOJA_REQUESTS} element={<PoojaRequests />} />
+          <Route path={ROUTES.SERVICE_REQUESTS} element={<ServiceRequests />} />
           <Route path={ROUTES.REVIEWS} element={<Reviews />} />
           <Route path={ROUTES.LIVE_STREAMS} element={<LiveStreams />} />
           <Route path={ROUTES.DISCUSSIONS} element={<Discussions />} />

@@ -21,7 +21,7 @@ import {
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Card, Loader, EmptyState, Avatar } from '@/components/common';
-import { PoojaRequest } from '@/types';
+import { PoojaRequest as ServiceRequest } from '@/types';
 import { formatCurrency, formatDateTime, formatDate } from '@/utils/formatters';
 import { RootState } from '@/store';
 import { fetchRequestsRequest } from '@/store/slices/poojaRequestsSlice';
@@ -35,13 +35,13 @@ const statusConfig = {
   cancelled: { label: 'Cancelled', color: 'bg-gray-100 text-gray-800 border-gray-200', icon: XCircle },
 };
 
-export const PoojaRequests = () => {
+export const ServiceRequests = () => {
   const dispatch = useDispatch();
   const { requests, pagination, isLoading } = useSelector((state: RootState) => state.poojaRequests);
   
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<'all' | 'pending' | 'confirmed' | 'inProgress' | 'completed' | 'cancelled'>('all');
-  const [selectedRequest, setSelectedRequest] = useState<PoojaRequest | null>(null);
+  const [selectedRequest, setSelectedRequest] = useState<ServiceRequest | null>(null);
 
   useEffect(() => {
     const debounce = setTimeout(() => {
@@ -94,7 +94,7 @@ export const PoojaRequests = () => {
   return (
     <MainLayout>
       <PageHeader
-        title="Pooja Requests Management"
+        title="Service Requests Management"
         subtitle={`Manage all service requests • ${pagination.total} total`}
       />
 
@@ -207,7 +207,7 @@ export const PoojaRequests = () => {
           <EmptyState
             icon={AlertCircle}
             title="No requests found"
-            description="No pooja requests match your current filters"
+            description="No service requests match your current filters"
           />
         ) : (
           <>
@@ -339,7 +339,7 @@ const RequestDetailModal = ({
   request, 
   onClose 
 }: { 
-  request: PoojaRequest; 
+  request: ServiceRequest; 
   onClose: () => void;
 }) => {
   const config = statusConfig[request.status as keyof typeof statusConfig] || statusConfig.pending;
