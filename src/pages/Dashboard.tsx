@@ -1,21 +1,28 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Users, UserCog, Calendar, DollarSign, AlertCircle, TrendingUp } from 'lucide-react';
+import { Users, UserCog, Calendar, DollarSign, AlertCircle, TrendingUp, Radio, Eye, Clock } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
-import { StatCard, Card, Loader } from '@/components/common';
-import { dashboardApi } from '@/api';
-import { DashboardStats } from '@/types';
-import { formatCurrency, formatNumber } from '@/utils/formatters';
+import { StatCard, Card, Loader, Avatar } from '@/components/common';
+import { dashboardApi, liveStreamsApi } from '@/api';
+import { DashboardStats, LiveStream } from '@/types';
+import { formatCurrency, formatNumber, formatRelativeTime } from '@/utils/formatters';
 import { ROUTES } from '@/utils/constants';
 
 export const Dashboard = () => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [liveStreams, setLiveStreams] = useState<LiveStream[]>([]);
+  const [liveLoading, setLiveLoading] = useState(false);
 
   useEffect(() => {
     loadStats();
+    loadLiveStreams();
+
+    // Auto-refresh live streams every 10 seconds
+    const interval = setInterval(loadLiveStreams, 10000);
+    return () => clearInterval(interval);
   }, []);
 
   const loadStats = async () => {
@@ -29,6 +36,25 @@ export const Dashboard = () => {
       setError(err.message || 'Failed to load dashboard stats');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const loadLiveStreams = async () => {
+    try {
+      setLiveLoading(true);
+      const response = await liveStreamsApi.getAll({ 
+        page: 1, 
+        limit: 5, 
+        sortBy: 'createdAt', 
+        sortOrder: 'desc' 
+      });
+      // Filter only active streams
+      const activeStreams = response.data.filter((stream: LiveStream) => stream.status === 'live');
+      setLiveStreams(activeStreams);
+    } catch (err) {
+      console.error('Live streams error:', err);
+    } finally {
+      setLiveLoading(false);
     }
   };
 
@@ -73,6 +99,84 @@ export const Dashboard = () => {
               icon={DollarSign}
             />
           </div>
+
+          {/* Currently Live Section */}
+          {liveStreams.length > 0 && (
+            <Card
+              title={
+                <div className="flex items-center gap-2">
+                  <div className="relative">
+                    <Radio className="w-5 h-5 text-red-500" />
+                    <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-ping" />
+                  </div>
+                  <span>Currently Live</span>
+                  <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-medium rounded-full">
+                    {liveStreams.length} Active
+                  </span>
+                </div>
+              }
+              action={
+                <Link to={ROUTES.LIVE_STREAMS} className="text-sm text-primary-600 hover:text-primary-700 font-medium">
+                  View All Streams
+                </Link>
+              }
+            >
+              <div className="space-y-3">
+                {liveStreams.map((stream) => (
+                  <div 
+                    key={stream._id}
+                    className="flex items-center gap-4 p-3 rounded-lg border border-gray-100 hover:border-red-200 hover:bg-red-50/30 transition-all"
+                  >
+                    {/* Astrologer Info */}
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      <Avatar
+                        src={stream.astrologerId?.profilePicture}
+                        name={stream.astrologerId?.name || 'Astrologer'}
+                        size="md"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium text-gray-900 truncate">
+                            {stream.astrologerId?.name || 'Unknown Astrologer'}
+                          </p>
+                          <div className="flex items-center gap-1 px-2 py-0.5 bg-red-500 text-white text-xs font-medium rounded">
+                            <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+                            LIVE
+                          </div>
+                        </div>
+                        <p className="text-sm text-gray-600 truncate">{stream.title}</p>
+                      </div>
+                    </div>
+
+                    {/* Stream Stats */}
+                    <div className="flex items-center gap-4 text-sm">
+                      <div className="flex items-center gap-1 text-gray-600">
+                        <Eye className="w-4 h-4" />
+                        <span className="font-medium">{formatNumber(stream.viewersCount || 0)}</span>
+                      </div>
+                      <div className="flex items-center gap-1 text-gray-600">
+                        <Clock className="w-4 h-4" />
+                        <span>{formatRelativeTime(stream.startedAt || stream.createdAt)}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          )}
+
+          {/* No Live Streams */}
+          {!liveLoading && liveStreams.length === 0 && (
+            <Card>
+              <div className="text-center py-8">
+                <Radio className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                <p className="text-gray-600">No live streams at the moment</p>
+                <Link to={ROUTES.LIVE_STREAMS} className="text-sm text-primary-600 hover:text-primary-700 mt-2 inline-block">
+                  View Stream History
+                </Link>
+              </div>
+            </Card>
+          )}
 
           {/* Detailed Stats */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
