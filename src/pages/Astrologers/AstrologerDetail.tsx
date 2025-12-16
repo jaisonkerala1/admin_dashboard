@@ -423,15 +423,15 @@ export const AstrologerDetail = () => {
                   >
                     <div className="flex items-start gap-3">
                       <Avatar
-                        src={review.userId?.profilePicture}
-                        name={review.clientName || review.userId?.name || 'Anonymous'}
+                        src={review.clientAvatar}
+                        name={review.clientName || 'Anonymous'}
                         size="md"
                       />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between mb-2">
                           <div>
                             <p className="font-medium text-gray-900">
-                              {review.clientName || review.userId?.name || 'Anonymous'}
+                              {review.clientName || 'Anonymous'}
                             </p>
                             <div className="flex items-center gap-2 mt-1">
                               <div className="flex items-center">
@@ -452,8 +452,8 @@ export const AstrologerDetail = () => {
                             </div>
                           </div>
                         </div>
-                        {review.comment && (
-                          <p className="text-gray-700 text-sm mt-2">{review.comment}</p>
+                        {review.reviewText && (
+                          <p className="text-gray-700 text-sm mt-2">{review.reviewText}</p>
                         )}
                       </div>
                     </div>
