@@ -1,31 +1,25 @@
 import apiClient from './client';
-import { ApiResponse } from '@/types';
-
-export interface RevenueData {
-  date: string;
-  consultations: number;
-  services: number;
-  liveStreams: number;
-  total: number;
-}
-
-export interface GrowthData {
-  date: string;
-  astrologers: number;
-  users: number;
-  consultations: number;
-  revenue: number;
-}
+import { ApiResponse, AnalyticsData } from '../types';
 
 export const analyticsApi = {
-  getRevenue: async (params: { startDate: string; endDate: string; groupBy?: 'day' | 'week' | 'month' }): Promise<ApiResponse<RevenueData[]>> => {
-    const response = await apiClient.get('/admin/analytics/revenue', { params });
-    return response.data;
+  /**
+   * Get complete analytics data
+   */
+  getAnalytics: (period: 'daily' | 'weekly' | 'monthly' = 'monthly'): Promise<ApiResponse<AnalyticsData>> => {
+    return apiClient.get(`/admin/analytics?period=${period}`);
   },
 
-  getGrowth: async (params: { startDate: string; endDate: string; groupBy?: 'day' | 'week' | 'month' }): Promise<ApiResponse<GrowthData[]>> => {
-    const response = await apiClient.get('/admin/analytics/growth', { params });
-    return response.data;
+  /**
+   * Get revenue analytics
+   */
+  getRevenueAnalytics: (period: 'daily' | 'weekly' | 'monthly' = 'monthly') => {
+    return apiClient.get(`/admin/analytics/revenue?period=${period}`);
   },
+
+  /**
+   * Get growth analytics
+   */
+  getGrowthAnalytics: (period: 'daily' | 'weekly' | 'monthly' = 'monthly') => {
+    return apiClient.get(`/admin/analytics/growth?period=${period}`);
+  }
 };
-
