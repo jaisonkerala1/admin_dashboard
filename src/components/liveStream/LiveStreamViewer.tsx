@@ -34,42 +34,59 @@ export const LiveStreamViewer = ({ stream, onClose, onEndStream }: LiveStreamVie
   const [isMuted, setIsMuted] = useState(false);
   const [remoteUsers, setRemoteUsers] = useState<IAgoraRTCRemoteUser[]>([]);
   const [showEndConfirm, setShowEndConfirm] = useState(false);
+  const [agoraConfig, setAgoraConfig] = useState<{ appId: string; token: string; channelName: string } | null>(null);
   
   const videoRef = useRef<HTMLDivElement>(null);
 
-  // Agora App ID - Get from backend or env
-  const APP_ID = import.meta.env.VITE_AGORA_APP_ID || '';
-
   useEffect(() => {
-    if (!APP_ID) {
-      setError('Agora App ID not configured');
-      setIsLoading(false);
-      return;
-    }
-
-    joinChannel();
+    fetchTokenAndJoin();
 
     return () => {
       leaveChannel();
     };
   }, []);
 
-  const joinChannel = async () => {
+  const fetchTokenAndJoin = async () => {
     try {
       setIsLoading(true);
       setError('');
 
+      // Fetch Agora token from backend
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || '/api'}/admin/live-streams/${stream._id}/token`, {
+        headers: {
+          'x-admin-key': import.meta.env.VITE_ADMIN_SECRET_KEY || ''
+        }
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to get stream token');
+      }
+
+      const data = await response.json();
+      const { token, channelName, appId } = data.data;
+
+      setAgoraConfig({ appId, token, channelName });
+      await joinChannel(appId, channelName, token);
+    } catch (err: any) {
+      console.error('Failed to fetch token:', err);
+      setError(err.message || 'Failed to connect to live stream');
+      setIsLoading(false);
+    }
+  };
+
+  const joinChannel = async (appId: string, channelName: string, token: string) => {
+    try {
       // Set up event listeners
       client.on('user-published', handleUserPublished);
       client.on('user-unpublished', handleUserUnpublished);
       client.on('user-left', handleUserLeft);
 
-      // Join channel (viewer mode - no token needed for testing)
-      // In production, get token from backend
+      // Join channel with token
       await client.join(
-        APP_ID,
-        stream.agoraChannelName,
-        null, // Token (null for testing, should get from backend)
+        appId,
+        channelName,
+        token,
         null  // UID (null = auto-generate)
       );
 
@@ -191,7 +208,7 @@ export const LiveStreamViewer = ({ stream, onClose, onEndStream }: LiveStreamVie
               <AlertCircle className="w-12 h-12 text-red-500" />
               <p className="text-white text-center">{error}</p>
               <button
-                onClick={joinChannel}
+                onClick={fetchTokenAndJoin}
                 className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
               >
                 Retry
