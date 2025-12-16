@@ -48,24 +48,45 @@ export const LiveStreamViewer = ({ stream, onClose, onEndStream }: LiveStreamVie
       setIsLoading(true);
       setError('');
 
+      console.log('🔴 Fetching token for stream:', stream._id);
+      console.log('🔴 Stream isLive:', stream.isLive);
+      console.log('🔴 API URL:', import.meta.env.VITE_API_BASE_URL || '/api');
+
+      // Check if stream is actually live
+      if (!stream.isLive) {
+        throw new Error('This stream is no longer live');
+      }
+
       // Fetch Agora token from backend
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || '/api'}/admin/live-streams/${stream._id}/token`, {
+      const apiUrl = `${import.meta.env.VITE_API_BASE_URL || '/api'}/admin/live-streams/${stream._id}/token`;
+      console.log('🔴 Fetching token from:', apiUrl);
+
+      const response = await fetch(apiUrl, {
         headers: {
           'x-admin-key': import.meta.env.VITE_ADMIN_SECRET_KEY || ''
         }
       });
 
+      console.log('🔴 Response status:', response.status);
+
       if (!response.ok) {
         const errorData = await response.json();
+        console.error('🔴 Token error:', errorData);
         throw new Error(errorData.message || 'Failed to get stream token');
       }
 
       const data = await response.json();
+      console.log('🔴 Token received:', { hasToken: !!data.data.token, appId: data.data.appId });
+
       const { token, channelName, appId } = data.data;
+
+      if (!token || !appId) {
+        throw new Error('Agora credentials not configured on server');
+      }
 
       await joinChannel(appId, channelName, token);
     } catch (err: any) {
-      console.error('Failed to fetch token:', err);
+      console.error('🔴 Failed to fetch token:', err);
       setError(err.message || 'Failed to connect to live stream');
       setIsLoading(false);
     }
@@ -73,24 +94,34 @@ export const LiveStreamViewer = ({ stream, onClose, onEndStream }: LiveStreamVie
 
   const joinChannel = async (appId: string, channelName: string, token: string) => {
     try {
+      console.log('🔴 Joining Agora channel:', { appId, channelName, hasToken: !!token });
+
       // Set up event listeners
       client.on('user-published', handleUserPublished);
       client.on('user-unpublished', handleUserUnpublished);
       client.on('user-left', handleUserLeft);
 
       // Join channel with token
-      await client.join(
+      const uid = await client.join(
         appId,
         channelName,
         token,
         null  // UID (null = auto-generate)
       );
 
+      console.log('🔴 Successfully joined channel with UID:', uid);
+      console.log('🔴 Remote users:', client.remoteUsers.length);
+
       setIsJoined(true);
       setIsLoading(false);
     } catch (err: any) {
-      console.error('Failed to join channel:', err);
-      setError(err.message || 'Failed to join live stream');
+      console.error('🔴 Failed to join channel:', err);
+      console.error('🔴 Error details:', {
+        code: err.code,
+        message: err.message,
+        name: err.name
+      });
+      setError(err.message || 'Failed to join live stream. Check if Agora credentials are configured.');
       setIsLoading(false);
     }
   };
