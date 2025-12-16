@@ -1,37 +1,113 @@
-import { useEffect, useState } from 'react';
-import { Search, Filter } from 'lucide-react';
+import { useEffect, useState, useCallback } from 'react';
+import { 
+  Search, 
+  Filter, 
+  Package,
+  DollarSign,
+  Star,
+  CheckCircle2,
+  XCircle,
+  Eye,
+  ChevronLeft,
+  ChevronRight,
+  X,
+  Clock,
+  TrendingUp,
+  RefreshCw,
+  Calendar,
+  Tag
+} from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
-import { Card, Loader, EmptyState, Avatar, StatusBadge } from '@/components/common';
+import { Card, Loader, EmptyState, Avatar } from '@/components/common';
 import { servicesApi } from '@/api';
 import { Service } from '@/types';
 import { formatCurrency, formatDateTime } from '@/utils/formatters';
+
+interface PaginationInfo {
+  page: number;
+  limit: number;
+  total: number;
+  pages: number;
+}
+
+const categoryLabels: Record<string, string> = {
+  reiki_healing: 'Reiki Healing',
+  tarot_reading: 'Tarot Reading',
+  numerology: 'Numerology',
+  vastu_consultation: 'Vastu Consultation',
+  kundli_matching: 'Kundli Matching',
+  gemstone_consultation: 'Gemstone Consultation',
+  horoscope_analysis: 'Horoscope Analysis',
+  palm_reading: 'Palm Reading',
+  face_reading: 'Face Reading',
+  other: 'Other'
+};
 
 export const Services = () => {
   const [services, setServices] = useState<Service[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'active' | 'inactive'>('all');
+  const [filter, setFilter] = useState<'all' | 'active' | 'inactive'>('all');
+  const [pagination, setPagination] = useState<PaginationInfo>({ page: 1, limit: 20, total: 0, pages: 0 });
+  const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [stats, setStats] = useState({
+    total: 0,
+    active: 0,
+    inactive: 0,
+    totalBookings: 0,
+    totalRevenue: 0
+  });
 
-  useEffect(() => {
-    loadServices();
-  }, [search, filter]);
-
-  const loadServices = async () => {
+  const loadServices = useCallback(async (page = 1) => {
     try {
       setIsLoading(true);
-      const response = await servicesApi.getAll({ search, sortBy: 'createdAt', sortOrder: 'desc' });
-      let data = response.data?.data || [];
+      const params: any = { 
+        page, 
+        limit: pagination.limit,
+        sortBy: 'createdAt', 
+        sortOrder: 'desc' 
+      };
       
-      if (filter !== 'all') {
-        data = data.filter(s => s.status === filter || (filter === 'active' && s.isActive) || (filter === 'inactive' && !s.isActive));
+      if (search) params.search = search;
+      if (filter !== 'all') params.isActive = filter === 'active';
+      
+      const response = await servicesApi.getAll(params);
+      
+      const servicesData = response.data || [];
+      setServices(servicesData);
+      
+      if (response.pagination) {
+        setPagination(response.pagination);
       }
       
-      setServices(data);
+      // Calculate stats
+      const revenue = servicesData.reduce((sum: number, s: Service) => sum + (s.price * s.totalBookings), 0);
+      const activeCount = servicesData.filter(s => s.isActive && !s.isDeleted).length;
+      setStats({
+        total: response.pagination?.total || servicesData.length,
+        active: activeCount,
+        inactive: servicesData.length - activeCount,
+        totalBookings: servicesData.reduce((sum: number, s: Service) => sum + s.totalBookings, 0),
+        totalRevenue: revenue
+      });
     } catch (err) {
       console.error('Failed to load services:', err);
     } finally {
       setIsLoading(false);
+    }
+  }, [search, filter, pagination.limit]);
+
+  useEffect(() => {
+    const debounce = setTimeout(() => {
+      loadServices(1);
+    }, 300);
+    return () => clearTimeout(debounce);
+  }, [search, filter]);
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= pagination.pages) {
+      loadServices(newPage);
     }
   };
 
@@ -39,10 +115,80 @@ export const Services = () => {
     <MainLayout>
       <PageHeader
         title="Services Management"
-        subtitle="Manage all astrologer services"
+        subtitle={`Manage all astrologer services • ${pagination.total} total`}
       />
 
+      {/* Stats Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+        <Card className="!p-4 bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-blue-500 rounded-lg">
+              <Package className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-blue-900">{pagination.total}</p>
+              <p className="text-xs text-blue-600">Total</p>
+            </div>
+          </div>
+        </Card>
+        
+        <Card className="!p-4 bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-green-500 rounded-lg">
+              <CheckCircle2 className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-green-900">
+                {services.filter(s => s.isActive && !s.isDeleted).length}
+              </p>
+              <p className="text-xs text-green-600">Active</p>
+            </div>
+          </div>
+        </Card>
+        
+        <Card className="!p-4 bg-gradient-to-br from-gray-50 to-gray-100 border-gray-200">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gray-500 rounded-lg">
+              <XCircle className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-gray-900">
+                {services.filter(s => !s.isActive || s.isDeleted).length}
+              </p>
+              <p className="text-xs text-gray-600">Inactive</p>
+            </div>
+          </div>
+        </Card>
+        
+        <Card className="!p-4 bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-purple-500 rounded-lg">
+              <TrendingUp className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-purple-900">{stats.totalBookings}</p>
+              <p className="text-xs text-purple-600">Bookings</p>
+            </div>
+          </div>
+        </Card>
+        
+        <Card className="!p-4 bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-emerald-500 rounded-lg">
+              <DollarSign className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-emerald-900">
+                {formatCurrency(stats.totalRevenue)}
+              </p>
+              <p className="text-xs text-emerald-600">Revenue</p>
+            </div>
+          </div>
+        </Card>
+      </div>
+
       <Card>
+        {/* Filters */}
         <div className="flex flex-col md:flex-row gap-4 mb-6">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -51,7 +197,7 @@ export const Services = () => {
               placeholder="Search services..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="input pl-10"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             />
           </div>
           <div className="flex items-center gap-2">
@@ -59,17 +205,23 @@ export const Services = () => {
             <select
               value={filter}
               onChange={(e) => setFilter(e.target.value as any)}
-              className="input w-48"
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             >
               <option value="all">All Status</option>
-              <option value="pending">Pending</option>
-              <option value="approved">Approved</option>
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
             </select>
           </div>
+          <button
+            onClick={() => loadServices(pagination.page)}
+            className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Refresh
+          </button>
         </div>
 
+        {/* Table */}
         {isLoading ? (
           <div className="py-12">
             <Loader size="lg" text="Loading services..." />
@@ -81,59 +233,364 @@ export const Services = () => {
             description="No services match your current filters"
           />
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50 border-y border-gray-200">
-                <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Service</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Astrologer</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Orders</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Rating</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Created</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {services.map((service) => (
-                  <tr key={service._id} className="hover:bg-gray-50">
-                    <td className="px-4 py-4">
-                      <p className="font-medium text-gray-900">{service.title}</p>
-                      <p className="text-sm text-gray-500">{service.description.slice(0, 50)}...</p>
-                    </td>
-                    <td className="px-4 py-4">
-                      <div className="flex items-center gap-2">
-                        <Avatar src={service.astrologerId.profilePicture} name={service.astrologerId.name} size="sm" />
-                        <span className="text-sm text-gray-900">{service.astrologerId.name}</span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-4">
-                      <span className="badge bg-gray-100 text-gray-700">{service.category}</span>
-                    </td>
-                    <td className="px-4 py-4">
-                      <p className="font-medium text-gray-900">{formatCurrency(service.price)}</p>
-                    </td>
-                    <td className="px-4 py-4">
-                      <p className="text-sm text-gray-900">{service.totalOrders}</p>
-                    </td>
-                    <td className="px-4 py-4">
-                      <p className="text-sm text-gray-900">{service.rating.toFixed(1)} ⭐</p>
-                    </td>
-                    <td className="px-4 py-4">
-                      <StatusBadge status={service.status} />
-                    </td>
-                    <td className="px-4 py-4">
-                      <p className="text-sm text-gray-500">{formatDateTime(service.createdAt)}</p>
-                    </td>
+          <>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 border-y border-gray-200">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Service</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Astrologer</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Bookings</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Rating</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {services.map((service) => (
+                    <tr key={service._id} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-4 py-4">
+                        <div>
+                          <p className="font-medium text-gray-900">{service.name}</p>
+                          <p className="text-sm text-gray-500 line-clamp-1">{service.description}</p>
+                        </div>
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="flex items-center gap-3">
+                          <Avatar 
+                            src={service.astrologerId.profilePicture} 
+                            name={service.astrologerId.name} 
+                            size="sm" 
+                          />
+                          <div>
+                            <p className="font-medium text-gray-900">{service.astrologerId.name}</p>
+                            <p className="text-sm text-gray-500">{service.astrologerId.email}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-4">
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-purple-50 text-purple-700 rounded-full text-xs font-medium">
+                          <Tag className="w-3 h-3" />
+                          {categoryLabels[service.category] || service.category}
+                        </span>
+                      </td>
+                      <td className="px-4 py-4">
+                        <p className="font-medium text-gray-900">
+                          {formatCurrency(service.price, service.currency || 'INR')}
+                        </p>
+                        <p className="text-xs text-gray-500">{service.duration}</p>
+                      </td>
+                      <td className="px-4 py-4">
+                        <p className="text-sm text-gray-900">{service.totalBookings}</p>
+                        <p className="text-xs text-gray-500">{service.completedBookings} completed</p>
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="flex items-center gap-1">
+                          <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                          <span className="font-medium text-sm">
+                            {service.averageRating > 0 ? service.averageRating.toFixed(1) : 'N/A'}
+                          </span>
+                          <span className="text-xs text-gray-500">
+                            ({service.totalRatings})
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-4">
+                        {service.isActive && !service.isDeleted ? (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            <CheckCircle2 className="w-3 h-3" />
+                            Active
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                            <XCircle className="w-3 h-3" />
+                            Inactive
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-4 py-4">
+                        <button
+                          onClick={() => setSelectedService(service)}
+                          className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                          title="View Details"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Pagination */}
+            <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200">
+              <p className="text-sm text-gray-600">
+                Showing {((pagination.page - 1) * pagination.limit) + 1} to{' '}
+                {Math.min(pagination.page * pagination.limit, pagination.total)} of{' '}
+                {pagination.total} services
+              </p>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => handlePageChange(pagination.page - 1)}
+                  disabled={pagination.page === 1}
+                  className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: Math.min(5, pagination.pages) }, (_, i) => {
+                    let pageNum;
+                    if (pagination.pages <= 5) {
+                      pageNum = i + 1;
+                    } else if (pagination.page <= 3) {
+                      pageNum = i + 1;
+                    } else if (pagination.page >= pagination.pages - 2) {
+                      pageNum = pagination.pages - 4 + i;
+                    } else {
+                      pageNum = pagination.page - 2 + i;
+                    }
+                    return (
+                      <button
+                        key={pageNum}
+                        onClick={() => handlePageChange(pageNum)}
+                        className={`px-3 py-1 rounded-lg text-sm transition-colors ${
+                          pagination.page === pageNum
+                            ? 'bg-indigo-600 text-white'
+                            : 'hover:bg-gray-100'
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  })}
+                </div>
+                <button
+                  onClick={() => handlePageChange(pagination.page + 1)}
+                  disabled={pagination.page === pagination.pages}
+                  className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </>
         )}
       </Card>
+
+      {/* Detail Modal */}
+      {selectedService && (
+        <ServiceDetailModal
+          service={selectedService}
+          onClose={() => setSelectedService(null)}
+        />
+      )}
     </MainLayout>
   );
 };
 
+// Service Detail Modal Component
+const ServiceDetailModal = ({ 
+  service, 
+  onClose 
+}: { 
+  service: Service; 
+  onClose: () => void;
+}) => {
+  const getDayName = (day: number) => {
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    return days[day];
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 overflow-y-auto">
+      <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center">
+        <div className="fixed inset-0 bg-black/50 transition-opacity" onClick={onClose} />
+        
+        <div className="relative bg-white rounded-2xl shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+          {/* Header */}
+          <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-2xl">
+            <h2 className="text-xl font-semibold text-gray-900">Service Details</h2>
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          <div className="p-6 space-y-6">
+            {/* Status */}
+            <div className="flex items-center justify-between">
+              {service.isActive && !service.isDeleted ? (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                  <CheckCircle2 className="w-4 h-4" />
+                  Active
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+                  <XCircle className="w-4 h-4" />
+                  Inactive
+                </span>
+              )}
+              <span className="text-sm text-gray-500">
+                ID: {service._id.slice(-8)}
+              </span>
+            </div>
+
+            {/* Service Info */}
+            <div className="bg-indigo-50 rounded-xl p-4">
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">{service.name}</h3>
+              <p className="text-gray-700 mb-3">{service.description}</p>
+              <div className="flex items-center gap-4 text-sm">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-purple-100 text-purple-700 rounded-full font-medium">
+                  <Tag className="w-3 h-3" />
+                  {categoryLabels[service.category] || service.category}
+                </span>
+                <span className="text-gray-600">
+                  <Clock className="w-4 h-4 inline mr-1" />
+                  {service.duration}
+                </span>
+              </div>
+            </div>
+
+            {/* Astrologer Info */}
+            <div className="bg-gray-50 rounded-xl p-4">
+              <h3 className="text-sm font-medium text-gray-500 mb-3">Astrologer</h3>
+              <div className="flex items-center gap-4">
+                <Avatar 
+                  src={service.astrologerId.profilePicture}
+                  name={service.astrologerId.name} 
+                  size="lg" 
+                />
+                <div>
+                  <p className="font-semibold text-gray-900">{service.astrologerId.name}</p>
+                  <p className="text-sm text-gray-600">{service.astrologerId.email}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Stats Grid */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4">
+                <div className="flex items-center gap-2 text-blue-600 mb-1">
+                  <DollarSign className="w-4 h-4" />
+                  <span className="text-sm">Price</span>
+                </div>
+                <p className="font-bold text-xl text-blue-900">
+                  {formatCurrency(service.price, service.currency || 'INR')}
+                </p>
+              </div>
+              
+              <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4">
+                <div className="flex items-center gap-2 text-purple-600 mb-1">
+                  <TrendingUp className="w-4 h-4" />
+                  <span className="text-sm">Bookings</span>
+                </div>
+                <p className="font-bold text-xl text-purple-900">{service.totalBookings}</p>
+                <p className="text-xs text-purple-600">{service.completedBookings} completed</p>
+              </div>
+              
+              <div className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl p-4">
+                <div className="flex items-center gap-2 text-amber-600 mb-1">
+                  <Star className="w-4 h-4" />
+                  <span className="text-sm">Rating</span>
+                </div>
+                <p className="font-bold text-xl text-amber-900">
+                  {service.averageRating > 0 ? service.averageRating.toFixed(1) : 'N/A'}
+                </p>
+                <p className="text-xs text-amber-600">{service.totalRatings} reviews</p>
+              </div>
+              
+              <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-4">
+                <div className="flex items-center gap-2 text-emerald-600 mb-1">
+                  <DollarSign className="w-4 h-4" />
+                  <span className="text-sm">Revenue</span>
+                </div>
+                <p className="font-bold text-xl text-emerald-900">
+                  {formatCurrency(service.price * service.totalBookings, service.currency || 'INR')}
+                </p>
+              </div>
+            </div>
+
+            {/* Requirements */}
+            {service.requirements && (
+              <div className="bg-gray-50 rounded-xl p-4">
+                <h3 className="text-sm font-medium text-gray-500 mb-2">Requirements</h3>
+                <p className="text-gray-700">{service.requirements}</p>
+              </div>
+            )}
+
+            {/* Benefits */}
+            {service.benefits && service.benefits.length > 0 && (
+              <div className="bg-green-50 rounded-xl p-4">
+                <h3 className="text-sm font-medium text-green-600 mb-3">Benefits</h3>
+                <ul className="space-y-2">
+                  {service.benefits.map((benefit, index) => (
+                    <li key={index} className="flex items-start gap-2 text-gray-700">
+                      <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                      <span>{benefit}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Availability */}
+            {service.availability && (
+              <div className="bg-blue-50 rounded-xl p-4">
+                <h3 className="text-sm font-medium text-blue-600 mb-3 flex items-center gap-2">
+                  <Calendar className="w-4 h-4" />
+                  Availability
+                </h3>
+                <div className="space-y-2 text-sm">
+                  <p className="text-gray-700">
+                    <span className="font-medium">Days:</span>{' '}
+                    {service.availability.availableDays.map(d => getDayName(d)).join(', ')}
+                  </p>
+                  <p className="text-gray-700">
+                    <span className="font-medium">Time:</span>{' '}
+                    {service.availability.startTime} - {service.availability.endTime}
+                  </p>
+                  <p className="text-gray-700">
+                    <span className="font-medium">Max Bookings/Day:</span>{' '}
+                    {service.availability.maxBookingsPerDay}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Tags */}
+            {service.tags && service.tags.length > 0 && (
+              <div>
+                <h3 className="text-sm font-medium text-gray-500 mb-2">Tags</h3>
+                <div className="flex flex-wrap gap-2">
+                  {service.tags.map((tag, index) => (
+                    <span 
+                      key={index}
+                      className="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Meta Info */}
+            <div className="grid grid-cols-2 gap-4 text-sm text-gray-500 pt-4 border-t border-gray-200">
+              <div>
+                <span className="font-medium">Created:</span> {formatDateTime(service.createdAt)}
+              </div>
+              <div>
+                <span className="font-medium">Updated:</span> {formatDateTime(service.updatedAt)}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};

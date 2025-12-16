@@ -1,25 +1,51 @@
 export interface Service {
   _id: string;
+  // Astrologer reference
   astrologerId: {
     _id: string;
     name: string;
     email: string;
     profilePicture?: string;
   };
-  title: string;
+  
+  // Basic info
+  name: string;
   description: string;
   category: string;
+  
+  // Pricing & Duration
   price: number;
-  duration: number;
-  deliveryTime: string;
-  status: 'pending' | 'approved' | 'rejected' | 'active' | 'inactive';
-  isActive: boolean;
-  features: string[];
+  currency: 'INR' | 'USD' | 'EUR';
+  duration: string; // e.g., "1 hr", "30 mins"
+  
+  // Details
+  requirements?: string;
+  benefits?: string[];
+  tags?: string[];
+  
+  // Media
+  imageUrl?: string;
   images?: string[];
-  totalOrders: number;
-  rating: number;
-  totalReviews: number;
-  rejectionReason?: string;
+  
+  // Status
+  isActive: boolean;
+  isDeleted: boolean;
+  
+  // Stats
+  totalBookings: number;
+  completedBookings: number;
+  averageRating: number;
+  totalRatings: number;
+  
+  // Availability
+  availability?: {
+    availableDays: number[]; // 0-6 for Sunday-Saturday
+    startTime: string; // "09:00"
+    endTime: string; // "18:00"
+    maxBookingsPerDay: number;
+  };
+  
+  // Timestamps
   createdAt: string;
   updatedAt: string;
 }
@@ -27,20 +53,18 @@ export interface Service {
 export interface ServiceStats {
   total: number;
   active: number;
-  pending: number;
-  totalOrders: number;
+  inactive: number;
+  totalBookings: number;
   totalRevenue: number;
   averageRating: number;
 }
 
 export interface UpdateServiceRequest {
-  title?: string;
+  name?: string;
   description?: string;
   price?: number;
-  duration?: number;
-  deliveryTime?: string;
-  status?: string;
+  duration?: string;
   isActive?: boolean;
-  rejectionReason?: string;
+  requirements?: string;
+  benefits?: string[];
 }
-

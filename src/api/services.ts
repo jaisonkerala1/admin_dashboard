@@ -3,13 +3,24 @@ import {
   Service,
   ServiceStats,
   UpdateServiceRequest,
-  PaginatedResponse,
   PaginationParams,
   ApiResponse,
 } from '@/types';
 
+// Custom response type that matches actual backend response
+interface ServicesListResponse {
+  success: boolean;
+  data: Service[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+}
+
 export const servicesApi = {
-  getAll: async (params?: PaginationParams): Promise<ApiResponse<PaginatedResponse<Service>>> => {
+  getAll: async (params?: PaginationParams): Promise<ServicesListResponse> => {
     const response = await apiClient.get('/admin/services', { params });
     return response.data;
   },
