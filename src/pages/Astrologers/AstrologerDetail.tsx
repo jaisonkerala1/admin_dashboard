@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Mail, Phone, Star, Calendar, DollarSign, Clock, CheckCircle, Ban } from 'lucide-react';
+import { Mail, Phone, Star, Calendar, DollarSign, Clock, CheckCircle, Ban, Package } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Card, Loader, Avatar, StatusBadge, Modal } from '@/components/common';
-import { astrologersApi } from '@/api';
-import { Astrologer } from '@/types';
+import { astrologersApi, servicesApi } from '@/api';
+import { Astrologer, Service } from '@/types';
 import { formatCurrency, formatNumber, formatDateTime } from '@/utils/formatters';
 import { useToastContext } from '@/contexts/ToastContext';
 
@@ -13,14 +13,19 @@ export const AstrologerDetail = () => {
   const { id } = useParams<{ id: string }>();
   const toast = useToastContext();
   const [astrologer, setAstrologer] = useState<Astrologer | null>(null);
+  const [services, setServices] = useState<Service[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [servicesLoading, setServicesLoading] = useState(false);
   const [isApproving, setIsApproving] = useState(false);
   const [isSuspending, setIsSuspending] = useState(false);
   const [showSuspendModal, setShowSuspendModal] = useState(false);
   const [suspensionReason, setSuspensionReason] = useState('');
 
   useEffect(() => {
-    if (id) loadAstrologer();
+    if (id) {
+      loadAstrologer();
+      loadServices();
+    }
   }, [id]);
 
   const loadAstrologer = async () => {
@@ -58,6 +63,23 @@ export const AstrologerDetail = () => {
       console.error('Failed to load astrologer:', err);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const loadServices = async () => {
+    if (!id) return;
+    try {
+      setServicesLoading(true);
+      const response = await servicesApi.getAll({ 
+        astrologerId: id,
+        page: 1,
+        limit: 100 // Get all services
+      });
+      setServices(response.data || []);
+    } catch (err) {
+      console.error('Failed to load services:', err);
+    } finally {
+      setServicesLoading(false);
     }
   };
 
@@ -286,6 +308,66 @@ export const AstrologerDetail = () => {
                 <p className="text-xl font-bold text-gray-900">{formatCurrency(astrologer.chatCharge || 0)}/min</p>
               </div>
             </div>
+          </Card>
+
+          {/* Services */}
+          <Card 
+            title={
+              <div className="flex items-center gap-2">
+                <Package className="w-5 h-5" />
+                <span>Services Offered</span>
+                <span className="px-2 py-0.5 bg-primary-100 text-primary-700 text-xs font-medium rounded-full">
+                  {services.length}
+                </span>
+              </div>
+            }
+          >
+            {servicesLoading ? (
+              <div className="flex justify-center py-8">
+                <Loader size="sm" text="Loading services..." />
+              </div>
+            ) : services.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {services.map((service) => (
+                  <div
+                    key={service._id}
+                    className="p-4 border border-gray-200 rounded-lg hover:border-primary-300 hover:bg-primary-50/30 transition-all"
+                  >
+                    <div className="flex items-start justify-between mb-2">
+                      <h4 className="font-semibold text-gray-900">{service.name}</h4>
+                      <StatusBadge status={service.status} />
+                    </div>
+                    {service.description && (
+                      <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                        {service.description}
+                      </p>
+                    )}
+                    <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                      <div className="flex items-center gap-4 text-sm">
+                        <span className="text-gray-600">
+                          <span className="font-medium text-gray-900">
+                            {formatCurrency(service.price)}
+                          </span>
+                        </span>
+                        {service.duration && (
+                          <span className="text-gray-500">
+                            {service.duration} mins
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-xs text-gray-500">
+                        {service.category}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <Package className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                <p className="text-gray-500">No services offered yet</p>
+              </div>
+            )}
           </Card>
 
           {/* Suspension Info */}
