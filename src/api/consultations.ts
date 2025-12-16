@@ -3,13 +3,23 @@ import {
   Consultation,
   ConsultationStats,
   UpdateConsultationRequest,
-  PaginatedResponse,
   PaginationParams,
-  ApiResponse,
 } from '@/types';
 
+// Custom response type that matches actual backend response
+interface ConsultationsListResponse {
+  success: boolean;
+  data: Consultation[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+}
+
 export const consultationsApi = {
-  getAll: async (params?: PaginationParams): Promise<ApiResponse<PaginatedResponse<Consultation>>> => {
+  getAll: async (params?: PaginationParams): Promise<ConsultationsListResponse> => {
     const response = await apiClient.get('/admin/consultations', { params });
     return response.data;
   },
