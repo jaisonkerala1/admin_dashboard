@@ -1,49 +1,52 @@
 export interface Review {
   _id: string;
-  userId: {
-    _id: string;
-    name: string;
-    email: string;
-    profilePicture?: string;
-  };
+  
+  // Client info (may be null)
+  clientId: string | null;
+  clientName: string;
+  clientAvatar?: string;
+  
+  // Astrologer reference (may be null)
   astrologerId: {
     _id: string;
     name: string;
     email: string;
     profilePicture?: string;
-  };
-  consultationId?: {
-    _id: string;
-    type: string;
-  };
-  rating: number;
-  comment: string;
-  isHidden: boolean;
-  hiddenReason?: string;
-  replies?: ReviewReply[];
-  helpful: number;
-  notHelpful: number;
+  } | null;
+  
+  // Review details
+  rating: number; // 1-5
+  reviewText: string;
+  sessionId?: string;
+  
+  // Astrologer reply
+  astrologerReply?: string | null;
+  repliedAt?: string | null;
+  
+  // Moderation
+  isPublic: boolean;
+  isVerified: boolean;
+  isModerated: boolean;
+  moderatedBy?: string | null;
+  moderatedAt?: string | null;
+  
+  // Engagement
+  helpfulCount: number;
+  
+  // Meta
+  source: string;
+  
+  // Timestamps
   createdAt: string;
   updatedAt: string;
-}
-
-export interface ReviewReply {
-  _id: string;
-  userId: string;
-  userName: string;
-  comment: string;
-  createdAt: string;
-}
-
-export interface ModerateReviewRequest {
-  isHidden: boolean;
-  hiddenReason?: string;
 }
 
 export interface ReviewStats {
   total: number;
   averageRating: number;
-  hidden: number;
+  verified: number;
+  moderated: number;
+  public: number;
   byRating: {
     5: number;
     4: number;
@@ -53,3 +56,8 @@ export interface ReviewStats {
   };
 }
 
+export interface ModerateReviewRequest {
+  isModerated?: boolean;
+  isPublic?: boolean;
+  moderatedReason?: string;
+}

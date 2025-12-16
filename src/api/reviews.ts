@@ -3,13 +3,24 @@ import {
   Review,
   ReviewStats,
   ModerateReviewRequest,
-  PaginatedResponse,
   PaginationParams,
   ApiResponse,
 } from '@/types';
 
+// Custom response type that matches backend
+interface ReviewsListResponse {
+  success: boolean;
+  data: Review[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+}
+
 export const reviewsApi = {
-  getAll: async (params?: PaginationParams): Promise<ApiResponse<PaginatedResponse<Review>>> => {
+  getAll: async (params?: PaginationParams): Promise<ReviewsListResponse> => {
     const response = await apiClient.get('/admin/reviews', { params });
     return response.data;
   },
