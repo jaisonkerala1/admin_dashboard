@@ -7,7 +7,6 @@ import {
   EyeOff,
   Shield,
   CheckCircle2,
-  XCircle,
   ChevronLeft,
   ChevronRight,
   RefreshCw,
@@ -218,7 +217,7 @@ export const Reviews = () => {
                         <div className="flex items-center gap-2 mb-1">
                           <p className="font-medium text-gray-900">{review.clientName}</p>
                           {review.isVerified && (
-                            <CheckCircle2 className="w-4 h-4 text-green-600" title="Verified" />
+                            <CheckCircle2 className="w-4 h-4 text-green-600" />
                           )}
                         </div>
                         {review.astrologerId && (
