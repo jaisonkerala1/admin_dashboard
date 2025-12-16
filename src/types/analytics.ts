@@ -80,7 +80,7 @@ export interface AnalyticsDistributions {
   reviewRatings: StatusDistribution[];
 }
 
-export interface LiveStreamStats {
+export interface AnalyticsLiveStreamStats {
   _id: null | string;
   totalViewers: number;
   totalViews: number;
@@ -93,6 +93,6 @@ export interface AnalyticsData {
   trends: AnalyticsTrends;
   topPerformers: TopPerformers;
   distributions: AnalyticsDistributions;
-  liveStreamStats: LiveStreamStats;
+  liveStreamStats: AnalyticsLiveStreamStats;
 }
 

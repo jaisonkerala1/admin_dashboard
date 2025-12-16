@@ -10,7 +10,7 @@ import {
 } from 'recharts';
 import { 
   DollarSign, TrendingUp, Users, UserCog, Star, ShoppingBag, 
-  Radio, MessageSquare, CheckCircle, XCircle, Clock 
+  Radio, CheckCircle
 } from 'lucide-react';
 import { getImageUrl } from '@/utils/helpers';
 
@@ -29,7 +29,9 @@ export const Analytics = () => {
     try {
       setIsLoading(true);
       const response = await analyticsApi.getAnalytics(period);
-      setData(response.data);
+      if (response.data) {
+        setData(response.data);
+      }
     } catch (err) {
       console.error('Failed to load analytics:', err);
     } finally {
@@ -338,7 +340,7 @@ export const Analytics = () => {
                     fill="#8884d8"
                     dataKey="value"
                   >
-                    {consultationStatusData.map((entry, index) => (
+                    {consultationStatusData.map((_entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
