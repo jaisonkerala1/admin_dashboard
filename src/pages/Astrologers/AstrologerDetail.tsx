@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Mail, Phone, Star, Calendar, DollarSign, Clock, CheckCircle, XCircle, Ban } from 'lucide-react';
+import { Mail, Phone, Star, Calendar, DollarSign, Clock, CheckCircle, Ban } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Card, Loader, Avatar, StatusBadge, Modal } from '@/components/common';
@@ -43,9 +43,9 @@ export const AstrologerDetail = () => {
         languages: data.languages || [],
         rating: data.rating ?? 0,
         totalReviews: data.totalReviews ?? 0,
-        consultationCharge: data.consultationCharge || data.ratePerMinute || 0,
-        callCharge: data.callCharge || data.ratePerMinute || 0,
-        chatCharge: data.chatCharge || data.ratePerMinute || 0,
+        consultationCharge: data.consultationCharge || (data as any).ratePerMinute || 0,
+        callCharge: data.callCharge || (data as any).ratePerMinute || 0,
+        chatCharge: data.chatCharge || (data as any).ratePerMinute || 0,
         totalEarnings: data.totalEarnings || 0,
         totalConsultations: data.totalConsultations || 0,
         isApproved: data.isApproved ?? false,

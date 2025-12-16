@@ -1,5 +1,6 @@
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { loginRequest, logout as logoutAction } from '@/store/slices/authSlice';
+import { store } from '@/store';
 
 export const useAuth = () => {
   const dispatch = useAppDispatch();
@@ -13,7 +14,7 @@ export const useAuth = () => {
     // In a real app, you'd handle this with a promise or callback
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        const state = useAppSelector.getState?.() as any;
+        const state = store.getState();
         if (state?.auth?.isAuthenticated) {
           resolve(undefined);
         } else {
