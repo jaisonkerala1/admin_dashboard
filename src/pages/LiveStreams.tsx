@@ -199,64 +199,66 @@ export const LiveStreams = () => {
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {streams.map((stream) => (
-                <Card 
-                  key={stream._id} 
-                  className="!p-0 overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
+                <div
+                  key={stream._id}
                   onClick={() => setSelectedStream(stream)}
+                  className="cursor-pointer"
                 >
-                  {/* Thumbnail */}
-                  <div className="relative h-40 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                    <Radio className="w-12 h-12 text-gray-400" />
-                    {stream.isLive && (
-                      <div className="absolute top-3 right-3 flex items-center gap-1.5 bg-red-600 text-white px-2.5 py-1 rounded-md text-xs font-medium">
-                        <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
-                        LIVE
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Content */}
-                  <div className="p-4">
-                    <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 text-sm">
-                      {stream.title}
-                    </h3>
-                    
-                    <div className="flex items-center gap-2 mb-3">
-                      <Avatar
-                        src={stream.astrologerId.profilePicture}
-                        name={stream.astrologerId.name}
-                        size="sm"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate">
-                          {stream.astrologerId.name}
-                        </p>
-                        <p className="text-xs text-gray-500">{stream.category}</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between text-xs text-gray-600">
-                      <div className="flex items-center gap-3">
-                        <span className="flex items-center gap-1">
-                          <Eye className="w-3 h-3" />
-                          {formatNumber(stream.isLive ? stream.viewerCount : stream.totalViews)}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Heart className="w-3 h-3" />
-                          {formatNumber(stream.likes)}
-                        </span>
-                      </div>
-                      {stream.isLive ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-red-50 text-red-700 rounded-md font-medium border border-red-200">
-                          <Users className="w-3 h-3" />
-                          {stream.viewerCount}
-                        </span>
-                      ) : (
-                        <span className="text-gray-500">Ended</span>
+                  <Card className="!p-0 overflow-hidden hover:shadow-md transition-shadow">
+                    {/* Thumbnail */}
+                    <div className="relative h-40 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                      <Radio className="w-12 h-12 text-gray-400" />
+                      {stream.isLive && (
+                        <div className="absolute top-3 right-3 flex items-center gap-1.5 bg-red-600 text-white px-2.5 py-1 rounded-md text-xs font-medium">
+                          <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
+                          LIVE
+                        </div>
                       )}
                     </div>
-                  </div>
-                </Card>
+
+                    {/* Content */}
+                    <div className="p-4">
+                      <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 text-sm">
+                        {stream.title}
+                      </h3>
+                      
+                      <div className="flex items-center gap-2 mb-3">
+                        <Avatar
+                          src={stream.astrologerId.profilePicture}
+                          name={stream.astrologerId.name}
+                          size="sm"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 truncate">
+                            {stream.astrologerId.name}
+                          </p>
+                          <p className="text-xs text-gray-500">{stream.category}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between text-xs text-gray-600">
+                        <div className="flex items-center gap-3">
+                          <span className="flex items-center gap-1">
+                            <Eye className="w-3 h-3" />
+                            {formatNumber(stream.isLive ? stream.viewerCount : stream.totalViews)}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Heart className="w-3 h-3" />
+                            {formatNumber(stream.likes)}
+                          </span>
+                        </div>
+                        {stream.isLive ? (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-red-50 text-red-700 rounded-md font-medium border border-red-200">
+                            <Users className="w-3 h-3" />
+                            {stream.viewerCount}
+                          </span>
+                        ) : (
+                          <span className="text-gray-500">Ended</span>
+                        )}
+                      </div>
+                    </div>
+                  </Card>
+                </div>
               ))}
             </div>
 
