@@ -83,21 +83,21 @@ export const Consultations = () => {
       
       const response = await consultationsApi.getAll(params);
       
-      if (response.data) {
-        setConsultations(response.data.data || []);
-        if (response.data.pagination) {
-          setPagination(response.data.pagination);
-        }
-        
-        // Calculate stats from total counts (simplified)
-        const allData = response.data.data || [];
-        const revenue = allData.reduce((sum: number, c: Consultation) => sum + (c.amount || 0), 0);
-        setStats(prev => ({
-          ...prev,
-          total: response.data?.pagination?.total || allData.length,
-          totalRevenue: revenue
-        }));
+      // API returns { success, data: [...], pagination: {...} }
+      const consultationsData = response.data || [];
+      setConsultations(consultationsData);
+      
+      if (response.pagination) {
+        setPagination(response.pagination);
       }
+      
+      // Calculate stats from current page data
+      const revenue = consultationsData.reduce((sum: number, c: Consultation) => sum + (c.amount || 0), 0);
+      setStats(prev => ({
+        ...prev,
+        total: response.pagination?.total || consultationsData.length,
+        totalRevenue: revenue
+      }));
     } catch (err) {
       console.error('Failed to load consultations:', err);
     } finally {
