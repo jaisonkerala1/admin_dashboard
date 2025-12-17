@@ -56,7 +56,10 @@ export const Modal = ({ isOpen, onClose, title, children, size = 'md', className
         )}
 
         {/* Content */}
-        <div className="px-6 py-4 max-h-[calc(100vh-120px)] overflow-y-auto">{children}</div>
+        {/* Use more vertical space on larger screens; still keep a safe max-height to avoid clipping off-screen */}
+        <div className="px-6 py-4 max-h-[calc(100vh-120px)] lg:max-h-[calc(100vh-64px)] overflow-y-auto">
+          {children}
+        </div>
       </div>
     </div>
   );
