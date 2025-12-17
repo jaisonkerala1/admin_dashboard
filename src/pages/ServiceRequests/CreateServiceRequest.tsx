@@ -68,8 +68,9 @@ export const CreateServiceRequest = () => {
         sortOrder: 'asc'
       });
       const data: Astrologer[] = response.data || [];
-      // Filter only active astrologers
-      setAstrologers(data.filter((a: Astrologer) => a.isActive && a.isApproved));
+      // Show all active astrologers (approved + pending), since admin can assign manually.
+      // We'll still visually indicate approval status in the list.
+      setAstrologers(data.filter((a: Astrologer) => a.isActive));
     } catch (err) {
       console.error('Failed to load astrologers:', err);
     } finally {
@@ -263,6 +264,9 @@ export const CreateServiceRequest = () => {
                       </div>
                       {astrologer.isOnline && (
                         <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">Online</span>
+                      )}
+                      {!astrologer.isApproved && (
+                        <span className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded">Pending</span>
                       )}
                     </button>
                   ))}
