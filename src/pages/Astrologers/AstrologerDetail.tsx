@@ -502,22 +502,26 @@ export const AstrologerDetail = () => {
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-2">
                             <Avatar
-                              src={consultation.userId?.profilePicture}
-                              name={consultation.userId?.name || 'Unknown'}
+                              name={consultation.clientName || 'Unknown'}
                               size="sm"
                             />
-                            <span className="text-sm font-medium text-gray-900">
-                              {consultation.userId?.name || 'Unknown User'}
-                            </span>
+                            <div>
+                              <div className="text-sm font-medium text-gray-900">
+                                {consultation.clientName || 'Unknown User'}
+                              </div>
+                              <div className="text-xs text-gray-500">
+                                {consultation.clientPhone}
+                              </div>
+                            </div>
                           </div>
                         </td>
                         <td className="px-4 py-3">
                           <div className="text-sm">
                             <div className="text-gray-900">
-                              {new Date(consultation.scheduledAt || consultation.createdAt).toLocaleDateString()}
+                              {new Date(consultation.scheduledTime || consultation.createdAt).toLocaleDateString()}
                             </div>
                             <div className="text-gray-500 text-xs">
-                              {new Date(consultation.scheduledAt || consultation.createdAt).toLocaleTimeString([], {
+                              {new Date(consultation.scheduledTime || consultation.createdAt).toLocaleTimeString([], {
                                 hour: '2-digit',
                                 minute: '2-digit'
                               })}
