@@ -136,9 +136,22 @@ export const AstrologersList = () => {
                   <tr key={astrologer._id} className="hover:bg-gray-50">
                     <td className="px-4 py-4">
                       <div className="flex items-center gap-3">
-                        <Avatar src={astrologer.profilePicture} name={astrologer.name} />
+                        <div className="relative">
+                          <Avatar src={astrologer.profilePicture} name={astrologer.name} />
+                          {astrologer.isOnline && (
+                            <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-green-500 border-2 border-white rounded-full" />
+                          )}
+                        </div>
                         <div>
-                          <p className="font-medium text-gray-900">{astrologer.name}</p>
+                          <div className="flex items-center gap-2">
+                            <p className="font-medium text-gray-900">{astrologer.name}</p>
+                            {astrologer.isOnline && (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded">
+                                <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />
+                                Online
+                              </span>
+                            )}
+                          </div>
                           <p className="text-sm text-gray-500">{astrologer.experience} years exp</p>
                         </div>
                       </div>

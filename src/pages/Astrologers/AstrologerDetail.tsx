@@ -252,8 +252,27 @@ export const AstrologerDetail = () => {
         {/* Profile Card */}
         <Card className="lg:col-span-1">
           <div className="flex flex-col items-center text-center">
-            <Avatar src={astrologer.profilePicture} name={astrologer.name} size="xl" />
+            <div className="relative">
+              <Avatar src={astrologer.profilePicture} name={astrologer.name} size="xl" />
+              {astrologer.isOnline && (
+                <div className="absolute -bottom-2 -right-2 flex items-center justify-center">
+                  <div className="w-5 h-5 bg-green-500 border-4 border-white rounded-full" />
+                  <div className="absolute w-5 h-5 bg-green-400 rounded-full animate-ping" />
+                </div>
+              )}
+            </div>
             <h2 className="mt-4 text-xl font-bold text-gray-900">{astrologer.name}</h2>
+            {astrologer.isOnline && (
+              <div className="flex items-center gap-1.5 mt-2 px-3 py-1 bg-green-100 text-green-700 text-sm font-medium rounded-full">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                <span>Online Now</span>
+              </div>
+            )}
+            {!astrologer.isOnline && astrologer.lastSeen && (
+              <p className="mt-2 text-sm text-gray-500">
+                Last seen {formatDateTime(astrologer.lastSeen)}
+              </p>
+            )}
             <StatusBadge status={getStatus()} className="mt-2" />
             
             <div className="w-full mt-6 space-y-3 border-t border-gray-200 pt-6">

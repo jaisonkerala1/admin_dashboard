@@ -23,6 +23,8 @@ export interface Astrologer {
   totalConsultations: number;
   totalEarnings: number;
   totalCallDuration: number;
+  isOnline?: boolean;
+  lastSeen?: string;
   availabilityStatus: 'online' | 'offline' | 'busy';
   activeSession?: {
     type: string;
