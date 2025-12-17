@@ -67,7 +67,8 @@ export const CreateServiceRequest = () => {
         sortBy: 'name',
         sortOrder: 'asc'
       });
-      const data = response.data?.data || response.data || [];
+      // astrologersApi.getAll returns ApiResponse<PaginatedResponse<Astrologer>>
+      const data: Astrologer[] = response.data?.data || [];
       // Filter only active astrologers
       setAstrologers(data.filter((a: Astrologer) => a.isActive && a.isApproved));
     } catch (err) {
@@ -148,7 +149,11 @@ export const CreateServiceRequest = () => {
 
       const response = await poojaRequestsApi.create(data);
       toast.success('Service request created successfully!');
-      navigate(`${ROUTES.SERVICE_REQUESTS}/${response.data._id}`);
+      if (response.data?._id) {
+        navigate(`${ROUTES.SERVICE_REQUESTS}/${response.data._id}`);
+      } else {
+        navigate(ROUTES.SERVICE_REQUESTS);
+      }
     } catch (err: any) {
       console.error('Failed to create service request:', err);
       toast.error(err?.message || 'Failed to create service request');
