@@ -8,7 +8,6 @@ import {
   MessageCircle, 
   MapPin,
   Calendar,
-  Clock,
   DollarSign,
   Users,
   CheckCircle2,
@@ -20,8 +19,7 @@ import {
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { Card, Loader, EmptyState, RoundAvatar, PillBadge, ShowEntriesDropdown, StatCard } from '@/components/common';
-import { Consultation } from '@/types';
-import { formatCurrency, formatDateTime, formatDuration } from '@/utils/formatters';
+import { formatCurrency, formatDuration } from '@/utils/formatters';
 import { RootState } from '@/store';
 import {
   fetchConsultationsRequest,
@@ -52,8 +50,6 @@ const typeConfig = {
   chat: { icon: MessageCircle, label: 'Chat', color: 'text-green-600 bg-green-50' },
   inPerson: { icon: MapPin, label: 'In Person', color: 'text-orange-600 bg-orange-50' },
 };
-
-type FilterTab = 'all' | 'scheduled' | 'inProgress' | 'completed' | 'cancelled' | 'noShow';
 
 export const Consultations = () => {
   const dispatch = useDispatch();
@@ -126,7 +122,7 @@ export const Consultations = () => {
 
   const getStatusBadge = (status: string) => {
     const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.scheduled;
-    return <PillBadge variant={status as any} label={config.label} icon={config.icon} showDot={false} />;
+    return <PillBadge variant={status as any} label={config.label} showDot={false} />;
   };
 
   // Pagination helper
