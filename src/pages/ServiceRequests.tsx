@@ -20,7 +20,6 @@ import {
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Card, Loader, EmptyState, Avatar } from '@/components/common';
-import { PoojaRequest } from '@/types';
 import { formatCurrency, formatDate } from '@/utils/formatters';
 import { RootState } from '@/store';
 import { fetchRequestsRequest } from '@/store/slices/poojaRequestsSlice';
