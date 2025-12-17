@@ -92,7 +92,7 @@ export const LiveStreams = () => {
       setIsEndingAll(true);
       const response = await liveStreamsApi.endAll();
       setShowEndAllConfirm(false);
-      alert(`Successfully ended ${response.data.endedCount} live stream(s)`);
+      alert(`Successfully ended ${response.data?.endedCount || 0} live stream(s)`);
       loadStreams(pagination.page);
     } catch (err) {
       console.error('Failed to end all streams:', err);
