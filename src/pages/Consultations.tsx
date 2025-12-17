@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { 
@@ -15,12 +15,16 @@ import {
   AlertCircle,
   Eye,
   Trash2,
-  Activity
+  Activity,
+  X,
+  Clock,
+  Star
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
-import { Card, Loader, EmptyState, RoundAvatar, PillBadge, ShowEntriesDropdown, StatCard } from '@/components/common';
-import { formatCurrency, formatDuration } from '@/utils/formatters';
+import { Card, Loader, EmptyState, RoundAvatar, PillBadge, ShowEntriesDropdown, StatCard, Modal, Avatar } from '@/components/common';
+import { formatCurrency, formatDuration, formatDateTime } from '@/utils/formatters';
 import { RootState } from '@/store';
+import { Consultation } from '@/types';
 import {
   fetchConsultationsRequest,
   setFilter,
@@ -63,6 +67,8 @@ export const Consultations = () => {
     selectedIds, 
     stats 
   } = useSelector((state: RootState) => state.consultations);
+  
+  const [selectedConsultation, setSelectedConsultation] = useState<Consultation | null>(null);
 
   useEffect(() => {
     dispatch(fetchConsultationsRequest());
@@ -370,6 +376,7 @@ export const Consultations = () => {
                       <td className="px-4 py-4">
                         <div className="flex items-center gap-2">
                           <button
+                            onClick={() => setSelectedConsultation(consultation)}
                             className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                             title="View Details"
                           >
@@ -434,7 +441,10 @@ export const Consultations = () => {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg">
+                    <button 
+                      onClick={() => setSelectedConsultation(consultation)}
+                      className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+                    >
                       <Eye className="w-4 h-4" />
                     </button>
                   </div>
@@ -504,7 +514,10 @@ export const Consultations = () => {
                       
                       <div className="mt-3 pt-3 border-t border-gray-200 flex items-center justify-between">
                         <p className="font-semibold text-gray-900">{formatCurrency(consultation.amount)}</p>
-                        <button className="flex items-center gap-2 px-3 py-1.5 text-sm text-blue-600 hover:bg-blue-50 rounded-lg">
+                        <button 
+                          onClick={() => setSelectedConsultation(consultation)}
+                          className="flex items-center gap-2 px-3 py-1.5 text-sm text-blue-600 hover:bg-blue-50 rounded-lg"
+                        >
                           <Eye className="w-4 h-4" />
                           View
                         </button>
@@ -563,6 +576,198 @@ export const Consultations = () => {
           </>
         )}
       </Card>
+
+      {/* Consultation Detail Modal */}
+      {selectedConsultation && (
+        <Modal
+          isOpen={true}
+          onClose={() => setSelectedConsultation(null)}
+          title="Consultation Details"
+        >
+          <div className="space-y-6">
+            {/* Status Badge */}
+            <div className="flex items-center justify-between">
+              {getStatusBadge(selectedConsultation.status)}
+              <span className="text-sm text-gray-500">
+                ID: {selectedConsultation._id.slice(-8)}
+              </span>
+            </div>
+
+            {/* Client Info */}
+            <Card className="!p-4 bg-gray-50">
+              <h4 className="text-sm font-semibold text-gray-700 mb-3">Client Information</h4>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Name:</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    {selectedConsultation.clientName}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Phone:</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    {selectedConsultation.clientPhone}
+                  </span>
+                </div>
+                {selectedConsultation.clientEmail && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Email:</span>
+                    <span className="text-sm font-medium text-gray-900">
+                      {selectedConsultation.clientEmail}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </Card>
+
+            {/* Astrologer Info */}
+            {selectedConsultation.astrologerId && (
+              <Card className="!p-4 bg-gray-50">
+                <h4 className="text-sm font-semibold text-gray-700 mb-3">Astrologer</h4>
+                <Link
+                  to={`${ROUTES.ASTROLOGERS}/${selectedConsultation.astrologerId._id}`}
+                  className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+                >
+                  <Avatar
+                    src={selectedConsultation.astrologerId.profilePicture}
+                    name={selectedConsultation.astrologerId.name}
+                    size="lg"
+                  />
+                  <div>
+                    <p className="font-semibold text-gray-900 hover:text-blue-600">
+                      {selectedConsultation.astrologerId.name}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      {selectedConsultation.astrologerId.email}
+                    </p>
+                  </div>
+                </Link>
+              </Card>
+            )}
+
+            {/* Consultation Details */}
+            <div className="grid grid-cols-2 gap-4">
+              <Card className="!p-4">
+                <div className="flex items-center gap-2 text-purple-600 mb-2">
+                  {getTypeIcon(selectedConsultation.type)}
+                  <span className="text-xs font-medium uppercase">Type</span>
+                </div>
+                <p className="text-sm font-medium text-gray-900">
+                  {typeConfig[selectedConsultation.type as keyof typeof typeConfig]?.label || selectedConsultation.type}
+                </p>
+              </Card>
+
+              <Card className="!p-4">
+                <div className="flex items-center gap-2 text-blue-600 mb-2">
+                  <Calendar className="w-4 h-4" />
+                  <span className="text-xs font-medium uppercase">Scheduled</span>
+                </div>
+                <p className="text-sm font-medium text-gray-900">
+                  {formatDateTime(selectedConsultation.scheduledTime)}
+                </p>
+              </Card>
+
+              <Card className="!p-4">
+                <div className="flex items-center gap-2 text-amber-600 mb-2">
+                  <Clock className="w-4 h-4" />
+                  <span className="text-xs font-medium uppercase">Duration</span>
+                </div>
+                <p className="text-sm font-medium text-gray-900">
+                  {formatDuration(selectedConsultation.duration)}
+                </p>
+              </Card>
+
+              <Card className="!p-4">
+                <div className="flex items-center gap-2 text-green-600 mb-2">
+                  <DollarSign className="w-4 h-4" />
+                  <span className="text-xs font-medium uppercase">Amount</span>
+                </div>
+                <p className="text-sm font-medium text-gray-900">
+                  {formatCurrency(selectedConsultation.amount)}
+                </p>
+              </Card>
+            </div>
+
+            {/* Additional Details */}
+            {selectedConsultation.notes && (
+              <Card className="!p-4 bg-amber-50">
+                <h4 className="text-sm font-semibold text-gray-700 mb-2">Notes</h4>
+                <p className="text-sm text-gray-900">{selectedConsultation.notes}</p>
+              </Card>
+            )}
+
+            {/* Topics */}
+            {selectedConsultation.consultationTopics && selectedConsultation.consultationTopics.length > 0 && (
+              <div>
+                <h4 className="text-sm font-semibold text-gray-700 mb-2">Topics</h4>
+                <div className="flex flex-wrap gap-2">
+                  {selectedConsultation.consultationTopics.map((topic, idx) => (
+                    <span
+                      key={idx}
+                      className="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-full"
+                    >
+                      {topic}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Rating & Feedback */}
+            {selectedConsultation.rating && (
+              <Card className="!p-4 bg-green-50">
+                <h4 className="text-sm font-semibold text-gray-700 mb-3">Client Feedback</h4>
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="flex items-center">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`w-4 h-4 ${
+                          i < selectedConsultation.rating!
+                            ? 'fill-amber-400 text-amber-400'
+                            : 'text-gray-300'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <span className="text-sm font-medium text-gray-900">
+                    {selectedConsultation.rating}/5
+                  </span>
+                </div>
+                {selectedConsultation.feedback && (
+                  <p className="text-sm text-gray-900">{selectedConsultation.feedback}</p>
+                )}
+              </Card>
+            )}
+
+            {/* Timestamps */}
+            <div className="text-xs text-gray-500 space-y-1 pt-4 border-t">
+              <div className="flex justify-between">
+                <span>Created:</span>
+                <span>{formatDateTime(selectedConsultation.createdAt)}</span>
+              </div>
+              {selectedConsultation.startedAt && (
+                <div className="flex justify-between">
+                  <span>Started:</span>
+                  <span>{formatDateTime(selectedConsultation.startedAt)}</span>
+                </div>
+              )}
+              {selectedConsultation.completedAt && (
+                <div className="flex justify-between">
+                  <span>Completed:</span>
+                  <span>{formatDateTime(selectedConsultation.completedAt)}</span>
+                </div>
+              )}
+              {selectedConsultation.cancelledAt && (
+                <div className="flex justify-between">
+                  <span>Cancelled:</span>
+                  <span>{formatDateTime(selectedConsultation.cancelledAt)}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </Modal>
+      )}
     </MainLayout>
   );
 };
