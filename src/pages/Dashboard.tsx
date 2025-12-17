@@ -1,156 +1,71 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Users, UserCog, Calendar, DollarSign, AlertCircle, TrendingUp, Radio, Eye, Clock, Play, ShoppingBag } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { StatCard, Card, Loader, Avatar } from '@/components/common';
 import { LiveStreamViewer } from '@/components/liveStream/LiveStreamViewer';
-import { dashboardApi, liveStreamsApi, astrologersApi, poojaRequestsApi } from '@/api';
-import { DashboardStats, LiveStream, Astrologer } from '@/types';
+import { liveStreamsApi } from '@/api';
 import { formatCurrency, formatNumber, formatRelativeTime } from '@/utils/formatters';
 import { ROUTES } from '@/utils/constants';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import {
+  fetchDashboardRequest,
+  fetchGlobalStatsRequest,
+  fetchLiveStreamsRequest,
+  fetchOnlineAstrologersRequest,
+  setPeriod,
+  type DashboardPeriod,
+} from '@/store/slices/dashboardSlice';
 
 export const Dashboard = () => {
-  const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [liveStreams, setLiveStreams] = useState<LiveStream[]>([]);
-  const [liveLoading, setLiveLoading] = useState(false);
-  const [selectedStream, setSelectedStream] = useState<LiveStream | null>(null);
-  const [onlineAstrologers, setOnlineAstrologers] = useState<Astrologer[]>([]);
-  const [onlineLoading, setOnlineLoading] = useState(false);
-  const [serviceRequestsTotal, setServiceRequestsTotal] = useState(0);
-  const [serviceRequestsByDay, setServiceRequestsByDay] = useState<Record<string, number>>({});
+  const dispatch = useAppDispatch();
+  const { period, isLoading, error, periodStats, chartData, globalStats, liveStreams, liveLoading, onlineAstrologers, onlineLoading } =
+    useAppSelector((s) => s.dashboard);
+
+  const [selectedStream, setSelectedStream] = useState<any | null>(null);
 
   useEffect(() => {
-    loadStats();
-    loadLiveStreams();
-    loadOnlineAstrologers();
-    loadServiceRequests();
+    // Initial load
+    dispatch(fetchDashboardRequest({ period }));
+    dispatch(fetchGlobalStatsRequest());
+    dispatch(fetchLiveStreamsRequest());
+    dispatch(fetchOnlineAstrologersRequest());
 
     // Auto-refresh every 10 seconds
     const interval = setInterval(() => {
-      loadLiveStreams();
-      loadOnlineAstrologers();
+      dispatch(fetchLiveStreamsRequest());
+      dispatch(fetchOnlineAstrologersRequest());
     }, 10000);
     return () => clearInterval(interval);
-  }, []);
+  }, [dispatch]);
 
-  const loadStats = async () => {
-    try {
-      setIsLoading(true);
-      const response = await dashboardApi.getStats();
-      setStats(response.data || null);
-      setError('');
-    } catch (err: any) {
-      console.error('Dashboard error:', err);
-      setError(err.message || 'Failed to load dashboard stats');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  useEffect(() => {
+    dispatch(fetchDashboardRequest({ period }));
+  }, [dispatch, period]);
 
-  const loadLiveStreams = async () => {
-    try {
-      setLiveLoading(true);
-      const response = await liveStreamsApi.getAll({ 
-        page: 1, 
-        limit: 5, 
-        sortBy: 'createdAt', 
-        sortOrder: 'desc' 
-      });
-      // Filter only active streams
-      const activeStreams = response.data.filter((stream: LiveStream) => stream.isLive);
-      setLiveStreams(activeStreams);
-    } catch (err) {
-      console.error('Live streams error:', err);
-    } finally {
-      setLiveLoading(false);
-    }
-  };
+  const periodLabel = useMemo(() => {
+    const map: Record<DashboardPeriod, string> = {
+      '1d': '1 Day',
+      '7d': '7 Days',
+      '1m': '1 Month',
+      '1y': '1 Year',
+      '3y': '3 Years',
+    };
+    return map[period];
+  }, [period]);
 
-  const loadOnlineAstrologers = async () => {
-    try {
-      setOnlineLoading(true);
-      const response = await astrologersApi.getOnlineList();
-      setOnlineAstrologers(response.data || []);
-    } catch (err) {
-      console.error('Online astrologers error:', err);
-    } finally {
-      setOnlineLoading(false);
-    }
-  };
-
-  const loadServiceRequests = async () => {
-    try {
-      // Fetch a reasonable window and compute last-7-days counts from real data.
-      // If volume gets large, the backend should expose an aggregated endpoint.
-      const response = await poojaRequestsApi.getAll({ page: 1, limit: 500, sortBy: 'createdAt', sortOrder: 'desc' } as any);
-      setServiceRequestsTotal(response.pagination?.total || 0);
-
-      const toDateKey = (d: Date) => {
-        const yyyy = d.getFullYear();
-        const mm = String(d.getMonth() + 1).padStart(2, '0');
-        const dd = String(d.getDate()).padStart(2, '0');
-        return `${yyyy}-${mm}-${dd}`;
-      };
-
-      const today = new Date();
-      const start = new Date(today);
-      start.setDate(start.getDate() - 6);
-      start.setHours(0, 0, 0, 0);
-
-      const counts: Record<string, number> = {};
-      for (const req of response.data || []) {
-        const createdAt = (req as any)?.createdAt;
-        if (!createdAt) continue;
-        const created = new Date(createdAt);
-        if (Number.isNaN(created.getTime())) continue;
-        if (created < start) continue;
-        const key = toDateKey(created);
-        counts[key] = (counts[key] || 0) + 1;
-      }
-
-      setServiceRequestsByDay(counts);
-    } catch (err) {
-      console.error('Service requests error:', err);
-    }
-  };
-
-  // Generate weekly data for charts (last 7 days)
-  const getWeeklyData = () => {
-    const days = [];
-    const today = new Date();
-    
-    for (let i = 6; i >= 0; i--) {
-      const date = new Date(today);
-      date.setDate(date.getDate() - i);
-      const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
-      
-      // Simulate data - in production, this should come from backend
-      // Random distribution across the week with some pattern
-      const baseConsultations = Math.floor((stats?.consultations.total || 0) / 30);
-      
-      const consultations = Math.max(0, baseConsultations + Math.floor(Math.random() * (baseConsultations * 0.5)));
-      const yyyy = date.getFullYear();
-      const mm = String(date.getMonth() + 1).padStart(2, '0');
-      const dd = String(date.getDate()).padStart(2, '0');
-      const key = `${yyyy}-${mm}-${dd}`;
-      const serviceRequests = serviceRequestsByDay[key] || 0;
-      
-      days.push({
-        day: dayName,
-        date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-        consultations,
-        serviceRequests
-      });
-    }
-    
-    return days;
-  };
-
-  const weeklyData = stats ? getWeeklyData() : [];
+  const periodOptions: { key: DashboardPeriod; label: string }[] = useMemo(
+    () => [
+      { key: '1d', label: '1 Day' },
+      { key: '7d', label: '7 Days' },
+      { key: '1m', label: '1 Month' },
+      { key: '1y', label: '1 Year' },
+      { key: '3y', label: '3 Years' },
+    ],
+    []
+  );
 
   return (
     <MainLayout>
@@ -168,28 +83,47 @@ export const Dashboard = () => {
           <AlertCircle className="w-5 h-5 flex-shrink-0" />
           <span>{error}</span>
         </div>
-      ) : stats ? (
+      ) : periodStats ? (
         <div className="space-y-6">
+          {/* Period Selector */}
+          <div className="border-b border-gray-200">
+            <div className="flex gap-6 overflow-x-auto">
+              {periodOptions.map((opt) => (
+                <button
+                  key={opt.key}
+                  onClick={() => dispatch(setPeriod(opt.key))}
+                  className={`pb-3 px-1 border-b-2 whitespace-nowrap transition-colors ${
+                    period === opt.key
+                      ? 'border-blue-500 text-blue-600 font-semibold'
+                      : 'border-transparent text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Key Stats */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <StatCard
-              title="Total Astrologers"
-              value={formatNumber(stats.astrologers.total)}
+              title={`New Astrologers (${periodLabel})`}
+              value={formatNumber(periodStats.astrologersNew)}
               icon={UserCog}
             />
             <StatCard
-              title="Total Users"
-              value={formatNumber(stats.users.total)}
+              title={`New Users (${periodLabel})`}
+              value={formatNumber(periodStats.usersNew)}
               icon={Users}
             />
             <StatCard
-              title="Consultations"
-              value={formatNumber(stats.consultations.total)}
+              title={`Consultations (${periodLabel})`}
+              value={formatNumber(periodStats.consultations)}
               icon={Calendar}
             />
             <StatCard
-              title="Total Revenue"
-              value={formatCurrency(stats.revenue.total)}
+              title={`Revenue (${periodLabel})`}
+              value={formatCurrency(periodStats.revenue)}
               icon={DollarSign}
             />
           </div>
@@ -201,16 +135,16 @@ export const Dashboard = () => {
               title={
                 <div className="flex items-center gap-2">
                   <Calendar className="w-5 h-5 text-blue-600" />
-                  <span>Consultations (Last 7 Days)</span>
+                  <span>Consultations</span>
                 </div>
               }
             >
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={weeklyData}>
+                  <LineChart data={chartData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                     <XAxis 
-                      dataKey="day" 
+                      dataKey="label" 
                       tick={{ fontSize: 12 }}
                       stroke="#9ca3af"
                     />
@@ -242,18 +176,16 @@ export const Dashboard = () => {
               <div className="mt-4 flex items-center justify-between pt-4 border-t border-gray-100">
                 <div>
                   <p className="text-2xl font-bold text-gray-900">
-                    {weeklyData.reduce((sum, day) => sum + day.consultations, 0)}
+                    {formatNumber(periodStats.consultations)}
                   </p>
-                  <p className="text-sm text-gray-500">Total this week</p>
+                  <p className="text-sm text-gray-500">Total ({periodLabel})</p>
                 </div>
                 <div className="text-right">
                   <div className="flex items-center gap-1 text-green-600">
                     <TrendingUp className="w-4 h-4" />
-                    <span className="text-sm font-semibold">
-                      {((weeklyData.reduce((sum, day) => sum + day.consultations, 0) / stats.consultations.total) * 100).toFixed(1)}%
-                    </span>
+                    <span className="text-sm font-semibold">{formatNumber(periodStats.completedConsultations)} completed</span>
                   </div>
-                  <p className="text-xs text-gray-500">of total</p>
+                  <p className="text-xs text-gray-500">in period</p>
                 </div>
               </div>
             </Card>
@@ -263,16 +195,16 @@ export const Dashboard = () => {
               title={
                 <div className="flex items-center gap-2">
                   <ShoppingBag className="w-5 h-5 text-purple-600" />
-                  <span>Service Requests (Last 7 Days)</span>
+                  <span>Service Requests</span>
                 </div>
               }
             >
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={weeklyData}>
+                  <BarChart data={chartData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                     <XAxis 
-                      dataKey="day" 
+                      dataKey="label" 
                       tick={{ fontSize: 12 }}
                       stroke="#9ca3af"
                     />
@@ -301,20 +233,16 @@ export const Dashboard = () => {
               <div className="mt-4 flex items-center justify-between pt-4 border-t border-gray-100">
                 <div>
                   <p className="text-2xl font-bold text-gray-900">
-                    {weeklyData.reduce((sum, day) => sum + day.serviceRequests, 0)}
+                    {formatNumber(periodStats.serviceRequests)}
                   </p>
-                  <p className="text-sm text-gray-500">Total this week</p>
+                  <p className="text-sm text-gray-500">Total ({periodLabel})</p>
                 </div>
                 <div className="text-right">
                   <div className="flex items-center gap-1 text-green-600">
                     <TrendingUp className="w-4 h-4" />
-                    <span className="text-sm font-semibold">
-                      {serviceRequestsTotal > 0 
-                        ? ((weeklyData.reduce((sum, day) => sum + day.serviceRequests, 0) / serviceRequestsTotal) * 100).toFixed(1)
-                        : 0}%
-                    </span>
+                    <span className="text-sm font-semibold">{formatNumber(periodStats.serviceRequests)}</span>
                   </div>
-                  <p className="text-xs text-gray-500">of total</p>
+                  <p className="text-xs text-gray-500">in period</p>
                 </div>
               </div>
             </Card>
@@ -488,79 +416,79 @@ export const Dashboard = () => {
           {/* Detailed Stats */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Astrologers Overview */}
-            <Card title="Astrologers Overview">
+            <Card title="Astrologers Overview (All-time)">
               <div className="space-y-4">
                 <div className="flex items-center justify-between py-2 border-b border-gray-100">
                   <span className="text-gray-600">Active</span>
-                  <span className="font-semibold text-green-600">{formatNumber(stats.astrologers.active)}</span>
+                  <span className="font-semibold text-green-600">{formatNumber(globalStats?.astrologers.active || 0)}</span>
                 </div>
                 <div className="flex items-center justify-between py-2 border-b border-gray-100">
                   <Link to={ROUTES.ASTROLOGER_APPROVALS} className="text-amber-600 hover:text-amber-700">
                     Pending Approvals
                   </Link>
-                  <span className="font-semibold text-amber-600">{formatNumber(stats.astrologers.pendingApprovals)}</span>
+                  <span className="font-semibold text-amber-600">{formatNumber(globalStats?.astrologers.pendingApprovals || 0)}</span>
                 </div>
                 <div className="flex items-center justify-between py-2">
                   <span className="text-gray-600">Suspended</span>
-                  <span className="font-semibold text-red-600">{formatNumber(stats.astrologers.suspended)}</span>
+                  <span className="font-semibold text-red-600">{formatNumber(globalStats?.astrologers.suspended || 0)}</span>
                 </div>
               </div>
             </Card>
 
             {/* Users Overview */}
-            <Card title="Users Overview">
+            <Card title="Users Overview (All-time)">
               <div className="space-y-4">
                 <div className="flex items-center justify-between py-2 border-b border-gray-100">
                   <span className="text-gray-600">Active Users</span>
-                  <span className="font-semibold text-green-600">{formatNumber(stats.users.active)}</span>
+                  <span className="font-semibold text-green-600">{formatNumber(globalStats?.users.active || 0)}</span>
                 </div>
                 <div className="flex items-center justify-between py-2 border-b border-gray-100">
                   <span className="text-gray-600">Banned Users</span>
-                  <span className="font-semibold text-red-600">{formatNumber(stats.users.banned)}</span>
+                  <span className="font-semibold text-red-600">{formatNumber(globalStats?.users.banned || 0)}</span>
                 </div>
                 <div className="flex items-center justify-between py-2">
                   <span className="text-gray-600">Total</span>
-                  <span className="font-semibold">{formatNumber(stats.users.total)}</span>
+                  <span className="font-semibold">{formatNumber(globalStats?.users.total || 0)}</span>
                 </div>
               </div>
             </Card>
 
             {/* Consultations Overview */}
-            <Card title="Consultations Overview">
+            <Card title="Consultations Overview (All-time)">
               <div className="space-y-4">
                 <div className="flex items-center justify-between py-2 border-b border-gray-100">
                   <span className="text-gray-600">Ongoing</span>
-                  <span className="font-semibold text-blue-600">{formatNumber(stats.consultations.ongoing)}</span>
+                  <span className="font-semibold text-blue-600">{formatNumber(globalStats?.consultations.ongoing || 0)}</span>
                 </div>
                 <div className="flex items-center justify-between py-2 border-b border-gray-100">
                   <span className="text-gray-600">Completed</span>
-                  <span className="font-semibold text-green-600">{formatNumber(stats.consultations.completed)}</span>
+                  <span className="font-semibold text-green-600">{formatNumber(globalStats?.consultations.completed || 0)}</span>
                 </div>
                 <div className="flex items-center justify-between py-2">
                   <span className="text-gray-600">Total</span>
-                  <span className="font-semibold">{formatNumber(stats.consultations.total)}</span>
+                  <span className="font-semibold">{formatNumber(globalStats?.consultations.total || 0)}</span>
                 </div>
               </div>
             </Card>
 
             {/* Services & More */}
-            <Card title="Services & Activity">
+            <Card title="Services & Activity (All-time)">
               <div className="space-y-4">
                 <div className="flex items-center justify-between py-2 border-b border-gray-100">
                   <span className="text-gray-600">Active Services</span>
-                  <span className="font-semibold">{formatNumber(stats.services.active)}</span>
+                  <span className="font-semibold">{formatNumber(globalStats?.services.active || 0)}</span>
                 </div>
                 <div className="flex items-center justify-between py-2 border-b border-gray-100">
                   <span className="text-gray-600">Pending Services</span>
-                  <span className="font-semibold text-amber-600">{formatNumber(stats.services.pending)}</span>
+                  <span className="font-semibold text-amber-600">{formatNumber(globalStats?.services.pending || 0)}</span>
                 </div>
                 <div className="flex items-center justify-between py-2 border-b border-gray-100">
                   <span className="text-gray-600">Live Streams</span>
-                  <span className="font-semibold text-red-600">{formatNumber(stats.liveStreams.active)}</span>
+                  <span className="font-semibold text-red-600">{formatNumber(globalStats?.liveStreams.active || 0)}</span>
                 </div>
                 <div className="flex items-center justify-between py-2">
                   <span className="text-gray-600">Total Reviews</span>
-                  <span className="font-semibold">{formatNumber(stats.reviews.total)}</span>
+                  <span className="font-semibold">{formatNumber(globalStats?.reviews.total || 0)}</span>
                 </div>
               </div>
             </Card>
@@ -568,7 +496,7 @@ export const Dashboard = () => {
 
           {/* Revenue Stats */}
           <Card
-            title="Revenue Overview"
+            title="Revenue Overview (All-time)"
             action={
               <Link to={ROUTES.ANALYTICS} className="flex items-center gap-1 text-sm text-primary-600 hover:text-primary-700 font-medium">
                 View Analytics <TrendingUp className="w-4 h-4" />
@@ -578,11 +506,11 @@ export const Dashboard = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <p className="text-sm text-gray-600 mb-1">Total Revenue</p>
-                <p className="text-3xl font-bold text-gray-900">{formatCurrency(stats.revenue.total)}</p>
+                <p className="text-3xl font-bold text-gray-900">{formatCurrency(globalStats?.revenue.total || 0)}</p>
               </div>
               <div>
                 <p className="text-sm text-gray-600 mb-1">This Month</p>
-                <p className="text-3xl font-bold text-primary-600">{formatCurrency(stats.revenue.monthly)}</p>
+                <p className="text-3xl font-bold text-primary-600">{formatCurrency(globalStats?.revenue.monthly || 0)}</p>
               </div>
             </div>
           </Card>
@@ -600,7 +528,7 @@ export const Dashboard = () => {
                 reason: 'Ended by admin'
               });
               setSelectedStream(null);
-              loadLiveStreams(); // Refresh list
+              dispatch(fetchLiveStreamsRequest()); // Refresh list
             } catch (err) {
               console.error('Failed to end stream:', err);
             }
