@@ -21,6 +21,7 @@ export const Dashboard = () => {
   const [onlineAstrologers, setOnlineAstrologers] = useState<Astrologer[]>([]);
   const [onlineLoading, setOnlineLoading] = useState(false);
   const [serviceRequestsTotal, setServiceRequestsTotal] = useState(0);
+  const [serviceRequestsByDay, setServiceRequestsByDay] = useState<Record<string, number>>({});
 
   useEffect(() => {
     loadStats();
@@ -83,8 +84,35 @@ export const Dashboard = () => {
 
   const loadServiceRequests = async () => {
     try {
-      const response = await poojaRequestsApi.getAll({ page: 1, limit: 1 });
+      // Fetch a reasonable window and compute last-7-days counts from real data.
+      // If volume gets large, the backend should expose an aggregated endpoint.
+      const response = await poojaRequestsApi.getAll({ page: 1, limit: 500, sortBy: 'createdAt', sortOrder: 'desc' } as any);
       setServiceRequestsTotal(response.pagination?.total || 0);
+
+      const toDateKey = (d: Date) => {
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+      };
+
+      const today = new Date();
+      const start = new Date(today);
+      start.setDate(start.getDate() - 6);
+      start.setHours(0, 0, 0, 0);
+
+      const counts: Record<string, number> = {};
+      for (const req of response.data || []) {
+        const createdAt = (req as any)?.createdAt;
+        if (!createdAt) continue;
+        const created = new Date(createdAt);
+        if (Number.isNaN(created.getTime())) continue;
+        if (created < start) continue;
+        const key = toDateKey(created);
+        counts[key] = (counts[key] || 0) + 1;
+      }
+
+      setServiceRequestsByDay(counts);
     } catch (err) {
       console.error('Service requests error:', err);
     }
@@ -103,10 +131,13 @@ export const Dashboard = () => {
       // Simulate data - in production, this should come from backend
       // Random distribution across the week with some pattern
       const baseConsultations = Math.floor((stats?.consultations.total || 0) / 30);
-      const baseServiceRequests = Math.floor(serviceRequestsTotal / 30);
       
       const consultations = Math.max(0, baseConsultations + Math.floor(Math.random() * (baseConsultations * 0.5)));
-      const serviceRequests = Math.max(0, baseServiceRequests + Math.floor(Math.random() * (baseServiceRequests * 0.5)));
+      const yyyy = date.getFullYear();
+      const mm = String(date.getMonth() + 1).padStart(2, '0');
+      const dd = String(date.getDate()).padStart(2, '0');
+      const key = `${yyyy}-${mm}-${dd}`;
+      const serviceRequests = serviceRequestsByDay[key] || 0;
       
       days.push({
         day: dayName,
