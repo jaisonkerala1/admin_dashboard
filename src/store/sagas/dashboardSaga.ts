@@ -27,24 +27,32 @@ function getPeriodRange(period: DashboardPeriod) {
   const now = new Date();
   const end = new Date(now);
   const start = new Date(now);
+  
+  // Set end to end of today (23:59:59.999) so we include all of today's data
+  end.setHours(23, 59, 59, 999);
+  
   switch (period) {
     case '1d':
-      start.setDate(start.getDate() - 1);
+      // "1 Day" = today only (start of today to end of today)
+      start.setHours(0, 0, 0, 0);
       break;
     case '7d':
       start.setDate(start.getDate() - 6);
+      start.setHours(0, 0, 0, 0);
       break;
     case '1m':
       start.setMonth(start.getMonth() - 1);
+      start.setHours(0, 0, 0, 0);
       break;
     case '1y':
       start.setFullYear(start.getFullYear() - 1);
+      start.setHours(0, 0, 0, 0);
       break;
     case '3y':
       start.setFullYear(start.getFullYear() - 3);
+      start.setHours(0, 0, 0, 0);
       break;
   }
-  start.setHours(0, 0, 0, 0);
   return { start, end };
 }
 
