@@ -576,194 +576,264 @@ export const Consultations = () => {
         )}
       </Card>
 
-      {/* Consultation Detail Modal */}
+      {/* Modern Consultation Detail Modal */}
       {selectedConsultation && (
         <Modal
           isOpen={true}
           onClose={() => setSelectedConsultation(null)}
-          title="Consultation Details"
+          title=""
         >
           <div className="space-y-6">
-            {/* Status Badge */}
-            <div className="flex items-center justify-between">
-              {getStatusBadge(selectedConsultation.status)}
-              <span className="text-sm text-gray-500">
-                ID: {selectedConsultation._id.slice(-8)}
-              </span>
+            {/* Header Section */}
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 pb-4 border-b border-gray-200">
+              <div className="flex items-start gap-3">
+                <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                  <Calendar className="w-5 h-5 text-blue-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Consultation Details</h3>
+                  <p className="text-sm text-gray-500 mt-0.5">ID: {selectedConsultation._id.slice(-8)}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                {getStatusBadge(selectedConsultation.status)}
+              </div>
             </div>
 
-            {/* Client Info */}
-            <Card className="!p-4 bg-gray-50">
-              <h4 className="text-sm font-semibold text-gray-700 mb-3">Client Information</h4>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Name:</span>
-                  <span className="text-sm font-medium text-gray-900">
-                    {selectedConsultation.clientName}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Phone:</span>
-                  <span className="text-sm font-medium text-gray-900">
-                    {selectedConsultation.clientPhone}
-                  </span>
-                </div>
-                {selectedConsultation.clientEmail && (
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Email:</span>
-                    <span className="text-sm font-medium text-gray-900">
-                      {selectedConsultation.clientEmail}
-                    </span>
+            {/* Two Column Layout - Mobile First */}
+            <div className="flex flex-col lg:flex-row gap-6">
+              
+              {/* RIGHT SIDEBAR - Shows FIRST on mobile */}
+              <div className="order-1 lg:order-2 w-full lg:w-[35%] space-y-4">
+                
+                {/* Quick Info Cards */}
+                <div className="space-y-3">
+                  {/* Scheduled Time */}
+                  <div className="bg-white border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors">
+                    <div className="flex items-center gap-2 text-gray-500 mb-2">
+                      <Calendar className="w-4 h-4" />
+                      <span className="text-xs font-medium uppercase tracking-wide">Scheduled</span>
+                    </div>
+                    <p className="text-sm font-semibold text-gray-900">
+                      {new Date(selectedConsultation.scheduledTime).toLocaleDateString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric', 
+                        year: 'numeric' 
+                      })}
+                    </p>
+                    <p className="text-xs text-gray-600 mt-1">
+                      {new Date(selectedConsultation.scheduledTime).toLocaleTimeString('en-US', { 
+                        hour: 'numeric', 
+                        minute: '2-digit',
+                        hour12: true 
+                      })}
+                    </p>
                   </div>
-                )}
-              </div>
-            </Card>
 
-            {/* Astrologer Info */}
-            {selectedConsultation.astrologerId && (
-              <Card className="!p-4 bg-gray-50">
-                <h4 className="text-sm font-semibold text-gray-700 mb-3">Astrologer</h4>
-                <Link
-                  to={`${ROUTES.ASTROLOGERS}/${selectedConsultation.astrologerId._id}`}
-                  className="flex items-center gap-3 hover:opacity-80 transition-opacity"
-                >
-                  <Avatar
-                    src={selectedConsultation.astrologerId.profilePicture}
-                    name={selectedConsultation.astrologerId.name}
-                    size="lg"
-                  />
+                  {/* Duration */}
+                  <div className="bg-white border border-gray-200 rounded-lg p-4 hover:border-purple-300 transition-colors">
+                    <div className="flex items-center gap-2 text-gray-500 mb-2">
+                      <Clock className="w-4 h-4" />
+                      <span className="text-xs font-medium uppercase tracking-wide">Duration</span>
+                    </div>
+                    <p className="text-sm font-semibold text-gray-900">
+                      {formatDuration(selectedConsultation.duration)}
+                    </p>
+                  </div>
+
+                  {/* Amount */}
+                  <div className="bg-white border border-gray-200 rounded-lg p-4 hover:border-green-300 transition-colors">
+                    <div className="flex items-center gap-2 text-gray-500 mb-2">
+                      <DollarSign className="w-4 h-4" />
+                      <span className="text-xs font-medium uppercase tracking-wide">Amount</span>
+                    </div>
+                    <p className="text-lg font-bold text-gray-900">
+                      {formatCurrency(selectedConsultation.amount)}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">{selectedConsultation.currency}</p>
+                  </div>
+
+                  {/* Type */}
+                  <div className="bg-white border border-gray-200 rounded-lg p-4">
+                    <div className="flex items-center gap-2 text-gray-500 mb-2">
+                      <Activity className="w-4 h-4" />
+                      <span className="text-xs font-medium uppercase tracking-wide">Type</span>
+                    </div>
+                    <div className="mt-2">
+                      {getTypeIcon(selectedConsultation.type)}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Timestamps */}
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                  <h4 className="text-xs font-semibold text-gray-700 uppercase tracking-wide mb-3">Timeline</h4>
+                  <div className="space-y-2 text-xs">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600">Created</span>
+                      <span className="text-gray-900 font-medium">
+                        {new Date(selectedConsultation.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                      </span>
+                    </div>
+                    {selectedConsultation.startedAt && (
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-600">Started</span>
+                        <span className="text-gray-900 font-medium">
+                          {new Date(selectedConsultation.startedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                        </span>
+                      </div>
+                    )}
+                    {selectedConsultation.completedAt && (
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-600">Completed</span>
+                        <span className="text-gray-900 font-medium">
+                          {new Date(selectedConsultation.completedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                        </span>
+                      </div>
+                    )}
+                    {selectedConsultation.cancelledAt && (
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-600">Cancelled</span>
+                        <span className="text-gray-900 font-medium">
+                          {new Date(selectedConsultation.cancelledAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* LEFT CONTENT - Shows SECOND on mobile */}
+              <div className="order-2 lg:order-1 w-full lg:w-[65%] space-y-6">
+                
+                {/* Client Information */}
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                    <Users className="w-4 h-4 text-gray-500" />
+                    Client Information
+                  </h4>
+                  <div className="bg-white border border-gray-200 rounded-lg p-4 space-y-3">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-semibold">
+                          {selectedConsultation.clientName.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <p className="font-semibold text-gray-900">{selectedConsultation.clientName}</p>
+                          <p className="text-sm text-gray-600">{selectedConsultation.clientPhone}</p>
+                        </div>
+                      </div>
+                    </div>
+                    {selectedConsultation.clientEmail && (
+                      <div className="pt-3 border-t border-gray-100">
+                        <p className="text-xs text-gray-500 mb-1">Email</p>
+                        <p className="text-sm text-gray-900">{selectedConsultation.clientEmail}</p>
+                      </div>
+                    )}
+                    {(selectedConsultation.clientAge || selectedConsultation.clientGender) && (
+                      <div className="pt-3 border-t border-gray-100 flex gap-4">
+                        {selectedConsultation.clientAge && (
+                          <div>
+                            <p className="text-xs text-gray-500 mb-1">Age</p>
+                            <p className="text-sm text-gray-900">{selectedConsultation.clientAge} years</p>
+                          </div>
+                        )}
+                        {selectedConsultation.clientGender && (
+                          <div>
+                            <p className="text-xs text-gray-500 mb-1">Gender</p>
+                            <p className="text-sm text-gray-900 capitalize">{selectedConsultation.clientGender}</p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Astrologer */}
+                {selectedConsultation.astrologerId && (
                   <div>
-                    <p className="font-semibold text-gray-900 hover:text-blue-600">
-                      {selectedConsultation.astrologerId.name}
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      {selectedConsultation.astrologerId.email}
-                    </p>
-                  </div>
-                </Link>
-              </Card>
-            )}
-
-            {/* Consultation Details */}
-            <div className="grid grid-cols-2 gap-4">
-              <Card className="!p-4">
-                <div className="flex items-center gap-2 text-purple-600 mb-2">
-                  {getTypeIcon(selectedConsultation.type)}
-                  <span className="text-xs font-medium uppercase">Type</span>
-                </div>
-                <p className="text-sm font-medium text-gray-900">
-                  {typeConfig[selectedConsultation.type as keyof typeof typeConfig]?.label || selectedConsultation.type}
-                </p>
-              </Card>
-
-              <Card className="!p-4">
-                <div className="flex items-center gap-2 text-blue-600 mb-2">
-                  <Calendar className="w-4 h-4" />
-                  <span className="text-xs font-medium uppercase">Scheduled</span>
-                </div>
-                <p className="text-sm font-medium text-gray-900">
-                  {formatDateTime(selectedConsultation.scheduledTime)}
-                </p>
-              </Card>
-
-              <Card className="!p-4">
-                <div className="flex items-center gap-2 text-amber-600 mb-2">
-                  <Clock className="w-4 h-4" />
-                  <span className="text-xs font-medium uppercase">Duration</span>
-                </div>
-                <p className="text-sm font-medium text-gray-900">
-                  {formatDuration(selectedConsultation.duration)}
-                </p>
-              </Card>
-
-              <Card className="!p-4">
-                <div className="flex items-center gap-2 text-green-600 mb-2">
-                  <DollarSign className="w-4 h-4" />
-                  <span className="text-xs font-medium uppercase">Amount</span>
-                </div>
-                <p className="text-sm font-medium text-gray-900">
-                  {formatCurrency(selectedConsultation.amount)}
-                </p>
-              </Card>
-            </div>
-
-            {/* Additional Details */}
-            {selectedConsultation.notes && (
-              <Card className="!p-4 bg-amber-50">
-                <h4 className="text-sm font-semibold text-gray-700 mb-2">Notes</h4>
-                <p className="text-sm text-gray-900">{selectedConsultation.notes}</p>
-              </Card>
-            )}
-
-            {/* Topics */}
-            {selectedConsultation.consultationTopics && selectedConsultation.consultationTopics.length > 0 && (
-              <div>
-                <h4 className="text-sm font-semibold text-gray-700 mb-2">Topics</h4>
-                <div className="flex flex-wrap gap-2">
-                  {selectedConsultation.consultationTopics.map((topic, idx) => (
-                    <span
-                      key={idx}
-                      className="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-full"
+                    <h4 className="text-sm font-semibold text-gray-900 mb-3">Astrologer</h4>
+                    <Link
+                      to={`${ROUTES.ASTROLOGERS}/${selectedConsultation.astrologerId._id}`}
+                      className="bg-white border border-gray-200 rounded-lg p-4 hover:border-blue-300 hover:shadow-sm transition-all block"
                     >
-                      {topic}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Rating & Feedback */}
-            {selectedConsultation.rating && (
-              <Card className="!p-4 bg-green-50">
-                <h4 className="text-sm font-semibold text-gray-700 mb-3">Client Feedback</h4>
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="flex items-center">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`w-4 h-4 ${
-                          i < selectedConsultation.rating!
-                            ? 'fill-amber-400 text-amber-400'
-                            : 'text-gray-300'
-                        }`}
-                      />
-                    ))}
+                      <div className="flex items-center gap-3">
+                        <Avatar
+                          src={selectedConsultation.astrologerId.profilePicture}
+                          name={selectedConsultation.astrologerId.name}
+                          size="lg"
+                        />
+                        <div>
+                          <p className="font-semibold text-gray-900 hover:text-blue-600 transition-colors">
+                            {selectedConsultation.astrologerId.name}
+                          </p>
+                          <p className="text-sm text-gray-600">{selectedConsultation.astrologerId.email}</p>
+                        </div>
+                      </div>
+                    </Link>
                   </div>
-                  <span className="text-sm font-medium text-gray-900">
-                    {selectedConsultation.rating}/5
-                  </span>
-                </div>
-                {selectedConsultation.feedback && (
-                  <p className="text-sm text-gray-900">{selectedConsultation.feedback}</p>
                 )}
-              </Card>
-            )}
 
-            {/* Timestamps */}
-            <div className="text-xs text-gray-500 space-y-1 pt-4 border-t">
-              <div className="flex justify-between">
-                <span>Created:</span>
-                <span>{formatDateTime(selectedConsultation.createdAt)}</span>
+                {/* Topics */}
+                {selectedConsultation.consultationTopics && selectedConsultation.consultationTopics.length > 0 && (
+                  <div>
+                    <h4 className="text-sm font-semibold text-gray-900 mb-3">Topics</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedConsultation.consultationTopics.map((topic, idx) => (
+                        <span
+                          key={idx}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-700 text-sm font-medium rounded-full border border-blue-200 hover:bg-blue-100 transition-colors"
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                          {topic}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Notes */}
+                {selectedConsultation.notes && (
+                  <div>
+                    <h4 className="text-sm font-semibold text-gray-900 mb-3">Notes</h4>
+                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                      <p className="text-sm text-gray-900 whitespace-pre-wrap">{selectedConsultation.notes}</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Rating & Feedback */}
+                {selectedConsultation.rating && (
+                  <div>
+                    <h4 className="text-sm font-semibold text-gray-900 mb-3">Client Feedback</h4>
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="flex items-center">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`w-5 h-5 ${
+                                i < selectedConsultation.rating!
+                                  ? 'fill-amber-400 text-amber-400'
+                                  : 'text-gray-300'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                        <span className="text-sm font-semibold text-gray-900">
+                          {selectedConsultation.rating}/5
+                        </span>
+                      </div>
+                      {selectedConsultation.feedback && (
+                        <p className="text-sm text-gray-900">{selectedConsultation.feedback}</p>
+                      )}
+                    </div>
+                  </div>
+                )}
+
               </div>
-              {selectedConsultation.startedAt && (
-                <div className="flex justify-between">
-                  <span>Started:</span>
-                  <span>{formatDateTime(selectedConsultation.startedAt)}</span>
-                </div>
-              )}
-              {selectedConsultation.completedAt && (
-                <div className="flex justify-between">
-                  <span>Completed:</span>
-                  <span>{formatDateTime(selectedConsultation.completedAt)}</span>
-                </div>
-              )}
-              {selectedConsultation.cancelledAt && (
-                <div className="flex justify-between">
-                  <span>Cancelled:</span>
-                  <span>{formatDateTime(selectedConsultation.cancelledAt)}</span>
-                </div>
-              )}
             </div>
+
           </div>
         </Modal>
       )}
