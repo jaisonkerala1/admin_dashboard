@@ -22,10 +22,7 @@ export const AstrologersList = () => {
     try {
       setIsLoading(true);
       const response = await astrologersApi.getAll({ search, sortBy: 'createdAt', sortOrder: 'desc' });
-      console.log('Astrologers API response:', response);
-      
-      // Handle response: { success: true, data: astrologers[] }
-      let data: Astrologer[] = Array.isArray(response.data) ? response.data : [];
+      let data: Astrologer[] = response.data || [];
       
       // The backend now returns properly formatted data with:
       // - specialization (mapped from specializations)

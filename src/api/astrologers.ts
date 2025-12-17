@@ -5,13 +5,24 @@ import {
   ApproveAstrologerRequest,
   SuspendAstrologerRequest,
   UpdateAstrologerRequest,
-  PaginatedResponse,
   PaginationParams,
   ApiResponse,
 } from '@/types';
 
+// Custom response type that matches backend
+interface AstrologersListResponse {
+  success: boolean;
+  data: Astrologer[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+}
+
 export const astrologersApi = {
-  getAll: async (params?: PaginationParams): Promise<ApiResponse<PaginatedResponse<Astrologer>>> => {
+  getAll: async (params?: PaginationParams): Promise<AstrologersListResponse> => {
     const response = await apiClient.get('/admin/astrologers', { params });
     return response.data;
   },

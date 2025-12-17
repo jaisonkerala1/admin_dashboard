@@ -67,8 +67,7 @@ export const CreateServiceRequest = () => {
         sortBy: 'name',
         sortOrder: 'asc'
       });
-      // astrologersApi.getAll returns ApiResponse<PaginatedResponse<Astrologer>>
-      const data: Astrologer[] = response.data?.data || [];
+      const data: Astrologer[] = response.data || [];
       // Filter only active astrologers
       setAstrologers(data.filter((a: Astrologer) => a.isActive && a.isApproved));
     } catch (err) {
