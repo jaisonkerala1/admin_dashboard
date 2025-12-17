@@ -302,7 +302,7 @@ export const AstrologerDetail = () => {
         <Card className="lg:col-span-1">
           <div className="flex flex-col items-center text-center">
             <div className="relative">
-              <Avatar src={astrologer.profilePicture} name={astrologer.name} size="xl" />
+            <Avatar src={astrologer.profilePicture} name={astrologer.name} size="xl" />
               {astrologer.isOnline && (
                 <div className="absolute -bottom-2 -right-2 flex items-center justify-center">
                   <div className="w-5 h-5 bg-green-500 border-4 border-white rounded-full" />

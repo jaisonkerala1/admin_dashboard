@@ -3,6 +3,7 @@ import createSagaMiddleware from 'redux-saga';
 import authReducer from './slices/authSlice';
 import poojaRequestsReducer from './slices/poojaRequestsSlice';
 import dashboardReducer from './slices/dashboardSlice';
+import consultationsReducer from './slices/consultationsSlice';
 import rootSaga from './sagas';
 
 // Create saga middleware
@@ -14,6 +15,7 @@ export const store = configureStore({
     auth: authReducer,
     poojaRequests: poojaRequestsReducer,
     dashboard: dashboardReducer,
+    consultations: consultationsReducer,
     // Add more reducers here as needed
   },
   middleware: (getDefaultMiddleware) =>

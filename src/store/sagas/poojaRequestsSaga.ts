@@ -1,6 +1,7 @@
-import { call, put, takeLatest } from 'redux-saga/effects';
+import { call, put, takeLatest, SagaIterator } from 'redux-saga/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { poojaRequestsApi } from '@/api/poojaRequests';
+import { PoojaRequest } from '@/types';
 import {
   fetchRequestsRequest,
   fetchRequestsSuccess,
@@ -8,47 +9,50 @@ import {
   updateRequestRequest,
   updateRequestSuccess,
   updateRequestFailure,
+  ServiceRequestsStats,
 } from '../slices/poojaRequestsSlice';
 
 // Worker saga: fetches pooja requests
-function* fetchRequestsSaga(action: PayloadAction<{ page: number; search?: string; status?: string }>) {
+function* fetchRequestsSaga(): SagaIterator {
   try {
-    const { page, search, status } = action.payload;
-    
-    const params: any = {
-      page,
-      limit: 20,
-      sortBy: 'createdAt',
-      sortOrder: 'desc',
-    };
-    
-    if (search) params.search = search;
-    if (status) params.status = status;
-    
-    const response: Awaited<ReturnType<typeof poojaRequestsApi.getAll>> = yield call(
+    // Fetch all requests (no pagination, filter client-side)
+    const response: { success: boolean; data: PoojaRequest[] } = yield call(
       poojaRequestsApi.getAll,
-      params
+      {
+        limit: 1000, // Fetch all
+        sortBy: 'createdAt',
+        sortOrder: 'desc',
+      }
     );
     
-    if (response.success) {
-      yield put(fetchRequestsSuccess({
-        data: response.data,
-        pagination: response.pagination,
-      }));
-    } else {
-      yield put(fetchRequestsFailure('Failed to fetch pooja requests'));
-    }
+    const requests = response.data || [];
+    
+    // Calculate stats
+    const stats: ServiceRequestsStats = {
+      total: requests.length,
+      pending: requests.filter(r => r.status === 'pending').length,
+      confirmed: requests.filter(r => r.status === 'confirmed').length,
+      inProgress: requests.filter(r => r.status === 'inProgress').length,
+      completed: requests.filter(r => r.status === 'completed').length,
+      cancelled: requests.filter(r => r.status === 'cancelled').length,
+      totalRevenue: requests
+        .filter(r => r.status === 'completed')
+        .reduce((sum, r) => sum + (r.price || 0), 0),
+    };
+    
+    yield put(fetchRequestsSuccess({ requests, stats }));
   } catch (error: any) {
-    yield put(fetchRequestsFailure(error.message || 'An error occurred'));
+    console.error('Failed to fetch service requests:', error);
+    yield put(fetchRequestsFailure(error.message || 'Failed to fetch service requests'));
   }
 }
 
 // Worker saga: updates a pooja request
-function* updateRequestSaga(action: PayloadAction<{ id: string; data: any }>) {
+function* updateRequestSaga(action: PayloadAction<{ id: string; data: any }>): SagaIterator {
   try {
     const { id, data } = action.payload;
     
-    const response: Awaited<ReturnType<typeof poojaRequestsApi.update>> = yield call(
+    const response: { success: boolean; data: PoojaRequest } = yield call(
       poojaRequestsApi.update,
       id,
       data
@@ -57,7 +61,7 @@ function* updateRequestSaga(action: PayloadAction<{ id: string; data: any }>) {
     if (response.success && response.data) {
       yield put(updateRequestSuccess(response.data));
     } else {
-      yield put(updateRequestFailure('Failed to update pooja request'));
+      yield put(updateRequestFailure('Failed to update service request'));
     }
   } catch (error: any) {
     yield put(updateRequestFailure(error.message || 'An error occurred'));
@@ -65,12 +69,12 @@ function* updateRequestSaga(action: PayloadAction<{ id: string; data: any }>) {
 }
 
 // Watcher saga: watches for pooja request actions
-function* poojaRequestsSaga() {
+export default function* poojaRequestsSaga(): SagaIterator {
   yield takeLatest(fetchRequestsRequest.type, fetchRequestsSaga);
   yield takeLatest(updateRequestRequest.type, updateRequestSaga);
 }
 
-export default poojaRequestsSaga;
+
 
 
 
