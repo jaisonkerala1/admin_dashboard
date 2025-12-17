@@ -341,9 +341,9 @@ export const Consultations = () => {
                           >
                             <RoundAvatar
                               src={consultation.astrologerId.profilePicture}
-                              alt={consultation.astrologerId.name}
+                              name={consultation.astrologerId.name}
                               size="sm"
-                              showOnline={false}
+                              isOnline={false}
                             />
                             <span className="font-medium text-gray-900 hover:text-blue-600">
                               {consultation.astrologerId.name}
@@ -416,9 +416,9 @@ export const Consultations = () => {
                         >
                           <RoundAvatar
                             src={consultation.astrologerId.profilePicture}
-                            alt={consultation.astrologerId.name}
-                            size="xs"
-                            showOnline={false}
+                            name={consultation.astrologerId.name}
+                            size="sm"
+                            isOnline={false}
                           />
                           <span className="text-sm text-gray-600 hover:text-blue-600">
                             {consultation.astrologerId.name}
@@ -474,9 +474,9 @@ export const Consultations = () => {
                         >
                           <RoundAvatar
                             src={consultation.astrologerId.profilePicture}
-                            alt={consultation.astrologerId.name}
+                            name={consultation.astrologerId.name}
                             size="sm"
-                            showOnline={false}
+                            isOnline={false}
                           />
                           <div>
                             <p className="text-xs text-gray-500">Astrologer</p>

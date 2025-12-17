@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { 
   Search, 
-  Calendar,
   Clock,
   DollarSign,
   Users,
@@ -40,8 +39,6 @@ const statusConfig = {
   completed: { label: 'Completed', color: 'bg-green-100 text-green-800 border-green-200', icon: CheckCircle2 },
   cancelled: { label: 'Cancelled', color: 'bg-gray-100 text-gray-800 border-gray-200', icon: XCircle },
 };
-
-type FilterTab = 'all' | 'pending' | 'confirmed' | 'inProgress' | 'completed' | 'cancelled';
 
 export const ServiceRequests = () => {
   const dispatch = useDispatch();
@@ -104,7 +101,7 @@ export const ServiceRequests = () => {
   // Helper functions
   const getStatusBadge = (status: string) => {
     const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
-    return <PillBadge variant={status as any} label={config.label} icon={config.icon} showDot={false} />;
+    return <PillBadge variant={status as any} label={config.label} showDot={false} />;
   };
 
   // Pagination helper
@@ -340,9 +337,9 @@ export const ServiceRequests = () => {
                           >
                             <RoundAvatar
                               src={request.astrologerId.profilePicture}
-                              alt={request.astrologerId.name}
                               size="sm"
-                              showOnline={false}
+                              name={request.astrologerId.name}
+                              isOnline={false}
                             />
                             <span className="font-medium text-gray-900 hover:text-blue-600">
                               {request.astrologerId.name}
@@ -410,9 +407,9 @@ export const ServiceRequests = () => {
                         >
                           <RoundAvatar
                             src={request.astrologerId.profilePicture}
-                            alt={request.astrologerId.name}
-                            size="xs"
-                            showOnline={false}
+                            name={request.astrologerId.name}
+                            size="sm"
+                            isOnline={false}
                           />
                           <span className="text-sm text-gray-600 hover:text-blue-600">
                             {request.astrologerId.name}
@@ -483,9 +480,9 @@ export const ServiceRequests = () => {
                         >
                           <RoundAvatar
                             src={request.astrologerId.profilePicture}
-                            alt={request.astrologerId.name}
                             size="sm"
-                            showOnline={false}
+                            name={request.astrologerId.name}
+                            isOnline={false}
                           />
                           <div>
                             <p className="text-xs text-gray-500">Astrologer</p>

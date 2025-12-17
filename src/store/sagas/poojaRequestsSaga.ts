@@ -1,4 +1,5 @@
-import { call, put, takeLatest, SagaIterator } from 'redux-saga/effects';
+import { call, put, takeLatest } from 'redux-saga/effects';
+import type { SagaIterator } from 'redux-saga';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { poojaRequestsApi } from '@/api/poojaRequests';
 import { PoojaRequest } from '@/types';

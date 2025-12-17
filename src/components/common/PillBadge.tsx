@@ -1,6 +1,24 @@
 import React from 'react';
 
-export type BadgeVariant = 'online' | 'offline' | 'busy' | 'on-call' | 'inactive' | 'pending' | 'active' | 'approved' | 'rejected';
+export type BadgeVariant =
+  | 'online'
+  | 'offline'
+  | 'busy'
+  | 'on-call'
+  | 'inactive'
+  // approvals / generic
+  | 'pending'
+  | 'active'
+  | 'approved'
+  | 'rejected'
+  // service-request statuses
+  | 'confirmed'
+  | 'inProgress'
+  | 'completed'
+  | 'cancelled'
+  // consultation statuses
+  | 'scheduled'
+  | 'noShow';
 
 interface PillBadgeProps {
   variant: BadgeVariant;
@@ -40,6 +58,36 @@ const variantStyles: Record<BadgeVariant, { bg: string; text: string; dot: strin
     text: 'text-yellow-700',
     dot: 'bg-yellow-500'
   },
+  confirmed: {
+    bg: 'bg-blue-100',
+    text: 'text-blue-700',
+    dot: 'bg-blue-500'
+  },
+  inProgress: {
+    bg: 'bg-purple-100',
+    text: 'text-purple-700',
+    dot: 'bg-purple-500'
+  },
+  completed: {
+    bg: 'bg-green-100',
+    text: 'text-green-700',
+    dot: 'bg-green-500'
+  },
+  cancelled: {
+    bg: 'bg-gray-100',
+    text: 'text-gray-700',
+    dot: 'bg-gray-400'
+  },
+  scheduled: {
+    bg: 'bg-yellow-100',
+    text: 'text-yellow-700',
+    dot: 'bg-yellow-500'
+  },
+  noShow: {
+    bg: 'bg-gray-100',
+    text: 'text-gray-700',
+    dot: 'bg-gray-400'
+  },
   active: {
     bg: 'bg-green-100',
     text: 'text-green-700',
@@ -64,6 +112,12 @@ const defaultLabels: Record<BadgeVariant, string> = {
   'on-call': 'On Call',
   inactive: 'Inactive',
   pending: 'Pending',
+  confirmed: 'Confirmed',
+  inProgress: 'In Progress',
+  completed: 'Completed',
+  cancelled: 'Cancelled',
+  scheduled: 'Scheduled',
+  noShow: 'No Show',
   active: 'Active',
   approved: 'Approved',
   rejected: 'Rejected'
