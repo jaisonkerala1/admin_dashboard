@@ -5,7 +5,7 @@ import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { StatCard, Card, Loader, Avatar } from '@/components/common';
 import { LiveStreamViewer } from '@/components/liveStream/LiveStreamViewer';
-import { dashboardApi, liveStreamsApi, astrologersApi } from '@/api';
+import { dashboardApi, liveStreamsApi, astrologersApi, poojaRequestsApi } from '@/api';
 import { DashboardStats, LiveStream, Astrologer } from '@/types';
 import { formatCurrency, formatNumber, formatRelativeTime } from '@/utils/formatters';
 import { ROUTES } from '@/utils/constants';
@@ -20,11 +20,13 @@ export const Dashboard = () => {
   const [selectedStream, setSelectedStream] = useState<LiveStream | null>(null);
   const [onlineAstrologers, setOnlineAstrologers] = useState<Astrologer[]>([]);
   const [onlineLoading, setOnlineLoading] = useState(false);
+  const [serviceRequestsTotal, setServiceRequestsTotal] = useState(0);
 
   useEffect(() => {
     loadStats();
     loadLiveStreams();
     loadOnlineAstrologers();
+    loadServiceRequests();
 
     // Auto-refresh every 10 seconds
     const interval = setInterval(() => {
@@ -79,6 +81,15 @@ export const Dashboard = () => {
     }
   };
 
+  const loadServiceRequests = async () => {
+    try {
+      const response = await poojaRequestsApi.getAll({ page: 1, limit: 1 });
+      setServiceRequestsTotal(response.pagination?.total || 0);
+    } catch (err) {
+      console.error('Service requests error:', err);
+    }
+  };
+
   // Generate weekly data for charts (last 7 days)
   const getWeeklyData = () => {
     const days = [];
@@ -92,7 +103,7 @@ export const Dashboard = () => {
       // Simulate data - in production, this should come from backend
       // Random distribution across the week with some pattern
       const baseConsultations = Math.floor((stats?.consultations.total || 0) / 30);
-      const baseServiceRequests = Math.floor((stats?.services.total || 0) / 30); // Using services.total as proxy for now
+      const baseServiceRequests = Math.floor(serviceRequestsTotal / 30);
       
       const consultations = Math.max(0, baseConsultations + Math.floor(Math.random() * (baseConsultations * 0.5)));
       const serviceRequests = Math.max(0, baseServiceRequests + Math.floor(Math.random() * (baseServiceRequests * 0.5)));
@@ -267,7 +278,9 @@ export const Dashboard = () => {
                   <div className="flex items-center gap-1 text-green-600">
                     <TrendingUp className="w-4 h-4" />
                     <span className="text-sm font-semibold">
-                      {((weeklyData.reduce((sum, day) => sum + day.serviceRequests, 0) / stats.services.total) * 100).toFixed(1)}%
+                      {serviceRequestsTotal > 0 
+                        ? ((weeklyData.reduce((sum, day) => sum + day.serviceRequests, 0) / serviceRequestsTotal) * 100).toFixed(1)
+                        : 0}%
                     </span>
                   </div>
                   <p className="text-xs text-gray-500">of total</p>
