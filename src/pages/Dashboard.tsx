@@ -92,16 +92,16 @@ export const Dashboard = () => {
       // Simulate data - in production, this should come from backend
       // Random distribution across the week with some pattern
       const baseConsultations = Math.floor((stats?.consultations.total || 0) / 30);
-      const baseServices = Math.floor((stats?.services.total || 0) / 30);
+      const baseServiceRequests = Math.floor((stats?.services.total || 0) / 30); // Using services.total as proxy for now
       
       const consultations = Math.max(0, baseConsultations + Math.floor(Math.random() * (baseConsultations * 0.5)));
-      const services = Math.max(0, baseServices + Math.floor(Math.random() * (baseServices * 0.5)));
+      const serviceRequests = Math.max(0, baseServiceRequests + Math.floor(Math.random() * (baseServiceRequests * 0.5)));
       
       days.push({
         day: dayName,
         date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
         consultations,
-        services
+        serviceRequests
       });
     }
     
@@ -216,12 +216,12 @@ export const Dashboard = () => {
               </div>
             </Card>
 
-            {/* Services Chart */}
+            {/* Service Requests Chart */}
             <Card 
               title={
                 <div className="flex items-center gap-2">
                   <ShoppingBag className="w-5 h-5 text-purple-600" />
-                  <span>Services Created (Last 7 Days)</span>
+                  <span>Service Requests (Last 7 Days)</span>
                 </div>
               }
             >
@@ -248,10 +248,10 @@ export const Dashboard = () => {
                       labelStyle={{ fontWeight: 600, marginBottom: '4px' }}
                     />
                     <Bar 
-                      dataKey="services" 
+                      dataKey="serviceRequests" 
                       fill="#8b5cf6" 
                       radius={[8, 8, 0, 0]}
-                      name="Services"
+                      name="Service Requests"
                     />
                   </BarChart>
                 </ResponsiveContainer>
@@ -259,7 +259,7 @@ export const Dashboard = () => {
               <div className="mt-4 flex items-center justify-between pt-4 border-t border-gray-100">
                 <div>
                   <p className="text-2xl font-bold text-gray-900">
-                    {weeklyData.reduce((sum, day) => sum + day.services, 0)}
+                    {weeklyData.reduce((sum, day) => sum + day.serviceRequests, 0)}
                   </p>
                   <p className="text-sm text-gray-500">Total this week</p>
                 </div>
@@ -267,7 +267,7 @@ export const Dashboard = () => {
                   <div className="flex items-center gap-1 text-green-600">
                     <TrendingUp className="w-4 h-4" />
                     <span className="text-sm font-semibold">
-                      {((weeklyData.reduce((sum, day) => sum + day.services, 0) / stats.services.total) * 100).toFixed(1)}%
+                      {((weeklyData.reduce((sum, day) => sum + day.serviceRequests, 0) / stats.services.total) * 100).toFixed(1)}%
                     </span>
                   </div>
                   <p className="text-xs text-gray-500">of total</p>
