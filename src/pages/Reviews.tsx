@@ -395,9 +395,9 @@ export const Reviews = () => {
                         <div className="flex gap-1">
                           {review.isVerified && <PillBadge variant="approved" label="✓" showDot={false} />}
                           {review.isPublic ? (
-                            <Eye className="w-4 h-4 text-indigo-600" title="Public" />
+                            <Eye className="w-4 h-4 text-indigo-600" />
                           ) : (
-                            <EyeOff className="w-4 h-4 text-gray-400" title="Hidden" />
+                            <EyeOff className="w-4 h-4 text-gray-400" />
                           )}
                         </div>
                       </div>
