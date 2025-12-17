@@ -13,7 +13,9 @@ import {
   RefreshCw,
   X,
   Calendar,
-  Clock
+  Clock,
+  Ban,
+  AlertTriangle
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
@@ -36,6 +38,8 @@ export const LiveStreams = () => {
   const [search, setSearch] = useState('');
   const [pagination, setPagination] = useState<PaginationInfo>({ page: 1, limit: 20, total: 0, pages: 0 });
   const [selectedStream, setSelectedStream] = useState<LiveStream | null>(null);
+  const [showEndAllConfirm, setShowEndAllConfirm] = useState(false);
+  const [isEndingAll, setIsEndingAll] = useState(false);
 
   const loadStreams = useCallback(async (page = 1) => {
     try {
@@ -80,6 +84,21 @@ export const LiveStreams = () => {
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= pagination.pages) {
       loadStreams(newPage);
+    }
+  };
+
+  const handleEndAllStreams = async () => {
+    try {
+      setIsEndingAll(true);
+      const response = await liveStreamsApi.endAll();
+      setShowEndAllConfirm(false);
+      alert(`Successfully ended ${response.data.endedCount} live stream(s)`);
+      loadStreams(pagination.page);
+    } catch (err) {
+      console.error('Failed to end all streams:', err);
+      alert('Failed to end all streams. Please try again.');
+    } finally {
+      setIsEndingAll(false);
     }
   };
 
@@ -183,6 +202,16 @@ export const LiveStreams = () => {
             <RefreshCw className="w-4 h-4" />
             Refresh
           </button>
+          {stats.live > 0 && (
+            <button
+              onClick={() => setShowEndAllConfirm(true)}
+              className="flex items-center gap-2 px-3 py-2 text-sm text-white bg-red-500 hover:bg-red-600 rounded-md transition-colors"
+              title="End all active live streams"
+            >
+              <Ban className="w-4 h-4" />
+              End All Lives ({stats.live})
+            </button>
+          )}
         </div>
 
         {/* Grid View */}
@@ -302,6 +331,54 @@ export const LiveStreams = () => {
           stream={selectedStream}
           onClose={() => setSelectedStream(null)}
         />
+      )}
+
+      {/* End All Streams Confirmation */}
+      {showEndAllConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-3 bg-red-100 rounded-full">
+                <AlertTriangle className="w-6 h-6 text-red-600" />
+              </div>
+              <h3 className="text-lg font-semibold">End All Live Streams?</h3>
+            </div>
+            <p className="text-gray-600 mb-4">
+              This will immediately end all {stats.live} active live stream(s). All viewers will be disconnected and broadcasters will be notified. This action cannot be undone.
+            </p>
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
+              <p className="text-sm text-yellow-800">
+                <strong>Warning:</strong> Use this only in emergencies or for scheduled maintenance. This is a drastic action that affects all active streams.
+              </p>
+            </div>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowEndAllConfirm(false)}
+                disabled={isEndingAll}
+                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleEndAllStreams}
+                disabled={isEndingAll}
+                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 disabled:opacity-50 flex items-center gap-2"
+              >
+                {isEndingAll ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                    Ending...
+                  </>
+                ) : (
+                  <>
+                    <Ban className="w-4 h-4" />
+                    End All Streams
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </MainLayout>
   );

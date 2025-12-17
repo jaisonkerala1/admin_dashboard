@@ -12,11 +12,15 @@ import {
   Volume2, 
   VolumeX,
   AlertCircle,
-  Loader2
+  Loader2,
+  Ban,
+  AlertTriangle,
+  Shield
 } from 'lucide-react';
 import { LiveStream } from '@/types';
 import { formatNumber, formatRelativeTime } from '@/utils/formatters';
 import { Avatar } from '@/components/common';
+import { liveStreamsApi } from '@/api';
 
 interface LiveStreamViewerProps {
   stream: LiveStream;
@@ -32,6 +36,10 @@ export const LiveStreamViewer = ({ stream, onClose, onEndStream }: LiveStreamVie
   const [isMuted, setIsMuted] = useState(false);
   const [remoteUsers, setRemoteUsers] = useState<IAgoraRTCRemoteUser[]>([]);
   const [showEndConfirm, setShowEndConfirm] = useState(false);
+  const [showBanConfirm, setShowBanConfirm] = useState(false);
+  const [showWarnDialog, setShowWarnDialog] = useState(false);
+  const [warningMessage, setWarningMessage] = useState('');
+  const [showAdminMenu, setShowAdminMenu] = useState(false);
   
   const videoRef = useRef<HTMLDivElement>(null);
 
@@ -186,6 +194,32 @@ export const LiveStreamViewer = ({ stream, onClose, onEndStream }: LiveStreamVie
     }
   };
 
+  const handleBanStream = async () => {
+    try {
+      await liveStreamsApi.ban(stream._id, 'Content violates community guidelines');
+      setShowBanConfirm(false);
+      await leaveChannel();
+      onClose();
+      if (onEndStream) onEndStream();
+    } catch (err) {
+      console.error('Failed to ban stream:', err);
+      alert('Failed to ban stream. Please try again.');
+    }
+  };
+
+  const handleSendWarning = async () => {
+    if (!warningMessage.trim()) return;
+    try {
+      await liveStreamsApi.warn(stream._id, warningMessage);
+      setShowWarnDialog(false);
+      setWarningMessage('');
+      alert('Warning sent successfully!');
+    } catch (err) {
+      console.error('Failed to send warning:', err);
+      alert('Failed to send warning. Please try again.');
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4">
       <div className="relative w-full max-w-6xl bg-black rounded-lg overflow-hidden shadow-2xl">
@@ -269,6 +303,7 @@ export const LiveStreamViewer = ({ stream, onClose, onEndStream }: LiveStreamVie
                   <button
                     onClick={toggleMute}
                     className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
+                    title={isMuted ? "Unmute" : "Mute"}
                   >
                     {isMuted ? (
                       <VolumeX className="w-5 h-5 text-white" />
@@ -276,6 +311,40 @@ export const LiveStreamViewer = ({ stream, onClose, onEndStream }: LiveStreamVie
                       <Volume2 className="w-5 h-5 text-white" />
                     )}
                   </button>
+
+                  <button
+                    onClick={() => setShowAdminMenu(!showAdminMenu)}
+                    className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors relative"
+                    title="Admin Controls"
+                  >
+                    <Shield className="w-5 h-5 text-white" />
+                  </button>
+
+                  {/* Admin Menu Dropdown */}
+                  {showAdminMenu && (
+                    <div className="absolute bottom-16 right-4 bg-white rounded-lg shadow-xl p-2 min-w-[200px] z-30">
+                      <button
+                        onClick={() => {
+                          setShowWarnDialog(true);
+                          setShowAdminMenu(false);
+                        }}
+                        className="flex items-center gap-2 w-full px-3 py-2 text-left hover:bg-gray-100 rounded-lg"
+                      >
+                        <AlertTriangle className="w-4 h-4 text-yellow-500" />
+                        <span>Send Warning</span>
+                      </button>
+                      <button
+                        onClick={() => {
+                          setShowBanConfirm(true);
+                          setShowAdminMenu(false);
+                        }}
+                        className="flex items-center gap-2 w-full px-3 py-2 text-left hover:bg-gray-100 rounded-lg text-red-600"
+                      >
+                        <Ban className="w-4 h-4" />
+                        <span>Ban Stream</span>
+                      </button>
+                    </div>
+                  )}
 
                   {onEndStream && (
                     <button
@@ -312,6 +381,79 @@ export const LiveStreamViewer = ({ stream, onClose, onEndStream }: LiveStreamVie
                   className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
                 >
                   End Stream
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Ban Stream Confirmation */}
+        {showBanConfirm && (
+          <div className="absolute inset-0 bg-black/80 flex items-center justify-center z-20">
+            <div className="bg-white rounded-lg p-6 max-w-md mx-4">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 bg-red-100 rounded-full">
+                  <Ban className="w-6 h-6 text-red-600" />
+                </div>
+                <h3 className="text-lg font-semibold">Ban Live Stream?</h3>
+              </div>
+              <p className="text-gray-600 mb-4">
+                This will immediately end and ban the stream. The broadcaster will be notified and the stream will be marked as banned. This is a serious action for policy violations.
+              </p>
+              <div className="flex gap-3 justify-end">
+                <button
+                  onClick={() => setShowBanConfirm(false)}
+                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleBanStream}
+                  className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                >
+                  Ban Stream
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Send Warning Dialog */}
+        {showWarnDialog && (
+          <div className="absolute inset-0 bg-black/80 flex items-center justify-center z-20">
+            <div className="bg-white rounded-lg p-6 max-w-md mx-4 w-full">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 bg-yellow-100 rounded-full">
+                  <AlertTriangle className="w-6 h-6 text-yellow-600" />
+                </div>
+                <h3 className="text-lg font-semibold">Send Warning</h3>
+              </div>
+              <p className="text-gray-600 mb-4">
+                Send a warning message to the broadcaster. This will appear as a notification during their live stream.
+              </p>
+              <textarea
+                value={warningMessage}
+                onChange={(e) => setWarningMessage(e.target.value)}
+                placeholder="Enter warning message..."
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 mb-4"
+                rows={3}
+              />
+              <div className="flex gap-3 justify-end">
+                <button
+                  onClick={() => {
+                    setShowWarnDialog(false);
+                    setWarningMessage('');
+                  }}
+                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSendWarning}
+                  disabled={!warningMessage.trim()}
+                  className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Send Warning
                 </button>
               </div>
             </div>
