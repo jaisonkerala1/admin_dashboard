@@ -7,4 +7,8 @@ export { Avatar } from './Avatar';
 export { Modal } from './Modal';
 export { Toast, ToastContainer } from './Toast';
 export type { ToastType, ToastProps, ToastContainerProps } from './Toast';
+export { RoundAvatar } from './RoundAvatar';
+export { PillBadge } from './PillBadge';
+export type { BadgeVariant } from './PillBadge';
+export { ShowEntriesDropdown } from './ShowEntriesDropdown';
 

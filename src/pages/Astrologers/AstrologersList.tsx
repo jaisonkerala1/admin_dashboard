@@ -1,22 +1,30 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Filter, Eye, UserX } from 'lucide-react';
+import { Search, Edit2, Trash2, Eye, UserX, Users, UserCheck, Clock, XCircle } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
-import { PageHeader } from '@/components/layout/PageHeader';
-import { Card, Loader, EmptyState, Avatar, StatusBadge } from '@/components/common';
+import { Card, Loader, EmptyState, RoundAvatar, PillBadge, ShowEntriesDropdown, StatCard } from '@/components/common';
 import { astrologersApi } from '@/api';
 import { Astrologer } from '@/types';
 import { formatCurrency, formatRelativeTime } from '@/utils/formatters';
+
+type FilterTab = 'all' | 'active' | 'pending' | 'inactive';
 
 export const AstrologersList = () => {
   const [astrologers, setAstrologers] = useState<Astrologer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'suspended'>('all');
+  const [filter, setFilter] = useState<FilterTab>('all');
+  const [entriesPerPage, setEntriesPerPage] = useState(8);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     loadAstrologers();
-  }, [search, filter]);
+  }, [search]);
+
+  useEffect(() => {
+    setCurrentPage(1); // Reset to first page when filter changes
+  }, [filter, entriesPerPage]);
 
   const loadAstrologers = async () => {
     try {
@@ -24,12 +32,7 @@ export const AstrologersList = () => {
       const response = await astrologersApi.getAll({ search, sortBy: 'createdAt', sortOrder: 'desc' });
       let data: Astrologer[] = response.data || [];
       
-      // The backend now returns properly formatted data with:
-      // - specialization (mapped from specializations)
-      // - rating (calculated from reviews)
-      // - totalReviews (count of reviews)
-      // - consultationCharge (mapped from ratePerMinute)
-      // Just ensure defaults for any missing fields
+      // Ensure defaults for any missing fields
       data = data.map((a: any) => ({
         ...a,
         specialization: a.specialization || a.specializations || [],
@@ -38,17 +41,8 @@ export const AstrologersList = () => {
         consultationCharge: a.consultationCharge || a.ratePerMinute || 0,
         isApproved: a.isApproved ?? false,
         isSuspended: a.isSuspended ?? false,
+        isOnline: a.isOnline ?? false,
       }));
-      
-      // Client-side filtering by status
-      if (filter !== 'all') {
-        data = data.filter(a => {
-          if (filter === 'pending') return !a.isApproved && !a.isSuspended;
-          if (filter === 'approved') return a.isApproved && !a.isSuspended;
-          if (filter === 'suspended') return a.isSuspended;
-          return true;
-        });
-      }
       
       setAstrologers(data);
     } catch (err) {
@@ -58,48 +52,190 @@ export const AstrologersList = () => {
     }
   };
 
-  const getStatus = (astrologer: Astrologer) => {
-    if (astrologer.isSuspended) return 'suspended';
-    if (astrologer.isApproved) return 'approved';
-    return 'pending';
+  // Filter astrologers based on selected tab
+  const filteredAstrologers = astrologers.filter(a => {
+    if (filter === 'active') return a.isApproved && !a.isSuspended;
+    if (filter === 'pending') return !a.isApproved && !a.isSuspended;
+    if (filter === 'inactive') return a.isSuspended;
+    return true; // 'all'
+  });
+
+  // Pagination
+  const totalPages = Math.ceil(filteredAstrologers.length / entriesPerPage);
+  const startIndex = (currentPage - 1) * entriesPerPage;
+  const endIndex = startIndex + entriesPerPage;
+  const paginatedAstrologers = filteredAstrologers.slice(startIndex, endIndex);
+
+  // Stats
+  const stats = {
+    total: astrologers.length,
+    active: astrologers.filter(a => a.isApproved && !a.isSuspended).length,
+    pending: astrologers.filter(a => !a.isApproved && !a.isSuspended).length,
+    inactive: astrologers.filter(a => a.isSuspended).length,
+  };
+
+  // Selection handlers
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedIds(new Set(paginatedAstrologers.map(a => a._id)));
+    } else {
+      setSelectedIds(new Set());
+    }
+  };
+
+  const handleSelectOne = (id: string, checked: boolean) => {
+    const newSelected = new Set(selectedIds);
+    if (checked) {
+      newSelected.add(id);
+    } else {
+      newSelected.delete(id);
+    }
+    setSelectedIds(newSelected);
+  };
+
+  const isAllSelected = paginatedAstrologers.length > 0 && paginatedAstrologers.every(a => selectedIds.has(a._id));
+  const isSomeSelected = paginatedAstrologers.some(a => selectedIds.has(a._id)) && !isAllSelected;
+
+  const getStatusVariant = (astrologer: Astrologer): 'online' | 'offline' | 'busy' | 'inactive' => {
+    if (astrologer.isSuspended) return 'inactive';
+    if (astrologer.isOnline) return 'online';
+    return 'offline';
+  };
+
+  const getStatusLabel = (astrologer: Astrologer): string => {
+    if (astrologer.isSuspended) return 'Inactive';
+    if (astrologer.isOnline) return 'Online';
+    if (astrologer.lastSeen) {
+      return `Last seen ${formatRelativeTime(astrologer.lastSeen)}`;
+    }
+    return 'Offline';
+  };
+
+  const getApprovalBadge = (astrologer: Astrologer) => {
+    if (!astrologer.isApproved) {
+      return <PillBadge variant="pending" label="Pending Approval" showDot={false} />;
+    }
+    return null;
+  };
+
+  // Pagination helper
+  const getPaginationNumbers = () => {
+    const pages: (number | string)[] = [];
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      pages.push(1);
+      if (currentPage > 3) pages.push('...');
+      for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+        pages.push(i);
+      }
+      if (currentPage < totalPages - 2) pages.push('...');
+      pages.push(totalPages);
+    }
+    return pages;
   };
 
   return (
     <MainLayout>
-      <PageHeader
-        title="Astrologers Management"
-        subtitle="Manage all astrologers on the platform"
-      />
-
-      <Card>
-        {/* Filters */}
-        <div className="flex flex-col md:flex-row gap-4 mb-6">
-          {/* Search */}
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+      {/* Header */}
+      <div className="mb-8">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Astrologers</h1>
+            <p className="text-gray-500 mt-1">Manage all astrologers on the platform</p>
+          </div>
+          
+          {/* Search Bar */}
+          <div className="relative w-full md:w-80">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
               type="text"
-              placeholder="Search astrologers..."
+              placeholder="Search name, email, or etc..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="input pl-10"
+              className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
             />
           </div>
+        </div>
 
-          {/* Status Filter */}
-          <div className="flex items-center gap-2">
-            <Filter className="w-5 h-5 text-gray-400" />
-            <select
-              value={filter}
-              onChange={(e) => setFilter(e.target.value as any)}
-              className="input w-48"
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatCard
+            title="Total"
+            value={stats.total}
+            icon={Users}
+            iconColor="text-blue-600"
+            iconBgColor="bg-blue-100"
+          />
+          <StatCard
+            title="Active"
+            value={stats.active}
+            icon={UserCheck}
+            iconColor="text-green-600"
+            iconBgColor="bg-green-100"
+          />
+          <StatCard
+            title="Pending Approvals"
+            value={stats.pending}
+            icon={Clock}
+            iconColor="text-yellow-600"
+            iconBgColor="bg-yellow-100"
+          />
+          <StatCard
+            title="Inactive"
+            value={stats.inactive}
+            icon={XCircle}
+            iconColor="text-red-600"
+            iconBgColor="bg-red-100"
+          />
+        </div>
+      </div>
+
+      {/* Filter Tabs */}
+      <div className="mb-6 border-b border-gray-200">
+        <div className="flex gap-8">
+          {[
+            { key: 'all', label: 'All', count: stats.total },
+            { key: 'active', label: 'Active', count: stats.active },
+            { key: 'pending', label: 'Pending', count: stats.pending },
+            { key: 'inactive', label: 'Inactive', count: stats.inactive },
+          ].map(tab => (
+            <button
+              key={tab.key}
+              onClick={() => setFilter(tab.key as FilterTab)}
+              className={`pb-4 px-2 border-b-2 transition-colors ${
+                filter === tab.key
+                  ? 'border-blue-500 text-blue-600 font-semibold'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+              }`}
             >
-              <option value="all">All Status</option>
-              <option value="pending">Pending</option>
-              <option value="approved">Approved</option>
-              <option value="suspended">Suspended</option>
-            </select>
-          </div>
+              {tab.label} <span className="text-sm">({tab.count})</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Table Card */}
+      <Card className="overflow-hidden">
+        {/* Table Controls */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+          <ShowEntriesDropdown value={entriesPerPage} onChange={setEntriesPerPage} />
+          
+          {selectedIds.size > 0 && (
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-gray-600">{selectedIds.size} selected</span>
+              <button className="btn btn-sm btn-primary">Approve</button>
+              <button className="btn btn-sm btn-danger">Deactivate</button>
+              <button 
+                onClick={() => setSelectedIds(new Set())}
+                className="btn btn-sm"
+              >
+                Deselect
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Table */}
@@ -107,105 +243,303 @@ export const AstrologersList = () => {
           <div className="py-12">
             <Loader size="lg" text="Loading astrologers..." />
           </div>
-        ) : astrologers.length === 0 ? (
+        ) : paginatedAstrologers.length === 0 ? (
           <EmptyState
             icon={UserX}
             title="No astrologers found"
             description="No astrologers match your current filters"
           />
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50 border-y border-gray-200">
-                <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Astrologer</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Contact</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Specialization</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Rating</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Charges</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Joined</th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {astrologers.map((astrologer) => (
-                  <tr key={astrologer._id} className="hover:bg-gray-50">
-                    <td className="px-4 py-4">
-                      <Link 
-                        to={`/astrologers/${astrologer._id}`}
-                        className="flex items-center gap-3 hover:opacity-80 transition-opacity"
-                      >
-                        <div className="relative">
-                          <Avatar src={astrologer.profilePicture} name={astrologer.name} />
-                          {astrologer.isOnline && (
-                            <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-green-500 border-2 border-white rounded-full" />
-                          )}
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <p className="font-medium text-gray-900">{astrologer.name}</p>
-                            {astrologer.isOnline && (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded">
-                                <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />
-                                Online
-                              </span>
-                            )}
+          <>
+            {/* Desktop Table */}
+            <div className="hidden lg:block overflow-x-auto">
+              <table className="w-full">
+                <thead className="border-b border-gray-200">
+                  <tr>
+                    <th className="px-4 py-3 text-left w-12">
+                      <input
+                        type="checkbox"
+                        checked={isAllSelected}
+                        ref={input => {
+                          if (input) input.indeterminate = isSomeSelected;
+                        }}
+                        onChange={(e) => handleSelectAll(e.target.checked)}
+                        className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Name</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Contact</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Specialization</th>
+                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginatedAstrologers.map((astrologer, index) => (
+                    <tr 
+                      key={astrologer._id} 
+                      className="border-b border-gray-100 hover:bg-gray-50 transition-colors group"
+                    >
+                      <td className="px-4 py-4">
+                        <input
+                          type="checkbox"
+                          checked={selectedIds.has(astrologer._id)}
+                          onChange={(e) => handleSelectOne(astrologer._id, e.target.checked)}
+                          className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                      </td>
+                      <td className="px-4 py-4">
+                        <Link 
+                          to={`/astrologers/${astrologer._id}`}
+                          className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+                        >
+                          <RoundAvatar 
+                            src={astrologer.profilePicture} 
+                            name={astrologer.name}
+                            isOnline={astrologer.isOnline}
+                            size="md"
+                          />
+                          <div>
+                            <p className="font-semibold text-gray-900 text-base">{astrologer.name}</p>
+                            <p className="text-sm text-gray-500">{astrologer.name.split(' ')[0]}</p>
                           </div>
+                        </Link>
+                      </td>
+                      <td className="px-4 py-4">
+                        <p className="text-sm text-gray-900">{astrologer.email}</p>
+                        <p className="text-sm text-gray-500">{astrologer.phone}</p>
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="flex flex-col gap-1.5">
+                          <PillBadge variant={getStatusVariant(astrologer)} label={getStatusLabel(astrologer)} />
+                          {getApprovalBadge(astrologer)}
+                        </div>
+                      </td>
+                      <td className="px-4 py-4">
+                        <div>
+                          <p className="font-medium text-gray-900 text-sm">
+                            {(astrologer.specialization || []).slice(0, 2).join(', ')}
+                          </p>
                           <p className="text-sm text-gray-500">{astrologer.experience} years exp</p>
                         </div>
-                      </Link>
-                    </td>
-                    <td className="px-4 py-4">
-                      <p className="text-sm text-gray-900">{astrologer.email}</p>
-                      <p className="text-sm text-gray-500">{astrologer.phone}</p>
-                    </td>
-                    <td className="px-4 py-4">
-                      <div className="flex flex-wrap gap-1">
-                        {(astrologer.specialization || []).slice(0, 2).map((spec, i) => (
-                          <span key={i} className="badge bg-gray-100 text-gray-700">
-                            {spec}
-                          </span>
-                        ))}
-                        {(astrologer.specialization || []).length > 2 && (
-                          <span className="badge bg-gray-100 text-gray-700">
-                            +{(astrologer.specialization || []).length - 2}
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-4 py-4">
-                      <div>
-                        <p className="font-medium text-gray-900">{(astrologer.rating || 0).toFixed(1)} ⭐</p>
-                        <p className="text-sm text-gray-500">{astrologer.totalReviews || 0} reviews</p>
-                      </div>
-                    </td>
-                    <td className="px-4 py-4">
-                      <p className="text-sm text-gray-900">{formatCurrency(astrologer.consultationCharge || 0)}/min</p>
-                    </td>
-                    <td className="px-4 py-4">
-                      <StatusBadge status={getStatus(astrologer)} />
-                    </td>
-                    <td className="px-4 py-4">
-                      <p className="text-sm text-gray-500">{formatRelativeTime(astrologer.createdAt)}</p>
-                    </td>
-                    <td className="px-4 py-4 text-right">
-                      <Link
-                        to={`/astrologers/${astrologer._id}`}
-                        className="inline-flex items-center gap-1 text-sm text-primary-600 hover:text-primary-700 font-medium"
-                      >
-                        <Eye className="w-4 h-4" />
-                        View
-                      </Link>
-                    </td>
+                      </td>
+                      <td className="px-4 py-4 text-right">
+                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Link
+                            to={`/astrologers/${astrologer._id}`}
+                            className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            title="View Profile"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </Link>
+                          <button
+                            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                            title="Edit"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                          <button
+                            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            title="Delete"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Tablet View */}
+            <div className="hidden sm:block lg:hidden">
+              <table className="w-full">
+                <thead className="border-b border-gray-200">
+                  <tr>
+                    <th className="px-4 py-3 text-left w-12">
+                      <input
+                        type="checkbox"
+                        checked={isAllSelected}
+                        ref={input => {
+                          if (input) input.indeterminate = isSomeSelected;
+                        }}
+                        onChange={(e) => handleSelectAll(e.target.checked)}
+                        className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Name & Contact</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Status</th>
+                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">Action</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {paginatedAstrologers.map((astrologer) => (
+                    <tr 
+                      key={astrologer._id} 
+                      className="border-b border-gray-100 hover:bg-gray-50 transition-colors group"
+                    >
+                      <td className="px-4 py-4">
+                        <input
+                          type="checkbox"
+                          checked={selectedIds.has(astrologer._id)}
+                          onChange={(e) => handleSelectOne(astrologer._id, e.target.checked)}
+                          className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                      </td>
+                      <td className="px-4 py-4">
+                        <Link 
+                          to={`/astrologers/${astrologer._id}`}
+                          className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+                        >
+                          <RoundAvatar 
+                            src={astrologer.profilePicture} 
+                            name={astrologer.name}
+                            isOnline={astrologer.isOnline}
+                            size="sm"
+                          />
+                          <div>
+                            <p className="font-semibold text-gray-900">{astrologer.name}</p>
+                            <p className="text-sm text-gray-500">{astrologer.phone}</p>
+                            <p className="text-xs text-gray-400">
+                              {(astrologer.specialization || []).slice(0, 1).join(', ')} • {astrologer.experience} years
+                            </p>
+                          </div>
+                        </Link>
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="flex flex-col gap-1.5">
+                          <PillBadge variant={getStatusVariant(astrologer)} label={getStatusLabel(astrologer)} />
+                          {getApprovalBadge(astrologer)}
+                        </div>
+                      </td>
+                      <td className="px-4 py-4 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <Link
+                            to={`/astrologers/${astrologer._id}`}
+                            className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </Link>
+                          <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Cards */}
+            <div className="block sm:hidden space-y-4">
+              {paginatedAstrologers.map((astrologer) => (
+                <div 
+                  key={astrologer._id}
+                  className="border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow"
+                >
+                  <div className="flex items-start gap-3">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(astrologer._id)}
+                      onChange={(e) => handleSelectOne(astrologer._id, e.target.checked)}
+                      className="mt-1 w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    
+                    <Link 
+                      to={`/astrologers/${astrologer._id}`}
+                      className="flex-1"
+                    >
+                      <div className="flex items-start gap-3">
+                        <RoundAvatar 
+                          src={astrologer.profilePicture} 
+                          name={astrologer.name}
+                          isOnline={astrologer.isOnline}
+                          size="md"
+                        />
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-gray-900">{astrologer.name}</h3>
+                          <p className="text-sm text-gray-500">{astrologer.phone}</p>
+                          <div className="flex items-center gap-2 mt-2 flex-wrap">
+                            <PillBadge variant={getStatusVariant(astrologer)} label={getStatusLabel(astrologer)} />
+                            {getApprovalBadge(astrologer)}
+                          </div>
+                          <p className="text-xs text-gray-500 mt-2">
+                            {(astrologer.specialization || []).slice(0, 2).join(', ')} • {astrologer.experience} years
+                          </p>
+                        </div>
+                      </div>
+                    </Link>
+                  </div>
+                  
+                  <div className="flex items-center gap-2 mt-4 pt-4 border-t border-gray-100">
+                    <Link
+                      to={`/astrologers/${astrologer._id}`}
+                      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                    >
+                      <Eye className="w-4 h-4" />
+                      View
+                    </Link>
+                    <button className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                      <Edit2 className="w-4 h-4" />
+                      Edit
+                    </button>
+                    <button className="px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* Pagination */}
+        {!isLoading && paginatedAstrologers.length > 0 && (
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-6 pt-6 border-t border-gray-200">
+            <p className="text-sm text-gray-600">
+              Showing {startIndex + 1} to {Math.min(endIndex, filteredAstrologers.length)} of {filteredAstrologers.length} entries
+            </p>
+            
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                &lt;
+              </button>
+              
+              {getPaginationNumbers().map((page, index) => (
+                page === '...' ? (
+                  <span key={`ellipsis-${index}`} className="px-3 py-1.5 text-gray-500">...</span>
+                ) : (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page as number)}
+                    className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
+                      currentPage === page
+                        ? 'bg-gray-900 text-white'
+                        : 'text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                )
+              ))}
+              
+              <button
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                &gt;
+              </button>
+            </div>
           </div>
         )}
       </Card>
     </MainLayout>
   );
 };
-
