@@ -132,7 +132,10 @@ export const AstrologersList = () => {
                 {astrologers.map((astrologer) => (
                   <tr key={astrologer._id} className="hover:bg-gray-50">
                     <td className="px-4 py-4">
-                      <div className="flex items-center gap-3">
+                      <Link 
+                        to={`/astrologers/${astrologer._id}`}
+                        className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+                      >
                         <div className="relative">
                           <Avatar src={astrologer.profilePicture} name={astrologer.name} />
                           {astrologer.isOnline && (
@@ -151,7 +154,7 @@ export const AstrologersList = () => {
                           </div>
                           <p className="text-sm text-gray-500">{astrologer.experience} years exp</p>
                         </div>
-                      </div>
+                      </Link>
                     </td>
                     <td className="px-4 py-4">
                       <p className="text-sm text-gray-900">{astrologer.email}</p>
