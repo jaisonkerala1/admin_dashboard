@@ -4,8 +4,8 @@ import { Mail, Phone, Star, Calendar, DollarSign, Clock, CheckCircle, Ban, Packa
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Card, Loader, Avatar, StatusBadge, Modal } from '@/components/common';
-import { astrologersApi, servicesApi, reviewsApi, discussionsApi } from '@/api';
-import { Astrologer, Service, Review, Discussion } from '@/types';
+import { astrologersApi, servicesApi, reviewsApi, discussionsApi, consultationsApi } from '@/api';
+import { Astrologer, Service, Review, Discussion, Consultation } from '@/types';
 import { formatCurrency, formatNumber, formatDateTime } from '@/utils/formatters';
 import { useToastContext } from '@/contexts/ToastContext';
 
@@ -16,10 +16,12 @@ export const AstrologerDetail = () => {
   const [services, setServices] = useState<Service[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [discussions, setDiscussions] = useState<Discussion[]>([]);
+  const [consultations, setConsultations] = useState<Consultation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [servicesLoading, setServicesLoading] = useState(false);
   const [reviewsLoading, setReviewsLoading] = useState(false);
   const [discussionsLoading, setDiscussionsLoading] = useState(false);
+  const [consultationsLoading, setConsultationsLoading] = useState(false);
   const [isApproving, setIsApproving] = useState(false);
   const [isSuspending, setIsSuspending] = useState(false);
   const [showSuspendModal, setShowSuspendModal] = useState(false);
@@ -30,6 +32,7 @@ export const AstrologerDetail = () => {
       loadAstrologer();
       loadServices();
       loadReviews();
+      loadConsultations();
     }
   }, [id]);
 
@@ -130,6 +133,26 @@ export const AstrologerDetail = () => {
       console.error('Failed to load discussions:', err);
     } finally {
       setDiscussionsLoading(false);
+    }
+  };
+
+  const loadConsultations = async () => {
+    if (!id) return;
+    try {
+      setConsultationsLoading(true);
+      const params: any = {
+        page: 1,
+        limit: 10,
+        sortBy: 'createdAt',
+        sortOrder: 'desc',
+        astrologerId: id
+      };
+      const response = await consultationsApi.getAll(params);
+      setConsultations(response.data || []);
+    } catch (err) {
+      console.error('Failed to load consultations:', err);
+    } finally {
+      setConsultationsLoading(false);
     }
   };
 
@@ -441,6 +464,88 @@ export const AstrologerDetail = () => {
               <div className="text-center py-8">
                 <Package className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                 <p className="text-gray-500">No services offered yet</p>
+              </div>
+            )}
+          </Card>
+
+          {/* Consultations */}
+          <Card 
+            title={
+              <div className="flex items-center gap-2">
+                <Calendar className="w-5 h-5" />
+                <span>Recent Consultations</span>
+                <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">
+                  {consultations.length}
+                </span>
+              </div>
+            }
+          >
+            {consultationsLoading ? (
+              <div className="flex justify-center py-8">
+                <Loader size="sm" text="Loading consultations..." />
+              </div>
+            ) : consultations.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="border-b border-gray-200">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Client</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Date</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Duration</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Amount</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {consultations.map((consultation) => (
+                      <tr key={consultation._id} className="hover:bg-gray-50">
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-2">
+                            <Avatar
+                              src={consultation.userId?.profilePicture}
+                              name={consultation.userId?.name || 'Unknown'}
+                              size="sm"
+                            />
+                            <span className="text-sm font-medium text-gray-900">
+                              {consultation.userId?.name || 'Unknown User'}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="text-sm">
+                            <div className="text-gray-900">
+                              {new Date(consultation.scheduledAt || consultation.createdAt).toLocaleDateString()}
+                            </div>
+                            <div className="text-gray-500 text-xs">
+                              {new Date(consultation.scheduledAt || consultation.createdAt).toLocaleTimeString([], {
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              })}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className="text-sm text-gray-900">
+                            {consultation.duration || 'N/A'} min
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className="text-sm font-semibold text-gray-900">
+                            {formatCurrency(consultation.amount || 0)}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <StatusBadge status={consultation.status} />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                <p className="text-gray-500">No consultations yet</p>
               </div>
             )}
           </Card>
