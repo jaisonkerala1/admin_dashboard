@@ -12,4 +12,5 @@ export { Reviews } from './Reviews';
 export { LiveStreams } from './LiveStreams';
 export { Discussions } from './Discussions';
 export { Analytics } from './Analytics';
+export { Communication } from './Communication';
 

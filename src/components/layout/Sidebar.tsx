@@ -9,6 +9,7 @@ import {
   Star,
   Radio,
   MessageSquare,
+  MessageCircle,
   BarChart3,
   LogOut,
 } from 'lucide-react';
@@ -26,6 +27,7 @@ const navigation = [
   { name: 'Reviews', href: ROUTES.REVIEWS, icon: Star },
   { name: 'Live Streams', href: ROUTES.LIVE_STREAMS, icon: Radio },
   { name: 'Discussions', href: ROUTES.DISCUSSIONS, icon: MessageSquare },
+  { name: 'Communication', href: ROUTES.COMMUNICATION, icon: MessageCircle },
   { name: 'Analytics', href: ROUTES.ANALYTICS, icon: BarChart3 },
 ];
 

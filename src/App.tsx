@@ -15,6 +15,7 @@ import {
   LiveStreams,
   Discussions,
   Analytics,
+  Communication,
 } from './pages';
 import { ROUTES } from './utils/constants';
 import { ToastProvider } from './contexts/ToastContext';
@@ -41,6 +42,7 @@ function App() {
           <Route path={ROUTES.REVIEWS} element={<Reviews />} />
           <Route path={ROUTES.LIVE_STREAMS} element={<LiveStreams />} />
           <Route path={ROUTES.DISCUSSIONS} element={<Discussions />} />
+          <Route path={ROUTES.COMMUNICATION} element={<Communication />} />
           <Route path={ROUTES.ANALYTICS} element={<Analytics />} />
 
           {/* Catch-all redirect */}

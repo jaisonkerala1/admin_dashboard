@@ -28,6 +28,7 @@ export const ROUTES = {
   LIVE_STREAMS: '/live-streams',
   DISCUSSIONS: '/discussions',
   ANALYTICS: '/analytics',
+  COMMUNICATION: '/communication',
 } as const;
 
 export const ASTROLOGER_STATUS = {
