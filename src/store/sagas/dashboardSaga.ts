@@ -193,8 +193,15 @@ function* fetchDashboardSaga(action: PayloadAction<{ period: DashboardPeriod }>)
       AnyRecord[],
     ];
 
+    const getConsultationDate = (c: any) => {
+      // Consultations should be bucketed by when they are scheduled to happen
+      // (not when they were created). Fallback to createdAt if scheduledTime missing.
+      const raw = c?.scheduledTime || c?.createdAt;
+      return new Date(raw);
+    };
+
     const consultationsInPeriod = consultations.filter((c: any) => {
-      const dt = new Date(c.createdAt);
+      const dt = getConsultationDate(c);
       return !Number.isNaN(dt.getTime()) && isWithin(dt, start, end);
     });
     const completedConsultations = consultationsInPeriod.filter((c: any) => c.status === 'completed');
@@ -236,7 +243,7 @@ function* fetchDashboardSaga(action: PayloadAction<{ period: DashboardPeriod }>)
     };
 
     for (const c of consultationsInPeriod as any[]) {
-      const dt = new Date(c.createdAt);
+      const dt = getConsultationDate(c);
       const k = bucketFor(dt);
       countsConsult[k] = (countsConsult[k] || 0) + 1;
     }
