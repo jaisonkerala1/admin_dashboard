@@ -1,4 +1,5 @@
 import { call, put, takeLatest } from 'redux-saga/effects';
+import type { SagaIterator } from 'redux-saga';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { astrologersApi, consultationsApi, liveStreamsApi, poojaRequestsApi, usersApi, dashboardApi } from '@/api';
 import { Consultation, LiveStream, User } from '@/types';
@@ -126,7 +127,12 @@ function isWithin(d: Date, start: Date, end: Date) {
   return d >= start && d <= end;
 }
 
-function* fetchAllPages(getAllFn: (params: AnyRecord) => Promise<any>, params: AnyRecord, start: Date, createdAtField = 'createdAt') {
+function* fetchAllPages(
+  getAllFn: (params: AnyRecord) => Promise<any>,
+  params: AnyRecord,
+  start: Date,
+  createdAtField = 'createdAt'
+): SagaIterator<AnyRecord[]> {
   const items: AnyRecord[] = [];
   const limit = params.limit || 200;
   let page = 1;
@@ -143,7 +149,7 @@ function* fetchAllPages(getAllFn: (params: AnyRecord) => Promise<any>, params: A
   return items;
 }
 
-function* fetchDashboardSaga(action: PayloadAction<{ period: DashboardPeriod }>) {
+function* fetchDashboardSaga(action: PayloadAction<{ period: DashboardPeriod }>): SagaIterator<void> {
   try {
     const period = action.payload.period;
     const { start, end } = getPeriodRange(period);
@@ -226,7 +232,7 @@ function* fetchDashboardSaga(action: PayloadAction<{ period: DashboardPeriod }>)
   }
 }
 
-function* fetchLiveStreamsSaga() {
+function* fetchLiveStreamsSaga(): SagaIterator<void> {
   try {
     const resp: any = yield call(liveStreamsApi.getAll as any, {
       page: 1,
@@ -242,7 +248,7 @@ function* fetchLiveStreamsSaga() {
   }
 }
 
-function* fetchOnlineAstrologersSaga() {
+function* fetchOnlineAstrologersSaga(): SagaIterator<void> {
   try {
     const resp: any = yield call(astrologersApi.getOnlineList as any);
     yield put(fetchOnlineAstrologersSuccess(resp?.data || []));
@@ -251,14 +257,14 @@ function* fetchOnlineAstrologersSaga() {
   }
 }
 
-export default function* dashboardSaga() {
+export default function* dashboardSaga(): SagaIterator<void> {
   yield takeLatest(fetchDashboardRequest.type, fetchDashboardSaga);
   yield takeLatest(fetchGlobalStatsRequest.type, fetchGlobalStatsSaga);
   yield takeLatest(fetchLiveStreamsRequest.type, fetchLiveStreamsSaga);
   yield takeLatest(fetchOnlineAstrologersRequest.type, fetchOnlineAstrologersSaga);
 }
 
-function* fetchGlobalStatsSaga() {
+function* fetchGlobalStatsSaga(): SagaIterator<void> {
   try {
     const resp: any = yield call(dashboardApi.getStats as any);
     if (resp?.data) {
