@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { 
   Search, 
   Filter, 
@@ -11,10 +12,6 @@ import {
   XCircle,
   RefreshCw,
   Eye,
-  X,
-  Phone,
-  AlertCircle,
-  History,
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
@@ -25,6 +22,7 @@ import { PoojaRequest as ServiceRequest } from '@/types';
 import { formatCurrency, formatDateTime, formatDate } from '@/utils/formatters';
 import { RootState } from '@/store';
 import { fetchRequestsRequest } from '@/store/slices/poojaRequestsSlice';
+import { ROUTES } from '@/utils/constants';
 
 // Status colors - minimal flat design
 const statusConfig = {
@@ -41,7 +39,6 @@ export const ServiceRequests = () => {
   
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<'all' | 'pending' | 'confirmed' | 'inProgress' | 'completed' | 'cancelled'>('all');
-  const [selectedRequest, setSelectedRequest] = useState<ServiceRequest | null>(null);
 
   useEffect(() => {
     const debounce = setTimeout(() => {
@@ -276,13 +273,13 @@ export const ServiceRequests = () => {
                         {getStatusBadge(request.status)}
                       </td>
                       <td className="px-4 py-4">
-                        <button
-                          onClick={() => setSelectedRequest(request)}
-                          className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors"
-                          title="View Details"
+                        <Link
+                          to={`${ROUTES.SERVICE_REQUESTS}/${request._id}`}
+                          className="inline-flex items-center gap-2 px-3 py-1.5 text-sm text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors font-medium"
                         >
                           <Eye className="w-4 h-4" />
-                        </button>
+                          View
+                        </Link>
                       </td>
                     </tr>
                   ))}
@@ -322,169 +319,6 @@ export const ServiceRequests = () => {
           </>
         )}
       </Card>
-
-      {/* Detail Modal */}
-      {selectedRequest && (
-        <RequestDetailModal
-          request={selectedRequest}
-          onClose={() => setSelectedRequest(null)}
-        />
-      )}
     </MainLayout>
   );
 };
-
-// Request Detail Modal - Minimal Flat Design
-const RequestDetailModal = ({ 
-  request, 
-  onClose 
-}: { 
-  request: ServiceRequest; 
-  onClose: () => void;
-}) => {
-  const config = statusConfig[request.status as keyof typeof statusConfig] || statusConfig.pending;
-  const StatusIcon = config.icon;
-
-  return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center">
-        <div className="fixed inset-0 bg-black/40 transition-opacity" onClick={onClose} />
-        
-        <div className="relative bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-          {/* Header */}
-          <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-lg">
-            <h2 className="text-lg font-semibold text-gray-900">Request Details</h2>
-            <button
-              onClick={onClose}
-              className="p-2 hover:bg-gray-100 rounded-md transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-
-          <div className="p-6 space-y-4">
-            {/* Status */}
-            <div className="flex items-center justify-between">
-              <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium border ${config.color}`}>
-                <StatusIcon className="w-4 h-4" />
-                {config.label}
-              </span>
-              <span className="text-sm text-gray-500">ID: {request._id.slice(-8)}</span>
-            </div>
-
-            {/* Customer & Astrologer */}
-            <div className="grid grid-cols-2 gap-4">
-              <Card className="!p-4">
-                <p className="text-xs font-medium text-gray-500 mb-2">Customer</p>
-                <div className="flex items-center gap-2 mb-2">
-                  <Avatar name={request.customerName} size="md" />
-                  <div>
-                    <p className="font-medium text-gray-900">{request.customerName}</p>
-                    <p className="text-sm text-gray-500">{request.customerPhone}</p>
-                  </div>
-                </div>
-              </Card>
-              
-              <Card className="!p-4">
-                <p className="text-xs font-medium text-gray-500 mb-2">Astrologer</p>
-                <div className="flex items-center gap-2 mb-2">
-                  <Avatar 
-                    src={request.astrologerId.profilePicture}
-                    name={request.astrologerId.name} 
-                    size="md" 
-                  />
-                  <div>
-                    <p className="font-medium text-gray-900">{request.astrologerId.name}</p>
-                    <p className="text-sm text-gray-500">{request.astrologerId.email}</p>
-                  </div>
-                </div>
-              </Card>
-            </div>
-
-            {/* Service Info */}
-            <Card className="!p-4 border-l-4 border-l-indigo-500">
-              <p className="text-xs font-medium text-gray-500 mb-2">Service Details</p>
-              <p className="font-semibold text-gray-900 mb-1">{request.serviceName}</p>
-              <p className="text-sm text-gray-600">{request.serviceCategory}</p>
-            </Card>
-
-            {/* Scheduling & Payment */}
-            <div className="grid grid-cols-2 gap-4">
-              <Card className="!p-4">
-                <div className="flex items-center gap-2 text-gray-500 mb-2">
-                  <Calendar className="w-4 h-4" />
-                  <span className="text-xs font-medium">Scheduled For</span>
-                </div>
-                <p className="font-medium text-gray-900">{formatDate(request.requestedDate)}</p>
-                <p className="text-sm text-gray-600">{request.requestedTime}</p>
-              </Card>
-              
-              <Card className="!p-4">
-                <div className="flex items-center gap-2 text-gray-500 mb-2">
-                  <DollarSign className="w-4 h-4" />
-                  <span className="text-xs font-medium">Payment</span>
-                </div>
-                <p className="font-bold text-lg text-gray-900">
-                  {formatCurrency(request.price, request.currency)}
-                </p>
-                <p className="text-sm text-gray-600 capitalize">{request.paymentStatus}</p>
-              </Card>
-            </div>
-
-            {/* Special Instructions */}
-            {request.specialInstructions && (
-              <Card className="!p-4 bg-amber-50 border-amber-200">
-                <p className="text-xs font-medium text-amber-800 mb-2">Special Instructions</p>
-                <p className="text-sm text-gray-700">{request.specialInstructions}</p>
-              </Card>
-            )}
-
-            {/* Notes */}
-            {request.notes && (
-              <Card className="!p-4 bg-blue-50 border-blue-200">
-                <p className="text-xs font-medium text-blue-800 mb-2">Admin Notes</p>
-                <p className="text-sm text-gray-700">{request.notes}</p>
-              </Card>
-            )}
-
-            {/* Status History */}
-            <Card className="!p-4">
-              <p className="text-xs font-medium text-gray-500 mb-3 flex items-center gap-2">
-                <History className="w-4 h-4" />
-                Status Timeline
-              </p>
-              <div className="space-y-3">
-                {request.statusHistory.map((history, index) => (
-                  <div key={history._id} className="flex items-start gap-3 relative">
-                    {index < request.statusHistory.length - 1 && (
-                      <div className="absolute left-2 top-6 w-0.5 h-full bg-gray-200" />
-                    )}
-                    <div className="w-4 h-4 rounded-full bg-indigo-500 flex-shrink-0 mt-0.5 z-10" />
-                    <div>
-                      <p className="font-medium text-sm capitalize text-gray-900">{history.status}</p>
-                      <p className="text-xs text-gray-500">{formatDateTime(history.timestamp)}</p>
-                      {history.notes && (
-                        <p className="text-xs text-gray-600 mt-1">{history.notes}</p>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </Card>
-
-            {/* Meta */}
-            <div className="grid grid-cols-2 gap-4 text-xs text-gray-500 pt-4 border-t border-gray-200">
-              <div>
-                <span className="font-medium">Source:</span> {request.source}
-              </div>
-              <div>
-                <span className="font-medium">Created:</span> {formatDateTime(request.createdAt)}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
