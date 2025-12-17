@@ -1,4 +1,5 @@
 import React from 'react';
+import { getImageUrl } from '@/utils/helpers';
 
 interface RoundAvatarProps {
   src?: string;
@@ -53,14 +54,31 @@ export const RoundAvatar: React.FC<RoundAvatarProps> = ({
     return colors[Math.abs(hash) % colors.length];
   };
 
+  const imageUrl = getImageUrl(src);
+
   return (
     <div className={`relative inline-block ${className}`}>
-      {src ? (
-        <img 
-          src={src} 
-          alt={name}
-          className={`${sizeClasses[size]} rounded-full object-cover ring-2 ring-white`}
-        />
+      {imageUrl ? (
+        <>
+          <img 
+            src={imageUrl} 
+            alt={name}
+            className={`${sizeClasses[size]} rounded-full object-cover ring-2 ring-white`}
+            onError={(e) => {
+              // Hide broken image and show initials fallback
+              e.currentTarget.style.display = 'none';
+              const fallback = e.currentTarget.nextElementSibling;
+              if (fallback) {
+                (fallback as HTMLElement).style.display = 'flex';
+              }
+            }}
+          />
+          <div 
+            className={`${sizeClasses[size]} ${getColorFromName(name)} rounded-full flex items-center justify-center text-white font-semibold ring-2 ring-white hidden`}
+          >
+            {getInitials(name)}
+          </div>
+        </>
       ) : (
         <div 
           className={`${sizeClasses[size]} ${getColorFromName(name)} rounded-full flex items-center justify-center text-white font-semibold ring-2 ring-white`}
