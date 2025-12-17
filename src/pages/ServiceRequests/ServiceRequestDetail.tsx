@@ -4,8 +4,6 @@ import {
   ArrowLeft,
   ClipboardList,
   Calendar,
-  Clock,
-  User,
   Package,
   CheckCircle,
   XCircle,
@@ -16,7 +14,7 @@ import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Card, Loader, Avatar, Modal } from '@/components/common';
 import { poojaRequestsApi } from '@/api';
-import { ServiceRequest } from '@/types';
+import { PoojaRequest } from '@/types';
 import { formatCurrency, formatDateTime } from '@/utils/formatters';
 import { useToastContext } from '@/contexts/ToastContext';
 import { ROUTES, SERVICE_REQUEST_STATUS } from '@/utils/constants';
@@ -25,7 +23,7 @@ export const ServiceRequestDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const toast = useToastContext();
-  const [request, setRequest] = useState<ServiceRequest | null>(null);
+  const [request, setRequest] = useState<PoojaRequest | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
