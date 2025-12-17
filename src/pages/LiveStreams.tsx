@@ -1,4 +1,6 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { 
   Search, 
   Radio,
@@ -8,315 +10,550 @@ import {
   TrendingUp,
   Play,
   StopCircle,
-  ChevronLeft,
-  ChevronRight,
-  RefreshCw,
-  X,
-  Calendar,
-  Clock,
-  Ban,
-  AlertTriangle
+  Ban
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
-import { PageHeader } from '@/components/layout/PageHeader';
-import { Card, Loader, EmptyState, Avatar } from '@/components/common';
-import { LiveStreamViewer } from '@/components/liveStream/LiveStreamViewer';
-import { liveStreamsApi } from '@/api';
-import { LiveStream } from '@/types';
-import { formatDateTime, formatNumber } from '@/utils/formatters';
-
-interface PaginationInfo {
-  page: number;
-  limit: number;
-  total: number;
-  pages: number;
-}
+import { Card, Loader, EmptyState, RoundAvatar, PillBadge, ShowEntriesDropdown, StatCard } from '@/components/common';
+import { formatNumber } from '@/utils/formatters';
+import { RootState } from '@/store';
+import {
+  fetchStreamsRequest,
+  setFilter,
+  setSearch,
+  setEntriesPerPage,
+  setCurrentPage,
+  toggleSelection,
+  selectAll,
+  deselectAll,
+  LiveStreamFilter,
+} from '@/store/slices/liveStreamsSlice';
+import { ROUTES } from '@/utils/constants';
 
 export const LiveStreams = () => {
-  const [streams, setStreams] = useState<LiveStream[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [search, setSearch] = useState('');
-  const [pagination, setPagination] = useState<PaginationInfo>({ page: 1, limit: 20, total: 0, pages: 0 });
-  const [selectedStream, setSelectedStream] = useState<LiveStream | null>(null);
-  const [showEndAllConfirm, setShowEndAllConfirm] = useState(false);
-  const [isEndingAll, setIsEndingAll] = useState(false);
-
-  const loadStreams = useCallback(async (page = 1) => {
-    try {
-      setIsLoading(true);
-      const params: any = { 
-        page, 
-        limit: pagination.limit,
-        sortBy: 'createdAt', 
-        sortOrder: 'desc' 
-      };
-      
-      if (search) params.search = search;
-      
-      const response = await liveStreamsApi.getAll(params);
-      
-      setStreams(response.data || []);
-      if (response.pagination) {
-        setPagination(response.pagination);
-      }
-    } catch (err) {
-      console.error('Failed to load live streams:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [search, pagination.limit]);
+  const dispatch = useDispatch();
+  const { 
+    streams, 
+    isLoading, 
+    filter, 
+    search, 
+    entriesPerPage, 
+    currentPage, 
+    selectedIds, 
+    stats 
+  } = useSelector((state: RootState) => state.liveStreams);
 
   useEffect(() => {
-    const debounce = setTimeout(() => {
-      loadStreams(1);
-    }, 300);
-    return () => clearTimeout(debounce);
-  }, [search]);
+    dispatch(fetchStreamsRequest());
+  }, [dispatch]);
 
-  // Auto-refresh every 30 seconds for live streams
+  // Auto-refresh every 30 seconds
   useEffect(() => {
     const interval = setInterval(() => {
-      loadStreams(pagination.page);
+      dispatch(fetchStreamsRequest());
     }, 30000);
     return () => clearInterval(interval);
-  }, [loadStreams, pagination.page]);
+  }, [dispatch]);
 
-  const handlePageChange = (newPage: number) => {
-    if (newPage >= 1 && newPage <= pagination.pages) {
-      loadStreams(newPage);
+  // Client-side filtering
+  const filteredStreams = streams.filter(s => {
+    // Apply status filter
+    if (filter === 'live' && !s.isLive) return false;
+    if (filter === 'ended' && s.isLive) return false;
+    
+    // Apply search filter
+    if (search) {
+      const searchLower = search.toLowerCase();
+      return (
+        s.title?.toLowerCase().includes(searchLower) ||
+        s.description?.toLowerCase().includes(searchLower) ||
+        s.astrologerId?.name?.toLowerCase().includes(searchLower) ||
+        s.category?.toLowerCase().includes(searchLower)
+      );
+    }
+    
+    return true;
+  });
+
+  // Pagination
+  const totalPages = Math.ceil(filteredStreams.length / entriesPerPage);
+  const startIndex = (currentPage - 1) * entriesPerPage;
+  const endIndex = startIndex + entriesPerPage;
+  const paginatedStreams = filteredStreams.slice(startIndex, endIndex);
+
+  // Selection handlers
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      dispatch(selectAll(paginatedStreams.map(s => s._id)));
+    } else {
+      dispatch(deselectAll());
     }
   };
 
-  const handleEndAllStreams = async () => {
-    try {
-      setIsEndingAll(true);
-      const response = await liveStreamsApi.endAll();
-      setShowEndAllConfirm(false);
-      alert(`Successfully ended ${response.data?.endedCount || 0} live stream(s)`);
-      loadStreams(pagination.page);
-    } catch (err) {
-      console.error('Failed to end all streams:', err);
-      alert('Failed to end all streams. Please try again.');
-    } finally {
-      setIsEndingAll(false);
-    }
+  const handleSelectOne = (id: string) => {
+    dispatch(toggleSelection(id));
   };
 
-  // Calculate stats
-  const stats = {
-    total: pagination.total,
-    live: streams.filter(s => s.isLive).length,
-    ended: streams.filter(s => !s.isLive).length,
-    totalViews: streams.reduce((sum, s) => sum + s.totalViews, 0),
-    totalLikes: streams.reduce((sum, s) => sum + s.likes, 0),
-    peakViewers: Math.max(...streams.map(s => s.peakViewerCount), 0),
+  const isAllSelected = paginatedStreams.length > 0 && paginatedStreams.every(s => selectedIds.has(s._id));
+  const isSomeSelected = paginatedStreams.some(s => selectedIds.has(s._id)) && !isAllSelected;
+
+  // Helper functions
+  const getStatusBadge = (stream: any) => {
+    if (stream.isLive) {
+      return (
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700 border border-red-200">
+          <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+          LIVE
+        </span>
+      );
+    }
+    return <PillBadge variant="inactive" label="Ended" showDot={false} />;
+  };
+
+  const formatDuration = (startedAt?: string, endedAt?: string) => {
+    if (!startedAt) return '-';
+    const start = new Date(startedAt).getTime();
+    const end = endedAt ? new Date(endedAt).getTime() : Date.now();
+    const minutes = Math.floor((end - start) / 60000);
+    if (minutes < 60) return `${minutes}m`;
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hours}h ${mins}m`;
+  };
+
+  // Pagination helper
+  const getPaginationNumbers = () => {
+    const pages: (number | string)[] = [];
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      pages.push(1);
+      if (currentPage > 3) pages.push('...');
+      for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+        pages.push(i);
+      }
+      if (currentPage < totalPages - 2) pages.push('...');
+      pages.push(totalPages);
+    }
+    return pages;
   };
 
   return (
     <MainLayout>
-      <PageHeader
-        title="Live Streams Monitoring"
-        subtitle={`Monitor all live streams • ${pagination.total} total`}
-      />
+      {/* Header */}
+      <div className="mb-8">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Live Streams</h1>
+            <p className="text-gray-500 mt-1">Monitor all live streams and replays</p>
+          </div>
+          
+          {/* Search Bar */}
+          <div className="relative w-full md:w-80">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search streams, astrologers..."
+              value={search}
+              onChange={(e) => dispatch(setSearch(e.target.value))}
+              className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            />
+          </div>
+        </div>
 
-      {/* Stats Cards - Minimal Flat */}
-      <div className="grid grid-cols-2 md:grid-cols-6 gap-3 mb-6">
-        <Card className="!p-4 border-l-4 border-l-blue-500">
-          <div className="flex items-center gap-2">
-            <Radio className="w-5 h-5 text-blue-600" />
-            <div>
-              <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
-              <p className="text-xs text-gray-600">Total Streams</p>
-            </div>
-          </div>
-        </Card>
-        
-        <Card className="!p-4 border-l-4 border-l-red-500">
-          <div className="flex items-center gap-2">
-            <Play className="w-5 h-5 text-red-600" />
-            <div>
-              <p className="text-2xl font-bold text-gray-900">{stats.live}</p>
-              <p className="text-xs text-gray-600">Live Now</p>
-            </div>
-          </div>
-        </Card>
-        
-        <Card className="!p-4 border-l-4 border-l-gray-500">
-          <div className="flex items-center gap-2">
-            <StopCircle className="w-5 h-5 text-gray-600" />
-            <div>
-              <p className="text-2xl font-bold text-gray-900">{stats.ended}</p>
-              <p className="text-xs text-gray-600">Ended</p>
-            </div>
-          </div>
-        </Card>
-        
-        <Card className="!p-4 border-l-4 border-l-purple-500">
-          <div className="flex items-center gap-2">
-            <Eye className="w-5 h-5 text-purple-600" />
-            <div>
-              <p className="text-2xl font-bold text-gray-900">{formatNumber(stats.totalViews)}</p>
-              <p className="text-xs text-gray-600">Total Views</p>
-            </div>
-          </div>
-        </Card>
-        
-        <Card className="!p-4 border-l-4 border-l-pink-500">
-          <div className="flex items-center gap-2">
-            <Heart className="w-5 h-5 text-pink-600" />
-            <div>
-              <p className="text-2xl font-bold text-gray-900">{formatNumber(stats.totalLikes)}</p>
-              <p className="text-xs text-gray-600">Total Likes</p>
-            </div>
-          </div>
-        </Card>
-        
-        <Card className="!p-4 border-l-4 border-l-emerald-500">
-          <div className="flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-emerald-600" />
-            <div>
-              <p className="text-2xl font-bold text-gray-900">{formatNumber(stats.peakViewers)}</p>
-              <p className="text-xs text-gray-600">Peak Viewers</p>
-            </div>
-          </div>
-        </Card>
+        {/* Stats Cards */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+          <StatCard
+            title="Total"
+            value={stats.total}
+            icon={Radio}
+            iconColor="text-blue-600"
+            iconBgColor="bg-blue-100"
+          />
+          <StatCard
+            title="Live Now"
+            value={stats.live}
+            icon={Play}
+            iconColor="text-red-600"
+            iconBgColor="bg-red-100"
+          />
+          <StatCard
+            title="Ended"
+            value={stats.ended}
+            icon={StopCircle}
+            iconColor="text-gray-600"
+            iconBgColor="bg-gray-100"
+          />
+          <StatCard
+            title="Total Views"
+            value={formatNumber(stats.totalViews)}
+            icon={Eye}
+            iconColor="text-purple-600"
+            iconBgColor="bg-purple-100"
+          />
+          <StatCard
+            title="Total Likes"
+            value={formatNumber(stats.totalLikes)}
+            icon={Heart}
+            iconColor="text-pink-600"
+            iconBgColor="bg-pink-100"
+          />
+          <StatCard
+            title="Peak Viewers"
+            value={stats.peakViewers}
+            icon={TrendingUp}
+            iconColor="text-emerald-600"
+            iconBgColor="bg-emerald-100"
+          />
+        </div>
+      </div>
+
+      {/* Filter Tabs */}
+      <div className="mb-6 border-b border-gray-200">
+        <div className="flex gap-8 overflow-x-auto">
+          {[
+            { key: 'all', label: 'All', count: stats.total },
+            { key: 'live', label: 'Live Now', count: stats.live },
+            { key: 'ended', label: 'Ended', count: stats.ended },
+          ].map(({ key, label, count }) => (
+            <button
+              key={key}
+              onClick={() => dispatch(setFilter(key as LiveStreamFilter))}
+              className={`whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                filter === key
+                  ? 'border-blue-600 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              {label}
+              <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${
+                filter === key ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
+              }`}>
+                {count}
+              </span>
+            </button>
+          ))}
+        </div>
       </div>
 
       <Card>
-        {/* Filters */}
-        <div className="flex flex-col md:flex-row gap-3 mb-6">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+        {/* Table Controls */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+          <div className="flex items-center gap-3">
             <input
-              type="text"
-              placeholder="Search by title, astrologer..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              type="checkbox"
+              checked={isAllSelected}
+              ref={input => {
+                if (input) input.indeterminate = isSomeSelected;
+              }}
+              onChange={(e) => handleSelectAll(e.target.checked)}
+              className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
             />
+            <span className="text-sm text-gray-600">
+              {selectedIds.size > 0 ? `${selectedIds.size} selected` : 'Select all'}
+            </span>
+            {selectedIds.size > 0 && (
+              <button className="text-sm text-red-600 hover:text-red-700 font-medium">
+                End Selected
+              </button>
+            )}
           </div>
-          <button
-            onClick={() => loadStreams(pagination.page)}
-            className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 border border-gray-300 rounded-md transition-colors"
-          >
-            <RefreshCw className="w-4 h-4" />
-            Refresh
-          </button>
-          {stats.live > 0 && (
-            <button
-              onClick={() => setShowEndAllConfirm(true)}
-              className="flex items-center gap-2 px-3 py-2 text-sm text-white bg-red-500 hover:bg-red-600 rounded-md transition-colors"
-              title="End all active live streams"
-            >
-              <Ban className="w-4 h-4" />
-              End All Lives ({stats.live})
-            </button>
-          )}
+          <ShowEntriesDropdown
+            value={entriesPerPage}
+            onChange={(value) => dispatch(setEntriesPerPage(value))}
+          />
         </div>
 
-        {/* Grid View */}
+        {/* Loading State */}
         {isLoading ? (
           <div className="py-12">
-            <Loader size="lg" text="Loading streams..." />
+            <Loader size="lg" text="Loading live streams..." />
           </div>
-        ) : streams.length === 0 ? (
+        ) : filteredStreams.length === 0 ? (
           <EmptyState
             icon={Radio}
             title="No live streams found"
-            description="No live streams match your current filters"
+            description="No streams match your current filters"
           />
         ) : (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {streams.map((stream) => (
+            {/* Desktop Table */}
+            <div className="hidden lg:block overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 border-y border-gray-200">
+                  <tr>
+                    <th className="w-12 px-4 py-3">
+                      <input
+                        type="checkbox"
+                        checked={isAllSelected}
+                        ref={input => {
+                          if (input) input.indeterminate = isSomeSelected;
+                        }}
+                        onChange={(e) => handleSelectAll(e.target.checked)}
+                        className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Stream</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Astrologer</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Category</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Duration</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Viewers</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Engagement</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {paginatedStreams.map((stream) => (
+                    <tr key={stream._id} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-4 py-4">
+                        <input
+                          type="checkbox"
+                          checked={selectedIds.has(stream._id)}
+                          onChange={() => handleSelectOne(stream._id)}
+                          className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="max-w-xs">
+                          <p className="font-medium text-gray-900 truncate">{stream.title}</p>
+                          {stream.description && (
+                            <p className="text-xs text-gray-500 truncate mt-1">{stream.description}</p>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-4 py-4">
+                        {stream.astrologerId ? (
+                          <Link 
+                            to={`${ROUTES.ASTROLOGERS}/${stream.astrologerId._id}`}
+                            className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+                          >
+                            <RoundAvatar
+                              src={stream.astrologerId.profilePicture}
+                              name={stream.astrologerId.name}
+                              size="sm"
+                            />
+                            <span className="font-medium text-gray-900 hover:text-blue-600">
+                              {stream.astrologerId.name}
+                            </span>
+                          </Link>
+                        ) : (
+                          <span className="text-gray-400 text-sm">Unknown</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-4">
+                        <span className="text-sm text-gray-900">{stream.category || '-'}</span>
+                      </td>
+                      <td className="px-4 py-4 text-sm text-gray-900">
+                        {formatDuration(stream.startedAt, stream.endedAt)}
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="flex items-center gap-1 text-sm">
+                          <Users className="w-4 h-4 text-gray-400" />
+                          <span className="font-medium text-gray-900">{stream.viewerCount || 0}</span>
+                          <span className="text-gray-500 text-xs">/ {stream.peakViewerCount || 0}</span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="flex items-center gap-3 text-sm">
+                          <div className="flex items-center gap-1">
+                            <Eye className="w-4 h-4 text-purple-500" />
+                            <span className="text-gray-900">{formatNumber(stream.totalViews)}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Heart className="w-4 h-4 text-pink-500" />
+                            <span className="text-gray-900">{formatNumber(stream.likes)}</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-4">{getStatusBadge(stream)}</td>
+                      <td className="px-4 py-4">
+                        <div className="flex items-center gap-2">
+                          {stream.isLive && (
+                            <button
+                              className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                              title="End Stream"
+                            >
+                              <Ban className="w-4 h-4" />
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Tablet View */}
+            <div className="hidden md:block lg:hidden space-y-3">
+              {paginatedStreams.map((stream) => (
                 <div
                   key={stream._id}
-                  onClick={() => setSelectedStream(stream)}
-                  className="cursor-pointer"
+                  className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50/30 transition-all"
                 >
-                  <Card className="!p-0 overflow-hidden hover:shadow-md transition-shadow">
-                    {/* Thumbnail */}
-                    <div className="relative h-40 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                      <Radio className="w-12 h-12 text-gray-400" />
-                      {stream.isLive && (
-                        <div className="absolute top-3 right-3 flex items-center gap-1.5 bg-red-600 text-white px-2.5 py-1 rounded-md text-xs font-medium">
-                          <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
-                          LIVE
-                        </div>
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.has(stream._id)}
+                    onChange={() => handleSelectOne(stream._id)}
+                    className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-3 mb-2">
+                      <p className="font-semibold text-gray-900 truncate">{stream.title}</p>
+                      {stream.astrologerId && (
+                        <Link 
+                          to={`${ROUTES.ASTROLOGERS}/${stream.astrologerId._id}`}
+                          className="flex items-center gap-2 hover:opacity-80"
+                        >
+                          <RoundAvatar
+                            src={stream.astrologerId.profilePicture}
+                            name={stream.astrologerId.name}
+                            size="sm"
+                          />
+                          <span className="text-sm text-gray-600 hover:text-blue-600">
+                            {stream.astrologerId.name}
+                          </span>
+                        </Link>
                       )}
                     </div>
-
-                    {/* Content */}
-                    <div className="p-4">
-                      <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 text-sm">
-                        {stream.title}
-                      </h3>
-                      
-                      <div className="flex items-center gap-2 mb-3">
-                        <Avatar
-                          src={stream.astrologerId.profilePicture}
-                          name={stream.astrologerId.name}
-                          size="sm"
-                        />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900 truncate">
-                            {stream.astrologerId.name}
-                          </p>
-                          <p className="text-xs text-gray-500">{stream.category}</p>
-                        </div>
+                    <div className="flex flex-wrap items-center gap-3 text-sm">
+                      <span className="text-gray-600">{formatDuration(stream.startedAt, stream.endedAt)}</span>
+                      <div className="flex items-center gap-1">
+                        <Eye className="w-3.5 h-3.5 text-purple-500" />
+                        <span>{formatNumber(stream.totalViews)}</span>
                       </div>
-
-                      <div className="flex items-center justify-between text-xs text-gray-600">
-                        <div className="flex items-center gap-3">
-                          <span className="flex items-center gap-1">
-                            <Eye className="w-3 h-3" />
-                            {formatNumber(stream.isLive ? stream.viewerCount : stream.totalViews)}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Heart className="w-3 h-3" />
-                            {formatNumber(stream.likes)}
-                          </span>
-                        </div>
-                        {stream.isLive ? (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-red-50 text-red-700 rounded-md font-medium border border-red-200">
-                            <Users className="w-3 h-3" />
-                            {stream.viewerCount}
-                          </span>
-                        ) : (
-                          <span className="text-gray-500">Ended</span>
-                        )}
+                      <div className="flex items-center gap-1">
+                        <Heart className="w-3.5 h-3.5 text-pink-500" />
+                        <span>{formatNumber(stream.likes)}</span>
                       </div>
+                      {getStatusBadge(stream)}
                     </div>
-                  </Card>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Mobile View */}
+            <div className="md:hidden space-y-4">
+              {paginatedStreams.map((stream) => (
+                <div
+                  key={stream._id}
+                  className="border border-gray-200 rounded-xl p-4 hover:border-blue-300 hover:shadow-sm transition-all"
+                >
+                  <div className="flex items-start gap-3 mb-3">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(stream._id)}
+                      onChange={() => handleSelectOne(stream._id)}
+                      className="w-4 h-4 mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="font-semibold text-gray-900">{stream.title}</p>
+                        {getStatusBadge(stream)}
+                      </div>
+                      
+                      {stream.description && (
+                        <p className="text-sm text-gray-500 mb-3 line-clamp-2">{stream.description}</p>
+                      )}
+                      
+                      {stream.astrologerId && (
+                        <Link 
+                          to={`${ROUTES.ASTROLOGERS}/${stream.astrologerId._id}`}
+                          className="flex items-center gap-2 mb-3 hover:opacity-80"
+                        >
+                          <RoundAvatar
+                            src={stream.astrologerId.profilePicture}
+                            name={stream.astrologerId.name}
+                            size="sm"
+                          />
+                          <div>
+                            <p className="text-xs text-gray-500">Hosted by</p>
+                            <p className="text-sm font-medium text-gray-900 hover:text-blue-600">
+                              {stream.astrologerId.name}
+                            </p>
+                          </div>
+                        </Link>
+                      )}
+                      
+                      <div className="grid grid-cols-3 gap-3 text-sm mb-3">
+                        <div>
+                          <p className="text-gray-500 text-xs mb-1">Duration</p>
+                          <p className="font-medium text-gray-900">
+                            {formatDuration(stream.startedAt, stream.endedAt)}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-gray-500 text-xs mb-1">Views</p>
+                          <div className="flex items-center gap-1">
+                            <Eye className="w-3.5 h-3.5 text-purple-500" />
+                            <span className="font-medium text-gray-900">{formatNumber(stream.totalViews)}</span>
+                          </div>
+                        </div>
+                        <div>
+                          <p className="text-gray-500 text-xs mb-1">Likes</p>
+                          <div className="flex items-center gap-1">
+                            <Heart className="w-3.5 h-3.5 text-pink-500" />
+                            <span className="font-medium text-gray-900">{formatNumber(stream.likes)}</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {stream.isLive && (
+                        <button className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg border border-red-200">
+                          <Ban className="w-4 h-4" />
+                          End Stream
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
 
             {/* Pagination */}
-            {pagination.pages > 1 && (
-              <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200">
+            {totalPages > 1 && (
+              <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-gray-200">
                 <p className="text-sm text-gray-600">
-                  Showing {((pagination.page - 1) * pagination.limit) + 1} to{' '}
-                  {Math.min(pagination.page * pagination.limit, pagination.total)} of{' '}
-                  {pagination.total} streams
+                  Showing {startIndex + 1}-{Math.min(endIndex, filteredStreams.length)} of {filteredStreams.length} streams
                 </p>
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => handlePageChange(pagination.page - 1)}
-                    disabled={pagination.page === 1}
-                    className="p-2 rounded-md border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={() => dispatch(setCurrentPage(currentPage - 1))}
+                    disabled={currentPage === 1}
+                    className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
-                    <ChevronLeft className="w-4 h-4" />
+                    Previous
                   </button>
-                  <span className="text-sm text-gray-600">
-                    Page {pagination.page} of {pagination.pages}
-                  </span>
+                  <div className="flex items-center gap-1">
+                    {getPaginationNumbers().map((page, idx) =>
+                      typeof page === 'number' ? (
+                        <button
+                          key={idx}
+                          onClick={() => dispatch(setCurrentPage(page))}
+                          className={`w-10 h-10 text-sm font-medium rounded-lg transition-colors ${
+                            currentPage === page
+                              ? 'bg-blue-600 text-white'
+                              : 'text-gray-700 hover:bg-gray-100'
+                          }`}
+                        >
+                          {page}
+                        </button>
+                      ) : (
+                        <span key={idx} className="px-2 text-gray-400">
+                          {page}
+                        </span>
+                      )
+                    )}
+                  </div>
                   <button
-                    onClick={() => handlePageChange(pagination.page + 1)}
-                    disabled={pagination.page === pagination.pages}
-                    className="p-2 rounded-md border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={() => dispatch(setCurrentPage(currentPage + 1))}
+                    disabled={currentPage === totalPages}
+                    className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
-                    <ChevronRight className="w-4 h-4" />
+                    Next
                   </button>
                 </div>
               </div>
@@ -324,258 +561,6 @@ export const LiveStreams = () => {
           </>
         )}
       </Card>
-
-      {/* Detail Modal */}
-      {selectedStream && (
-        <StreamDetailModal
-          stream={selectedStream}
-          onClose={() => setSelectedStream(null)}
-        />
-      )}
-
-      {/* End All Streams Confirmation */}
-      {showEndAllConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-3 bg-red-100 rounded-full">
-                <AlertTriangle className="w-6 h-6 text-red-600" />
-              </div>
-              <h3 className="text-lg font-semibold">End All Live Streams?</h3>
-            </div>
-            <p className="text-gray-600 mb-4">
-              This will immediately end all {stats.live} active live stream(s). All viewers will be disconnected and broadcasters will be notified. This action cannot be undone.
-            </p>
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
-              <p className="text-sm text-yellow-800">
-                <strong>Warning:</strong> Use this only in emergencies or for scheduled maintenance. This is a drastic action that affects all active streams.
-              </p>
-            </div>
-            <div className="flex gap-3 justify-end">
-              <button
-                onClick={() => setShowEndAllConfirm(false)}
-                disabled={isEndingAll}
-                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleEndAllStreams}
-                disabled={isEndingAll}
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 disabled:opacity-50 flex items-center gap-2"
-              >
-                {isEndingAll ? (
-                  <>
-                    <RefreshCw className="w-4 h-4 animate-spin" />
-                    Ending...
-                  </>
-                ) : (
-                  <>
-                    <Ban className="w-4 h-4" />
-                    End All Streams
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </MainLayout>
-  );
-};
-
-// Stream Detail Modal
-const StreamDetailModal = ({ 
-  stream, 
-  onClose 
-}: { 
-  stream: LiveStream; 
-  onClose: () => void;
-}) => {
-  const [showViewer, setShowViewer] = useState(false);
-
-  if (showViewer) {
-    return (
-      <LiveStreamViewer
-        stream={stream}
-        onClose={() => {
-          setShowViewer(false);
-          onClose();
-        }}
-        onEndStream={async () => {
-          try {
-            await liveStreamsApi.end(stream._id, { reason: 'Ended by admin' });
-            setShowViewer(false);
-            onClose();
-          } catch (err) {
-            console.error('Failed to end stream:', err);
-          }
-        }}
-      />
-    );
-  }
-
-  return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center">
-        <div className="fixed inset-0 bg-black/40 transition-opacity" onClick={onClose} />
-        
-        <div className="relative bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-          {/* Header */}
-          <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-lg">
-            <h2 className="text-lg font-semibold text-gray-900">Stream Details</h2>
-            <button
-              onClick={onClose}
-              className="p-2 hover:bg-gray-100 rounded-md transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-
-          <div className="p-6 space-y-4">
-            {/* Status & Watch Button */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                {stream.isLive ? (
-                  <>
-                    <span className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-md text-sm font-medium">
-                      <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
-                      LIVE NOW
-                    </span>
-                    <button
-                      onClick={() => setShowViewer(true)}
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md text-sm font-medium transition-colors"
-                    >
-                      <Play className="w-4 h-4" />
-                      Watch Live
-                    </button>
-                  </>
-                ) : (
-                  <span className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-800 rounded-md text-sm font-medium border border-gray-200">
-                    <StopCircle className="w-4 h-4" />
-                    Ended
-                  </span>
-                )}
-              </div>
-              <span className="text-sm text-gray-500">ID: {stream._id.slice(-8)}</span>
-            </div>
-
-            {/* Title & Description */}
-            <div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">{stream.title}</h3>
-              {stream.description && (
-                <p className="text-gray-700">{stream.description}</p>
-              )}
-            </div>
-
-            {/* Astrologer */}
-            <Card className="!p-4">
-              <p className="text-xs font-medium text-gray-500 mb-2">Hosted By</p>
-              <div className="flex items-center gap-3">
-                <Avatar 
-                  src={stream.astrologerId.profilePicture}
-                  name={stream.astrologerId.name} 
-                  size="lg" 
-                />
-                <div>
-                  <p className="font-semibold text-gray-900">{stream.astrologerId.name}</p>
-                  <p className="text-sm text-gray-600">{stream.astrologerId.email}</p>
-                  {stream.astrologerSpecialty && (
-                    <p className="text-xs text-gray-500">{stream.astrologerSpecialty}</p>
-                  )}
-                </div>
-              </div>
-            </Card>
-
-            {/* Stats Grid */}
-            <div className="grid grid-cols-2 gap-3">
-              <Card className="!p-4 border-l-4 border-l-purple-500">
-                <div className="flex items-center gap-2 text-purple-600 mb-1">
-                  <Eye className="w-4 h-4" />
-                  <span className="text-xs font-medium">Total Views</span>
-                </div>
-                <p className="text-2xl font-bold text-gray-900">{formatNumber(stream.totalViews)}</p>
-              </Card>
-              
-              <Card className="!p-4 border-l-4 border-l-pink-500">
-                <div className="flex items-center gap-2 text-pink-600 mb-1">
-                  <Heart className="w-4 h-4" />
-                  <span className="text-xs font-medium">Likes</span>
-                </div>
-                <p className="text-2xl font-bold text-gray-900">{formatNumber(stream.likes)}</p>
-              </Card>
-              
-              <Card className="!p-4 border-l-4 border-l-blue-500">
-                <div className="flex items-center gap-2 text-blue-600 mb-1">
-                  <Users className="w-4 h-4" />
-                  <span className="text-xs font-medium">Current Viewers</span>
-                </div>
-                <p className="text-2xl font-bold text-gray-900">{formatNumber(stream.viewerCount)}</p>
-              </Card>
-              
-              <Card className="!p-4 border-l-4 border-l-emerald-500">
-                <div className="flex items-center gap-2 text-emerald-600 mb-1">
-                  <TrendingUp className="w-4 h-4" />
-                  <span className="text-xs font-medium">Peak Viewers</span>
-                </div>
-                <p className="text-2xl font-bold text-gray-900">{formatNumber(stream.peakViewerCount)}</p>
-              </Card>
-            </div>
-
-            {/* Category & Tags */}
-            <div>
-              <p className="text-xs font-medium text-gray-500 mb-2">Category</p>
-              <span className="inline-block px-3 py-1 bg-indigo-50 text-indigo-700 rounded-md text-sm font-medium border border-indigo-200">
-                {stream.category}
-              </span>
-            </div>
-
-            {stream.tags && stream.tags.length > 0 && (
-              <div>
-                <p className="text-xs font-medium text-gray-500 mb-2">Tags</p>
-                <div className="flex flex-wrap gap-2">
-                  {stream.tags.map((tag, index) => (
-                    <span 
-                      key={index}
-                      className="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-md text-xs font-medium"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Timestamps */}
-            <div className="grid grid-cols-2 gap-4 text-sm pt-4 border-t border-gray-200">
-              {stream.startedAt && (
-                <div>
-                  <p className="text-xs text-gray-500 mb-1 flex items-center gap-1">
-                    <Calendar className="w-3 h-3" />
-                    Started
-                  </p>
-                  <p className="text-gray-900">{formatDateTime(stream.startedAt)}</p>
-                </div>
-              )}
-              {stream.endedAt && (
-                <div>
-                  <p className="text-xs text-gray-500 mb-1 flex items-center gap-1">
-                    <Clock className="w-3 h-3" />
-                    Ended
-                  </p>
-                  <p className="text-gray-900">{formatDateTime(stream.endedAt)}</p>
-                </div>
-              )}
-            </div>
-
-            {/* Meta */}
-            <div className="text-xs text-gray-500 pt-4 border-t border-gray-200">
-              <p><span className="font-medium">Created:</span> {formatDateTime(stream.createdAt)}</p>
-              <p><span className="font-medium">Channel:</span> {stream.agoraChannelName}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
   );
 };
