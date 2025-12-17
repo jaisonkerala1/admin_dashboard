@@ -358,7 +358,7 @@ export const ServiceRequestDetail = () => {
 
       {/* Cancel Confirmation Modal */}
       {showCancelModal && (
-        <Modal onClose={() => setShowCancelModal(false)} title="Cancel Service Request">
+        <Modal isOpen={showCancelModal} onClose={() => setShowCancelModal(false)} title="Cancel Service Request">
           <div className="space-y-4">
             <div className="flex items-start gap-3 p-4 bg-yellow-50 rounded-lg">
               <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5" />

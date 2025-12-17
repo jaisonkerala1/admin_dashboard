@@ -4,16 +4,12 @@ import {
   ArrowLeft,
   Package,
   DollarSign,
-  Clock,
   Star,
   TrendingUp,
-  Calendar,
   CheckCircle,
   XCircle,
   Trash2,
-  AlertCircle,
-  User,
-  Tag
+  AlertCircle
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
@@ -61,7 +57,7 @@ export const ServiceDetail = () => {
       setIsLoading(true);
       const response = await servicesApi.getById(id);
       const serviceData = response.data;
-      setService(serviceData);
+      setService(serviceData || null);
 
       // Load associated astrologer
       if (serviceData?.astrologerId) {
@@ -71,7 +67,7 @@ export const ServiceDetail = () => {
         
         if (astroId) {
           const astroResponse = await astrologersApi.getById(astroId);
-          setAstrologer(astroResponse.data);
+          setAstrologer(astroResponse.data || null);
         }
       }
     } catch (err) {
@@ -404,7 +400,7 @@ export const ServiceDetail = () => {
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
-        <Modal onClose={() => setShowDeleteModal(false)} title="Delete Service">
+        <Modal isOpen={showDeleteModal} onClose={() => setShowDeleteModal(false)} title="Delete Service">
           <div className="space-y-4">
             <div className="flex items-start gap-3 p-4 bg-red-50 rounded-lg">
               <AlertCircle className="w-5 h-5 text-red-600 mt-0.5" />

@@ -60,6 +60,14 @@ export const SERVICE_STATUS = {
   INACTIVE: 'inactive',
 } as const;
 
+export const SERVICE_REQUEST_STATUS = {
+  PENDING: 'pending',
+  APPROVED: 'approved',
+  REJECTED: 'rejected',
+  COMPLETED: 'completed',
+  CANCELLED: 'cancelled',
+} as const;
+
 export const LIVE_STREAM_STATUS = {
   SCHEDULED: 'scheduled',
   LIVE: 'live',

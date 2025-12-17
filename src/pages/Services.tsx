@@ -11,11 +11,8 @@ import {
   Eye,
   ChevronLeft,
   ChevronRight,
-  X,
-  Clock,
   TrendingUp,
   RefreshCw,
-  Calendar,
   Tag
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
@@ -23,7 +20,7 @@ import { PageHeader } from '@/components/layout/PageHeader';
 import { Card, Loader, EmptyState, Avatar } from '@/components/common';
 import { servicesApi } from '@/api';
 import { Service } from '@/types';
-import { formatCurrency, formatDateTime } from '@/utils/formatters';
+import { formatCurrency } from '@/utils/formatters';
 import { ROUTES } from '@/utils/constants';
 
 interface PaginationInfo {
