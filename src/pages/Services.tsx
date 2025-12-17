@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { 
   Search, 
   Filter, 
@@ -23,6 +24,7 @@ import { Card, Loader, EmptyState, Avatar } from '@/components/common';
 import { servicesApi } from '@/api';
 import { Service } from '@/types';
 import { formatCurrency, formatDateTime } from '@/utils/formatters';
+import { ROUTES } from '@/utils/constants';
 
 interface PaginationInfo {
   page: number;
@@ -50,7 +52,6 @@ export const Services = () => {
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<'all' | 'active' | 'inactive'>('all');
   const [pagination, setPagination] = useState<PaginationInfo>({ page: 1, limit: 20, total: 0, pages: 0 });
-  const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [stats, setStats] = useState({
     total: 0,
     active: 0,
@@ -311,13 +312,13 @@ export const Services = () => {
                         )}
                       </td>
                       <td className="px-4 py-4">
-                        <button
-                          onClick={() => setSelectedService(service)}
-                          className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
-                          title="View Details"
+                        <Link
+                          to={`${ROUTES.SERVICES}/${service._id}`}
+                          className="inline-flex items-center gap-2 px-3 py-1.5 text-sm text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors font-medium"
                         >
                           <Eye className="w-4 h-4" />
-                        </button>
+                          View
+                        </Link>
                       </td>
                     </tr>
                   ))}
@@ -379,218 +380,6 @@ export const Services = () => {
           </>
         )}
       </Card>
-
-      {/* Detail Modal */}
-      {selectedService && (
-        <ServiceDetailModal
-          service={selectedService}
-          onClose={() => setSelectedService(null)}
-        />
-      )}
     </MainLayout>
   );
-};
-
-// Service Detail Modal Component
-const ServiceDetailModal = ({ 
-  service, 
-  onClose 
-}: { 
-  service: Service; 
-  onClose: () => void;
-}) => {
-  const getDayName = (day: number) => {
-    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    return days[day];
-  };
-
-  return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center">
-        <div className="fixed inset-0 bg-black/50 transition-opacity" onClick={onClose} />
-        
-        <div className="relative bg-white rounded-2xl shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-          {/* Header */}
-          <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-2xl">
-            <h2 className="text-xl font-semibold text-gray-900">Service Details</h2>
-            <button
-              onClick={onClose}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-
-          <div className="p-6 space-y-6">
-            {/* Status */}
-            <div className="flex items-center justify-between">
-              {service.isActive && !service.isDeleted ? (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                  <CheckCircle2 className="w-4 h-4" />
-                  Active
-                </span>
-              ) : (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
-                  <XCircle className="w-4 h-4" />
-                  Inactive
-                </span>
-              )}
-              <span className="text-sm text-gray-500">
-                ID: {service._id.slice(-8)}
-              </span>
-            </div>
-
-            {/* Service Info */}
-            <div className="bg-indigo-50 rounded-xl p-4">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">{service.name}</h3>
-              <p className="text-gray-700 mb-3">{service.description}</p>
-              <div className="flex items-center gap-4 text-sm">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-purple-100 text-purple-700 rounded-full font-medium">
-                  <Tag className="w-3 h-3" />
-                  {categoryLabels[service.category] || service.category}
-                </span>
-                <span className="text-gray-600">
-                  <Clock className="w-4 h-4 inline mr-1" />
-                  {service.duration}
-                </span>
-              </div>
-            </div>
-
-            {/* Astrologer Info */}
-            <div className="bg-gray-50 rounded-xl p-4">
-              <h3 className="text-sm font-medium text-gray-500 mb-3">Astrologer</h3>
-              <div className="flex items-center gap-4">
-                <Avatar 
-                  src={service.astrologerId.profilePicture}
-                  name={service.astrologerId.name} 
-                  size="lg" 
-                />
-                <div>
-                  <p className="font-semibold text-gray-900">{service.astrologerId.name}</p>
-                  <p className="text-sm text-gray-600">{service.astrologerId.email}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Stats Grid */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4">
-                <div className="flex items-center gap-2 text-blue-600 mb-1">
-                  <DollarSign className="w-4 h-4" />
-                  <span className="text-sm">Price</span>
-                </div>
-                <p className="font-bold text-xl text-blue-900">
-                  {formatCurrency(service.price, service.currency || 'INR')}
-                </p>
-              </div>
-              
-              <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4">
-                <div className="flex items-center gap-2 text-purple-600 mb-1">
-                  <TrendingUp className="w-4 h-4" />
-                  <span className="text-sm">Bookings</span>
-                </div>
-                <p className="font-bold text-xl text-purple-900">{service.totalBookings}</p>
-                <p className="text-xs text-purple-600">{service.completedBookings} completed</p>
-              </div>
-              
-              <div className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl p-4">
-                <div className="flex items-center gap-2 text-amber-600 mb-1">
-                  <Star className="w-4 h-4" />
-                  <span className="text-sm">Rating</span>
-                </div>
-                <p className="font-bold text-xl text-amber-900">
-                  {service.averageRating > 0 ? service.averageRating.toFixed(1) : 'N/A'}
-                </p>
-                <p className="text-xs text-amber-600">{service.totalRatings} reviews</p>
-              </div>
-              
-              <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-4">
-                <div className="flex items-center gap-2 text-emerald-600 mb-1">
-                  <DollarSign className="w-4 h-4" />
-                  <span className="text-sm">Revenue</span>
-                </div>
-                <p className="font-bold text-xl text-emerald-900">
-                  {formatCurrency(service.price * service.totalBookings, service.currency || 'INR')}
-                </p>
-              </div>
-            </div>
-
-            {/* Requirements */}
-            {service.requirements && (
-              <div className="bg-gray-50 rounded-xl p-4">
-                <h3 className="text-sm font-medium text-gray-500 mb-2">Requirements</h3>
-                <p className="text-gray-700">{service.requirements}</p>
-              </div>
-            )}
-
-            {/* Benefits */}
-            {service.benefits && service.benefits.length > 0 && (
-              <div className="bg-green-50 rounded-xl p-4">
-                <h3 className="text-sm font-medium text-green-600 mb-3">Benefits</h3>
-                <ul className="space-y-2">
-                  {service.benefits.map((benefit, index) => (
-                    <li key={index} className="flex items-start gap-2 text-gray-700">
-                      <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
-                      <span>{benefit}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* Availability */}
-            {service.availability && (
-              <div className="bg-blue-50 rounded-xl p-4">
-                <h3 className="text-sm font-medium text-blue-600 mb-3 flex items-center gap-2">
-                  <Calendar className="w-4 h-4" />
-                  Availability
-                </h3>
-                <div className="space-y-2 text-sm">
-                  <p className="text-gray-700">
-                    <span className="font-medium">Days:</span>{' '}
-                    {service.availability.availableDays.map(d => getDayName(d)).join(', ')}
-                  </p>
-                  <p className="text-gray-700">
-                    <span className="font-medium">Time:</span>{' '}
-                    {service.availability.startTime} - {service.availability.endTime}
-                  </p>
-                  <p className="text-gray-700">
-                    <span className="font-medium">Max Bookings/Day:</span>{' '}
-                    {service.availability.maxBookingsPerDay}
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Tags */}
-            {service.tags && service.tags.length > 0 && (
-              <div>
-                <h3 className="text-sm font-medium text-gray-500 mb-2">Tags</h3>
-                <div className="flex flex-wrap gap-2">
-                  {service.tags.map((tag, index) => (
-                    <span 
-                      key={index}
-                      className="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Meta Info */}
-            <div className="grid grid-cols-2 gap-4 text-sm text-gray-500 pt-4 border-t border-gray-200">
-              <div>
-                <span className="font-medium">Created:</span> {formatDateTime(service.createdAt)}
-              </div>
-              <div>
-                <span className="font-medium">Updated:</span> {formatDateTime(service.updatedAt)}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
+}; 

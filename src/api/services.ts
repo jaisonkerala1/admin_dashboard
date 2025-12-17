@@ -35,6 +35,16 @@ export const servicesApi = {
     return response.data;
   },
 
+  approve: async (id: string): Promise<ApiResponse<Service>> => {
+    const response = await apiClient.patch(`/admin/services/${id}/approve`);
+    return response.data;
+  },
+
+  reject: async (id: string): Promise<ApiResponse<Service>> => {
+    const response = await apiClient.patch(`/admin/services/${id}/reject`);
+    return response.data;
+  },
+
   delete: async (id: string): Promise<ApiResponse<void>> => {
     const response = await apiClient.delete(`/admin/services/${id}`);
     return response.data;

@@ -7,6 +7,7 @@ import {
   Users,
   Consultations,
   Services,
+  ServiceDetail,
   ServiceRequests,
   Reviews,
   LiveStreams,
@@ -31,6 +32,7 @@ function App() {
           <Route path={ROUTES.USERS} element={<Users />} />
           <Route path={ROUTES.CONSULTATIONS} element={<Consultations />} />
           <Route path={ROUTES.SERVICES} element={<Services />} />
+          <Route path={`${ROUTES.SERVICES}/:id`} element={<ServiceDetail />} />
           <Route path={ROUTES.SERVICE_REQUESTS} element={<ServiceRequests />} />
           <Route path={ROUTES.REVIEWS} element={<Reviews />} />
           <Route path={ROUTES.LIVE_STREAMS} element={<LiveStreams />} />
