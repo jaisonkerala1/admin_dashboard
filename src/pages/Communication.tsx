@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { MessageCircle, Phone, Video, Search, Loader2 } from 'lucide-react';
+import { MessageCircle, Search, Loader2 } from 'lucide-react';
 import { ChatWindow, VideoCallWindow } from '@/components/communication';
 import { RoundAvatar } from '@/components/common/RoundAvatar';
 import { PillBadge } from '@/components/common/PillBadge';

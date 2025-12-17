@@ -82,7 +82,7 @@ export const VideoCallWindow = ({
         }
       });
 
-      client.on('user-unpublished', (user, mediaType) => {
+      client.on('user-unpublished', (_user, mediaType) => {
         if (mediaType === 'video' && remoteVideoRef.current) {
           remoteVideoRef.current.innerHTML = '';
         }
