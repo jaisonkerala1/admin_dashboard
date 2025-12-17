@@ -5,7 +5,7 @@ import { MainLayout } from '@/components/layout';
 import { Card, Loader, EmptyState, RoundAvatar, PillBadge, ShowEntriesDropdown, StatCard } from '@/components/common';
 import { astrologersApi } from '@/api';
 import { Astrologer } from '@/types';
-import { formatCurrency, formatRelativeTime } from '@/utils/formatters';
+import { formatRelativeTime } from '@/utils/formatters';
 
 type FilterTab = 'all' | 'active' | 'pending' | 'inactive';
 
@@ -275,7 +275,7 @@ export const AstrologersList = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {paginatedAstrologers.map((astrologer, index) => (
+                  {paginatedAstrologers.map((astrologer) => (
                     <tr 
                       key={astrologer._id} 
                       className="border-b border-gray-100 hover:bg-gray-50 transition-colors group"

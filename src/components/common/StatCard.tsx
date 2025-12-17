@@ -9,10 +9,20 @@ interface StatCardProps {
     value: number;
     isPositive: boolean;
   };
+  iconColor?: string;
+  iconBgColor?: string;
   className?: string;
 }
 
-export const StatCard = ({ title, value, icon: Icon, trend, className }: StatCardProps) => {
+export const StatCard = ({ 
+  title, 
+  value, 
+  icon: Icon, 
+  trend, 
+  iconColor = 'text-primary-600',
+  iconBgColor = 'bg-primary-50',
+  className 
+}: StatCardProps) => {
   return (
     <div className={cn('card', className)}>
       <div className="flex items-start justify-between">
@@ -30,8 +40,8 @@ export const StatCard = ({ title, value, icon: Icon, trend, className }: StatCar
             </p>
           )}
         </div>
-        <div className="rounded-lg bg-primary-50 p-3">
-          <Icon className="w-6 h-6 text-primary-600" />
+        <div className={cn('rounded-lg p-3', iconBgColor)}>
+          <Icon className={cn('w-6 h-6', iconColor)} />
         </div>
       </div>
     </div>
