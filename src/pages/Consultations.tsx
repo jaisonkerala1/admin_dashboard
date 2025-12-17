@@ -16,7 +16,6 @@ import {
   Eye,
   Trash2,
   Activity,
-  X,
   Clock,
   Star
 } from 'lucide-react';
