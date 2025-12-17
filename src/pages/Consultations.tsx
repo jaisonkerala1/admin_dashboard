@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { Card, Loader, EmptyState, RoundAvatar, PillBadge, ShowEntriesDropdown, StatCard, Modal, Avatar } from '@/components/common';
-import { formatCurrency, formatDuration, formatDateTime } from '@/utils/formatters';
+import { formatCurrency, formatDuration } from '@/utils/formatters';
 import { RootState } from '@/store';
 import { Consultation } from '@/types';
 import {
