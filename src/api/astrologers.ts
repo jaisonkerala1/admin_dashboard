@@ -50,5 +50,10 @@ export const astrologersApi = {
     const response = await apiClient.get(`/admin/astrologers/${id}/stats`);
     return response.data;
   },
+
+  getOnlineList: async (): Promise<ApiResponse<Astrologer[]>> => {
+    const response = await apiClient.get('/admin/astrologers/online/list');
+    return response.data;
+  },
 };
 

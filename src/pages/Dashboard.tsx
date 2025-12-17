@@ -5,8 +5,8 @@ import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { StatCard, Card, Loader, Avatar } from '@/components/common';
 import { LiveStreamViewer } from '@/components/liveStream/LiveStreamViewer';
-import { dashboardApi, liveStreamsApi } from '@/api';
-import { DashboardStats, LiveStream } from '@/types';
+import { dashboardApi, liveStreamsApi, astrologersApi } from '@/api';
+import { DashboardStats, LiveStream, Astrologer } from '@/types';
 import { formatCurrency, formatNumber, formatRelativeTime } from '@/utils/formatters';
 import { ROUTES } from '@/utils/constants';
 
@@ -17,13 +17,19 @@ export const Dashboard = () => {
   const [liveStreams, setLiveStreams] = useState<LiveStream[]>([]);
   const [liveLoading, setLiveLoading] = useState(false);
   const [selectedStream, setSelectedStream] = useState<LiveStream | null>(null);
+  const [onlineAstrologers, setOnlineAstrologers] = useState<Astrologer[]>([]);
+  const [onlineLoading, setOnlineLoading] = useState(false);
 
   useEffect(() => {
     loadStats();
     loadLiveStreams();
+    loadOnlineAstrologers();
 
-    // Auto-refresh live streams every 10 seconds
-    const interval = setInterval(loadLiveStreams, 10000);
+    // Auto-refresh every 10 seconds
+    const interval = setInterval(() => {
+      loadLiveStreams();
+      loadOnlineAstrologers();
+    }, 10000);
     return () => clearInterval(interval);
   }, []);
 
@@ -57,6 +63,18 @@ export const Dashboard = () => {
       console.error('Live streams error:', err);
     } finally {
       setLiveLoading(false);
+    }
+  };
+
+  const loadOnlineAstrologers = async () => {
+    try {
+      setOnlineLoading(true);
+      const response = await astrologersApi.getOnlineList();
+      setOnlineAstrologers(response.data || []);
+    } catch (err) {
+      console.error('Online astrologers error:', err);
+    } finally {
+      setOnlineLoading(false);
     }
   };
 
@@ -182,6 +200,87 @@ export const Dashboard = () => {
                 <p className="text-gray-600">No live streams at the moment</p>
                 <Link to={ROUTES.LIVE_STREAMS} className="text-sm text-primary-600 hover:text-primary-700 mt-2 inline-block">
                   View Stream History
+                </Link>
+              </div>
+            </Card>
+          )}
+
+          {/* Currently Online Astrologers */}
+          {onlineAstrologers.length > 0 && (
+            <Card
+              title={
+                <div className="flex items-center gap-2">
+                  <div className="relative">
+                    <UserCog className="w-5 h-5 text-green-500" />
+                    <div className="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                  </div>
+                  <span>Currently Online</span>
+                  <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded-full">
+                    {onlineAstrologers.length} Available
+                  </span>
+                </div>
+              }
+              action={
+                <Link to={ROUTES.ASTROLOGERS} className="text-sm text-primary-600 hover:text-primary-700 font-medium">
+                  View All Astrologers
+                </Link>
+              }
+            >
+              <div className="space-y-3">
+                {onlineAstrologers.slice(0, 5).map((astrologer) => (
+                  <Link 
+                    key={astrologer._id}
+                    to={`${ROUTES.ASTROLOGERS}/${astrologer._id}`}
+                    className="flex items-center gap-4 p-3 rounded-lg border border-gray-100 hover:border-green-200 hover:bg-green-50/30 transition-all"
+                  >
+                    {/* Astrologer Info */}
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      <Avatar
+                        src={astrologer.profilePicture}
+                        name={astrologer.name}
+                        size="md"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium text-gray-900 truncate">
+                            {astrologer.name}
+                          </p>
+                          <div className="flex items-center gap-1 px-2 py-0.5 bg-green-500 text-white text-xs font-medium rounded">
+                            <div className="w-1.5 h-1.5 bg-white rounded-full" />
+                            Online
+                          </div>
+                        </div>
+                        <p className="text-sm text-gray-600 truncate">
+                          {astrologer.specialization?.slice(0, 2).join(', ') || 'Astrologer'}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Astrologer Stats */}
+                    <div className="flex items-center gap-4 text-sm">
+                      <div className="text-center">
+                        <p className="font-semibold text-gray-900">{astrologer.rating?.toFixed(1) || '0.0'}</p>
+                        <p className="text-xs text-gray-500">Rating</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="font-semibold text-gray-900">{formatNumber(astrologer.totalConsultations || 0)}</p>
+                        <p className="text-xs text-gray-500">Sessions</p>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </Card>
+          )}
+
+          {/* No Online Astrologers */}
+          {!onlineLoading && onlineAstrologers.length === 0 && (
+            <Card>
+              <div className="text-center py-8">
+                <UserCog className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                <p className="text-gray-600">No astrologers currently online</p>
+                <Link to={ROUTES.ASTROLOGERS} className="text-sm text-primary-600 hover:text-primary-700 mt-2 inline-block">
+                  View All Astrologers
                 </Link>
               </div>
             </Card>
