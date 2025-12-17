@@ -582,6 +582,7 @@ export const Consultations = () => {
           isOpen={true}
           onClose={() => setSelectedConsultation(null)}
           title=""
+          size="2xl"
         >
           <div className="space-y-6">
             {/* Header Section */}
