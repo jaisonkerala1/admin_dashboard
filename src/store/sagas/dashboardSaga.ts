@@ -159,9 +159,12 @@ function* fetchDashboardSaga(action: PayloadAction<{ period: DashboardPeriod }>)
       call(
         fetchAllPages,
         consultationsApi.getAll as any,
-        { sortBy: 'createdAt', sortOrder: 'desc', limit: 200 },
+        // IMPORTANT: Consultations should be fetched/sorted by scheduledTime because
+        // we bucket/filter by scheduledTime. If we sort/paginate by createdAt, we can
+        // prematurely stop and miss consultations scheduled within the period.
+        { sortBy: 'scheduledTime', sortOrder: 'desc', limit: 200 },
         start,
-        'createdAt'
+        'scheduledTime'
       ),
       call(
         fetchAllPages,
