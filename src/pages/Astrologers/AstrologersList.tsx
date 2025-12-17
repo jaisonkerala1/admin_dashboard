@@ -270,6 +270,8 @@ export const AstrologersList = () => {
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Name</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Contact</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Reviews</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Charges</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Specialization</th>
                     <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Action</th>
                   </tr>
@@ -314,6 +316,19 @@ export const AstrologersList = () => {
                           <PillBadge variant={getStatusVariant(astrologer)} label={getStatusLabel(astrologer)} />
                           {getApprovalBadge(astrologer)}
                         </div>
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-lg">⭐</span>
+                          <div>
+                            <p className="font-semibold text-gray-900">{(astrologer.rating || 0).toFixed(1)}</p>
+                            <p className="text-xs text-gray-500">{astrologer.totalReviews || 0} reviews</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-4">
+                        <p className="font-semibold text-gray-900">₹{astrologer.consultationCharge || 0}</p>
+                        <p className="text-xs text-gray-500">per minute</p>
                       </td>
                       <td className="px-4 py-4">
                         <div>
@@ -368,7 +383,8 @@ export const AstrologersList = () => {
                         className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                       />
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Name & Contact</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Name</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Reviews</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Status</th>
                     <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">Action</th>
                   </tr>
@@ -400,12 +416,21 @@ export const AstrologersList = () => {
                           />
                           <div>
                             <p className="font-semibold text-gray-900">{astrologer.name}</p>
-                            <p className="text-sm text-gray-500">{astrologer.phone}</p>
-                            <p className="text-xs text-gray-400">
+                            <p className="text-xs text-gray-500">
                               {(astrologer.specialization || []).slice(0, 1).join(', ')} • {astrologer.experience} years
                             </p>
+                            <p className="text-xs text-gray-500">₹{astrologer.consultationCharge || 0}/min</p>
                           </div>
                         </Link>
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-base">⭐</span>
+                          <div>
+                            <p className="font-semibold text-gray-900 text-sm">{(astrologer.rating || 0).toFixed(1)}</p>
+                            <p className="text-xs text-gray-500">{astrologer.totalReviews || 0}</p>
+                          </div>
+                        </div>
                       </td>
                       <td className="px-4 py-4">
                         <div className="flex flex-col gap-1.5">
@@ -460,7 +485,11 @@ export const AstrologersList = () => {
                         />
                         <div className="flex-1">
                           <h3 className="font-semibold text-gray-900">{astrologer.name}</h3>
-                          <p className="text-sm text-gray-500">{astrologer.phone}</p>
+                          <div className="flex items-center gap-3 mt-1">
+                            <span className="text-sm text-gray-600">⭐ {(astrologer.rating || 0).toFixed(1)}</span>
+                            <span className="text-sm text-gray-600">•</span>
+                            <span className="text-sm font-semibold text-gray-900">₹{astrologer.consultationCharge || 0}/min</span>
+                          </div>
                           <div className="flex items-center gap-2 mt-2 flex-wrap">
                             <PillBadge variant={getStatusVariant(astrologer)} label={getStatusLabel(astrologer)} />
                             {getApprovalBadge(astrologer)}
