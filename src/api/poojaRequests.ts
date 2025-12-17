@@ -38,6 +38,11 @@ export const poojaRequestsApi = {
     const response = await apiClient.patch(`/admin/service-requests/${id}/status`, { status });
     return response.data;
   },
+
+  create: async (data: any): Promise<ApiResponse<PoojaRequest>> => {
+    const response = await apiClient.post('/admin/service-requests', data);
+    return response.data;
+  },
 };
 
 

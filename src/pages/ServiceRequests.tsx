@@ -94,6 +94,12 @@ export const ServiceRequests = () => {
       <PageHeader
         title="Service Requests Management"
         subtitle={`Manage all service requests • ${pagination.total} total`}
+        action={
+          <Link to={`${ROUTES.SERVICE_REQUESTS}/create`} className="btn btn-primary">
+            <Users className="w-4 h-4 mr-2" />
+            Create Request
+          </Link>
+        }
       />
 
       {/* Stats Cards - Minimal Flat Design */}
