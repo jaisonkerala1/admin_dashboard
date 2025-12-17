@@ -6,7 +6,6 @@ import {
   Calendar,
   Package,
   CheckCircle,
-  XCircle,
   AlertCircle,
   DollarSign
 } from 'lucide-react';
