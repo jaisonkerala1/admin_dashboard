@@ -151,16 +151,16 @@ export const ServiceRequestDetail = () => {
             
             <div className="w-full mt-6 space-y-3 border-t border-gray-200 pt-6">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-600">Amount</span>
-                <span className="font-semibold text-gray-900">{formatCurrency(request.amount || 0)}</span>
+                <span className="text-gray-600">Price</span>
+                <span className="font-semibold text-gray-900">{formatCurrency(request.price || 0, request.currency)}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-600">Date</span>
-                <span className="font-semibold text-gray-900">{formatDateTime(request.date)}</span>
+                <span className="font-semibold text-gray-900">{formatDateTime(request.requestedDate)}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-600">Time</span>
-                <span className="font-semibold text-gray-900">{request.time}</span>
+                <span className="font-semibold text-gray-900">{request.requestedTime}</span>
               </div>
               {request.completedAt && (
                 <div className="flex items-center justify-between text-sm">
@@ -228,28 +228,24 @@ export const ServiceRequestDetail = () => {
 
         {/* Details Section */}
         <div className="lg:col-span-2 space-y-6">
-          {/* User Info */}
+          {/* Customer Info */}
           <Card>
             <h3 className="text-lg font-semibold mb-4">Client Information</h3>
             <div className="flex items-center gap-4">
-              <Link to={`/users/${request.userId._id || request.userId}`} className="flex items-center gap-4 hover:opacity-80 transition-opacity">
+              <div className="flex items-center gap-4">
                 <Avatar 
-                  src={typeof request.userId === 'object' ? request.userId.profilePicture : undefined}
-                  name={typeof request.userId === 'object' ? request.userId.name : 'User'} 
+                  name={request.customerName} 
                   size="lg" 
                 />
                 <div>
                   <h4 className="font-semibold text-gray-900">
-                    {typeof request.userId === 'object' ? request.userId.name : 'User'}
+                    {request.customerName}
                   </h4>
                   <p className="text-sm text-gray-600">
-                    {typeof request.userId === 'object' ? request.userId.email : ''}
+                    {request.customerPhone}
                   </p>
-                  {typeof request.userId === 'object' && request.userId.phone && (
-                    <p className="text-sm text-gray-500">{request.userId.phone}</p>
-                  )}
                 </div>
-              </Link>
+              </div>
             </div>
           </Card>
 
@@ -258,38 +254,25 @@ export const ServiceRequestDetail = () => {
             <h3 className="text-lg font-semibold mb-4">Assigned Astrologer</h3>
             <div className="flex items-center gap-4">
               <Link 
-                to={`${ROUTES.ASTROLOGERS}/${request.astrologerId._id || request.astrologerId}`}
+                to={`${ROUTES.ASTROLOGERS}/${request.astrologerId._id}`}
                 className="flex items-center gap-4 hover:opacity-80 transition-opacity"
               >
-                <div className="relative">
-                  <Avatar 
-                    src={typeof request.astrologerId === 'object' ? request.astrologerId.profilePicture : undefined}
-                    name={typeof request.astrologerId === 'object' ? request.astrologerId.name : 'Astrologer'} 
-                    size="lg" 
-                  />
-                  {typeof request.astrologerId === 'object' && request.astrologerId.isOnline && (
-                    <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full" />
-                  )}
-                </div>
+                <Avatar 
+                  src={request.astrologerId.profilePicture}
+                  name={request.astrologerId.name} 
+                  size="lg" 
+                />
                 <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <h4 className="font-semibold text-gray-900">
-                      {typeof request.astrologerId === 'object' ? request.astrologerId.name : 'Astrologer'}
-                    </h4>
-                    {typeof request.astrologerId === 'object' && request.astrologerId.isOnline && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded">
-                        <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />
-                        Online
-                      </span>
-                    )}
-                  </div>
+                  <h4 className="font-semibold text-gray-900">
+                    {request.astrologerId.name}
+                  </h4>
                   <p className="text-sm text-gray-600">
-                    {typeof request.astrologerId === 'object' ? request.astrologerId.email : ''}
+                    {request.astrologerId.email}
                   </p>
                 </div>
               </Link>
               <button
-                onClick={() => navigate(`${ROUTES.ASTROLOGERS}/${request.astrologerId._id || request.astrologerId}`)}
+                onClick={() => navigate(`${ROUTES.ASTROLOGERS}/${request.astrologerId._id}`)}
                 className="btn btn-secondary"
               >
                 View Profile
@@ -298,34 +281,42 @@ export const ServiceRequestDetail = () => {
           </Card>
 
           {/* Service Info */}
-          {request.serviceId && (
-            <Card>
-              <h3 className="text-lg font-semibold mb-4">Service Details</h3>
-              <Link 
-                to={`${ROUTES.SERVICES}/${request.serviceId._id || request.serviceId}`}
-                className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-              >
-                <Package className="w-10 h-10 text-primary-600" />
-                <div className="flex-1">
-                  <h4 className="font-semibold text-gray-900">
-                    {typeof request.serviceId === 'object' ? request.serviceId.name : 'Service'}
-                  </h4>
-                  <p className="text-sm text-gray-600">
-                    {typeof request.serviceId === 'object' ? request.serviceId.description : ''}
-                  </p>
-                </div>
-                <span className="text-sm text-primary-600 font-medium">View Service →</span>
-              </Link>
-            </Card>
-          )}
+          <Card>
+            <h3 className="text-lg font-semibold mb-4">Service Details</h3>
+            <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+              <Package className="w-10 h-10 text-primary-600" />
+              <div className="flex-1">
+                <h4 className="font-semibold text-gray-900">
+                  {request.serviceName}
+                </h4>
+                <p className="text-sm text-gray-600">
+                  {request.serviceCategory}
+                </p>
+              </div>
+              {request.serviceId && (
+                <Link to={`${ROUTES.SERVICES}/${request.serviceId}`} className="text-sm text-primary-600 font-medium hover:text-primary-700">
+                  View Service →
+                </Link>
+              )}
+            </div>
+          </Card>
 
           {/* Details */}
           <Card>
             <h3 className="text-lg font-semibold mb-4">Request Details</h3>
-            {request.details ? (
-              <p className="text-gray-700 whitespace-pre-wrap">{request.details}</p>
+            {request.specialInstructions ? (
+              <div>
+                <p className="text-sm font-medium text-gray-700 mb-2">Special Instructions:</p>
+                <p className="text-gray-700 whitespace-pre-wrap">{request.specialInstructions}</p>
+              </div>
             ) : (
-              <p className="text-gray-500 italic">No additional details provided.</p>
+              <p className="text-gray-500 italic">No special instructions provided.</p>
+            )}
+            {request.notes && (
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <p className="text-sm font-medium text-gray-700 mb-2">Admin Notes:</p>
+                <p className="text-gray-700 whitespace-pre-wrap">{request.notes}</p>
+              </div>
             )}
           </Card>
 
@@ -345,8 +336,8 @@ export const ServiceRequestDetail = () => {
               <div className="flex items-center gap-2">
                 <DollarSign className="w-5 h-5 text-purple-600" />
                 <div>
-                  <p className="text-xs text-gray-600">Amount</p>
-                  <p className="text-sm font-semibold text-gray-900">{formatCurrency(request.amount || 0)}</p>
+                  <p className="text-xs text-gray-600">Price</p>
+                  <p className="text-sm font-semibold text-gray-900">{formatCurrency(request.price || 0, request.currency)}</p>
                 </div>
               </div>
             </Card>
