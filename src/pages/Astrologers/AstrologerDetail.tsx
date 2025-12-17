@@ -4,8 +4,8 @@ import { Mail, Phone, Star, Calendar, DollarSign, Clock, CheckCircle, Ban, Packa
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Card, Loader, Avatar, StatusBadge, Modal } from '@/components/common';
-import { astrologersApi, servicesApi, reviewsApi, discussionsApi, consultationsApi } from '@/api';
-import { Astrologer, Service, Review, Discussion, Consultation } from '@/types';
+import { astrologersApi, servicesApi, reviewsApi, discussionsApi, consultationsApi, poojaRequestsApi } from '@/api';
+import { Astrologer, Service, Review, Discussion, Consultation, PoojaRequest } from '@/types';
 import { formatCurrency, formatNumber, formatDateTime } from '@/utils/formatters';
 import { useToastContext } from '@/contexts/ToastContext';
 
@@ -17,11 +17,13 @@ export const AstrologerDetail = () => {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [discussions, setDiscussions] = useState<Discussion[]>([]);
   const [consultations, setConsultations] = useState<Consultation[]>([]);
+  const [serviceRequests, setServiceRequests] = useState<PoojaRequest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [servicesLoading, setServicesLoading] = useState(false);
   const [reviewsLoading, setReviewsLoading] = useState(false);
   const [discussionsLoading, setDiscussionsLoading] = useState(false);
   const [consultationsLoading, setConsultationsLoading] = useState(false);
+  const [serviceRequestsLoading, setServiceRequestsLoading] = useState(false);
   const [isApproving, setIsApproving] = useState(false);
   const [isSuspending, setIsSuspending] = useState(false);
   const [showSuspendModal, setShowSuspendModal] = useState(false);
@@ -33,6 +35,7 @@ export const AstrologerDetail = () => {
       loadServices();
       loadReviews();
       loadConsultations();
+      loadServiceRequests();
     }
   }, [id]);
 
@@ -153,6 +156,29 @@ export const AstrologerDetail = () => {
       console.error('Failed to load consultations:', err);
     } finally {
       setConsultationsLoading(false);
+    }
+  };
+
+  const loadServiceRequests = async () => {
+    if (!id) return;
+    try {
+      setServiceRequestsLoading(true);
+      const params: any = {
+        page: 1,
+        limit: 50,
+        sortBy: 'createdAt',
+        sortOrder: 'desc',
+        astrologerId: id
+      };
+      const response = await poojaRequestsApi.getAll(params);
+      const list = response.data || [];
+      // Fallback: if backend doesn't filter by astrologerId, filter client-side
+      const filtered = list.filter((r) => r.astrologerId?._id === id);
+      setServiceRequests(filtered.slice(0, 10));
+    } catch (err) {
+      console.error('Failed to load service requests:', err);
+    } finally {
+      setServiceRequestsLoading(false);
     }
   };
 
@@ -550,6 +576,76 @@ export const AstrologerDetail = () => {
               <div className="text-center py-8">
                 <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                 <p className="text-gray-500">No consultations yet</p>
+              </div>
+            )}
+          </Card>
+
+          {/* Service Requests */}
+          <Card 
+            title={
+              <div className="flex items-center gap-2">
+                <Package className="w-5 h-5" />
+                <span>Recent Service Requests</span>
+                <span className="px-2 py-0.5 bg-purple-100 text-purple-700 text-xs font-medium rounded-full">
+                  {serviceRequests.length}
+                </span>
+              </div>
+            }
+          >
+            {serviceRequestsLoading ? (
+              <div className="flex justify-center py-8">
+                <Loader size="sm" text="Loading service requests..." />
+              </div>
+            ) : serviceRequests.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="border-b border-gray-200">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Customer</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Service</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Schedule</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Amount</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {serviceRequests.map((req) => (
+                      <tr key={req._id} className="hover:bg-gray-50">
+                        <td className="px-4 py-3">
+                          <div className="text-sm">
+                            <div className="font-medium text-gray-900">{req.customerName}</div>
+                            <div className="text-xs text-gray-500">{req.customerPhone}</div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="text-sm">
+                            <div className="font-medium text-gray-900">{req.serviceName}</div>
+                            <div className="text-xs text-gray-500">{req.serviceCategory}</div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="text-sm">
+                            <div className="text-gray-900">{req.requestedDate}</div>
+                            <div className="text-xs text-gray-500">{req.requestedTime}</div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className="text-sm font-semibold text-gray-900">
+                            {formatCurrency(req.price || 0)}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <StatusBadge status={req.status} />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <Package className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                <p className="text-gray-500">No service requests yet</p>
               </div>
             )}
           </Card>
