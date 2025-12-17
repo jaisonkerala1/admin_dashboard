@@ -9,6 +9,7 @@ import {
   Services,
   ServiceDetail,
   ServiceRequests,
+  ServiceRequestDetail,
   Reviews,
   LiveStreams,
   Discussions,
@@ -34,6 +35,7 @@ function App() {
           <Route path={ROUTES.SERVICES} element={<Services />} />
           <Route path={`${ROUTES.SERVICES}/:id`} element={<ServiceDetail />} />
           <Route path={ROUTES.SERVICE_REQUESTS} element={<ServiceRequests />} />
+          <Route path={`${ROUTES.SERVICE_REQUESTS}/:id`} element={<ServiceRequestDetail />} />
           <Route path={ROUTES.REVIEWS} element={<Reviews />} />
           <Route path={ROUTES.LIVE_STREAMS} element={<LiveStreams />} />
           <Route path={ROUTES.DISCUSSIONS} element={<Discussions />} />

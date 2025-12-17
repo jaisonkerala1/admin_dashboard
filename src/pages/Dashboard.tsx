@@ -228,13 +228,12 @@ export const Dashboard = () => {
             >
               <div className="space-y-3">
                 {onlineAstrologers.slice(0, 5).map((astrologer) => (
-                  <Link 
+                  <div 
                     key={astrologer._id}
-                    to={`${ROUTES.ASTROLOGERS}/${astrologer._id}`}
                     className="flex items-center gap-4 p-3 rounded-lg border border-gray-100 hover:border-green-200 hover:bg-green-50/30 transition-all"
                   >
                     {/* Astrologer Info */}
-                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <Link to={`${ROUTES.ASTROLOGERS}/${astrologer._id}`} className="flex items-center gap-3 flex-1 min-w-0 hover:opacity-80 transition-opacity">
                       <Avatar
                         src={astrologer.profilePicture}
                         name={astrologer.name}
@@ -254,7 +253,7 @@ export const Dashboard = () => {
                           {astrologer.specialization?.slice(0, 2).join(', ') || 'Astrologer'}
                         </p>
                       </div>
-                    </div>
+                    </Link>
 
                     {/* Astrologer Stats */}
                     <div className="flex items-center gap-4 text-sm">
@@ -267,7 +266,7 @@ export const Dashboard = () => {
                         <p className="text-xs text-gray-500">Sessions</p>
                       </div>
                     </div>
-                  </Link>
+                  </div>
                 ))}
               </div>
             </Card>
