@@ -1,4 +1,4 @@
-import { call, put, takeLatest } from 'redux-saga/effects';
+import { all, call, put, takeLatest } from 'redux-saga/effects';
 import type { SagaIterator } from 'redux-saga';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { astrologersApi, consultationsApi, liveStreamsApi, poojaRequestsApi, usersApi, dashboardApi } from '@/api';
@@ -155,16 +155,42 @@ function* fetchDashboardSaga(action: PayloadAction<{ period: DashboardPeriod }>)
     const { start, end } = getPeriodRange(period);
 
     // Fetch enough recent data and filter client-side by start/end
-    const [consultations, serviceRequests, users, astrologers]: [
+    const results: AnyRecord[] = (yield all([
+      call(
+        fetchAllPages,
+        consultationsApi.getAll as any,
+        { sortBy: 'createdAt', sortOrder: 'desc', limit: 200 },
+        start,
+        'createdAt'
+      ),
+      call(
+        fetchAllPages,
+        poojaRequestsApi.getAll as any,
+        { sortBy: 'createdAt', sortOrder: 'desc', limit: 200 },
+        start,
+        'createdAt'
+      ),
+      call(
+        fetchAllPages,
+        usersApi.getAll as any,
+        { sortBy: 'createdAt', sortOrder: 'desc', limit: 200 },
+        start,
+        'createdAt'
+      ),
+      call(
+        fetchAllPages,
+        astrologersApi.getAll as any,
+        { sortBy: 'createdAt', sortOrder: 'desc', limit: 200 },
+        start,
+        'createdAt'
+      ),
+    ])) as any;
+
+    const [consultations, serviceRequests, users, astrologers] = results as unknown as [
       Consultation[],
       AnyRecord[],
       User[],
       AnyRecord[],
-    ] = yield [
-      call(fetchAllPages, consultationsApi.getAll as any, { sortBy: 'createdAt', sortOrder: 'desc', limit: 200 }, start, 'createdAt'),
-      call(fetchAllPages, poojaRequestsApi.getAll as any, { sortBy: 'createdAt', sortOrder: 'desc', limit: 200 }, start, 'createdAt'),
-      call(fetchAllPages, usersApi.getAll as any, { sortBy: 'createdAt', sortOrder: 'desc', limit: 200 }, start, 'createdAt'),
-      call(fetchAllPages, astrologersApi.getAll as any, { sortBy: 'createdAt', sortOrder: 'desc', limit: 200 }, start, 'createdAt'),
     ];
 
     const consultationsInPeriod = consultations.filter((c: any) => {
