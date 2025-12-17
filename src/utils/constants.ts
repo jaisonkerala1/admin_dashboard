@@ -62,8 +62,8 @@ export const SERVICE_STATUS = {
 
 export const SERVICE_REQUEST_STATUS = {
   PENDING: 'pending',
-  APPROVED: 'approved',
-  REJECTED: 'rejected',
+  CONFIRMED: 'confirmed',
+  IN_PROGRESS: 'inProgress',
   COMPLETED: 'completed',
   CANCELLED: 'cancelled',
 } as const;

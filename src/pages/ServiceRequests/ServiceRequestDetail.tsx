@@ -39,7 +39,7 @@ export const ServiceRequestDetail = () => {
     try {
       setIsLoading(true);
       const response = await poojaRequestsApi.getById(id);
-      setRequest(response.data);
+      setRequest(response.data || null);
     } catch (err) {
       console.error('Failed to load service request:', err);
       toast.error('Failed to load service request details');
@@ -82,9 +82,9 @@ export const ServiceRequestDetail = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case SERVICE_REQUEST_STATUS.PENDING: return 'bg-yellow-100 text-yellow-700';
-      case SERVICE_REQUEST_STATUS.APPROVED: return 'bg-green-100 text-green-700';
-      case SERVICE_REQUEST_STATUS.REJECTED: return 'bg-red-100 text-red-700';
-      case SERVICE_REQUEST_STATUS.COMPLETED: return 'bg-blue-100 text-blue-700';
+      case SERVICE_REQUEST_STATUS.CONFIRMED: return 'bg-green-100 text-green-700';
+      case SERVICE_REQUEST_STATUS.IN_PROGRESS: return 'bg-blue-100 text-blue-700';
+      case SERVICE_REQUEST_STATUS.COMPLETED: return 'bg-purple-100 text-purple-700';
       case SERVICE_REQUEST_STATUS.CANCELLED: return 'bg-gray-100 text-gray-700';
       default: return 'bg-gray-100 text-gray-700';
     }
@@ -173,34 +173,34 @@ export const ServiceRequestDetail = () => {
             {/* Admin Actions */}
             <div className="w-full mt-6 space-y-2">
               {request.status === SERVICE_REQUEST_STATUS.PENDING && (
-                <>
-                  <button
-                    onClick={() => handleUpdateStatus(SERVICE_REQUEST_STATUS.APPROVED)}
-                    disabled={isUpdating}
-                    className="w-full btn btn-primary"
-                  >
-                    {isUpdating ? 'Approving...' : (
-                      <>
-                        <CheckCircle className="w-4 h-4 mr-2" />
-                        Approve Request
-                      </>
-                    )}
-                  </button>
-                  <button
-                    onClick={() => handleUpdateStatus(SERVICE_REQUEST_STATUS.REJECTED)}
-                    disabled={isUpdating}
-                    className="w-full btn bg-red-50 text-red-700 hover:bg-red-100"
-                  >
-                    {isUpdating ? 'Rejecting...' : (
-                      <>
-                        <XCircle className="w-4 h-4 mr-2" />
-                        Reject Request
-                      </>
-                    )}
-                  </button>
-                </>
+                <button
+                  onClick={() => handleUpdateStatus(SERVICE_REQUEST_STATUS.CONFIRMED)}
+                  disabled={isUpdating}
+                  className="w-full btn btn-primary"
+                >
+                  {isUpdating ? 'Confirming...' : (
+                    <>
+                      <CheckCircle className="w-4 h-4 mr-2" />
+                      Confirm Request
+                    </>
+                  )}
+                </button>
               )}
-              {request.status === SERVICE_REQUEST_STATUS.APPROVED && (
+              {request.status === SERVICE_REQUEST_STATUS.CONFIRMED && (
+                <button
+                  onClick={() => handleUpdateStatus(SERVICE_REQUEST_STATUS.IN_PROGRESS)}
+                  disabled={isUpdating}
+                  className="w-full btn btn-primary"
+                >
+                  {isUpdating ? 'Starting...' : (
+                    <>
+                      <CheckCircle className="w-4 h-4 mr-2" />
+                      Start Service
+                    </>
+                  )}
+                </button>
+              )}
+              {request.status === SERVICE_REQUEST_STATUS.IN_PROGRESS && (
                 <button
                   onClick={() => handleUpdateStatus(SERVICE_REQUEST_STATUS.COMPLETED)}
                   disabled={isUpdating}
@@ -214,7 +214,7 @@ export const ServiceRequestDetail = () => {
                   )}
                 </button>
               )}
-              {(request.status === SERVICE_REQUEST_STATUS.PENDING || request.status === SERVICE_REQUEST_STATUS.APPROVED) && (
+              {(request.status === SERVICE_REQUEST_STATUS.PENDING || request.status === SERVICE_REQUEST_STATUS.CONFIRMED) && (
                 <button
                   onClick={() => setShowCancelModal(true)}
                   className="w-full btn btn-secondary"
