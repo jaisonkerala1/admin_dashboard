@@ -9,7 +9,10 @@ export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ||
     ? 'https://astrologerapp-production.up.railway.app/api'
     : '/api');
 
-export const ADMIN_SECRET_KEY = import.meta.env.VITE_ADMIN_SECRET_KEY || '';
+export const ADMIN_SECRET_KEY = import.meta.env.VITE_ADMIN_SECRET_KEY || 'admin123';
+
+// Socket.IO URL - always use Railway backend
+export const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'https://astrologerapp-production.up.railway.app';
 
 export const ROUTES = {
   LOGIN: '/login',

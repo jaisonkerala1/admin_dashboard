@@ -1,8 +1,6 @@
 import { io, Socket } from 'socket.io-client';
 import type { DirectMessage, Call } from '@/types/communication';
-
-const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-const ADMIN_SECRET_KEY = 'admin123';
+import { SOCKET_URL, ADMIN_SECRET_KEY } from '@/utils/constants';
 
 class SocketService {
   private socket: Socket | null = null;
