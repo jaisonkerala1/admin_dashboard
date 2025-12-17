@@ -20,7 +20,7 @@ export const ChatWindow = ({ astrologer, onBack, onCall }: ChatWindowProps) => {
   const [isSending, setIsSending] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const typingTimeoutRef = useRef<NodeJS.Timeout>();
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const conversationId = `admin_${astrologer._id}`;
 

@@ -35,7 +35,7 @@ export const VideoCallWindow = ({
   const localVideoTrackRef = useRef<ICameraVideoTrack | null>(null);
   const localVideoRef = useRef<HTMLDivElement>(null);
   const remoteVideoRef = useRef<HTMLDivElement>(null);
-  const durationIntervalRef = useRef<NodeJS.Timeout>();
+  const durationIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     initializeAgora();
@@ -55,6 +55,7 @@ export const VideoCallWindow = ({
     return () => {
       if (durationIntervalRef.current) {
         clearInterval(durationIntervalRef.current);
+        durationIntervalRef.current = null;
       }
     };
   }, [isConnected]);
