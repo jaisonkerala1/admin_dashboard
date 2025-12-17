@@ -55,3 +55,4 @@ export const ChatMessage = ({ message, isOwn }: ChatMessageProps) => {
   );
 };
 
+

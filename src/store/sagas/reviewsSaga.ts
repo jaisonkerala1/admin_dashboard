@@ -52,3 +52,4 @@ export default function* reviewsSaga(): SagaIterator {
   yield takeLatest(fetchReviewsRequest.type, fetchReviewsSaga);
 }
 
+
