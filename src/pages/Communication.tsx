@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { MessageCircle, Search, Loader2 } from 'lucide-react';
 import { ChatWindow, VideoCallWindow } from '@/components/communication';
 import { IncomingCallModal } from '@/components/communication/IncomingCallModal';
@@ -382,53 +382,41 @@ export const Communication = () => {
           ) : (
             <div className="divide-y divide-gray-100">
               {filteredAstrologers.map((astrologer) => (
-                <div
+                <button
                   key={astrologer._id}
-                  className={`relative p-4 flex items-center gap-3 hover:bg-gray-50 transition-colors ${
+                  onClick={() => handleSelectAstrologer(astrologer)}
+                  className={`w-full p-4 flex items-center gap-3 hover:bg-gray-50 transition-colors ${
                     selectedAstrologer?._id === astrologer._id ? 'bg-indigo-50' : ''
                   }`}
                 >
-                  {/* Clickable Profile Section */}
-                  <Link
-                    to={`/astrologers/${astrologer._id}`}
-                    className="flex items-center gap-3 hover:opacity-80 transition-opacity group"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <RoundAvatar
-                      src={astrologer.profilePicture}
-                      name={astrologer.name}
-                      size="md"
-                      isOnline={astrologer.isOnline}
-                    />
-                    
-                    <div className="text-left">
-                      <h3 className="font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors">
-                        {astrologer.name}
-                      </h3>
-                      <div className="flex items-center gap-2 mt-1">
-                        <PillBadge
-                          variant={astrologer.isActive ? 'active' : 'inactive'}
-                        />
-                        {astrologer.isOnline && (
-                          <span className="text-xs text-green-600 font-medium">● Online</span>
-                        )}
-                      </div>
-                    </div>
-                  </Link>
+                  <RoundAvatar
+                    src={astrologer.profilePicture}
+                    name={astrologer.name}
+                    size="md"
+                    isOnline={astrologer.isOnline}
+                  />
                   
-                  {/* Chat Select Button (rest of the row) */}
-                  <button
-                    onClick={() => handleSelectAstrologer(astrologer)}
-                    className="flex-1 flex items-center justify-end gap-1"
-                  >
+                  <div className="flex-1 text-left">
+                    <h3 className="font-semibold text-gray-900">{astrologer.name}</h3>
+                    <div className="flex items-center gap-2 mt-1">
+                      <PillBadge
+                        variant={astrologer.isActive ? 'active' : 'inactive'}
+                      />
+                      {astrologer.isOnline && (
+                        <span className="text-xs text-green-600 font-medium">● Online</span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex gap-1">
                     <MessageCircle className="w-5 h-5 text-gray-400" />
                     {(unreadCounts[astrologer._id] ?? 0) > 0 && (
                       <span className="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-semibold text-white bg-indigo-600 rounded-full">
                         {unreadCounts[astrologer._id]}
                       </span>
                     )}
-                  </button>
-                </div>
+                  </div>
+                </button>
               ))}
             </div>
           )}
