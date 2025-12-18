@@ -29,12 +29,10 @@ export const Communication = () => {
     // Listen for incoming calls
     const unsubscribeIncoming = socketService.onIncomingCall((call) => {
       console.log('📞 Incoming call received in Communication.tsx:', call);
-      // Find the astrologer who is calling
-      const caller = astrologers.find(a => a._id === call.callerId);
       setIncomingCall({
         ...call,
-        callerName: call.callerName || caller?.name || 'Unknown',
-        callerAvatar: call.callerAvatar || caller?.profilePicture,
+        callerName: call.callerName || 'Unknown',
+        callerAvatar: call.callerAvatar,
       });
     });
 
@@ -56,23 +54,21 @@ export const Communication = () => {
 
       if (!astroId) return;
 
+      // Track last activity timestamp for sorting (newest first)
+      const ts =
+        typeof message.timestamp === 'string'
+          ? Date.parse(message.timestamp)
+          : message.timestamp instanceof Date
+            ? message.timestamp.getTime()
+            : Date.now();
+
+      setLastActivity((prev) => ({ ...prev, [astroId]: ts || Date.now() }));
+      
+      // Update unread count (will be cleared when that conversation is selected)
       setUnreadCounts((prev) => {
-        // If this conversation is currently open, do not increment
-        if (selectedAstrologer?._id === astroId) {
-          return { ...prev, [astroId]: 0 };
-        }
         const current = prev[astroId] ?? 0;
         return { ...prev, [astroId]: current + 1 };
       });
-
-       // Track last activity timestamp for sorting (newest first)
-       const ts =
-         typeof message.timestamp === 'string'
-           ? Date.parse(message.timestamp)
-           : message.timestamp instanceof Date
-             ? message.timestamp.getTime()
-             : Date.now();
-       setLastActivity((prev) => ({ ...prev, [astroId]: ts || Date.now() }));
     });
 
     return () => {
@@ -80,13 +76,15 @@ export const Communication = () => {
       unsubscribeIncoming();
       unsubscribeMessages();
     };
-  }, [selectedAstrologer, astrologers]);
+  }, []); // Run only once on mount
 
   useEffect(() => {
     filterAstrologers();
   }, [astrologers, searchQuery, filterStatus, lastActivity]);
 
   const loadAstrologers = async () => {
+    if (isLoading) return; // Prevent multiple simultaneous loads
+    
     try {
       setIsLoading(true);
       const response = await astrologersApi.getAll();
@@ -105,15 +103,13 @@ export const Communication = () => {
       // Pre-join all conversations so incoming messages trigger badges
       try {
         await socketService.connectAndWait();
-        const nextJoined = new Set(joinedRooms);
         sorted.forEach((astro) => {
           const convoId = `admin_${astro._id}`;
-          if (!nextJoined.has(convoId)) {
+          if (!joinedRooms.has(convoId)) {
             socketService.joinConversation(convoId);
-            nextJoined.add(convoId);
+            setJoinedRooms((prev) => new Set([...prev, convoId]));
           }
         });
-        setJoinedRooms(nextJoined);
       } catch (e) {
         console.error('Failed to pre-join conversation rooms:', e);
       }
