@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { MessageCircle, Search, Loader2 } from 'lucide-react';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { MessageCircle, Search, Loader2, Home } from 'lucide-react';
 import { ChatWindow, VideoCallWindow } from '@/components/communication';
 import { IncomingCallModal } from '@/components/communication/IncomingCallModal';
 import { RoundAvatar } from '@/components/common/RoundAvatar';
@@ -24,6 +24,7 @@ export const Communication = () => {
   const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({});
   const [joinedRooms, setJoinedRooms] = useState<Set<string>>(new Set());
   const [lastActivity, setLastActivity] = useState<Record<string, number>>({});
+  const [lastMessages, setLastMessages] = useState<Record<string, { content: string; isOwn: boolean }>>({});
 
   useEffect(() => {
     console.log('🚀 Communication page mounted');
@@ -74,6 +75,15 @@ export const Communication = () => {
             : Date.now();
 
       setLastActivity((prev) => ({ ...prev, [astroId]: ts || Date.now() }));
+      
+      // Store last message preview
+      setLastMessages((prev) => ({
+        ...prev,
+        [astroId]: {
+          content: message.content,
+          isOwn: message.senderType === 'admin'
+        }
+      }));
       
       // Update unread count (will be cleared when that conversation is selected)
       setUnreadCounts((prev) => {
@@ -220,6 +230,19 @@ export const Communication = () => {
     setLastActivity((prev) => ({ ...prev, [astrologer._id]: Date.now() }));
   };
 
+  // Format last message preview
+  const getLastMessagePreview = (astrologerId: string): string => {
+    const lastMsg = lastMessages[astrologerId];
+    if (!lastMsg) return 'No messages yet';
+    
+    const prefix = lastMsg.isOwn ? 'You: ' : '';
+    const truncated = lastMsg.content.length > 40 
+      ? lastMsg.content.substring(0, 40) + '...' 
+      : lastMsg.content;
+    
+    return prefix + truncated;
+  };
+
   const handleCall = (type: 'voice' | 'video') => {
     if (!selectedAstrologer) return;
 
@@ -320,7 +343,17 @@ export const Communication = () => {
       } w-full lg:w-96 flex-col bg-white border-r border-gray-200`}>
         {/* Header */}
         <div className="p-4 border-b border-gray-200">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Communication</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold text-gray-900">Communication</h2>
+            <Link
+              to="/"
+              className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+              title="Back to Dashboard"
+            >
+              <Home className="w-4 h-4" />
+              <span className="hidden sm:inline">Dashboard</span>
+            </Link>
+          </div>
           
           {/* Search */}
           <div className="relative mb-4">
@@ -396,15 +429,20 @@ export const Communication = () => {
                     isOnline={astrologer.isOnline}
                   />
                   
-                  <div className="flex-1 text-left">
-                    <h3 className="font-semibold text-gray-900">{astrologer.name}</h3>
-                    <div className="flex items-center gap-2 mt-1">
+                  <div className="flex-1 text-left min-w-0">
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <h3 className="font-semibold text-gray-900 truncate">{astrologer.name}</h3>
+                      {astrologer.isOnline && (
+                        <span className="text-xs text-green-600 font-medium whitespace-nowrap">● Online</span>
+                      )}
+                    </div>
+                    <p className="text-sm text-gray-500 truncate mb-1">
+                      {getLastMessagePreview(astrologer._id)}
+                    </p>
+                    <div className="flex items-center gap-2">
                       <PillBadge
                         variant={astrologer.isActive ? 'active' : 'inactive'}
                       />
-                      {astrologer.isOnline && (
-                        <span className="text-xs text-green-600 font-medium">● Online</span>
-                      )}
                     </div>
                   </div>
 
