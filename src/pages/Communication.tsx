@@ -16,6 +16,7 @@ export const Communication = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [activeCall, setActiveCall] = useState<Call | null>(null);
   const [filterStatus, setFilterStatus] = useState<'all' | 'online' | 'offline'>('all');
+  const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({});
 
   useEffect(() => {
     loadAstrologers();
@@ -28,10 +29,32 @@ export const Communication = () => {
       }
     });
 
+    // Listen for incoming messages to update unread badge on list
+    const unsubscribeMessages = socketService.onMessage((message) => {
+      const astroId =
+        message.senderType === 'astrologer'
+          ? message.senderId
+          : message.recipientType === 'astrologer'
+            ? message.recipientId
+            : undefined;
+
+      if (!astroId) return;
+
+      setUnreadCounts((prev) => {
+        // If this conversation is currently open, do not increment
+        if (selectedAstrologer?._id === astroId) {
+          return { ...prev, [astroId]: 0 };
+        }
+        const current = prev[astroId] ?? 0;
+        return { ...prev, [astroId]: current + 1 };
+      });
+    });
+
     return () => {
       unsubscribe();
+      unsubscribeMessages();
     };
-  }, []);
+  }, [selectedAstrologer]);
 
   useEffect(() => {
     filterAstrologers();
@@ -84,6 +107,7 @@ export const Communication = () => {
 
   const handleSelectAstrologer = (astrologer: Astrologer) => {
     setSelectedAstrologer(astrologer);
+    setUnreadCounts((prev) => ({ ...prev, [astrologer._id]: 0 }));
   };
 
   const handleCall = (type: 'voice' | 'video') => {
@@ -213,6 +237,11 @@ export const Communication = () => {
 
                   <div className="flex gap-1">
                     <MessageCircle className="w-5 h-5 text-gray-400" />
+                    {(unreadCounts[astrologer._id] ?? 0) > 0 && (
+                      <span className="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-semibold text-white bg-indigo-600 rounded-full">
+                        {unreadCounts[astrologer._id]}
+                      </span>
+                    )}
                   </div>
                 </button>
               ))}
