@@ -18,6 +18,7 @@ export const Communication = () => {
   const [filterStatus, setFilterStatus] = useState<'all' | 'online' | 'offline'>('all');
   const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({});
   const [joinedRooms, setJoinedRooms] = useState<Set<string>>(new Set());
+  const [lastActivity, setLastActivity] = useState<Record<string, number>>({});
 
   useEffect(() => {
     loadAstrologers();
@@ -49,6 +50,15 @@ export const Communication = () => {
         const current = prev[astroId] ?? 0;
         return { ...prev, [astroId]: current + 1 };
       });
+
+       // Track last activity timestamp for sorting (newest first)
+       const ts =
+         typeof message.timestamp === 'string'
+           ? Date.parse(message.timestamp)
+           : message.timestamp instanceof Date
+             ? message.timestamp.getTime()
+             : Date.now();
+       setLastActivity((prev) => ({ ...prev, [astroId]: ts || Date.now() }));
     });
 
     return () => {
@@ -59,7 +69,7 @@ export const Communication = () => {
 
   useEffect(() => {
     filterAstrologers();
-  }, [astrologers, searchQuery, filterStatus]);
+  }, [astrologers, searchQuery, filterStatus, lastActivity]);
 
   const loadAstrologers = async () => {
     try {
@@ -119,12 +129,27 @@ export const Communication = () => {
       );
     }
 
+    // Sort by online -> last activity desc -> name
+    filtered = [...filtered].sort((a, b) => {
+      if (a.isOnline !== b.isOnline) {
+        return a.isOnline ? -1 : 1;
+      }
+      const la = lastActivity[a._id] ?? 0;
+      const lb = lastActivity[b._id] ?? 0;
+      if (la !== lb) {
+        return lb - la;
+      }
+      return a.name.localeCompare(b.name);
+    });
+
     setFilteredAstrologers(filtered);
   };
 
   const handleSelectAstrologer = (astrologer: Astrologer) => {
     setSelectedAstrologer(astrologer);
     setUnreadCounts((prev) => ({ ...prev, [astrologer._id]: 0 }));
+    // Mark last activity to "now" when opened so it stays near top until new events arrive
+    setLastActivity((prev) => ({ ...prev, [astrologer._id]: Date.now() }));
   };
 
   const handleCall = (type: 'voice' | 'video') => {
