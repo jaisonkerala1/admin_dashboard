@@ -251,17 +251,22 @@ class SocketService {
       if (data.conversationId !== conversationId) return;
       clearTimeout(timeoutId);
       socket.off('dm:history_response', handler);
+      socket.off('dm:history', handler);
+      console.log(`📜 [SOCKET] History received for ${conversationId}: ${data.messages?.length ?? 0} messages`);
       callback(data.messages);
     };
 
     // Failsafe timeout: stop loading even if server reply is lost
     const timeoutId = setTimeout(() => {
       socket.off('dm:history_response', handler);
+      socket.off('dm:history', handler);
       console.warn(`⚠️ [SOCKET] History response timeout for ${conversationId}`);
       callback([]);
     }, 4000);
 
+    // Listen to both names to be resilient to backend emission differences
     socket.on('dm:history_response', handler);
+    socket.on('dm:history', handler);
 
     socket.emit('dm:history', {
       conversationId,
