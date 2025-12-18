@@ -92,8 +92,6 @@ export const Communication = () => {
   }, [astrologers, searchQuery, filterStatus, lastActivity]);
 
   const loadAstrologers = async () => {
-    if (isLoading) return; // Prevent multiple simultaneous loads
-    
     try {
       setIsLoading(true);
       console.log('📥 Loading astrologers...');
