@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { Phone, Video, Send, Loader2, ArrowLeft } from 'lucide-react';
 import { ChatMessage } from './ChatMessage';
 import { socketService } from '@/services/socketService';
@@ -146,24 +147,31 @@ export const ChatWindow = ({ astrologer, onBack, onCall }: ChatWindowProps) => {
             <ArrowLeft className="w-5 h-5 text-gray-600" />
           </button>
           
-          <RoundAvatar
-            src={astrologer.profilePicture}
-            name={astrologer.name}
-            size="md"
-            isOnline={astrologer.isOnline}
-          />
-          
-          <div>
-            <h3 className="font-semibold text-gray-900">{astrologer.name}</h3>
-            <div className="flex items-center gap-2 mt-0.5">
-              {astrologer.isOnline ? (
-                <span className="text-xs text-green-600 font-medium">Online</span>
-              ) : (
-                <span className="text-xs text-gray-500">Offline</span>
-              )}
-              <PillBadge variant={astrologer.isActive ? 'active' : 'inactive'} />
+          <Link 
+            to={`/astrologers/${astrologer._id}`}
+            className="flex items-center gap-3 hover:opacity-80 transition-opacity group"
+          >
+            <RoundAvatar
+              src={astrologer.profilePicture}
+              name={astrologer.name}
+              size="md"
+              isOnline={astrologer.isOnline}
+            />
+            
+            <div>
+              <h3 className="font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors">
+                {astrologer.name}
+              </h3>
+              <div className="flex items-center gap-2 mt-0.5">
+                {astrologer.isOnline ? (
+                  <span className="text-xs text-green-600 font-medium">Online</span>
+                ) : (
+                  <span className="text-xs text-gray-500">Offline</span>
+                )}
+                <PillBadge variant={astrologer.isActive ? 'active' : 'inactive'} />
+              </div>
             </div>
-          </div>
+          </Link>
         </div>
 
         <div className="flex items-center gap-2">
