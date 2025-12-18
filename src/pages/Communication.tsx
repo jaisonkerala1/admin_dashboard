@@ -17,6 +17,7 @@ export const Communication = () => {
   const [activeCall, setActiveCall] = useState<Call | null>(null);
   const [filterStatus, setFilterStatus] = useState<'all' | 'online' | 'offline'>('all');
   const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({});
+  const [joinedRooms, setJoinedRooms] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     loadAstrologers();
@@ -75,6 +76,22 @@ export const Communication = () => {
       });
       
       setAstrologers(sorted);
+
+      // Pre-join all conversations so incoming messages trigger badges
+      try {
+        await socketService.connectAndWait();
+        const nextJoined = new Set(joinedRooms);
+        sorted.forEach((astro) => {
+          const convoId = `admin_${astro._id}`;
+          if (!nextJoined.has(convoId)) {
+            socketService.joinConversation(convoId);
+            nextJoined.add(convoId);
+          }
+        });
+        setJoinedRooms(nextJoined);
+      } catch (e) {
+        console.error('Failed to pre-join conversation rooms:', e);
+      }
     } catch (error) {
       console.error('Failed to load astrologers:', error);
     } finally {
