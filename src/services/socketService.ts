@@ -4,6 +4,7 @@ import { SOCKET_URL, ADMIN_SECRET_KEY } from '@/utils/constants';
 
 class SocketService {
   private socket: Socket | null = null;
+  private connectionPromise: Promise<void> | null = null;
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
   private messageCallbacks: Array<(message: DirectMessage) => void> = [];
@@ -29,6 +30,44 @@ class SocketService {
     });
 
     this.setupEventListeners();
+  }
+
+  /**
+   * Ensure the socket is connected before sending/receiving events.
+   * Resolves once the socket is connected, with a small timeout to avoid hanging spinners.
+   */
+  async connectAndWait(timeoutMs: number = 3000): Promise<void> {
+    if (this.socket?.connected) {
+      return;
+    }
+
+    // If a connection attempt is already in-flight, reuse it
+    if (this.connectionPromise) {
+      return this.connectionPromise;
+    }
+
+    this.connect();
+
+    this.connectionPromise = new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        this.connectionPromise = null;
+        reject(new Error('Socket connection timeout'));
+      }, timeoutMs);
+
+      this.socket?.once('connect', () => {
+        clearTimeout(timeout);
+        this.connectionPromise = null;
+        resolve();
+      });
+
+      this.socket?.once('connect_error', (err) => {
+        clearTimeout(timeout);
+        this.connectionPromise = null;
+        reject(err);
+      });
+    });
+
+    return this.connectionPromise;
   }
 
   private setupEventListeners() {

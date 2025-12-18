@@ -25,41 +25,63 @@ export const ChatWindow = ({ astrologer, onBack, onCall }: ChatWindowProps) => {
   const conversationId = `admin_${astrologer._id}`;
 
   useEffect(() => {
-    // Join conversation
-    socketService.joinConversation(conversationId);
+    let isMounted = true;
 
-    // Load message history
-    socketService.getMessageHistory(conversationId, 1, 50, (loadedMessages) => {
-      setMessages(loadedMessages.sort((a, b) => 
-        new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
-      ));
-      setIsLoading(false);
-    });
+    const init = async () => {
+      try {
+        setIsLoading(true);
+        await socketService.connectAndWait();
 
-    // Listen for new messages
-    const unsubscribe = socketService.onMessage((message) => {
-      if (message.conversationId === conversationId) {
-        setMessages((prev) => {
-          // Avoid duplicates
-          if (prev.some(m => m._id === message._id)) {
-            return prev;
-          }
-          return [...prev, message];
+        // Join conversation
+        socketService.joinConversation(conversationId);
+
+        // Load message history
+        socketService.getMessageHistory(conversationId, 1, 50, (loadedMessages) => {
+          if (!isMounted) return;
+          setMessages(loadedMessages.sort((a, b) => 
+            new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+          ));
+          setIsLoading(false);
         });
-      }
-    });
 
-    // Listen for typing indicator
-    const unsubscribeTyping = socketService.onTyping((data) => {
-      if (data.conversationId === conversationId && data.userId !== 'admin') {
-        setIsTyping(data.isTyping);
+        // Listen for new messages
+        const unsubscribe = socketService.onMessage((message) => {
+          if (message.conversationId === conversationId) {
+            setMessages((prev) => {
+              // Avoid duplicates
+              if (prev.some(m => m._id === message._id)) {
+                return prev;
+              }
+              return [...prev, message];
+            });
+          }
+        });
+
+        // Listen for typing indicator
+        const unsubscribeTyping = socketService.onTyping((data) => {
+          if (data.conversationId === conversationId && data.userId !== 'admin') {
+            setIsTyping(data.isTyping);
+          }
+        });
+
+        return () => {
+          isMounted = false;
+          socketService.leaveConversation(conversationId);
+          unsubscribe();
+          unsubscribeTyping();
+        };
+      } catch (err) {
+        console.error('Failed to initialize chat window:', err);
+        setIsLoading(false);
       }
-    });
+    };
+
+    const cleanupPromise = init();
 
     return () => {
-      socketService.leaveConversation(conversationId);
-      unsubscribe();
-      unsubscribeTyping();
+      isMounted = false;
+      // Ensure cleanup even if init throws
+      cleanupPromise?.then((cleanup) => cleanup?.());
     };
   }, [conversationId]);
 
