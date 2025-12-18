@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { MessageCircle, Search, Loader2 } from 'lucide-react';
 import { ChatWindow, VideoCallWindow } from '@/components/communication';
 import { IncomingCallModal } from '@/components/communication/IncomingCallModal';
@@ -10,6 +11,8 @@ import type { Astrologer } from '@/types';
 import type { Call } from '@/types/communication';
 
 export const Communication = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [astrologers, setAstrologers] = useState<Astrologer[]>([]);
   const [filteredAstrologers, setFilteredAstrologers] = useState<Astrologer[]>([]);
   const [selectedAstrologer, setSelectedAstrologer] = useState<Astrologer | null>(null);
@@ -90,6 +93,38 @@ export const Communication = () => {
   useEffect(() => {
     filterAstrologers();
   }, [astrologers, searchQuery, filterStatus, lastActivity]);
+
+  // Handle pre-selection from navigation state (from profile page)
+  useEffect(() => {
+    if (!location.state?.selectedAstrologerId || astrologers.length === 0) return;
+
+    const preSelectedAstrologer = astrologers.find(
+      a => a._id === location.state.selectedAstrologerId
+    );
+
+    if (preSelectedAstrologer) {
+      console.log('📍 Pre-selecting astrologer from profile:', preSelectedAstrologer.name);
+      setSelectedAstrologer(preSelectedAstrologer);
+      setUnreadCounts((prev) => ({ ...prev, [preSelectedAstrologer._id]: 0 }));
+      setLastActivity((prev) => ({ ...prev, [preSelectedAstrologer._id]: Date.now() }));
+
+      // Handle the requested action
+      const action = location.state.action;
+      if (action === 'voice_call' && preSelectedAstrologer.isOnline) {
+        console.log('📞 Auto-initiating voice call...');
+        setTimeout(() => handleCall('voice'), 500); // Small delay to ensure chat window is ready
+      } else if (action === 'video_call' && preSelectedAstrologer.isOnline) {
+        console.log('📹 Auto-initiating video call...');
+        setTimeout(() => handleCall('video'), 500);
+      } else if (action === 'voice_call' || action === 'video_call') {
+        console.warn('⚠️ Cannot initiate call - astrologer is offline');
+      }
+      // For 'message' action, just opening the chat window is enough (default behavior)
+
+      // Clear the navigation state to prevent re-triggering
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [astrologers, location.state]);
 
   const loadAstrologers = async () => {
     try {

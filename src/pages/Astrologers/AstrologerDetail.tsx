@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { Mail, Phone, Star, Calendar, DollarSign, Clock, CheckCircle, Ban, Package, MessageSquare, FileText, ThumbsUp } from 'lucide-react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Mail, Phone, Star, Calendar, DollarSign, Clock, CheckCircle, Ban, Package, MessageSquare, FileText, ThumbsUp, MessageCircle, Video } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Card, Loader, Avatar, StatusBadge, Modal } from '@/components/common';
@@ -11,6 +11,7 @@ import { useToastContext } from '@/contexts/ToastContext';
 
 export const AstrologerDetail = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const toast = useToastContext();
   const [astrologer, setAstrologer] = useState<Astrologer | null>(null);
   const [services, setServices] = useState<Service[]>([]);
@@ -226,6 +227,37 @@ export const AstrologerDetail = () => {
     }
   };
 
+  // Communication handlers
+  const handleMessage = () => {
+    if (!astrologer) return;
+    navigate('/communication', {
+      state: {
+        selectedAstrologerId: astrologer._id,
+        action: 'message'
+      }
+    });
+  };
+
+  const handleVoiceCall = () => {
+    if (!astrologer) return;
+    navigate('/communication', {
+      state: {
+        selectedAstrologerId: astrologer._id,
+        action: 'voice_call'
+      }
+    });
+  };
+
+  const handleVideoCall = () => {
+    if (!astrologer) return;
+    navigate('/communication', {
+      state: {
+        selectedAstrologerId: astrologer._id,
+        action: 'video_call'
+      }
+    });
+  };
+
   if (isLoading) {
     return (
       <MainLayout>
@@ -336,6 +368,60 @@ export const AstrologerDetail = () => {
               <div className="flex items-center gap-2 text-gray-600">
                 <Calendar className="w-4 h-4" />
                 <span className="text-sm">Joined {formatDateTime(astrologer.createdAt)}</span>
+              </div>
+            </div>
+
+            {/* Communication Actions */}
+            <div className="w-full mt-6 pt-6 border-t border-gray-200">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                Quick Actions
+              </p>
+              <div className="space-y-2">
+                {/* Message Button */}
+                <button
+                  onClick={handleMessage}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  <span>Send Message</span>
+                </button>
+                
+                {/* Voice & Video Calls */}
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={handleVoiceCall}
+                    disabled={!astrologer.isOnline}
+                    className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg transition-colors font-medium ${
+                      astrologer.isOnline
+                        ? 'bg-green-600 text-white hover:bg-green-700'
+                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    }`}
+                    title={astrologer.isOnline ? 'Voice Call' : 'Astrologer is offline'}
+                  >
+                    <Phone className="w-4 h-4" />
+                    <span className="text-sm">Call</span>
+                  </button>
+                  
+                  <button
+                    onClick={handleVideoCall}
+                    disabled={!astrologer.isOnline}
+                    className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg transition-colors font-medium ${
+                      astrologer.isOnline
+                        ? 'bg-blue-600 text-white hover:bg-blue-700'
+                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    }`}
+                    title={astrologer.isOnline ? 'Video Call' : 'Astrologer is offline'}
+                  >
+                    <Video className="w-4 h-4" />
+                    <span className="text-sm">Video</span>
+                  </button>
+                </div>
+                
+                {!astrologer.isOnline && (
+                  <p className="text-xs text-gray-500 text-center mt-2">
+                    Calls available when astrologer is online
+                  </p>
+                )}
               </div>
             </div>
           </div>

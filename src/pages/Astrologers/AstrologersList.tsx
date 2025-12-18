@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Search, Edit2, Trash2, Eye, UserX, Users, UserCheck, Clock, XCircle } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Search, Edit2, Trash2, Eye, UserX, Users, UserCheck, Clock, XCircle, MessageCircle, Phone, Video } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { Card, Loader, EmptyState, RoundAvatar, PillBadge, ShowEntriesDropdown, StatCard } from '@/components/common';
 import { astrologersApi } from '@/api';
@@ -10,6 +10,7 @@ import { formatRelativeTime } from '@/utils/formatters';
 type FilterTab = 'all' | 'active' | 'pending' | 'inactive';
 
 export const AstrologersList = () => {
+  const navigate = useNavigate();
   const [astrologers, setAstrologers] = useState<Astrologer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -116,6 +117,16 @@ export const AstrologersList = () => {
       return <PillBadge variant="pending" label="Pending Approval" showDot={false} />;
     }
     return null;
+  };
+
+  // Communication helper
+  const handleCommunication = (astrologer: Astrologer, action: 'message' | 'voice_call' | 'video_call') => {
+    navigate('/communication', {
+      state: {
+        selectedAstrologerId: astrologer._id,
+        action
+      }
+    });
   };
 
   // Pagination helper
@@ -339,7 +350,44 @@ export const AstrologersList = () => {
                         </div>
                       </td>
                       <td className="px-4 py-4 text-right">
-                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          {/* Communication Actions */}
+                          <button
+                            onClick={() => handleCommunication(astrologer, 'message')}
+                            className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                            title="Send Message"
+                          >
+                            <MessageCircle className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleCommunication(astrologer, 'voice_call')}
+                            disabled={!astrologer.isOnline}
+                            className={`p-2 rounded-lg transition-colors ${
+                              astrologer.isOnline
+                                ? 'text-gray-400 hover:text-green-600 hover:bg-green-50'
+                                : 'text-gray-300 cursor-not-allowed'
+                            }`}
+                            title={astrologer.isOnline ? 'Voice Call' : 'Offline'}
+                          >
+                            <Phone className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleCommunication(astrologer, 'video_call')}
+                            disabled={!astrologer.isOnline}
+                            className={`p-2 rounded-lg transition-colors ${
+                              astrologer.isOnline
+                                ? 'text-gray-400 hover:text-blue-600 hover:bg-blue-50'
+                                : 'text-gray-300 cursor-not-allowed'
+                            }`}
+                            title={astrologer.isOnline ? 'Video Call' : 'Offline'}
+                          >
+                            <Video className="w-4 h-4" />
+                          </button>
+                          
+                          {/* Separator */}
+                          <div className="w-px h-6 bg-gray-200 mx-1" />
+                          
+                          {/* Standard Actions */}
                           <Link
                             to={`/astrologers/${astrologer._id}`}
                             className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
@@ -439,7 +487,20 @@ export const AstrologersList = () => {
                         </div>
                       </td>
                       <td className="px-4 py-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
+                        <div className="flex items-center justify-end gap-1">
+                          {/* Communication */}
+                          <button
+                            onClick={() => handleCommunication(astrologer, 'message')}
+                            className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                            title="Message"
+                          >
+                            <MessageCircle className="w-4 h-4" />
+                          </button>
+                          
+                          {/* Separator */}
+                          <div className="w-px h-6 bg-gray-200 mx-1" />
+                          
+                          {/* Standard Actions */}
                           <Link
                             to={`/astrologers/${astrologer._id}`}
                             className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
@@ -502,21 +563,33 @@ export const AstrologersList = () => {
                     </Link>
                   </div>
                   
-                  <div className="flex items-center gap-2 mt-4 pt-4 border-t border-gray-100">
-                    <Link
-                      to={`/astrologers/${astrologer._id}`}
-                      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                  <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-gray-100">
+                    {/* Communication Button */}
+                    <button
+                      onClick={() => handleCommunication(astrologer, 'message')}
+                      className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors"
                     >
-                      <Eye className="w-4 h-4" />
-                      View
-                    </Link>
-                    <button className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
-                      <Edit2 className="w-4 h-4" />
-                      Edit
+                      <MessageCircle className="w-4 h-4" />
+                      Send Message
                     </button>
-                    <button className="px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                    
+                    {/* Standard Actions */}
+                    <div className="flex items-center gap-2">
+                      <Link
+                        to={`/astrologers/${astrologer._id}`}
+                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                      >
+                        <Eye className="w-4 h-4" />
+                        View
+                      </Link>
+                      <button className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                        <Edit2 className="w-4 h-4" />
+                        Edit
+                      </button>
+                      <button className="px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
