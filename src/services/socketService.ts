@@ -240,23 +240,30 @@ class SocketService {
     }
 
     // Prepare response handler before emitting to avoid race conditions
+    const socket = this.socket;
+    if (!socket) {
+      console.error('❌ Socket missing after connect for history');
+      callback([]);
+      return;
+    }
+
     const handler = (data: { conversationId: string; messages: DirectMessage[] }) => {
       if (data.conversationId !== conversationId) return;
       clearTimeout(timeoutId);
-      this.socket?.off('dm:history_response', handler);
+      socket.off('dm:history_response', handler);
       callback(data.messages);
     };
 
     // Failsafe timeout: stop loading even if server reply is lost
     const timeoutId = setTimeout(() => {
-      this.socket?.off('dm:history_response', handler);
+      socket.off('dm:history_response', handler);
       console.warn(`⚠️ [SOCKET] History response timeout for ${conversationId}`);
       callback([]);
     }, 4000);
 
-    this.socket.on('dm:history_response', handler);
+    socket.on('dm:history_response', handler);
 
-    this.socket.emit('dm:history', {
+    socket.emit('dm:history', {
       conversationId,
       page,
       limit,
