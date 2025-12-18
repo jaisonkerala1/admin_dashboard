@@ -98,7 +98,11 @@ export const Communication = () => {
       setIsLoading(true);
       console.log('📥 Loading astrologers...');
       
-      const response = await astrologersApi.getAll();
+      // Call API with params like Astrologers page does
+      const response = await astrologersApi.getAll({ 
+        sortBy: 'createdAt', 
+        sortOrder: 'desc' 
+      });
       console.log('✅ Astrologers loaded:', response.data?.length || 0);
       
       const data = response.data || [];
@@ -112,31 +116,31 @@ export const Communication = () => {
       });
       
       setAstrologers(sorted);
+      setIsLoading(false); // Stop loading spinner NOW
+      console.log('✅ Astrologers list ready');
 
-      // Pre-join all conversations so incoming messages trigger badges
+      // Pre-join rooms AFTER showing the list (non-blocking)
       if (sorted.length > 0) {
-        try {
-          await socketService.connectAndWait(2000); // 2 second timeout
-          console.log('🔌 Socket connected, pre-joining rooms...');
-          sorted.forEach((astro) => {
-            const convoId = `admin_${astro._id}`;
-            if (!joinedRooms.has(convoId)) {
-              socketService.joinConversation(convoId);
-              setJoinedRooms((prev) => new Set([...prev, convoId]));
-            }
+        console.log('🔌 Pre-joining conversation rooms in background...');
+        // Don't await this - let it happen in background
+        socketService.connectAndWait(2000)
+          .then(() => {
+            sorted.forEach((astro) => {
+              const convoId = `admin_${astro._id}`;
+              if (!joinedRooms.has(convoId)) {
+                socketService.joinConversation(convoId);
+                setJoinedRooms((prev) => new Set([...prev, convoId]));
+              }
+            });
+            console.log(`✅ Pre-joined ${sorted.length} conversation rooms`);
+          })
+          .catch((e) => {
+            console.warn('⚠️ Failed to pre-join conversation rooms (non-critical):', e);
           });
-          console.log(`✅ Pre-joined ${sorted.length} conversation rooms`);
-        } catch (e) {
-          console.warn('⚠️ Failed to pre-join conversation rooms (non-critical):', e);
-          // Continue anyway - this is not critical
-        }
       }
     } catch (error) {
       console.error('❌ Failed to load astrologers:', error);
-      // Still set loading to false so user can retry
-    } finally {
       setIsLoading(false);
-      console.log('✅ Loading complete');
     }
   };
 
