@@ -301,10 +301,10 @@ class SocketService {
     console.log('📞 [SOCKET] Initiating call:', data);
   }
 
-  acceptCall(callId: string) {
+  acceptCall(callId: string, contactId?: string) {
     if (!this.socket?.connected) return;
 
-    this.socket.emit('call:accept', { callId });
+    this.socket.emit('call:accept', { callId, contactId });
     console.log('✅ [SOCKET] Accepting call:', callId);
   }
 
