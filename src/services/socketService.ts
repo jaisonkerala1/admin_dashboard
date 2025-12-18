@@ -10,6 +10,8 @@ class SocketService {
   private messageCallbacks: Array<(message: DirectMessage) => void> = [];
   private callCallbacks: Array<(call: Call) => void> = [];
   private callEndCallbacks: Array<(callId: string) => void> = [];
+  private callTokenCallbacks: Array<(data: any) => void> = [];
+  private callIncomingCallbacks: Array<(call: any) => void> = [];
   private typingCallbacks: Array<(data: { conversationId: string; userId: string; isTyping: boolean }) => void> = [];
 
   connect() {
@@ -114,9 +116,14 @@ class SocketService {
     });
 
     // Call events
-    this.socket.on('call:incoming', (call: Call) => {
+    this.socket.on('call:incoming', (call: any) => {
       console.log('📞 [SOCKET] Incoming call:', call);
-      this.callCallbacks.forEach(callback => callback(call));
+      this.callIncomingCallbacks.forEach(callback => callback(call));
+    });
+
+    this.socket.on('call:token', (data: any) => {
+      console.log('🔑 [SOCKET] Call token received:', data);
+      this.callTokenCallbacks.forEach(callback => callback(data));
     });
 
     this.socket.on('call:accepted', (call: Call) => {
@@ -347,6 +354,20 @@ class SocketService {
     this.typingCallbacks.push(callback);
     return () => {
       this.typingCallbacks = this.typingCallbacks.filter(cb => cb !== callback);
+    };
+  }
+
+  onCallToken(callback: (data: any) => void) {
+    this.callTokenCallbacks.push(callback);
+    return () => {
+      this.callTokenCallbacks = this.callTokenCallbacks.filter(cb => cb !== callback);
+    };
+  }
+
+  onIncomingCall(callback: (call: any) => void) {
+    this.callIncomingCallbacks.push(callback);
+    return () => {
+      this.callIncomingCallbacks = this.callIncomingCallbacks.filter(cb => cb !== callback);
     };
   }
 

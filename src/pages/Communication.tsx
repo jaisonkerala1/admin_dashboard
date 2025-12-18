@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { MessageCircle, Search, Loader2 } from 'lucide-react';
 import { ChatWindow, VideoCallWindow } from '@/components/communication';
+import { IncomingCallModal } from '@/components/communication/IncomingCallModal';
 import { RoundAvatar } from '@/components/common/RoundAvatar';
 import { PillBadge } from '@/components/common/PillBadge';
 import { socketService } from '@/services/socketService';
@@ -15,6 +16,7 @@ export const Communication = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [activeCall, setActiveCall] = useState<Call | null>(null);
+  const [incomingCall, setIncomingCall] = useState<any | null>(null);
   const [filterStatus, setFilterStatus] = useState<'all' | 'online' | 'offline'>('all');
   const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({});
   const [joinedRooms, setJoinedRooms] = useState<Set<string>>(new Set());
@@ -25,6 +27,18 @@ export const Communication = () => {
     socketService.connect();
 
     // Listen for incoming calls
+    const unsubscribeIncoming = socketService.onIncomingCall((call) => {
+      console.log('📞 Incoming call received in Communication.tsx:', call);
+      // Find the astrologer who is calling
+      const caller = astrologers.find(a => a._id === call.callerId);
+      setIncomingCall({
+        ...call,
+        callerName: call.callerName || caller?.name || 'Unknown',
+        callerAvatar: call.callerAvatar || caller?.profilePicture,
+      });
+    });
+
+    // Listen for call accepted events
     const unsubscribe = socketService.onCall((call) => {
       if (call.status === 'accepted') {
         setActiveCall(call);
@@ -63,9 +77,10 @@ export const Communication = () => {
 
     return () => {
       unsubscribe();
+      unsubscribeIncoming();
       unsubscribeMessages();
     };
-  }, [selectedAstrologer]);
+  }, [selectedAstrologer, astrologers]);
 
   useEffect(() => {
     filterAstrologers();
@@ -155,11 +170,36 @@ export const Communication = () => {
   const handleCall = (type: 'voice' | 'video') => {
     if (!selectedAstrologer) return;
 
+    // Listen for call:token response (one-time)
+    const unsubscribeToken = socketService.onCallToken((data) => {
+      console.log('🔑 Call token received:', data);
+      
+      // Set up active call with token data
+      setActiveCall({
+        _id: data.callId,
+        callerId: 'admin',
+        callerType: 'admin',
+        recipientId: selectedAstrologer._id,
+        recipientType: 'astrologer',
+        callType: type,
+        channelName: data.channelName,
+        agoraToken: data.agoraToken,
+        status: 'initiated',
+        startedAt: new Date(),
+      });
+
+      // Clean up listener
+      unsubscribeToken();
+    });
+
+    // Initiate the call
     socketService.initiateCall({
       recipientId: selectedAstrologer._id,
       recipientType: 'astrologer',
       callType: type,
     });
+
+    console.log(`📞 Initiating ${type} call to ${selectedAstrologer.name}`);
   };
 
   const handleEndCall = () => {
@@ -167,6 +207,44 @@ export const Communication = () => {
       socketService.endCall(activeCall._id);
       setActiveCall(null);
     }
+  };
+
+  const handleAcceptIncomingCall = () => {
+    if (!incomingCall) return;
+
+    // Emit call:accept
+    socketService.acceptCall(incomingCall.callId, incomingCall.callerId);
+
+    // Find the astrologer and select them
+    const caller = astrologers.find(a => a._id === incomingCall.callerId);
+    if (caller) {
+      setSelectedAstrologer(caller);
+    }
+
+    // Set up active call with incoming call data
+    setActiveCall({
+      _id: incomingCall.callId,
+      callerId: incomingCall.callerId,
+      callerType: 'astrologer',
+      recipientId: 'admin',
+      recipientType: 'admin',
+      callType: incomingCall.callType,
+      channelName: incomingCall.channelName,
+      agoraToken: incomingCall.agoraToken,
+      status: 'accepted',
+      startedAt: new Date(),
+    });
+
+    setIncomingCall(null);
+  };
+
+  const handleRejectIncomingCall = () => {
+    if (!incomingCall) return;
+
+    // Emit call:reject
+    socketService.rejectCall(incomingCall.callId, 'declined');
+
+    setIncomingCall(null);
   };
 
   if (activeCall && selectedAstrologer) {
@@ -314,6 +392,17 @@ export const Communication = () => {
           </div>
         )}
       </div>
+
+      {/* Incoming Call Modal */}
+      {incomingCall && (
+        <IncomingCallModal
+          callerName={incomingCall.callerName}
+          callerAvatar={incomingCall.callerAvatar}
+          callType={incomingCall.callType}
+          onAccept={handleAcceptIncomingCall}
+          onReject={handleRejectIncomingCall}
+        />
+      )}
     </div>
   );
 };
