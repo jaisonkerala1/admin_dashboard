@@ -225,14 +225,17 @@ class SocketService {
     });
   }
 
-  getMessageHistory(
+  async getMessageHistory(
     conversationId: string,
     page: number = 1,
     limit: number = 50,
     callback: (messages: DirectMessage[]) => void
-  ) {
-    if (!this.socket?.connected) {
-      console.error('❌ Socket not connected');
+  ): Promise<void> {
+    try {
+      await this.connectAndWait();
+    } catch (err) {
+      console.error('❌ Socket not connected (history):', err);
+      callback([]);
       return;
     }
 
