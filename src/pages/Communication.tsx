@@ -74,13 +74,13 @@ export const Communication = () => {
     const unsubscribeCallEnd = socketService.onCallEnd((callId) => {
       console.log('📴 [COMMUNICATION] Call ended/rejected remotely:', callId);
       // Clear outgoing ringing UI if it matches
-      setOutgoingCall((current) => (current?._id === callId ? null : current));
+      setOutgoingCall((current: Call | null) => (current?._id === callId ? null : current));
 
       // Clear active call UI if it matches
-      setActiveCall((current) => (current?._id === callId ? null : current));
+      setActiveCall((current: Call | null) => (current?._id === callId ? null : current));
 
       // Clear incoming call modal if caller cancels before we answer
-      setIncomingCall((current) => (current?.callId === callId ? null : current));
+      setIncomingCall((current: any | null) => (current?.callId === callId ? null : current));
     });
 
     // Listen for incoming messages to update unread badge on list
