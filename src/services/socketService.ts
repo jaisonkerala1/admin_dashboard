@@ -131,7 +131,7 @@ class SocketService {
       this.callCallbacks.forEach(callback => callback(call));
     });
 
-    this.socket.on('call:rejected', (data: { callId: string; reason?: string }) => {
+    this.socket.on('call:reject', (data: { callId: string; reason?: string }) => {
       console.log('❌ [SOCKET] Call rejected:', data);
       this.callEndCallbacks.forEach(callback => callback(data.callId));
     });
