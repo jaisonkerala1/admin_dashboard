@@ -193,9 +193,9 @@ export const Reviews = () => {
             icon={Star}
             iconColor="text-yellow-600"
             iconBgColor="bg-yellow-100"
-          />
+            />
+          </div>
         </div>
-      </div>
 
       {/* Filter Tabs */}
       <div className="mb-6 border-b border-gray-200">
@@ -372,8 +372,8 @@ export const Reviews = () => {
             {/* Tablet & Mobile View */}
             <div className="lg:hidden space-y-4">
               {paginatedReviews.map((review) => (
-                <div
-                  key={review._id}
+              <div
+                key={review._id}
                   className="border border-gray-200 rounded-xl p-4 hover:border-blue-300 hover:shadow-sm transition-all"
                 >
                   <div className="flex items-start gap-3">
@@ -384,14 +384,14 @@ export const Reviews = () => {
                       className="w-4 h-4 mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
                     <div className="flex-1">
-                      <div className="flex items-start justify-between mb-3">
-                        <div>
+                <div className="flex items-start justify-between mb-3">
+                    <div>
                           <p className="font-semibold text-gray-900">{review.clientName}</p>
                           <div className="flex items-center gap-2 mt-1">
                             {getRatingStars(review.rating)}
                             <span className="text-sm font-medium text-gray-700">{review.rating}</span>
-                          </div>
-                        </div>
+                    </div>
+                  </div>
                         <div className="flex gap-1">
                           {review.isVerified && <PillBadge variant="approved" label="✓" showDot={false} />}
                           {review.isPublic ? (
@@ -399,9 +399,9 @@ export const Reviews = () => {
                           ) : (
                             <EyeOff className="w-4 h-4 text-gray-400" />
                           )}
-                        </div>
-                      </div>
-                      
+                  </div>
+                </div>
+                
                       {review.astrologerId && (
                         <Link 
                           to={`${ROUTES.ASTROLOGERS}/${review.astrologerId._id}`}
@@ -417,7 +417,7 @@ export const Reviews = () => {
                             <p className="text-sm font-medium text-gray-900 hover:text-blue-600">
                               {review.astrologerId.name}
                             </p>
-                          </div>
+                  </div>
                         </Link>
                       )}
                       
@@ -433,10 +433,10 @@ export const Reviews = () => {
                         )}
                       </div>
                     </div>
-                  </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
+          </div>
 
             {/* Pagination */}
             {totalPages > 1 && (
@@ -455,7 +455,7 @@ export const Reviews = () => {
                   <div className="flex items-center gap-1">
                     {getPaginationNumbers().map((page, idx) =>
                       typeof page === 'number' ? (
-                        <button
+              <button
                           key={idx}
                           onClick={() => dispatch(setCurrentPage(page))}
                           className={`w-10 h-10 text-sm font-medium rounded-lg transition-colors ${
@@ -465,7 +465,7 @@ export const Reviews = () => {
                           }`}
                         >
                           {page}
-                        </button>
+              </button>
                       ) : (
                         <span key={idx} className="px-2 text-gray-400">
                           {page}
@@ -473,16 +473,16 @@ export const Reviews = () => {
                       )
                     )}
                   </div>
-                  <button
+              <button
                     onClick={() => dispatch(setCurrentPage(currentPage + 1))}
                     disabled={currentPage === totalPages}
                     className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     Next
-                  </button>
-                </div>
-              </div>
-            )}
+              </button>
+            </div>
+          </div>
+        )}
           </>
         )}
       </Card>

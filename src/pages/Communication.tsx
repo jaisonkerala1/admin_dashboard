@@ -55,6 +55,15 @@ export const Communication = () => {
       }
     });
 
+    // Listen for call ended events (when astrologer ends the call)
+    const unsubscribeCallEnd = socketService.onCallEnd((callId) => {
+      console.log('📴 [COMMUNICATION] Call ended remotely:', callId);
+      if (activeCall?._id === callId) {
+        console.log('📴 [COMMUNICATION] Clearing active call UI');
+        setActiveCall(null);
+      }
+    });
+
     // Listen for incoming messages to update unread badge on list
     const unsubscribeMessages = socketService.onMessage((message) => {
       const astroId =
@@ -96,6 +105,7 @@ export const Communication = () => {
       clearTimeout(loadingTimeout);
       unsubscribe();
       unsubscribeIncoming();
+      unsubscribeCallEnd();
       unsubscribeMessages();
     };
   }, []); // Run only once on mount
@@ -278,11 +288,26 @@ export const Communication = () => {
     console.log(`📞 Initiating ${type} call to ${selectedAstrologer.name}`);
   };
 
-  const handleEndCall = () => {
-    if (activeCall) {
-      socketService.endCall(activeCall._id);
-      setActiveCall(null);
-    }
+  const handleEndCall = (duration?: number) => {
+    if (!activeCall) return;
+
+    // Calculate call duration if not provided
+    const callDuration = duration ?? Math.floor((Date.now() - activeCall.startedAt.getTime()) / 1000);
+    
+    // Determine the contact ID (recipient of the call)
+    const contactId = activeCall.recipientId || activeCall.callerId;
+    
+    console.log(`📴 [COMMUNICATION] Ending call ${activeCall._id} with ${contactId} (duration: ${callDuration}s)`);
+    
+    // Notify backend via Socket.IO with contactId so the other party gets notified
+    socketService.endCall(activeCall._id, {
+      contactId,
+      duration: callDuration,
+      endReason: 'completed',
+    });
+    
+    // Clear local call state
+    setActiveCall(null);
   };
 
   const handleAcceptIncomingCall = () => {

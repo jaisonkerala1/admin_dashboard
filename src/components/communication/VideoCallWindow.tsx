@@ -13,7 +13,7 @@ interface VideoCallWindowProps {
   channelName: string;
   agoraToken: string;
   callType: 'voice' | 'video';
-  onEnd: () => void;
+  onEnd: (duration?: number) => void;
 }
 
 const APP_ID = import.meta.env.VITE_AGORA_APP_ID || '';
@@ -151,8 +151,19 @@ export const VideoCallWindow = ({
   };
 
   const handleEnd = () => {
+    console.log(`📴 [VIDEO_CALL] Ending call, duration: ${duration}s`);
+    
+    // Stop duration timer
+    if (durationIntervalRef.current) {
+      clearInterval(durationIntervalRef.current);
+      durationIntervalRef.current = null;
+    }
+    
+    // Cleanup Agora resources
     cleanup();
-    onEnd();
+    
+    // Notify parent with call duration
+    onEnd(duration);
   };
 
   const formatDuration = (seconds: number) => {

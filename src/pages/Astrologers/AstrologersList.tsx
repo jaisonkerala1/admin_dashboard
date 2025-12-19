@@ -193,7 +193,7 @@ export const AstrologersList = () => {
             icon={Clock}
             iconColor="text-yellow-600"
             iconBgColor="bg-yellow-100"
-          />
+            />
           <StatCard
             title="Inactive"
             value={stats.inactive}
@@ -202,7 +202,7 @@ export const AstrologersList = () => {
             iconBgColor="bg-red-100"
           />
         </div>
-      </div>
+          </div>
 
       {/* Filter Tabs */}
       <div className="mb-6 border-b border-gray-200">
@@ -225,7 +225,7 @@ export const AstrologersList = () => {
               {tab.label} <span className="text-sm">({tab.count})</span>
             </button>
           ))}
-        </div>
+          </div>
       </div>
 
       {/* Table Card */}
@@ -264,9 +264,9 @@ export const AstrologersList = () => {
           <>
             {/* Desktop Table */}
             <div className="hidden lg:block overflow-x-auto">
-              <table className="w-full">
+            <table className="w-full">
                 <thead className="border-b border-gray-200">
-                  <tr>
+                <tr>
                     <th className="px-4 py-3 text-left w-12">
                       <input
                         type="checkbox"
@@ -285,8 +285,8 @@ export const AstrologersList = () => {
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Charges</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Specialization</th>
                     <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Action</th>
-                  </tr>
-                </thead>
+                </tr>
+              </thead>
                 <tbody>
                   {paginatedAstrologers.map((astrologer) => (
                     <tr 
@@ -301,7 +301,7 @@ export const AstrologersList = () => {
                           className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                         />
                       </td>
-                      <td className="px-4 py-4">
+                    <td className="px-4 py-4">
                         <Link 
                           to={`/astrologers/${astrologer._id}`}
                           className="flex items-center gap-3 hover:opacity-80 transition-opacity"
@@ -312,32 +312,32 @@ export const AstrologersList = () => {
                             isOnline={astrologer.isOnline}
                             size="md"
                           />
-                          <div>
+                        <div>
                             <p className="font-semibold text-gray-900 text-base">{astrologer.name}</p>
                             <p className="text-sm text-gray-500">{astrologer.name.split(' ')[0]}</p>
-                          </div>
+                        </div>
                         </Link>
-                      </td>
-                      <td className="px-4 py-4">
-                        <p className="text-sm text-gray-900">{astrologer.email}</p>
-                        <p className="text-sm text-gray-500">{astrologer.phone}</p>
-                      </td>
-                      <td className="px-4 py-4">
+                    </td>
+                    <td className="px-4 py-4">
+                      <p className="text-sm text-gray-900">{astrologer.email}</p>
+                      <p className="text-sm text-gray-500">{astrologer.phone}</p>
+                    </td>
+                    <td className="px-4 py-4">
                         <div className="flex flex-col gap-1.5">
                           <PillBadge variant={getStatusVariant(astrologer)} label={getStatusLabel(astrologer)} />
                           {getApprovalBadge(astrologer)}
-                        </div>
-                      </td>
-                      <td className="px-4 py-4">
+                      </div>
+                    </td>
+                    <td className="px-4 py-4">
                         <div className="flex items-center gap-1.5">
                           <span className="text-lg">⭐</span>
-                          <div>
+                      <div>
                             <p className="font-semibold text-gray-900">{(astrologer.rating || 0).toFixed(1)}</p>
                             <p className="text-xs text-gray-500">{astrologer.totalReviews || 0} reviews</p>
                           </div>
-                        </div>
-                      </td>
-                      <td className="px-4 py-4">
+                      </div>
+                    </td>
+                    <td className="px-4 py-4">
                         <p className="font-semibold text-gray-900">₹{astrologer.consultationCharge || 0}</p>
                         <p className="text-xs text-gray-500">per minute</p>
                       </td>
@@ -470,8 +470,8 @@ export const AstrologersList = () => {
                             <p className="text-xs text-gray-500">₹{astrologer.consultationCharge || 0}/min</p>
                           </div>
                         </Link>
-                      </td>
-                      <td className="px-4 py-4">
+                    </td>
+                    <td className="px-4 py-4">
                         <div className="flex items-center gap-1.5">
                           <span className="text-base">⭐</span>
                           <div>
@@ -479,14 +479,14 @@ export const AstrologersList = () => {
                             <p className="text-xs text-gray-500">{astrologer.totalReviews || 0}</p>
                           </div>
                         </div>
-                      </td>
-                      <td className="px-4 py-4">
+                    </td>
+                    <td className="px-4 py-4">
                         <div className="flex flex-col gap-1.5">
                           <PillBadge variant={getStatusVariant(astrologer)} label={getStatusLabel(astrologer)} />
                           {getApprovalBadge(astrologer)}
                         </div>
-                      </td>
-                      <td className="px-4 py-4 text-right">
+                    </td>
+                    <td className="px-4 py-4 text-right">
                         <div className="flex items-center justify-end gap-1">
                           {/* Communication */}
                           <button
@@ -501,21 +501,21 @@ export const AstrologersList = () => {
                           <div className="w-px h-6 bg-gray-200 mx-1" />
                           
                           {/* Standard Actions */}
-                          <Link
-                            to={`/astrologers/${astrologer._id}`}
+                      <Link
+                        to={`/astrologers/${astrologer._id}`}
                             className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                          >
-                            <Eye className="w-4 h-4" />
-                          </Link>
+                      >
+                        <Eye className="w-4 h-4" />
+                      </Link>
                           <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
                             <Edit2 className="w-4 h-4" />
                           </button>
                         </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
             </div>
 
             {/* Mobile Cards */}

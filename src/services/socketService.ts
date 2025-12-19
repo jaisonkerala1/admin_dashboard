@@ -315,11 +315,16 @@ class SocketService {
     console.log('❌ [SOCKET] Rejecting call:', callId);
   }
 
-  endCall(callId: string, endReason?: string) {
+  endCall(callId: string, options?: { contactId?: string; duration?: number; endReason?: string }) {
     if (!this.socket?.connected) return;
 
-    this.socket.emit('call:end', { callId, endReason });
-    console.log('📞 [SOCKET] Ending call:', callId);
+    const payload: Record<string, any> = { callId };
+    if (options?.contactId) payload.contactId = options.contactId;
+    if (options?.duration !== undefined) payload.duration = options.duration;
+    if (options?.endReason) payload.reason = options.endReason;
+
+    this.socket.emit('call:end', payload);
+    console.log('📞 [SOCKET] Ending call:', callId, options ? `(contactId: ${options.contactId}, duration: ${options.duration}s)` : '');
   }
 
   notifyCallConnected(callId: string) {
