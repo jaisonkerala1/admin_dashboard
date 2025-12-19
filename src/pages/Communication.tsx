@@ -55,12 +55,17 @@ export const Communication = () => {
       }
     });
 
-    // Listen for call ended events (when astrologer ends the call)
+    // Listen for call ended/rejected events (when astrologer ends or declines the call)
     const unsubscribeCallEnd = socketService.onCallEnd((callId) => {
-      console.log('📴 [COMMUNICATION] Call ended remotely:', callId);
+      console.log('📴 [COMMUNICATION] Call ended/rejected remotely:', callId);
       if (activeCall?._id === callId) {
-        console.log('📴 [COMMUNICATION] Clearing active call UI');
+        console.log('📴 [COMMUNICATION] Clearing active call UI (rejected/ended)');
+        // Clear the active call immediately
         setActiveCall(null);
+        
+        // Show a brief notification that the call was declined/ended
+        // You can add a toast notification here if you have a toast library
+        console.log('ℹ️ [COMMUNICATION] Call was declined or ended by the other party');
       }
     });
 
