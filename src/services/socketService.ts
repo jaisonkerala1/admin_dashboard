@@ -1,5 +1,5 @@
 import { io, Socket } from 'socket.io-client';
-import type { DirectMessage, Call } from '@/types/communication';
+import type { DirectMessage } from '@/types/communication';
 import { SOCKET_URL, ADMIN_SECRET_KEY } from '@/utils/constants';
 
 class SocketService {
@@ -8,7 +8,7 @@ class SocketService {
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
   private messageCallbacks: Array<(message: DirectMessage) => void> = [];
-  private callCallbacks: Array<(call: Call) => void> = [];
+  private callAcceptCallbacks: Array<(data: { callId: string; contactId?: string; agoraToken?: string; channelName?: string; agoraAppId?: string }) => void> = [];
   private callEndCallbacks: Array<(callId: string) => void> = [];
   private callTokenCallbacks: Array<(data: any) => void> = [];
   private callIncomingCallbacks: Array<(call: any) => void> = [];
@@ -126,20 +126,38 @@ class SocketService {
       this.callTokenCallbacks.forEach(callback => callback(data));
     });
 
-    this.socket.on('call:accepted', (call: Call) => {
-      console.log('✅ [SOCKET] Call accepted:', call);
-      this.callCallbacks.forEach(callback => callback(call));
-    });
+    // Call accepted (server -> caller). Backend event is `call:accept`.
+    // Keep backward compatibility in case older servers emit `call:accepted`.
+    const handleCallAccept = (data: any) => {
+      console.log('✅ [SOCKET] Call accepted:', data);
+      const normalized = {
+        callId: data?.callId ?? data?._id,
+        contactId: data?.contactId,
+        agoraToken: data?.agoraToken,
+        channelName: data?.channelName,
+        agoraAppId: data?.agoraAppId,
+      };
+      if (!normalized.callId) return;
+      this.callAcceptCallbacks.forEach(callback => callback(normalized));
+    };
+    this.socket.on('call:accept', handleCallAccept);
+    this.socket.on('call:accepted', handleCallAccept);
 
     this.socket.on('call:reject', (data: { callId: string; reason?: string }) => {
       console.log('❌ [SOCKET] Call rejected:', data);
       this.callEndCallbacks.forEach(callback => callback(data.callId));
     });
 
-    this.socket.on('call:ended', (data: { callId: string; duration?: number; endReason?: string }) => {
+    // Call ended (server -> other party). Backend event is `call:end`.
+    // Keep backward compatibility in case older servers emit `call:ended`.
+    const handleCallEnd = (data: any) => {
       console.log('📞 [SOCKET] Call ended:', data);
-      this.callEndCallbacks.forEach(callback => callback(data.callId));
-    });
+      const callId = data?.callId ?? data?._id;
+      if (!callId) return;
+      this.callEndCallbacks.forEach(callback => callback(callId));
+    };
+    this.socket.on('call:end', handleCallEnd);
+    this.socket.on('call:ended', handleCallEnd);
 
     this.socket.on('call:missed', (data: { callId: string }) => {
       console.log('📞 [SOCKET] Call missed:', data);
@@ -341,10 +359,10 @@ class SocketService {
     };
   }
 
-  onCall(callback: (call: Call) => void) {
-    this.callCallbacks.push(callback);
+  onCallAccept(callback: (data: { callId: string; contactId?: string; agoraToken?: string; channelName?: string; agoraAppId?: string }) => void) {
+    this.callAcceptCallbacks.push(callback);
     return () => {
-      this.callCallbacks = this.callCallbacks.filter(cb => cb !== callback);
+      this.callAcceptCallbacks = this.callAcceptCallbacks.filter(cb => cb !== callback);
     };
   }
 

@@ -3,6 +3,7 @@ import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { MessageCircle, Search, Loader2, Home } from 'lucide-react';
 import { ChatWindow, VideoCallWindow } from '@/components/communication';
 import { IncomingCallModal } from '@/components/communication/IncomingCallModal';
+import { OutgoingCallModal } from '@/components/communication/OutgoingCallModal';
 import { RoundAvatar } from '@/components/common/RoundAvatar';
 import { PillBadge } from '@/components/common/PillBadge';
 import { socketService } from '@/services/socketService';
@@ -18,6 +19,10 @@ export const Communication = () => {
   const [selectedAstrologer, setSelectedAstrologer] = useState<Astrologer | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  // WhatsApp-like call state:
+  // - outgoingCall: we initiated and we're waiting for accept (ringing)
+  // - activeCall: accepted/in-call (Agora window)
+  const [outgoingCall, setOutgoingCall] = useState<Call | null>(null);
   const [activeCall, setActiveCall] = useState<Call | null>(null);
   const [incomingCall, setIncomingCall] = useState<any | null>(null);
   const [filterStatus, setFilterStatus] = useState<'all' | 'online' | 'offline'>('all');
@@ -49,24 +54,33 @@ export const Communication = () => {
     });
 
     // Listen for call accepted events
-    const unsubscribe = socketService.onCall((call) => {
-      if (call.status === 'accepted') {
-        setActiveCall(call);
-      }
+    const unsubscribeAccept = socketService.onCallAccept((data) => {
+      console.log('✅ [COMMUNICATION] Call accepted:', data);
+      setOutgoingCall((current) => {
+        if (!current || current._id !== data.callId) return current;
+
+        // Transition to in-call window (Agora)
+        setActiveCall({
+          ...current,
+          status: 'accepted',
+          agoraToken: data.agoraToken ?? current.agoraToken,
+          channelName: data.channelName ?? current.channelName,
+        });
+        return null;
+      });
     });
 
     // Listen for call ended/rejected events (when astrologer ends or declines the call)
     const unsubscribeCallEnd = socketService.onCallEnd((callId) => {
       console.log('📴 [COMMUNICATION] Call ended/rejected remotely:', callId);
-      if (activeCall?._id === callId) {
-        console.log('📴 [COMMUNICATION] Clearing active call UI (rejected/ended)');
-        // Clear the active call immediately
-        setActiveCall(null);
-        
-        // Show a brief notification that the call was declined/ended
-        // You can add a toast notification here if you have a toast library
-        console.log('ℹ️ [COMMUNICATION] Call was declined or ended by the other party');
-      }
+      // Clear outgoing ringing UI if it matches
+      setOutgoingCall((current) => (current?._id === callId ? null : current));
+
+      // Clear active call UI if it matches
+      setActiveCall((current) => (current?._id === callId ? null : current));
+
+      // Clear incoming call modal if caller cancels before we answer
+      setIncomingCall((current) => (current?.callId === callId ? null : current));
     });
 
     // Listen for incoming messages to update unread badge on list
@@ -108,7 +122,7 @@ export const Communication = () => {
 
     return () => {
       clearTimeout(loadingTimeout);
-      unsubscribe();
+      unsubscribeAccept();
       unsubscribeIncoming();
       unsubscribeCallEnd();
       unsubscribeMessages();
@@ -265,8 +279,9 @@ export const Communication = () => {
     const unsubscribeToken = socketService.onCallToken((data) => {
       console.log('🔑 Call token received:', data);
       
-      // Set up active call with token data
-      setActiveCall({
+      // Set up OUTGOING call (ringing) with token data.
+      // We only open Agora window after `call:accept` arrives.
+      setOutgoingCall({
         _id: data.callId,
         callerId: 'admin',
         callerType: 'admin',
@@ -275,7 +290,7 @@ export const Communication = () => {
         callType: type,
         channelName: data.channelName,
         agoraToken: data.agoraToken,
-        status: 'initiated',
+        status: 'ringing',
         startedAt: new Date(),
       });
 
@@ -294,25 +309,34 @@ export const Communication = () => {
   };
 
   const handleEndCall = (duration?: number) => {
-    if (!activeCall) return;
+    // End active (in-call)
+    if (activeCall) {
+      const callDuration = duration ?? Math.floor((Date.now() - activeCall.startedAt.getTime()) / 1000);
+      const contactId = activeCall.recipientId || activeCall.callerId;
 
-    // Calculate call duration if not provided
-    const callDuration = duration ?? Math.floor((Date.now() - activeCall.startedAt.getTime()) / 1000);
-    
-    // Determine the contact ID (recipient of the call)
-    const contactId = activeCall.recipientId || activeCall.callerId;
-    
-    console.log(`📴 [COMMUNICATION] Ending call ${activeCall._id} with ${contactId} (duration: ${callDuration}s)`);
-    
-    // Notify backend via Socket.IO with contactId so the other party gets notified
-    socketService.endCall(activeCall._id, {
-      contactId,
-      duration: callDuration,
-      endReason: 'completed',
-    });
-    
-    // Clear local call state
-    setActiveCall(null);
+      console.log(`📴 [COMMUNICATION] Ending ACTIVE call ${activeCall._id} with ${contactId} (duration: ${callDuration}s)`);
+      socketService.endCall(activeCall._id, {
+        contactId,
+        duration: callDuration,
+        endReason: 'completed',
+      });
+      setActiveCall(null);
+      return;
+    }
+
+    // Cancel outgoing (ringing) before it's answered
+    if (outgoingCall) {
+      const callDuration = duration ?? Math.floor((Date.now() - outgoingCall.startedAt.getTime()) / 1000);
+      const contactId = outgoingCall.recipientId;
+
+      console.log(`📴 [COMMUNICATION] Cancelling OUTGOING call ${outgoingCall._id} to ${contactId} (duration: ${callDuration}s)`);
+      socketService.endCall(outgoingCall._id, {
+        contactId,
+        duration: callDuration,
+        endReason: 'cancelled',
+      });
+      setOutgoingCall(null);
+    }
   };
 
   const handleAcceptIncomingCall = () => {
@@ -522,6 +546,16 @@ export const Communication = () => {
           callType={incomingCall.callType}
           onAccept={handleAcceptIncomingCall}
           onReject={handleRejectIncomingCall}
+        />
+      )}
+
+      {/* Outgoing Call Modal (WhatsApp-like ringing screen) */}
+      {outgoingCall && selectedAstrologer && (
+        <OutgoingCallModal
+          calleeName={selectedAstrologer.name}
+          calleeAvatar={selectedAstrologer.profilePicture}
+          callType={outgoingCall.callType}
+          onCancel={() => handleEndCall(0)}
         />
       )}
     </div>
