@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Users, UserCog, Calendar, DollarSign, AlertCircle, TrendingUp, Radio, Eye, Clock, Play, ShoppingBag } from 'lucide-react';
+import { Users, UserCog, Calendar, DollarSign, AlertCircle, TrendingUp, Radio, Eye, Clock, Play, ShoppingBag, Bell, X } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { StatCard, Card, Loader, Avatar } from '@/components/common';
@@ -10,6 +10,7 @@ import { formatCurrency, formatNumber, formatRelativeTime } from '@/utils/format
 import { ROUTES } from '@/utils/constants';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { useNotifications } from '@/contexts/NotificationContext';
 import {
   fetchDashboardRequest,
   fetchGlobalStatsRequest,
@@ -21,10 +22,30 @@ import {
 
 export const Dashboard = () => {
   const dispatch = useAppDispatch();
+  const { requestPermission } = useNotifications();
   const { period, isLoading, error, periodStats, chartData, globalStats, liveStreams, liveLoading, onlineAstrologers, onlineLoading } =
     useAppSelector((s) => s.dashboard);
 
   const [selectedStream, setSelectedStream] = useState<any | null>(null);
+  const [showNotificationBanner, setShowNotificationBanner] = useState(() => {
+    // Check if user dismissed banner or already granted permission
+    const dismissed = localStorage.getItem('notification-banner-dismissed');
+    const permission = Notification?.permission;
+    return !dismissed && permission !== 'granted';
+  });
+
+  const handleEnableNotifications = async () => {
+    const granted = await requestPermission();
+    if (granted) {
+      setShowNotificationBanner(false);
+      localStorage.setItem('notification-banner-dismissed', 'true');
+    }
+  };
+
+  const handleDismissBanner = () => {
+    setShowNotificationBanner(false);
+    localStorage.setItem('notification-banner-dismissed', 'true');
+  };
 
   useEffect(() => {
     // Initial load
@@ -73,6 +94,39 @@ export const Dashboard = () => {
         title="Dashboard"
         subtitle="Welcome to your platform management dashboard"
       />
+
+      {/* Notification Permission Banner */}
+      {showNotificationBanner && (
+        <div className="mb-6 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg shadow-lg">
+          <div className="px-4 py-3 sm:px-6 sm:flex sm:items-center sm:justify-between">
+            <div className="flex items-center flex-1 min-w-0">
+              <Bell className="h-6 w-6 text-white flex-shrink-0" />
+              <div className="ml-3 flex-1">
+                <h3 className="text-sm font-medium text-white">
+                  Enable Desktop Notifications
+                </h3>
+                <p className="mt-1 text-sm text-indigo-100">
+                  Get instant alerts when astrologers send you messages or call
+                </p>
+              </div>
+            </div>
+            <div className="mt-3 sm:mt-0 sm:ml-4 flex items-center gap-2">
+              <button
+                onClick={handleEnableNotifications}
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-indigo-600 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white transition-colors"
+              >
+                Enable
+              </button>
+              <button
+                onClick={handleDismissBanner}
+                className="inline-flex items-center justify-center p-2 rounded-md text-white hover:bg-white hover:bg-opacity-20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {isLoading ? (
         <div className="flex items-center justify-center py-20">

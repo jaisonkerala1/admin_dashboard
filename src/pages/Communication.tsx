@@ -8,12 +8,14 @@ import { RoundAvatar } from '@/components/common/RoundAvatar';
 import { PillBadge } from '@/components/common/PillBadge';
 import { socketService } from '@/services/socketService';
 import { astrologersApi } from '@/api/astrologers';
+import { useNotifications } from '@/contexts/NotificationContext';
 import type { Astrologer } from '@/types';
 import type { Call } from '@/types/communication';
 
 export const Communication = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { markAsRead } = useNotifications();
   const [astrologers, setAstrologers] = useState<Astrologer[]>([]);
   const [filteredAstrologers, setFilteredAstrologers] = useState<Astrologer[]>([]);
   const [selectedAstrologer, setSelectedAstrologer] = useState<Astrologer | null>(null);
@@ -29,7 +31,20 @@ export const Communication = () => {
   const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({});
   const [joinedRooms, setJoinedRooms] = useState<Set<string>>(new Set());
   const [lastActivity, setLastActivity] = useState<Record<string, number>>({});
-  const [lastMessages, setLastMessages] = useState<Record<string, { content: string; isOwn: boolean }>>({});
+  const [lastMessages, setLastMessages] = useState<Record<string, { content: string; isOwn: boolean }>>({}); 
+
+  // Mark messages as read when selecting an astrologer
+  useEffect(() => {
+    if (selectedAstrologer) {
+      markAsRead(selectedAstrologer._id);
+      // Also clear local unread count
+      setUnreadCounts((prev) => {
+        const newCounts = { ...prev };
+        delete newCounts[selectedAstrologer._id];
+        return newCounts;
+      });
+    }
+  }, [selectedAstrologer, markAsRead]);
 
   useEffect(() => {
     console.log('🚀 Communication page mounted');

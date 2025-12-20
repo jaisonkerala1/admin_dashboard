@@ -14,6 +14,7 @@ import {
   LogOut,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { useNotifications } from '@/contexts/NotificationContext';
 import { cn } from '@/utils/helpers';
 import { APP_NAME, ROUTES } from '@/utils/constants';
 
@@ -33,6 +34,7 @@ const navigation = [
 
 export const Sidebar = () => {
   const { logout } = useAuth();
+  const { unreadCount } = useNotifications();
 
   return (
     <div className="flex flex-col w-64 bg-white border-r border-gray-200 h-screen fixed left-0 top-0">
@@ -53,7 +55,7 @@ export const Sidebar = () => {
               to={item.href}
               className={({ isActive }) =>
                 cn(
-                  'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all',
+                  'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all relative',
                   isActive
                     ? 'bg-primary-50 text-primary-700'
                     : 'text-gray-700 hover:bg-gray-50'
@@ -62,6 +64,12 @@ export const Sidebar = () => {
             >
               <item.icon className="w-5 h-5" />
               {item.name}
+              {/* Unread badge for Communication */}
+              {item.href === ROUTES.COMMUNICATION && unreadCount > 0 && (
+                <span className="ml-auto inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold text-white bg-red-500 rounded-full min-w-[20px]">
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </span>
+              )}
             </NavLink>
           ))}
         </div>
