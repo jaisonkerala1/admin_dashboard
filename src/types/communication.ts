@@ -6,12 +6,17 @@ export interface DirectMessage {
   recipientId: string;
   recipientType: 'user' | 'astrologer' | 'admin';
   content: string;
-  messageType: 'text' | 'image' | 'audio' | 'file';
+  messageType: 'text' | 'image' | 'audio' | 'file' | 'call_log';
   mediaUrl?: string;
   timestamp: Date;
   status: 'sent' | 'delivered' | 'read' | 'failed';
   readAt?: Date;
   replyToId?: string;
+  // Call log specific fields
+  callType?: 'voice' | 'video';
+  callStatus?: 'completed' | 'missed' | 'declined' | 'cancelled';
+  callDuration?: number; // in seconds
+  callId?: string;
 }
 
 export interface DirectConversation {
