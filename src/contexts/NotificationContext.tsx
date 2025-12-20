@@ -38,12 +38,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
       // Notify ONLY for messages addressed to admin, coming from astrologers.
       // (Prevents notifications for messages the admin sends)
       if (message.senderType === 'astrologer' && message.recipientType === 'admin') {
-        const astrologerId =
-          message.senderType === 'astrologer'
-            ? message.senderId
-            : message.recipientType === 'astrologer'
-              ? message.recipientId
-              : undefined;
+        const astrologerId = message.senderId;
 
         if (!astrologerId) return;
 
