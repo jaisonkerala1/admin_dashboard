@@ -15,7 +15,7 @@ import type { Call } from '@/types/communication';
 export const Communication = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { markAsRead } = useNotifications();
+  const { markAsRead, unreadByAstrologer } = useNotifications();
   const [astrologers, setAstrologers] = useState<Astrologer[]>([]);
   const [filteredAstrologers, setFilteredAstrologers] = useState<Astrologer[]>([]);
   const [selectedAstrologer, setSelectedAstrologer] = useState<Astrologer | null>(null);
@@ -28,17 +28,21 @@ export const Communication = () => {
   const [activeCall, setActiveCall] = useState<Call | null>(null);
   const [incomingCall, setIncomingCall] = useState<any | null>(null);
   const [filterStatus, setFilterStatus] = useState<'all' | 'online' | 'offline'>('all');
-  const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({});
+  // Use global unread counts from NotificationContext
+  const [localUnreadCounts, setLocalUnreadCounts] = useState<Record<string, number>>({});
   const [joinedRooms, setJoinedRooms] = useState<Set<string>>(new Set());
   const [lastActivity, setLastActivity] = useState<Record<string, number>>({});
   const [lastMessages, setLastMessages] = useState<Record<string, { content: string; isOwn: boolean }>>({}); 
+
+  // Merge global unread counts with local counts
+  const unreadCounts = { ...localUnreadCounts, ...unreadByAstrologer };
 
   // Mark messages as read when selecting an astrologer
   useEffect(() => {
     if (selectedAstrologer) {
       markAsRead(selectedAstrologer._id);
       // Also clear local unread count
-      setUnreadCounts((prev) => {
+      setLocalUnreadCounts((prev) => {
         const newCounts = { ...prev };
         delete newCounts[selectedAstrologer._id];
         return newCounts;
@@ -129,7 +133,7 @@ export const Communication = () => {
       }));
       
       // Update unread count (will be cleared when that conversation is selected)
-      setUnreadCounts((prev) => {
+      setLocalUnreadCounts((prev) => {
         const current = prev[astroId] ?? 0;
         return { ...prev, [astroId]: current + 1 };
       });
@@ -146,7 +150,7 @@ export const Communication = () => {
 
   useEffect(() => {
     filterAstrologers();
-  }, [astrologers, searchQuery, filterStatus, lastActivity]);
+  }, [astrologers, searchQuery, filterStatus, lastActivity, unreadCounts]);
 
   // Handle pre-selection from navigation state (from profile page)
   useEffect(() => {
@@ -159,7 +163,7 @@ export const Communication = () => {
     if (preSelectedAstrologer) {
       console.log('📍 Pre-selecting astrologer from profile:', preSelectedAstrologer.name);
       setSelectedAstrologer(preSelectedAstrologer);
-      setUnreadCounts((prev) => ({ ...prev, [preSelectedAstrologer._id]: 0 }));
+      setLocalUnreadCounts((prev) => ({ ...prev, [preSelectedAstrologer._id]: 0 }));
       setLastActivity((prev) => ({ ...prev, [preSelectedAstrologer._id]: Date.now() }));
 
       // Handle the requested action
@@ -251,16 +255,27 @@ export const Communication = () => {
       );
     }
 
-    // Sort by online -> last activity desc -> name
+    // Sort: unread → online → last activity desc → name
     filtered = [...filtered].sort((a, b) => {
+      // 1. Unread messages first (most important)
+      const unreadA = unreadCounts[a._id] ?? 0;
+      const unreadB = unreadCounts[b._id] ?? 0;
+      if (unreadA > 0 && unreadB === 0) return -1;
+      if (unreadB > 0 && unreadA === 0) return 1;
+      
+      // 2. Online status
       if (a.isOnline !== b.isOnline) {
         return a.isOnline ? -1 : 1;
       }
+      
+      // 3. Last activity (most recent first)
       const la = lastActivity[a._id] ?? 0;
       const lb = lastActivity[b._id] ?? 0;
       if (la !== lb) {
         return lb - la;
       }
+      
+      // 4. Alphabetical by name
       return a.name.localeCompare(b.name);
     });
 
@@ -269,7 +284,7 @@ export const Communication = () => {
 
   const handleSelectAstrologer = (astrologer: Astrologer) => {
     setSelectedAstrologer(astrologer);
-    setUnreadCounts((prev) => ({ ...prev, [astrologer._id]: 0 }));
+    setLocalUnreadCounts((prev) => ({ ...prev, [astrologer._id]: 0 }));
     // Mark last activity to "now" when opened so it stays near top until new events arrive
     setLastActivity((prev) => ({ ...prev, [astrologer._id]: Date.now() }));
   };
