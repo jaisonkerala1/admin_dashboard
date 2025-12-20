@@ -132,11 +132,13 @@ export const Communication = () => {
         }
       }));
       
-      // Update unread count (will be cleared when that conversation is selected)
-      setLocalUnreadCounts((prev) => {
-        const current = prev[astroId] ?? 0;
-        return { ...prev, [astroId]: current + 1 };
-      });
+      // Only increment unread count if message is FROM astrologer (not our own messages)
+      if (message.senderType === 'astrologer') {
+        setLocalUnreadCounts((prev) => {
+          const current = prev[astroId] ?? 0;
+          return { ...prev, [astroId]: current + 1 };
+        });
+      }
     });
 
     return () => {
