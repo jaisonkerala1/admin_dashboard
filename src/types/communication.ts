@@ -3,6 +3,8 @@ export interface DirectMessage {
   conversationId: string;
   senderId: string;
   senderType: 'user' | 'astrologer' | 'admin';
+  senderName?: string;
+  senderAvatar?: string;
   recipientId: string;
   recipientType: 'user' | 'astrologer' | 'admin';
   content: string;

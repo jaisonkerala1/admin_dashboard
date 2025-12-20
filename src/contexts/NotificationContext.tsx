@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { socketService } from '@/services/socketService';
 import { notificationService } from '@/services/notificationService';
-import { useToast } from './ToastContext';
+import { useToastContext } from './ToastContext';
 
 interface NotificationContextType {
   unreadCount: number;
@@ -15,7 +15,7 @@ const NotificationContext = createContext<NotificationContextType | undefined>(u
 export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   const [unreadCount, setUnreadCount] = useState(0);
   const [unreadByAstrologer, setUnreadByAstrologer] = useState<Record<string, number>>({});
-  const { showToast } = useToast();
+  const { info } = useToastContext();
 
   useEffect(() => {
     // Connect to socket
@@ -52,11 +52,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
 
         // Show toast notification (only if not on Communication page)
         if (!window.location.pathname.includes('/communication')) {
-          showToast({
-            type: 'info',
-            message: `${message.senderName || 'Astrologer'}: ${message.content.substring(0, 50)}${message.content.length > 50 ? '...' : ''}`,
-            duration: 5000,
-          });
+          info(`${message.senderName || 'Astrologer'}: ${message.content.substring(0, 50)}${message.content.length > 50 ? '...' : ''}`, 5000);
         }
 
         // Play sound
@@ -67,7 +63,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
     return () => {
       unsubscribe();
     };
-  }, [showToast]);
+  }, [info]);
 
   const markAsRead = (astrologerId: string) => {
     setUnreadByAstrologer((prev) => {
