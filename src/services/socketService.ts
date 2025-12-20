@@ -104,6 +104,31 @@ class SocketService {
       this.messageCallbacks.forEach(callback => callback(message));
     });
 
+    // Lightweight notification event emitted to recipient personal room
+    // (works even when admin hasn't joined the conversation room)
+    this.socket.on('dm:new_message', (payload: any) => {
+      try {
+        const normalized: DirectMessage = {
+          _id: (payload?._id ?? `preview_${Date.now()}`).toString(),
+          conversationId: payload?.conversationId ?? '',
+          senderId: payload?.senderId ?? '',
+          senderType: payload?.senderType ?? 'user',
+          senderName: payload?.senderName,
+          senderAvatar: payload?.senderAvatar,
+          recipientId: 'admin',
+          recipientType: 'admin',
+          content: payload?.content ?? '',
+          messageType: 'text',
+          timestamp: payload?.timestamp ? new Date(payload.timestamp) : new Date(),
+          status: 'delivered',
+        };
+        console.log('📩 [SOCKET] New message (preview):', normalized);
+        this.messageCallbacks.forEach(callback => callback(normalized));
+      } catch (e) {
+        console.warn('⚠️ [SOCKET] Failed to normalize dm:new_message payload:', e);
+      }
+    });
+
     // Typing events
     this.socket.on('dm:user_typing', (data: { conversationId: string; userId: string; userType: string }) => {
       console.log('⌨️ [SOCKET] User typing:', data);

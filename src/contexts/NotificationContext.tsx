@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode, useRef } from 'react';
 import { socketService } from '@/services/socketService';
 import { notificationService } from '@/services/notificationService';
 import { useToastContext } from './ToastContext';
@@ -16,6 +16,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   const [unreadCount, setUnreadCount] = useState(0);
   const [unreadByAstrologer, setUnreadByAstrologer] = useState<Record<string, number>>({});
   const { info } = useToastContext();
+  const seenMessageIdsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     // Connect to socket
@@ -23,8 +24,20 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
 
     // Listen for incoming messages
     const unsubscribe = socketService.onMessage((message) => {
-      // Only count messages from astrologers (not from admin)
-      if (message.senderType === 'astrologer') {
+      // Dedupe: we may receive both dm:message_received (conversation room)
+      // and dm:new_message (personal room preview) for the same message.
+      const msgId = message?._id;
+      if (msgId) {
+        if (seenMessageIdsRef.current.has(msgId)) return;
+        seenMessageIdsRef.current.add(msgId);
+        setTimeout(() => {
+          seenMessageIdsRef.current.delete(msgId);
+        }, 60_000);
+      }
+
+      // Notify ONLY for messages addressed to admin, coming from astrologers.
+      // (Prevents notifications for messages the admin sends)
+      if (message.senderType === 'astrologer' && message.recipientType === 'admin') {
         const astrologerId =
           message.senderType === 'astrologer'
             ? message.senderId
