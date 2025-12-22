@@ -7,6 +7,7 @@ import servicesSaga from './servicesSaga';
 import liveStreamsSaga from './liveStreamsSaga';
 import reviewsSaga from './reviewsSaga';
 import { earningsSaga } from './earningsSaga';
+import { availabilitySaga } from './availabilitySaga';
 
 // Root saga: combines all sagas
 export default function* rootSaga() {
@@ -19,6 +20,7 @@ export default function* rootSaga() {
     fork(liveStreamsSaga),
     fork(reviewsSaga),
     earningsSaga(),
+    availabilitySaga(),
     // Add more sagas here as needed
   ]);
 }

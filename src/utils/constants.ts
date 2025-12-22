@@ -24,6 +24,7 @@ export const ROUTES = {
   USER_DETAIL: '/users/:id',
   CONSULTATIONS: '/consultations',
   CONSULTATION_DETAIL: '/consultations/:id',
+  CALENDAR: '/calendar',
   SERVICES: '/services',
   SERVICE_DETAIL: '/services/:id',
   SERVICE_REQUESTS: '/service-requests',
