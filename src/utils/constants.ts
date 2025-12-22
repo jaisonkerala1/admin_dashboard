@@ -32,6 +32,7 @@ export const ROUTES = {
   DISCUSSIONS: '/discussions',
   ANALYTICS: '/analytics',
   COMMUNICATION: '/communication',
+  EARNINGS: '/earnings',
 } as const;
 
 export const ASTROLOGER_STATUS = {

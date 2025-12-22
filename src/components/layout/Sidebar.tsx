@@ -11,6 +11,7 @@ import {
   MessageSquare,
   MessageCircle,
   BarChart3,
+  Wallet,
   LogOut,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
@@ -30,6 +31,7 @@ const navigation = [
   { name: 'Discussions', href: ROUTES.DISCUSSIONS, icon: MessageSquare },
   { name: 'Communication', href: ROUTES.COMMUNICATION, icon: MessageCircle },
   { name: 'Analytics', href: ROUTES.ANALYTICS, icon: BarChart3 },
+  { name: 'Earnings', href: ROUTES.EARNINGS, icon: Wallet },
 ];
 
 export const Sidebar = () => {

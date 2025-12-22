@@ -205,9 +205,9 @@ export const LiveStreams = () => {
             icon={TrendingUp}
             iconColor="text-emerald-600"
             iconBgColor="bg-emerald-100"
-          />
+            />
+          </div>
         </div>
-      </div>
 
       {/* Filter Tabs */}
       <div className="mb-6 border-b border-gray-200">
@@ -365,7 +365,7 @@ export const LiveStreams = () => {
                             <Heart className="w-4 h-4 text-pink-500" />
                             <span className="text-gray-900">{formatNumber(stream.likes)}</span>
                           </div>
-                        </div>
+                    </div>
                       </td>
                       <td className="px-4 py-4">{getStatusBadge(stream)}</td>
                       <td className="px-4 py-4">
@@ -384,7 +384,7 @@ export const LiveStreams = () => {
                   ))}
                 </tbody>
               </table>
-            </div>
+                    </div>
 
             {/* Tablet View */}
             <div className="hidden md:block lg:hidden space-y-3">
@@ -453,8 +453,8 @@ export const LiveStreams = () => {
                       <div className="flex items-center justify-between mb-2">
                         <p className="font-semibold text-gray-900">{stream.title}</p>
                         {getStatusBadge(stream)}
-                      </div>
-                      
+                </div>
+
                       {stream.description && (
                         <p className="text-sm text-gray-500 mb-3 line-clamp-2">{stream.description}</p>
                       )}
@@ -465,11 +465,11 @@ export const LiveStreams = () => {
                           className="flex items-center gap-2 mb-3 hover:opacity-80"
                         >
                           <RoundAvatar
-                            src={stream.astrologerId.profilePicture}
-                            name={stream.astrologerId.name}
-                            size="sm"
-                          />
-                          <div>
+                      src={stream.astrologerId.profilePicture}
+                      name={stream.astrologerId.name}
+                      size="sm"
+                    />
+                    <div>
                             <p className="text-xs text-gray-500">Hosted by</p>
                             <p className="text-sm font-medium text-gray-900 hover:text-blue-600">
                               {stream.astrologerId.name}
@@ -490,28 +490,28 @@ export const LiveStreams = () => {
                           <div className="flex items-center gap-1">
                             <Eye className="w-3.5 h-3.5 text-purple-500" />
                             <span className="font-medium text-gray-900">{formatNumber(stream.totalViews)}</span>
-                          </div>
-                        </div>
+                    </div>
+                  </div>
                         <div>
                           <p className="text-gray-500 text-xs mb-1">Likes</p>
                           <div className="flex items-center gap-1">
                             <Heart className="w-3.5 h-3.5 text-pink-500" />
                             <span className="font-medium text-gray-900">{formatNumber(stream.likes)}</span>
                           </div>
-                        </div>
-                      </div>
-                      
+                    </div>
+                  </div>
+
                       {stream.isLive && (
                         <button className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg border border-red-200">
                           <Ban className="w-4 h-4" />
-                          End Stream
-                        </button>
-                      )}
-                    </div>
+                        End Stream
+                      </button>
+                    )}
                   </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
+          </div>
 
             {/* Pagination */}
             {totalPages > 1 && (
@@ -564,3 +564,7 @@ export const LiveStreams = () => {
     </MainLayout>
   );
 };
+
+
+
+

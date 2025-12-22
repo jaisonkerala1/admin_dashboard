@@ -16,6 +16,7 @@ import {
   Discussions,
   Analytics,
   Communication,
+  Earnings,
 } from './pages';
 import { ROUTES } from './utils/constants';
 import { ToastProvider } from './contexts/ToastContext';
@@ -46,6 +47,7 @@ function App() {
         <Route path={ROUTES.DISCUSSIONS} element={<Discussions />} />
               <Route path={ROUTES.COMMUNICATION} element={<Communication />} />
         <Route path={ROUTES.ANALYTICS} element={<Analytics />} />
+        <Route path={ROUTES.EARNINGS} element={<Earnings />} />
 
         {/* Catch-all redirect */}
         <Route path="*" element={<Navigate to={ROUTES.DASHBOARD} replace />} />

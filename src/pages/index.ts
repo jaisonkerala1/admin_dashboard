@@ -13,4 +13,5 @@ export { LiveStreams } from './LiveStreams';
 export { Discussions } from './Discussions';
 export { Analytics } from './Analytics';
 export { Communication } from './Communication';
+export { Earnings } from './Earnings';
 

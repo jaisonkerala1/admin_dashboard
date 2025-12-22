@@ -10,4 +10,5 @@ export { liveStreamsApi } from './liveStreams';
 export { discussionsApi } from './discussions';
 export { analyticsApi } from './analytics';
 export { poojaRequestsApi } from './poojaRequests';
+export { earningsApi } from './earnings';
 
