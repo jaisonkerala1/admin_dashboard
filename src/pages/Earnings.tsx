@@ -26,14 +26,13 @@ import {
   TrendingDown,
   Wallet,
   CreditCard,
-  UserCog,
   AlertCircle,
   Phone,
   Video,
   MessageCircle,
   Flame,
 } from 'lucide-react';
-import { formatCurrency, formatNumber } from '@/utils/formatters';
+import { formatCurrency } from '@/utils/formatters';
 
 const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6'];
 
@@ -136,36 +135,30 @@ export const Earnings = () => {
               title={`GMV (${periodLabel})`}
               value={formatCurrency(data.overview.gmv)}
               icon={DollarSign}
-              trend={
-                data.overview.growthPercentage > 0
-                  ? `+${data.overview.growthPercentage.toFixed(1)}%`
-                  : `${data.overview.growthPercentage.toFixed(1)}%`
-              }
-              trendDirection={data.overview.growthPercentage >= 0 ? 'up' : 'down'}
+              trend={{
+                value: Math.abs(data.overview.growthPercentage),
+                isPositive: data.overview.growthPercentage >= 0,
+              }}
             />
             <StatCard
               title={`Net Revenue (${periodLabel})`}
               value={formatCurrency(data.overview.netRevenue)}
               icon={Wallet}
-              subtitle="Platform commission"
             />
             <StatCard
               title={`Payouts (${periodLabel})`}
               value={formatCurrency(data.overview.payouts)}
               icon={CreditCard}
-              subtitle="To astrologers"
             />
             <StatCard
               title="Pending Payouts"
               value={formatCurrency(data.overview.pendingPayouts)}
               icon={AlertCircle}
-              subtitle="Awaiting transfer"
             />
             <StatCard
               title={`Refunds (${periodLabel})`}
               value={formatCurrency(data.overview.refunds)}
               icon={TrendingDown}
-              subtitle="Customer refunds"
             />
           </div>
 
@@ -298,7 +291,7 @@ export const Earnings = () => {
                 </ResponsiveContainer>
               </div>
               <div className="px-4 pb-4 space-y-2">
-                {data.breakdown.map((item, index) => {
+                {data.breakdown.map((item) => {
                   const Icon = TYPE_ICONS[item.type] || DollarSign;
                   const colorClass = TYPE_COLORS[item.type] || 'text-gray-600 bg-gray-50';
                   return (
