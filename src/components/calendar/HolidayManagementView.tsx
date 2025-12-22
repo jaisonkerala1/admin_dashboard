@@ -60,6 +60,12 @@ export const HolidayManagementView: React.FC<{
     return allHolidays.filter((h) => h.astrologerId === selectedAstrologerId);
   }, [allHolidays, selectedAstrologerId]);
 
+  const astrologerNameById = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const s of summaries) map.set(s.astrologerId, s.astrologerName);
+    return map;
+  }, [summaries]);
+
   const save = () => {
     if (!draft.astrologerId) return;
     dispatch(
@@ -170,7 +176,9 @@ export const HolidayManagementView: React.FC<{
           filtered.map((h) => (
             <div key={h._id} className="p-4 rounded-xl border border-gray-200 bg-white flex items-center justify-between gap-3">
               <div className="flex flex-col gap-1">
-                <div className="font-semibold text-gray-900">{h.astrologerName || h.astrologerId}</div>
+                <div className="font-semibold text-gray-900">
+                  {h.astrologerName || astrologerNameById.get(h.astrologerId) || h.astrologerId}
+                </div>
                 <div className="flex flex-wrap gap-2">
                   <HolidayBadge holiday={h} />
                   {h.isRecurring && (
