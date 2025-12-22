@@ -72,7 +72,6 @@ const astrologersSeed = [
 ];
 
 const generateWeeklyAvailability = (astrologerId: string, astrologerName: string): Availability[] => {
-  const now = new Date();
   const createdAt = isoNow();
 
   // 5-6 active days per week
