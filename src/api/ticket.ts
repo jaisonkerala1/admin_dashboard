@@ -20,11 +20,22 @@ export const ticketApi = {
     page = 1,
     limit = 20
   ): Promise<ApiResponse<TicketListResponse>> => {
-    const params: any = {
-      page,
-      limit,
-      ...filters,
-    };
+    // IMPORTANT: Backend treats any provided query param as an actual filter value.
+    // The UI uses sentinel values like 'all' / '' which must be omitted,
+    // otherwise the backend will filter for status='all', etc. and return 0 results.
+    const params: any = { page, limit };
+
+    if (filters.status && filters.status !== 'all') params.status = filters.status;
+    if (filters.priority && filters.priority !== 'all') params.priority = filters.priority;
+    if (filters.category && filters.category !== 'all') params.category = filters.category;
+    if (filters.assignedTo && filters.assignedTo !== 'all') params.assignedTo = filters.assignedTo;
+
+    if (typeof filters.search === 'string' && filters.search.trim().length > 0) {
+      params.search = filters.search.trim();
+    }
+
+    if (filters.sortBy) params.sortBy = filters.sortBy;
+    if (filters.sortOrder) params.sortOrder = filters.sortOrder;
 
     const response = await apiClient.get('/admin/support/tickets', { params });
     return response.data;
