@@ -343,30 +343,34 @@ export const Communication = () => {
   const handleEndCall = (duration?: number) => {
     // End active (in-call)
     if (activeCall) {
-      const callDuration = duration ?? Math.floor((Date.now() - activeCall.startedAt.getTime()) / 1000);
+      const callDuration = duration ?? (activeCall.startedAt ? Math.floor((Date.now() - activeCall.startedAt.getTime()) / 1000) : 0);
       const contactId = activeCall.recipientId || activeCall.callerId;
 
       console.log(`📴 [COMMUNICATION] Ending ACTIVE call ${activeCall._id} with ${contactId} (duration: ${callDuration}s)`);
-      socketService.endCall(activeCall._id, {
-        contactId,
-        duration: callDuration,
-        endReason: 'completed',
-      });
+      if (activeCall._id) {
+        socketService.endCall(activeCall._id, {
+          contactId,
+          duration: callDuration,
+          endReason: 'completed',
+        });
+      }
       setActiveCall(null);
       return;
     }
 
     // Cancel outgoing (ringing) before it's answered
     if (outgoingCall) {
-      const callDuration = duration ?? Math.floor((Date.now() - outgoingCall.startedAt.getTime()) / 1000);
+      const callDuration = duration ?? (outgoingCall.startedAt ? Math.floor((Date.now() - outgoingCall.startedAt.getTime()) / 1000) : 0);
       const contactId = outgoingCall.recipientId;
 
       console.log(`📴 [COMMUNICATION] Cancelling OUTGOING call ${outgoingCall._id} to ${contactId} (duration: ${callDuration}s)`);
-      socketService.endCall(outgoingCall._id, {
-        contactId,
-        duration: callDuration,
-        endReason: 'cancelled',
-      });
+      if (outgoingCall._id) {
+        socketService.endCall(outgoingCall._id, {
+          contactId,
+          duration: callDuration,
+          endReason: 'cancelled',
+        });
+      }
       setOutgoingCall(null);
     }
   };

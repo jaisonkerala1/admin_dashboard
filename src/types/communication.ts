@@ -57,10 +57,13 @@ export interface CallSuccessRateTrend {
 
 // DirectMessage type for chat messages
 export interface DirectMessage {
+  _id?: string;
   id: string;
   conversationId: string;
   senderId: string;
   senderType: 'user' | 'astrologer' | 'admin';
+  senderName?: string;
+  senderAvatar?: string;
   recipientId: string;
   recipientType: 'user' | 'astrologer' | 'admin';
   content: string;
