@@ -36,6 +36,7 @@ export const ROUTES = {
   COMMUNICATION_ANALYTICS: '/communication-analytics',
   EARNINGS: '/earnings',
   SUPPORT: '/support',
+  APPROVALS: '/approvals',
 } as const;
 
 export const ASTROLOGER_STATUS = {

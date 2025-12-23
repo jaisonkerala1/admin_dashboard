@@ -10,6 +10,7 @@ import { earningsSaga } from './earningsSaga';
 import { availabilitySaga } from './availabilitySaga';
 import { ticketSaga } from './ticketSaga';
 import { communicationSaga } from './communicationSaga';
+import { approvalSaga } from './approvalSaga';
 
 // Root saga: combines all sagas
 export default function* rootSaga() {
@@ -25,6 +26,7 @@ export default function* rootSaga() {
     availabilitySaga(),
     ticketSaga(),
     communicationSaga(),
+    approvalSaga(),
     // Add more sagas here as needed
   ]);
 }

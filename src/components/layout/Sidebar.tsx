@@ -19,8 +19,10 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNotifications } from '@/contexts/NotificationContext';
+import { useAppSelector } from '@/store/hooks';
 import { cn } from '@/utils/helpers';
 import { APP_NAME, ROUTES } from '@/utils/constants';
+import { CheckCircle } from 'lucide-react';
 
 const navigation = [
   { name: 'Dashboard', href: ROUTES.DASHBOARD, icon: LayoutDashboard },
@@ -38,11 +40,13 @@ const navigation = [
   { name: 'Analytics', href: ROUTES.ANALYTICS, icon: BarChart3 },
   { name: 'Earnings', href: ROUTES.EARNINGS, icon: Wallet },
   { name: 'Support & Tickets', href: ROUTES.SUPPORT, icon: LifeBuoy },
+  { name: 'Approval Requests', href: ROUTES.APPROVALS, icon: CheckCircle },
 ];
 
 export const Sidebar = () => {
   const { logout } = useAuth();
   const { unreadCount } = useNotifications();
+  const pendingApprovals = useAppSelector((state) => state.approval.stats?.totalPending || 0);
 
   return (
     <div className="flex flex-col w-64 bg-white border-r border-gray-200 h-screen fixed left-0 top-0">
@@ -76,6 +80,12 @@ export const Sidebar = () => {
               {item.href === ROUTES.COMMUNICATION && unreadCount > 0 && (
                 <span className="ml-auto inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold text-white bg-red-500 rounded-full min-w-[20px]">
                   {unreadCount > 99 ? '99+' : unreadCount}
+                </span>
+              )}
+              {/* Pending badge for Approval Requests */}
+              {item.href === ROUTES.APPROVALS && pendingApprovals > 0 && (
+                <span className="ml-auto inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold text-white bg-orange-500 rounded-full min-w-[20px]">
+                  {pendingApprovals > 99 ? '99+' : pendingApprovals}
                 </span>
               )}
             </NavLink>
