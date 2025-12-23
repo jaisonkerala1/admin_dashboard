@@ -92,4 +92,5 @@ export * from './liveStream';
 export * from './discussion';
 export * from './poojaRequest';
 export * from './analytics';
+export * from './communication';
 

@@ -16,6 +16,7 @@ import {
   Discussions,
   Analytics,
   Communication,
+  CommunicationAnalytics,
   Earnings,
   Calendar,
   Support,
@@ -48,6 +49,7 @@ function App() {
         <Route path={ROUTES.LIVE_STREAMS} element={<LiveStreams />} />
         <Route path={ROUTES.DISCUSSIONS} element={<Discussions />} />
               <Route path={ROUTES.COMMUNICATION} element={<Communication />} />
+        <Route path={ROUTES.COMMUNICATION_ANALYTICS} element={<CommunicationAnalytics />} />
         <Route path={ROUTES.ANALYTICS} element={<Analytics />} />
         <Route path={ROUTES.EARNINGS} element={<Earnings />} />
         <Route path={ROUTES.CALENDAR} element={<Calendar />} />

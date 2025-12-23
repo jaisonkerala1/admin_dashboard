@@ -13,4 +13,5 @@ export { poojaRequestsApi } from './poojaRequests';
 export { earningsApi } from './earnings';
 export { availabilityApi } from './availability';
 export { ticketApi } from './ticket';
+export { communicationApi } from './communication';
 

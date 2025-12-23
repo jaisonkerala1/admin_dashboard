@@ -1,6 +1,6 @@
-export { ChatMessage } from './ChatMessage';
-export { ChatWindow } from './ChatWindow';
-export { VideoCallWindow } from './VideoCallWindow';
-export { IncomingCallModal } from './IncomingCallModal';
-
-
+export { CommunicationOverview } from './CommunicationOverview';
+export { CommunicationTrends } from './CommunicationTrends';
+export { AstrologerCommunicationChart } from './AstrologerCommunicationChart';
+export { CallDurationChart } from './CallDurationChart';
+export { CallSuccessRateChart } from './CallSuccessRateChart';
+export { PeakHoursChart } from './PeakHoursChart';

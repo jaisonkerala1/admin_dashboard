@@ -33,6 +33,7 @@ export const ROUTES = {
   DISCUSSIONS: '/discussions',
   ANALYTICS: '/analytics',
   COMMUNICATION: '/communication',
+  COMMUNICATION_ANALYTICS: '/communication-analytics',
   EARNINGS: '/earnings',
   SUPPORT: '/support',
 } as const;

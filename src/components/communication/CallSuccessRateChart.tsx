@@ -1,0 +1,113 @@
+import React, { useEffect } from 'react';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { fetchSuccessRateTrendsRequest } from '@/store/slices/communicationSlice';
+import { Card, Loader } from '@/components/common';
+import { CheckCircle } from 'lucide-react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { format } from 'date-fns';
+
+export const CallSuccessRateChart: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const { successRateTrends, period, isLoadingSuccessRate, successRateError } = useAppSelector(
+    (state) => state.communication
+  );
+
+  useEffect(() => {
+    dispatch(fetchSuccessRateTrendsRequest({ period }));
+  }, [dispatch, period]);
+
+  if (isLoadingSuccessRate) {
+    return (
+      <div className="flex justify-center items-center h-96">
+        <Loader size="lg" />
+      </div>
+    );
+  }
+
+  if (successRateError || !successRateTrends || successRateTrends.length === 0) {
+    return (
+      <Card className="p-8 text-center">
+        <p className="text-red-600 dark:text-red-400">{successRateError || 'Failed to load success rate trends'}</p>
+      </Card>
+    );
+  }
+
+  // Format dates for display
+  const chartData = successRateTrends.map((trend) => ({
+    ...trend,
+    dateLabel: format(new Date(trend.date), period === '1d' ? 'HH:mm' : period === '7d' ? 'MMM d' : 'MMM d, yyyy'),
+  }));
+
+  return (
+    <Card
+      title={
+        <div className="flex items-center gap-2">
+          <CheckCircle className="w-5 h-5 text-green-600" />
+          <span>Call Success Rate Trends</span>
+        </div>
+      }
+    >
+      <div className="h-80">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={chartData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+            <XAxis
+              dataKey="dateLabel"
+              tick={{ fontSize: 12 }}
+              stroke="#9ca3af"
+            />
+            <YAxis
+              label={{ value: 'Percentage (%)', angle: -90, position: 'insideLeft' }}
+              tick={{ fontSize: 12 }}
+              stroke="#9ca3af"
+              domain={[0, 100]}
+            />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: '#fff',
+                border: '1px solid #e5e7eb',
+                borderRadius: '8px',
+                padding: '8px 12px',
+              }}
+              labelStyle={{ fontWeight: 600, marginBottom: '4px' }}
+              formatter={(value: number) => `${value.toFixed(1)}%`}
+            />
+            <Legend
+              formatter={(value) => (
+                <span style={{ color: '#374151', fontSize: '14px' }}>{value}</span>
+              )}
+            />
+            <Line
+              type="monotone"
+              dataKey="completedRate"
+              stroke="#10b981"
+              strokeWidth={2}
+              dot={{ fill: '#10b981', r: 3 }}
+              activeDot={{ r: 5 }}
+              name="Completed"
+            />
+            <Line
+              type="monotone"
+              dataKey="missedRate"
+              stroke="#ef4444"
+              strokeWidth={2}
+              dot={{ fill: '#ef4444', r: 3 }}
+              activeDot={{ r: 5 }}
+              name="Missed"
+            />
+            <Line
+              type="monotone"
+              dataKey="rejectedRate"
+              stroke="#f59e0b"
+              strokeWidth={2}
+              dot={{ fill: '#f59e0b', r: 3 }}
+              activeDot={{ r: 5 }}
+              name="Rejected"
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+    </Card>
+  );
+};
+

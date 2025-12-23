@@ -13,6 +13,7 @@ export { LiveStreams } from './LiveStreams';
 export { Discussions } from './Discussions';
 export { Analytics } from './Analytics';
 export { Communication } from './Communication';
+export { CommunicationAnalytics } from './CommunicationAnalytics';
 export { Earnings } from './Earnings';
 export { Calendar } from './Calendar';
 export { Support } from './Support';

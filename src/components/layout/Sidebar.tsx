@@ -15,6 +15,7 @@ import {
   Wallet,
   LifeBuoy,
   LogOut,
+  TrendingUp,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNotifications } from '@/contexts/NotificationContext';
@@ -33,6 +34,7 @@ const navigation = [
   { name: 'Live Streams', href: ROUTES.LIVE_STREAMS, icon: Radio },
   { name: 'Discussions', href: ROUTES.DISCUSSIONS, icon: MessageSquare },
   { name: 'Communication', href: ROUTES.COMMUNICATION, icon: MessageCircle },
+  { name: 'Communication Analytics', href: ROUTES.COMMUNICATION_ANALYTICS, icon: TrendingUp },
   { name: 'Analytics', href: ROUTES.ANALYTICS, icon: BarChart3 },
   { name: 'Earnings', href: ROUTES.EARNINGS, icon: Wallet },
   { name: 'Support & Tickets', href: ROUTES.SUPPORT, icon: LifeBuoy },

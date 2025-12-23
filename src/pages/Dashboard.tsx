@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Users, UserCog, Calendar, DollarSign, AlertCircle, TrendingUp, Radio, Eye, Clock, Play, ShoppingBag, Bell, X } from 'lucide-react';
+import { Users, UserCog, Calendar, DollarSign, AlertCircle, TrendingUp, Radio, Eye, Clock, Play, ShoppingBag, Bell, X, MessageSquare, Phone, Video } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { StatCard, Card, Loader, Avatar } from '@/components/common';
@@ -19,12 +19,14 @@ import {
   setPeriod,
   type DashboardPeriod,
 } from '@/store/slices/dashboardSlice';
+import { fetchStatsRequest } from '@/store/slices/communicationSlice';
 
 export const Dashboard = () => {
   const dispatch = useAppDispatch();
   const { requestPermission } = useNotifications();
   const { period, isLoading, error, periodStats, chartData, globalStats, liveStreams, liveLoading, onlineAstrologers, onlineLoading } =
     useAppSelector((s) => s.dashboard);
+  const { stats: communicationStats } = useAppSelector((s) => s.communication);
 
   const [selectedStream, setSelectedStream] = useState<any | null>(null);
   const [showNotificationBanner, setShowNotificationBanner] = useState(() => {
@@ -53,6 +55,7 @@ export const Dashboard = () => {
     dispatch(fetchGlobalStatsRequest());
     dispatch(fetchLiveStreamsRequest());
     dispatch(fetchOnlineAstrologersRequest());
+    dispatch(fetchStatsRequest({ period: '7d' }));
 
     // Auto-refresh every 10 seconds
     const interval = setInterval(() => {
@@ -181,6 +184,52 @@ export const Dashboard = () => {
               icon={DollarSign}
             />
           </div>
+
+          {/* Communication Stats */}
+          {communicationStats && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+              <StatCard
+                title="Total Messages"
+                value={formatNumber(communicationStats.totalMessages)}
+                icon={MessageSquare}
+                iconColor="text-blue-600"
+                iconBgColor="bg-blue-50"
+              />
+              <StatCard
+                title="Voice Calls"
+                value={formatNumber(communicationStats.totalVoiceCalls)}
+                icon={Phone}
+                iconColor="text-green-600"
+                iconBgColor="bg-green-50"
+              />
+              <StatCard
+                title="Video Calls"
+                value={formatNumber(communicationStats.totalVideoCalls)}
+                icon={Video}
+                iconColor="text-purple-600"
+                iconBgColor="bg-purple-50"
+              />
+              <StatCard
+                title="Total Communications"
+                value={formatNumber(communicationStats.totalCommunications)}
+                icon={TrendingUp}
+                iconColor="text-indigo-600"
+                iconBgColor="bg-indigo-50"
+              />
+            </div>
+          )}
+
+          {/* Communication Analytics Link */}
+          {communicationStats && (
+            <div className="mb-6">
+              <Link
+                to={ROUTES.COMMUNICATION_ANALYTICS}
+                className="inline-flex items-center gap-2 text-sm text-primary-600 hover:text-primary-700 font-medium"
+              >
+                View Full Communication Analytics <TrendingUp className="w-4 h-4" />
+              </Link>
+            </div>
+          )}
 
           {/* Weekly Activity Charts */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

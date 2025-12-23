@@ -1,52 +1,56 @@
-export interface DirectMessage {
-  _id: string;
-  conversationId: string;
-  senderId: string;
-  senderType: 'user' | 'astrologer' | 'admin';
-  senderName?: string;
-  senderAvatar?: string;
-  recipientId: string;
-  recipientType: 'user' | 'astrologer' | 'admin';
-  content: string;
-  messageType: 'text' | 'image' | 'audio' | 'file' | 'call_log';
-  mediaUrl?: string;
-  timestamp: Date;
-  status: 'sent' | 'delivered' | 'read' | 'failed';
-  readAt?: Date;
-  replyToId?: string;
-  // Call log specific fields
-  callType?: 'voice' | 'video';
-  callStatus?: 'completed' | 'missed' | 'declined' | 'cancelled';
-  callDuration?: number; // in seconds
-  callId?: string;
+// Communication Analytics Types
+
+export type CommunicationPeriod = '1d' | '7d' | '30d' | '90d' | '1y';
+
+export interface CommunicationStats {
+  totalMessages: number;
+  totalVoiceCalls: number;
+  totalVideoCalls: number;
+  totalCommunications: number;
+  avgCallDuration: number; // in minutes
+  activeConversations: number;
+  completedCalls: number;
+  missedCalls: number;
+  rejectedCalls: number;
 }
 
-export interface DirectConversation {
-  _id: string;
-  participants: Array<{
-    id: string;
-    type: 'User' | 'Astrologer' | 'Admin';
-  }>;
-  lastMessage?: string;
-  lastMessageAt?: Date;
-  createdAt: Date;
-  updatedAt: Date;
+export interface CommunicationTrend {
+  date: string;
+  messages: number;
+  voiceCalls: number;
+  videoCalls: number;
+  total: number;
 }
 
-export interface Call {
-  _id: string;
-  callerId: string;
-  callerType: 'user' | 'astrologer' | 'admin';
-  recipientId: string;
-  recipientType: 'user' | 'astrologer' | 'admin';
-  callType: 'voice' | 'video';
-  channelName: string;
-  agoraToken?: string;
-  status: 'initiated' | 'ringing' | 'accepted' | 'rejected' | 'connected' | 'ended' | 'missed';
-  startedAt: Date;
-  acceptedAt?: Date;
-  connectedAt?: Date;
-  endedAt?: Date;
-  duration?: number;
-  endReason?: string;
+export interface AstrologerCommunicationStats {
+  astrologerId: string;
+  astrologerName: string;
+  messages: number;
+  voiceCalls: number;
+  videoCalls: number;
+  total: number;
+}
+
+export interface CallDurationStats {
+  astrologerId: string;
+  astrologerName: string;
+  avgVoiceCallDuration: number; // in minutes
+  avgVideoCallDuration: number; // in minutes
+  totalVoiceCalls: number;
+  totalVideoCalls: number;
+}
+
+export interface PeakHoursData {
+  hour: number; // 0-23
+  messages: number;
+  voiceCalls: number;
+  videoCalls: number;
+  total: number;
+}
+
+export interface CallSuccessRateTrend {
+  date: string;
+  completedRate: number; // percentage
+  missedRate: number; // percentage
+  rejectedRate: number; // percentage
 }
