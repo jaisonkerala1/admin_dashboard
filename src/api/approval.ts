@@ -2,7 +2,6 @@ import apiClient from './client';
 import type {
   ApprovalRequest,
   ApprovalStats,
-  ApprovalFilters,
   ApprovalPagination,
   ApprovalRequestType,
   ApprovalStatus,
