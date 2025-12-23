@@ -13,6 +13,7 @@ import {
   MessageCircle,
   BarChart3,
   Wallet,
+  LifeBuoy,
   LogOut,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
@@ -34,6 +35,7 @@ const navigation = [
   { name: 'Communication', href: ROUTES.COMMUNICATION, icon: MessageCircle },
   { name: 'Analytics', href: ROUTES.ANALYTICS, icon: BarChart3 },
   { name: 'Earnings', href: ROUTES.EARNINGS, icon: Wallet },
+  { name: 'Support & Tickets', href: ROUTES.SUPPORT, icon: LifeBuoy },
 ];
 
 export const Sidebar = () => {

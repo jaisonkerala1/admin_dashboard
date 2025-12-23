@@ -9,6 +9,7 @@ import liveStreamsReducer from './slices/liveStreamsSlice';
 import reviewsReducer from './slices/reviewsSlice';
 import earningsReducer from './slices/earningsSlice';
 import availabilityReducer from './slices/availabilitySlice';
+import ticketReducer from './slices/ticketSlice';
 import rootSaga from './sagas';
 
 // Create saga middleware
@@ -26,6 +27,7 @@ export const store = configureStore({
     reviews: reviewsReducer,
     earnings: earningsReducer,
     availability: availabilityReducer,
+    ticket: ticketReducer,
     // Add more reducers here as needed
   },
   middleware: (getDefaultMiddleware) =>

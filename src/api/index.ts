@@ -12,4 +12,5 @@ export { analyticsApi } from './analytics';
 export { poojaRequestsApi } from './poojaRequests';
 export { earningsApi } from './earnings';
 export { availabilityApi } from './availability';
+export { ticketApi } from './ticket';
 

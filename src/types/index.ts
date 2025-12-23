@@ -84,6 +84,7 @@ export * from './astrologer';
 export * from './user';
 export * from './earnings';
 export * from './availability';
+export * from './ticket';
 export * from './consultation';
 export * from './service';
 export * from './review';

@@ -13,6 +13,11 @@ class SocketService {
   private callTokenCallbacks: Array<(data: any) => void> = [];
   private callIncomingCallbacks: Array<(call: any) => void> = [];
   private typingCallbacks: Array<(data: { conversationId: string; userId: string; isTyping: boolean }) => void> = [];
+  private ticketCallbacks: Array<(ticket: any) => void> = [];
+  private ticketMessageCallbacks: Array<(message: any) => void> = [];
+  private ticketStatusCallbacks: Array<(data: any) => void> = [];
+  private ticketAssignCallbacks: Array<(data: any) => void> = [];
+  private ticketPriorityCallbacks: Array<(data: any) => void> = [];
 
   connect() {
     if (this.socket?.connected) {
@@ -187,6 +192,32 @@ class SocketService {
     this.socket.on('call:missed', (data: { callId: string }) => {
       console.log('📞 [SOCKET] Call missed:', data);
       this.callEndCallbacks.forEach(callback => callback(data.callId));
+    });
+
+    // Ticket events
+    this.socket.on('ticket:new_ticket', (ticket: any) => {
+      console.log('🎫 [SOCKET] New ticket created:', ticket);
+      this.ticketCallbacks.forEach(callback => callback(ticket));
+    });
+
+    this.socket.on('ticket:new_message', (message: any) => {
+      console.log('💬 [SOCKET] New ticket message:', message);
+      this.ticketMessageCallbacks.forEach(callback => callback(message));
+    });
+
+    this.socket.on('ticket:status_changed', (data: any) => {
+      console.log('📋 [SOCKET] Ticket status changed:', data);
+      this.ticketStatusCallbacks.forEach(callback => callback(data));
+    });
+
+    this.socket.on('ticket:assigned', (data: any) => {
+      console.log('👤 [SOCKET] Ticket assigned:', data);
+      this.ticketAssignCallbacks.forEach(callback => callback(data));
+    });
+
+    this.socket.on('ticket:priority_changed', (data: any) => {
+      console.log('⚠️ [SOCKET] Ticket priority changed:', data);
+      this.ticketPriorityCallbacks.forEach(callback => callback(data));
     });
   }
 
@@ -421,6 +452,76 @@ class SocketService {
 
   isConnected(): boolean {
     return this.socket?.connected || false;
+  }
+
+  // Ticket methods
+  joinTicketMonitor() {
+    if (!this.socket?.connected) {
+      console.error('❌ Socket not connected');
+      return;
+    }
+
+    this.socket.emit('admin_join_ticket_monitor');
+    console.log('🎫 [SOCKET] Joined ticket monitor');
+  }
+
+  joinTicket(ticketId: string) {
+    if (!this.socket?.connected) {
+      console.error('❌ Socket not connected');
+      return;
+    }
+
+    this.socket.emit('join_ticket', { ticketId });
+    console.log(`🎫 [SOCKET] Joined ticket: ${ticketId}`);
+  }
+
+  leaveTicket(ticketId: string) {
+    if (!this.socket?.connected) return;
+
+    this.socket.emit('leave_ticket', { ticketId });
+    console.log(`🎫 [SOCKET] Left ticket: ${ticketId}`);
+  }
+
+  sendTicketTyping(ticketId: string, isTyping: boolean) {
+    if (!this.socket?.connected) return;
+
+    this.socket.emit('ticket:typing', { ticketId, isTyping });
+  }
+
+  // Ticket event listeners
+  onNewTicket(callback: (ticket: any) => void) {
+    this.ticketCallbacks.push(callback);
+    return () => {
+      this.ticketCallbacks = this.ticketCallbacks.filter(cb => cb !== callback);
+    };
+  }
+
+  onTicketMessage(callback: (message: any) => void) {
+    this.ticketMessageCallbacks.push(callback);
+    return () => {
+      this.ticketMessageCallbacks = this.ticketMessageCallbacks.filter(cb => cb !== callback);
+    };
+  }
+
+  onTicketStatusChange(callback: (data: any) => void) {
+    this.ticketStatusCallbacks.push(callback);
+    return () => {
+      this.ticketStatusCallbacks = this.ticketStatusCallbacks.filter(cb => cb !== callback);
+    };
+  }
+
+  onTicketAssign(callback: (data: any) => void) {
+    this.ticketAssignCallbacks.push(callback);
+    return () => {
+      this.ticketAssignCallbacks = this.ticketAssignCallbacks.filter(cb => cb !== callback);
+    };
+  }
+
+  onTicketPriorityChange(callback: (data: any) => void) {
+    this.ticketPriorityCallbacks.push(callback);
+    return () => {
+      this.ticketPriorityCallbacks = this.ticketPriorityCallbacks.filter(cb => cb !== callback);
+    };
   }
 }
 
