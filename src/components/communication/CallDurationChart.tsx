@@ -31,8 +31,8 @@ export const CallDurationChart: React.FC = () => {
     );
   }
 
-  // Get top 10 by total calls
-  const topAstrologers = callDurationStats
+  // Get top 10 by total calls (create a copy to avoid mutating Redux state)
+  const topAstrologers = [...callDurationStats]
     .sort((a, b) => (b.totalVoiceCalls + b.totalVideoCalls) - (a.totalVoiceCalls + a.totalVideoCalls))
     .slice(0, 10);
 
