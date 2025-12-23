@@ -199,77 +199,77 @@ export const ApprovalRequestDetailModal: React.FC<ApprovalRequestDetailModalProp
             {!showRejectForm ? (
               <div className="flex items-center gap-4">
                 {canApprove && (
-                  <>
-                    <div className="flex-1">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Admin Notes (Optional)
-                      </label>
-                      <textarea
-                        value={notes}
-                        onChange={(e) => setNotes(e.target.value)}
-                        placeholder="Add any notes about this approval..."
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
-                        rows={2}
-                      />
-                    </div>
-                    <div className="flex gap-3">
-                      <button
-                        onClick={handleApprove}
-                        disabled={isProcessing}
-                        className="px-6 py-2.5 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                      >
-                        <CheckCircle2 className="w-5 h-5" />
-                        Approve
-                      </button>
-                      {canReject && (
-                        <button
-                          onClick={() => setShowRejectForm(true)}
-                          disabled={isProcessing}
-                          className="px-6 py-2.5 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                        >
-                          <XCircle className="w-5 h-5" />
-                          Reject
-                        </button>
-                      )}
-                    </div>
-                  </>
-                ) : (
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-red-700 mb-2">
-                        Rejection Reason <span className="text-red-500">*</span>
-                      </label>
-                      <textarea
-                        value={rejectionReason}
-                        onChange={(e) => setRejectionReason(e.target.value)}
-                        placeholder="Please provide a reason for rejection..."
-                        className="w-full px-3 py-2 border border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 resize-none"
-                        rows={3}
-                        required
-                      />
-                    </div>
-                    <div className="flex gap-3 justify-end">
-                      <button
-                        onClick={() => {
-                          setShowRejectForm(false);
-                          setRejectionReason('');
-                        }}
-                        disabled={isProcessing}
-                        className="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        onClick={handleReject}
-                        disabled={isProcessing || !rejectionReason.trim()}
-                        className="px-6 py-2.5 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                      >
-                        <XCircle className="w-5 h-5" />
-                        Confirm Rejection
-                      </button>
-                    </div>
+                  <div className="flex-1">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Admin Notes (Optional)
+                    </label>
+                    <textarea
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                      placeholder="Add any notes about this approval..."
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                      rows={2}
+                    />
                   </div>
                 )}
+                <div className="flex gap-3">
+                  {canApprove && (
+                    <button
+                      onClick={handleApprove}
+                      disabled={isProcessing}
+                      className="px-6 py-2.5 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    >
+                      <CheckCircle2 className="w-5 h-5" />
+                      Approve
+                    </button>
+                  )}
+                  {canReject && (
+                    <button
+                      onClick={() => setShowRejectForm(true)}
+                      disabled={isProcessing}
+                      className="px-6 py-2.5 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    >
+                      <XCircle className="w-5 h-5" />
+                      Reject
+                    </button>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-red-700 mb-2">
+                    Rejection Reason <span className="text-red-500">*</span>
+                  </label>
+                  <textarea
+                    value={rejectionReason}
+                    onChange={(e) => setRejectionReason(e.target.value)}
+                    placeholder="Please provide a reason for rejection..."
+                    className="w-full px-3 py-2 border border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 resize-none"
+                    rows={3}
+                    required
+                  />
+                </div>
+                <div className="flex gap-3 justify-end">
+                  <button
+                    onClick={() => {
+                      setShowRejectForm(false);
+                      setRejectionReason('');
+                    }}
+                    disabled={isProcessing}
+                    className="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleReject}
+                    disabled={isProcessing || !rejectionReason.trim()}
+                    className="px-6 py-2.5 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  >
+                    <XCircle className="w-5 h-5" />
+                    Confirm Rejection
+                  </button>
+                </div>
               </div>
             )}
           </div>
