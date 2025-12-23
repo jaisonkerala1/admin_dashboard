@@ -1,372 +1,211 @@
+import apiClient from './client';
 import type {
   ApprovalRequest,
   ApprovalStats,
   ApprovalFilters,
   ApprovalPagination,
+  ApprovalRequestType,
+  ApprovalStatus,
   ApiResponse,
 } from '@/types/approval';
 
-// Mock astrologer names for generating requests
-const astrologerNames = [
-  'Dr. Sharma',
-  'Pandit Verma',
-  'Acharya Patel',
-  'Guru Singh',
-  'Swami Kumar',
-  'Rishi Mehta',
-  'Jyotish Reddy',
-  'Vedic Iyer',
-  'Astro Nair',
-  'Sage Bhatt',
-  'Mystic Joshi',
-  'Oracle Desai',
-  'Pandit Agarwal',
-  'Acharya Kapoor',
-  'Guru Malhotra',
-  'Swami Chaturvedi',
-  'Rishi Gupta',
-  'Jyotish Saxena',
-  'Vedic Mishra',
-  'Astro Tiwari',
-];
-
-const specializations = [
-  'Vedic Astrology',
-  'Numerology',
-  'Palmistry',
-  'Tarot Reading',
-  'Vastu Shastra',
-  'Gemstone Consultation',
-  'Horoscope Matching',
-  'Remedial Solutions',
-];
-
-// Generate mock approval requests
-function generateMockApprovalRequests(): ApprovalRequest[] {
-  const requests: ApprovalRequest[] = [];
-  const now = new Date();
-
-  // 60% Verification Badge requests
-  for (let i = 0; i < 18; i++) {
-    const submittedDaysAgo = Math.floor(Math.random() * 30);
-    const submittedAt = new Date(now);
-    submittedAt.setDate(submittedAt.getDate() - submittedDaysAgo);
-
-    const statuses: Array<'pending' | 'approved' | 'rejected'> = ['pending', 'approved', 'rejected'];
-    const status = statuses[Math.floor(Math.random() * 3)];
-
-    const reviewedAt = status !== 'pending' ? new Date(submittedAt.getTime() + Math.random() * 48 * 60 * 60 * 1000) : undefined;
-
-    requests.push({
-      _id: `verification_${i + 1}`,
-      astrologerId: `astrologer_${i + 1}`,
-      astrologerName: astrologerNames[i % astrologerNames.length],
-      astrologerEmail: `astrologer${i + 1}@example.com`,
-      astrologerPhone: `+91${Math.floor(9000000000 + Math.random() * 999999999)}`,
-      astrologerAvatar: `https://i.pravatar.cc/150?img=${i + 1}`,
-      requestType: 'verification_badge',
-      status,
-      submittedAt: submittedAt.toISOString(),
-      reviewedAt: reviewedAt?.toISOString(),
-      reviewedBy: status !== 'pending' ? 'admin' : undefined,
-      rejectionReason: status === 'rejected' ? 'ID proof image quality is low. Please resubmit with clearer image.' : undefined,
-      documents: [
-        {
-          type: 'id_proof',
-          url: `https://picsum.photos/800/600?random=${i + 1}`,
-          uploadedAt: submittedAt.toISOString(),
-        },
-        {
-          type: 'certificate',
-          url: `https://picsum.photos/800/600?random=${i + 100}`,
-          uploadedAt: submittedAt.toISOString(),
-        },
-      ],
-      astrologerData: {
-        experience: Math.floor(Math.random() * 20) + 1,
-        specializations: specializations.slice(0, Math.floor(Math.random() * 3) + 1),
-        consultationsCount: Math.floor(Math.random() * 100) + 10,
-        rating: Math.round((4 + Math.random() * 1) * 10) / 10,
-      },
-    });
-  }
-
-  // 25% Onboarding requests
-  for (let i = 0; i < 7; i++) {
-    const submittedDaysAgo = Math.floor(Math.random() * 14);
-    const submittedAt = new Date(now);
-    submittedAt.setDate(submittedAt.getDate() - submittedDaysAgo);
-
-    const statuses: Array<'pending' | 'approved' | 'rejected'> = ['pending', 'approved', 'rejected'];
-    const status = statuses[Math.floor(Math.random() * 3)];
-
-    const reviewedAt = status !== 'pending' ? new Date(submittedAt.getTime() + Math.random() * 24 * 60 * 60 * 1000) : undefined;
-
-    requests.push({
-      _id: `onboarding_${i + 1}`,
-      astrologerId: `astrologer_${18 + i + 1}`,
-      astrologerName: astrologerNames[(18 + i) % astrologerNames.length],
-      astrologerEmail: `astrologer${18 + i + 1}@example.com`,
-      astrologerPhone: `+91${Math.floor(9000000000 + Math.random() * 999999999)}`,
-      astrologerAvatar: `https://i.pravatar.cc/150?img=${18 + i + 1}`,
-      requestType: 'onboarding',
-      status,
-      submittedAt: submittedAt.toISOString(),
-      reviewedAt: reviewedAt?.toISOString(),
-      reviewedBy: status !== 'pending' ? 'admin' : undefined,
-      rejectionReason: status === 'rejected' ? 'Incomplete profile information. Please complete all required fields.' : undefined,
-      astrologerData: {
-        experience: Math.floor(Math.random() * 10) + 1,
-        specializations: specializations.slice(0, Math.floor(Math.random() * 2) + 1),
-        consultationsCount: 0,
-        rating: 0,
-      },
-    });
-  }
-
-  // 10% Service approvals
-  for (let i = 0; i < 3; i++) {
-    const submittedDaysAgo = Math.floor(Math.random() * 7);
-    const submittedAt = new Date(now);
-    submittedAt.setDate(submittedAt.getDate() - submittedDaysAgo);
-
-    const statuses: Array<'pending' | 'approved' | 'rejected'> = ['pending', 'approved', 'rejected'];
-    const status = statuses[Math.floor(Math.random() * 3)];
-
-    const reviewedAt = status !== 'pending' ? new Date(submittedAt.getTime() + Math.random() * 12 * 60 * 60 * 1000) : undefined;
-
-    requests.push({
-      _id: `service_${i + 1}`,
-      astrologerId: `astrologer_${25 + i + 1}`,
-      astrologerName: astrologerNames[(25 + i) % astrologerNames.length],
-      astrologerEmail: `astrologer${25 + i + 1}@example.com`,
-      astrologerPhone: `+91${Math.floor(9000000000 + Math.random() * 999999999)}`,
-      astrologerAvatar: `https://i.pravatar.cc/150?img=${25 + i + 1}`,
-      requestType: 'service_approval',
-      status,
-      submittedAt: submittedAt.toISOString(),
-      reviewedAt: reviewedAt?.toISOString(),
-      reviewedBy: status !== 'pending' ? 'admin' : undefined,
-      rejectionReason: status === 'rejected' ? 'Service description does not meet platform guidelines.' : undefined,
-      astrologerData: {
-        experience: Math.floor(Math.random() * 15) + 5,
-        specializations: specializations.slice(0, Math.floor(Math.random() * 3) + 1),
-        consultationsCount: Math.floor(Math.random() * 200) + 50,
-        rating: Math.round((4.2 + Math.random() * 0.8) * 10) / 10,
-      },
-    });
-  }
-
-  // 5% Profile updates
-  for (let i = 0; i < 2; i++) {
-    const submittedDaysAgo = Math.floor(Math.random() * 3);
-    const submittedAt = new Date(now);
-    submittedAt.setDate(submittedAt.getDate() - submittedDaysAgo);
-
-    const statuses: Array<'pending' | 'approved' | 'rejected'> = ['pending', 'approved'];
-    const status = statuses[Math.floor(Math.random() * 2)];
-
-    const reviewedAt = status !== 'pending' ? new Date(submittedAt.getTime() + Math.random() * 6 * 60 * 60 * 1000) : undefined;
-
-    requests.push({
-      _id: `profile_${i + 1}`,
-      astrologerId: `astrologer_${28 + i + 1}`,
-      astrologerName: astrologerNames[(28 + i) % astrologerNames.length],
-      astrologerEmail: `astrologer${28 + i + 1}@example.com`,
-      astrologerPhone: `+91${Math.floor(9000000000 + Math.random() * 999999999)}`,
-      astrologerAvatar: `https://i.pravatar.cc/150?img=${28 + i + 1}`,
-      requestType: 'profile_update',
-      status,
-      submittedAt: submittedAt.toISOString(),
-      reviewedAt: reviewedAt?.toISOString(),
-      reviewedBy: status !== 'pending' ? 'admin' : undefined,
-      astrologerData: {
-        experience: Math.floor(Math.random() * 20) + 5,
-        specializations: specializations.slice(0, Math.floor(Math.random() * 4) + 1),
-        consultationsCount: Math.floor(Math.random() * 300) + 100,
-        rating: Math.round((4.5 + Math.random() * 0.5) * 10) / 10,
-      },
-    });
-  }
-
-  // Sort by submitted date (newest first)
-  return requests.sort((a, b) => {
-    const dateA = new Date(a.submittedAt).getTime();
-    const dateB = new Date(b.submittedAt).getTime();
-    return dateB - dateA;
-  });
-}
-
-// Generate mock stats
-function generateMockStats(): ApprovalStats {
-  const requests = generateMockApprovalRequests();
-  const pending = requests.filter((r) => r.status === 'pending');
-  const approved = requests.filter((r) => r.status === 'approved');
-  const rejected = requests.filter((r) => r.status === 'rejected');
-
+// Helper to transform backend response to frontend format
+function transformApprovalRequest(backendRequest: any): ApprovalRequest {
   return {
-    totalPending: pending.length,
-    totalApproved: approved.length,
-    totalRejected: rejected.length,
-    pendingOnboarding: pending.filter((r) => r.requestType === 'onboarding').length,
-    pendingVerification: pending.filter((r) => r.requestType === 'verification_badge').length,
-    pendingServices: pending.filter((r) => r.requestType === 'service_approval').length,
-    avgReviewTime: 18.5, // hours
-    todayReviewed: Math.floor(Math.random() * 5) + 2,
+    _id: backendRequest._id,
+    astrologerId: backendRequest.astrologerId?._id || backendRequest.astrologerId,
+    astrologerName: backendRequest.astrologerName,
+    astrologerEmail: backendRequest.astrologerEmail,
+    astrologerPhone: backendRequest.astrologerPhone,
+    astrologerAvatar: backendRequest.astrologerAvatar || backendRequest.astrologerId?.profilePicture,
+    requestType: backendRequest.requestType,
+    status: backendRequest.status,
+    submittedAt: backendRequest.submittedAt,
+    reviewedAt: backendRequest.reviewedAt,
+    reviewedBy: backendRequest.reviewedBy,
+    rejectionReason: backendRequest.rejectionReason,
+    notes: backendRequest.notes,
+    documents: backendRequest.documents || [], // Backend doesn't return documents yet, but keep for compatibility
+    astrologerData: backendRequest.astrologerData || {
+      experience: backendRequest.astrologerId?.experience || 0,
+      specializations: backendRequest.astrologerId?.specializations || [],
+      consultationsCount: 0,
+      rating: 0,
+    },
   };
 }
-
-// Filter requests based on filters
-function filterRequests(
-  requests: ApprovalRequest[],
-  filters: Partial<ApprovalFilters>
-): ApprovalRequest[] {
-  let filtered = [...requests];
-
-  if (filters.type && filters.type !== 'all') {
-    filtered = filtered.filter((r) => r.requestType === filters.type);
-  }
-
-  if (filters.status && filters.status !== 'all') {
-    filtered = filtered.filter((r) => r.status === filters.status);
-  }
-
-  if (filters.search) {
-    const searchLower = filters.search.toLowerCase();
-    filtered = filtered.filter(
-      (r) =>
-        r.astrologerName.toLowerCase().includes(searchLower) ||
-        r.astrologerEmail.toLowerCase().includes(searchLower) ||
-        r.astrologerPhone.includes(searchLower)
-    );
-  }
-
-  return filtered;
-}
-
-// Simulate API delay
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const approvalApi = {
   // Get approval requests with filters and pagination
   getApprovalRequests: async (params: {
-    filters?: Partial<ApprovalFilters>;
+    type?: ApprovalRequestType | 'all';
+    status?: ApprovalStatus | 'all';
+    search?: string;
     page?: number;
     limit?: number;
   }): Promise<ApiResponse<{ requests: ApprovalRequest[]; pagination: ApprovalPagination }>> => {
-    await delay(300);
+    try {
+      const queryParams: any = {
+        page: params.page || 1,
+        limit: params.limit || 20,
+      };
 
-    const allRequests = generateMockApprovalRequests();
-    const filtered = filterRequests(allRequests, params.filters || {});
-    const page = params.page || 1;
-    const limit = params.limit || 20;
-    const start = (page - 1) * limit;
-    const end = start + limit;
-    const paginated = filtered.slice(start, end);
+      if (params.type && params.type !== 'all') {
+        queryParams.type = params.type;
+      }
 
-    return {
-      success: true,
-      data: {
-        requests: paginated,
-        pagination: {
-          page,
-          limit,
-          total: filtered.length,
-        },
-      },
-    };
+      if (params.status && params.status !== 'all') {
+        queryParams.status = params.status;
+      }
+
+      if (params.search) {
+        queryParams.search = params.search;
+      }
+
+      const response = await apiClient.get('/admin/approvals', { params: queryParams });
+
+      if (response.data.success && response.data.data) {
+        const requests = response.data.data.map(transformApprovalRequest);
+        return {
+          success: true,
+          data: {
+            requests: requests,
+            pagination: {
+              page: response.data.pagination.page,
+              limit: response.data.pagination.limit,
+              total: response.data.pagination.total,
+            },
+          },
+        };
+      }
+
+      return {
+        success: false,
+        message: response.data.message || 'Failed to fetch approval requests',
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        message: error.message || 'Failed to fetch approval requests',
+      };
+    }
   },
 
   // Get approval statistics
   getApprovalStats: async (): Promise<ApiResponse<ApprovalStats>> => {
-    await delay(200);
+    try {
+      const response = await apiClient.get('/admin/approvals/stats');
 
-    return {
-      success: true,
-      data: generateMockStats(),
-    };
+      if (response.data.success && response.data.data) {
+        return {
+          success: true,
+          data: {
+            totalPending: response.data.data.totalPending || 0,
+            totalApproved: response.data.data.totalApproved || 0,
+            totalRejected: response.data.data.totalRejected || 0,
+            pendingOnboarding: response.data.data.pendingOnboarding || 0,
+            pendingVerification: response.data.data.pendingVerification || 0,
+            pendingServices: response.data.data.pendingServices || 0,
+            avgReviewTime: response.data.data.avgReviewTime || 0,
+            todayReviewed: response.data.data.todayReviewed || 0,
+          },
+        };
+      }
+
+      return {
+        success: false,
+        message: response.data.message || 'Failed to fetch approval statistics',
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        message: error.message || 'Failed to fetch approval statistics',
+      };
+    }
   },
 
   // Get single request by ID
   getApprovalRequestById: async (requestId: string): Promise<ApiResponse<ApprovalRequest>> => {
-    await delay(200);
+    try {
+      const response = await apiClient.get(`/admin/approvals/${requestId}`);
 
-    const allRequests = generateMockApprovalRequests();
-    const request = allRequests.find((r) => r._id === requestId);
+      if (response.data.success && response.data.data) {
+        return {
+          success: true,
+          data: transformApprovalRequest(response.data.data),
+        };
+      }
 
-    if (!request) {
       return {
         success: false,
-        message: 'Request not found',
+        message: response.data.message || 'Request not found',
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        message: error.message || 'Failed to fetch approval request',
       };
     }
-
-    return {
-      success: true,
-      data: request,
-    };
   },
 
   // Approve request
   approveRequest: async (
     requestId: string,
-    data: { notes?: string }
+    notes?: string
   ): Promise<ApiResponse<ApprovalRequest>> => {
-    await delay(500);
+    try {
+      const response = await apiClient.post(`/admin/approvals/${requestId}/approve`, {
+        notes,
+      });
 
-    const allRequests = generateMockApprovalRequests();
-    const request = allRequests.find((r) => r._id === requestId);
+      if (response.data.success && response.data.data) {
+        return {
+          success: true,
+          data: transformApprovalRequest(response.data.data),
+          message: response.data.message || 'Request approved successfully',
+        };
+      }
 
-    if (!request) {
       return {
         success: false,
-        message: 'Request not found',
+        message: response.data.message || 'Failed to approve request',
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        message: error.message || 'Failed to approve request',
       };
     }
-
-    const approved: ApprovalRequest = {
-      ...request,
-      status: 'approved',
-      reviewedAt: new Date().toISOString(),
-      reviewedBy: 'admin',
-      notes: data.notes,
-    };
-
-    return {
-      success: true,
-      data: approved,
-    };
   },
 
   // Reject request
   rejectRequest: async (
     requestId: string,
-    data: { rejectionReason: string }
+    reason: string
   ): Promise<ApiResponse<ApprovalRequest>> => {
-    await delay(500);
+    try {
+      const response = await apiClient.post(`/admin/approvals/${requestId}/reject`, {
+        reason,
+      });
 
-    const allRequests = generateMockApprovalRequests();
-    const request = allRequests.find((r) => r._id === requestId);
+      if (response.data.success && response.data.data) {
+        return {
+          success: true,
+          data: transformApprovalRequest(response.data.data),
+          message: response.data.message || 'Request rejected successfully',
+        };
+      }
 
-    if (!request) {
       return {
         success: false,
-        message: 'Request not found',
+        message: response.data.message || 'Failed to reject request',
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        message: error.message || 'Failed to reject request',
       };
     }
-
-    const rejected: ApprovalRequest = {
-      ...request,
-      status: 'rejected',
-      reviewedAt: new Date().toISOString(),
-      reviewedBy: 'admin',
-      rejectionReason: data.rejectionReason,
-    };
-
-    return {
-      success: true,
-      data: rejected,
-    };
   },
 };
 

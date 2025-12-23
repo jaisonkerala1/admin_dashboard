@@ -31,7 +31,9 @@ function* fetchRequestsSaga(
 ): SagaIterator {
   try {
     const response = yield call(approvalApi.getApprovalRequests, {
-      filters: action.payload.filters,
+      type: action.payload.filters?.type,
+      status: action.payload.filters?.status,
+      search: action.payload.filters?.search,
       page: action.payload.page,
       limit: action.payload.limit,
     });
@@ -86,9 +88,7 @@ function* approveRequestSaga(
   action: PayloadAction<{ requestId: string; notes?: string }>
 ): SagaIterator {
   try {
-    const response = yield call(approvalApi.approveRequest, action.payload.requestId, {
-      notes: action.payload.notes,
-    });
+    const response = yield call(approvalApi.approveRequest, action.payload.requestId, action.payload.notes);
 
     if (response.success && response.data) {
       yield put(approveRequestSuccess(response.data));
@@ -107,9 +107,7 @@ function* rejectRequestSaga(
   action: PayloadAction<{ requestId: string; rejectionReason: string }>
 ): SagaIterator {
   try {
-    const response = yield call(approvalApi.rejectRequest, action.payload.requestId, {
-      rejectionReason: action.payload.rejectionReason,
-    });
+    const response = yield call(approvalApi.rejectRequest, action.payload.requestId, action.payload.rejectionReason);
 
     if (response.success && response.data) {
       yield put(rejectRequestSuccess(response.data));
