@@ -34,7 +34,6 @@ export const ROUTES = {
   ANALYTICS: '/analytics',
   COMMUNICATION: '/communication',
   EARNINGS: '/earnings',
-  CALENDAR: '/calendar',
   SUPPORT: '/support',
 } as const;
 

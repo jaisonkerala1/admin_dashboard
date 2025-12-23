@@ -5,7 +5,6 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { socketService } from '@/services/socketService';
 import {
   fetchTicketDetailRequest,
-  assignTicketRequest,
   updateTicketStatusRequest,
   updateTicketPriorityRequest,
   addMessageRequest,
@@ -26,7 +25,6 @@ import {
   MessageSquare,
   Star,
   StickyNote,
-  X,
 } from 'lucide-react';
 import type { TicketStatus, TicketPriority, MessageSenderType } from '@/types/ticket';
 

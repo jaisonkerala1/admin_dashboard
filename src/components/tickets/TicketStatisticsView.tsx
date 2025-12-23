@@ -7,15 +7,13 @@ import {
   Line,
   BarChart,
   Bar,
-  PieChart,
-  Pie,
-  Cell,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   Legend,
   ResponsiveContainer,
+  Cell,
 } from 'recharts';
 import {
   TrendingUp,
@@ -25,13 +23,6 @@ import {
   Star,
   AlertTriangle,
 } from 'lucide-react';
-
-const PRIORITY_COLORS = {
-  Urgent: '#ef4444',
-  High: '#f97316',
-  Medium: '#eab308',
-  Low: '#22c55e',
-};
 
 const CATEGORY_COLORS = [
   '#3b82f6',
@@ -78,11 +69,6 @@ export const TicketStatisticsView: React.FC = () => {
   }
 
   // Prepare data for charts
-  const priorityData = Object.entries(statistics.topCategories || {}).map(([key, value]) => ({
-    name: key,
-    value: (value as any).count || value,
-  }));
-
   const categoryData = statistics.topCategories.map((cat) => ({
     name: cat.category,
     count: cat.count,

@@ -23,7 +23,6 @@ import {
   CheckCircle,
   XCircle,
 } from 'lucide-react';
-import type { TicketStatus, TicketPriority, TicketCategory } from '@/types/ticket';
 
 export const TicketListView: React.FC = () => {
   const dispatch = useAppDispatch();

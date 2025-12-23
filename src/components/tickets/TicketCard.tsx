@@ -30,12 +30,11 @@ export const TicketCard: React.FC<TicketCardProps> = ({
   };
 
   return (
-    <Card
-      className={`p-4 hover:shadow-md transition-all cursor-pointer ${
-        isSelected ? 'ring-2 ring-primary-500' : ''
-      }`}
+    <div
+      className={`cursor-pointer ${isSelected ? 'ring-2 ring-primary-500 rounded-lg' : ''}`}
       onClick={onClick}
     >
+      <Card className="p-4 hover:shadow-md transition-all">
       <div className="flex items-start gap-4">
         {/* Checkbox */}
         {showCheckbox && (
@@ -108,7 +107,8 @@ export const TicketCard: React.FC<TicketCardProps> = ({
           )}
         </div>
       </div>
-    </Card>
+      </Card>
+    </div>
   );
 };
 

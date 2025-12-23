@@ -16,7 +16,6 @@ import {
   AlertCircle,
   Clock,
   CheckCircle,
-  MessageSquare,
   BarChart3,
 } from 'lucide-react';
 
