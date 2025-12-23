@@ -1,6 +1,4 @@
-import apiClient from './client';
 import type {
-  ApiResponse,
   CommunicationStats,
   CommunicationTrend,
   AstrologerCommunicationStats,
@@ -9,6 +7,7 @@ import type {
   CallSuccessRateTrend,
   CommunicationPeriod,
 } from '@/types/communication';
+import type { ApiResponse } from '@/types';
 
 // Generate dummy data based on period
 const generateDummyStats = (period: CommunicationPeriod): CommunicationStats => {
@@ -175,7 +174,7 @@ export const communicationApi = {
   },
 
   // Get communication stats by astrologer
-  getAstrologerCommunicationStats: async (period: CommunicationPeriod = '7d'): Promise<ApiResponse<AstrologerCommunicationStats[]>> => {
+  getAstrologerCommunicationStats: async (_period: CommunicationPeriod = '7d'): Promise<ApiResponse<AstrologerCommunicationStats[]>> => {
     await new Promise(resolve => setTimeout(resolve, 300));
     
     return {
@@ -185,7 +184,7 @@ export const communicationApi = {
   },
 
   // Get call duration statistics
-  getCallDurationStats: async (period: CommunicationPeriod = '7d'): Promise<ApiResponse<CallDurationStats[]>> => {
+  getCallDurationStats: async (_period: CommunicationPeriod = '7d'): Promise<ApiResponse<CallDurationStats[]>> => {
     await new Promise(resolve => setTimeout(resolve, 300));
     
     return {
@@ -195,7 +194,7 @@ export const communicationApi = {
   },
 
   // Get peak hours data
-  getPeakHours: async (period: CommunicationPeriod = '7d'): Promise<ApiResponse<PeakHoursData[]>> => {
+  getPeakHours: async (_period: CommunicationPeriod = '7d'): Promise<ApiResponse<PeakHoursData[]>> => {
     await new Promise(resolve => setTimeout(resolve, 300));
     
     return {

@@ -75,7 +75,7 @@ export const Communication = () => {
     // Listen for call accepted events
     const unsubscribeAccept = socketService.onCallAccept((data) => {
       console.log('✅ [COMMUNICATION] Call accepted:', data);
-      setOutgoingCall((current) => {
+      setOutgoingCall((current: Call | null) => {
         if (!current || current._id !== data.callId) return current;
 
         // Transition to in-call window (Agora)

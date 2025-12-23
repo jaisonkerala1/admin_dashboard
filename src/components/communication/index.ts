@@ -4,3 +4,5 @@ export { AstrologerCommunicationChart } from './AstrologerCommunicationChart';
 export { CallDurationChart } from './CallDurationChart';
 export { CallSuccessRateChart } from './CallSuccessRateChart';
 export { PeakHoursChart } from './PeakHoursChart';
+export { ChatWindow } from './ChatWindow';
+export { VideoCallWindow } from './VideoCallWindow';

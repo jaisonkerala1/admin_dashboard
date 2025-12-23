@@ -54,3 +54,43 @@ export interface CallSuccessRateTrend {
   missedRate: number; // percentage
   rejectedRate: number; // percentage
 }
+
+// DirectMessage type for chat messages
+export interface DirectMessage {
+  id: string;
+  conversationId: string;
+  senderId: string;
+  senderType: 'user' | 'astrologer' | 'admin';
+  recipientId: string;
+  recipientType: 'user' | 'astrologer' | 'admin';
+  content: string;
+  messageType: 'text' | 'image' | 'audio' | 'video' | 'file' | 'call_log';
+  mediaUrl?: string;
+  timestamp: Date | string;
+  status: 'sent' | 'delivered' | 'read' | 'failed';
+  callType?: 'voice' | 'video';
+  callStatus?: 'completed' | 'missed' | 'declined' | 'cancelled';
+  callDuration?: number; // in seconds
+}
+
+// Call type for voice/video calls
+export interface Call {
+  _id?: string;
+  id?: string;
+  callerId: string;
+  callerType: 'user' | 'astrologer' | 'admin';
+  callerName?: string;
+  callerAvatar?: string;
+  recipientId: string;
+  recipientType: 'user' | 'astrologer' | 'admin';
+  recipientName?: string;
+  recipientAvatar?: string;
+  callType: 'voice' | 'video';
+  channelName: string;
+  agoraToken?: string;
+  status: 'initiated' | 'ringing' | 'accepted' | 'rejected' | 'connected' | 'ended' | 'missed' | 'failed' | 'cancelled';
+  duration?: number; // in seconds
+  startTime?: Date | string;
+  startedAt?: Date;
+  endTime?: Date | string;
+}
