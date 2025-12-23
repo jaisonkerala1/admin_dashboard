@@ -2,7 +2,7 @@ import { call, put, takeLatest } from 'redux-saga/effects';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { SagaIterator } from 'redux-saga';
 import { approvalApi } from '@/api';
-import type { ApprovalRequest, ApprovalStats, ApprovalFilters } from '@/types/approval';
+import type { ApprovalFilters } from '@/types/approval';
 import {
   fetchRequestsRequest,
   fetchRequestsSuccess,

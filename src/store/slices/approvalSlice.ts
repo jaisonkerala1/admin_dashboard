@@ -4,8 +4,6 @@ import type {
   ApprovalStats,
   ApprovalFilters,
   ApprovalPagination,
-  ApprovalRequestType,
-  ApprovalStatus,
 } from '@/types/approval';
 
 interface ApprovalState {

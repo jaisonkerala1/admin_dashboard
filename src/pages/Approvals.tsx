@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
@@ -39,7 +39,6 @@ export const Approvals = () => {
     isLoading,
     isLoadingStats,
     currentRequest,
-    isLoadingDetail,
     isProcessing,
     error,
   } = useAppSelector((state) => state.approval);
