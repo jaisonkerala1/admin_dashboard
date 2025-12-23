@@ -115,6 +115,7 @@ class SocketService {
       try {
         const normalized: DirectMessage = {
           _id: (payload?._id ?? `preview_${Date.now()}`).toString(),
+          id: (payload?.id ?? payload?._id ?? `preview_${Date.now()}`).toString(),
           conversationId: payload?.conversationId ?? '',
           senderId: payload?.senderId ?? '',
           senderType: payload?.senderType ?? 'user',

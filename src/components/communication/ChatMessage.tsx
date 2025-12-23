@@ -8,7 +8,7 @@ interface ChatMessageProps {
 }
 
 export const ChatMessage = ({ message, isOwn }: ChatMessageProps) => {
-  const formatTime = (date: Date) => {
+  const formatTime = (date: Date | string) => {
     return format(new Date(date), 'HH:mm');
   };
 
