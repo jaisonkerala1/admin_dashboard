@@ -148,7 +148,9 @@ export const TicketStatisticsView: React.FC = () => {
               <div className="flex items-center gap-2">
                 <Star className="w-6 h-6 fill-yellow-400 text-yellow-400" />
                 <span className="text-3xl font-bold text-gray-900 dark:text-white">
-                  {statistics.overview.satisfactionRate.toFixed(1)}
+                  {typeof (statistics.overview as any)?.satisfactionRate === 'number'
+                    ? (statistics.overview as any).satisfactionRate.toFixed(1)
+                    : '—'}
                 </span>
                 <span className="text-gray-500 dark:text-gray-400">/ 5.0</span>
               </div>

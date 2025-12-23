@@ -234,7 +234,9 @@ export const TicketDetailView: React.FC = () => {
                   <div>
                     <span className="text-gray-500 dark:text-gray-400">Avg Rating:</span>
                     <span className="ml-2 font-medium text-gray-900 dark:text-white flex items-center gap-1">
-                      {currentTicket.userHistory.avgRating.toFixed(1)}
+                      {typeof (currentTicket.userHistory as any)?.avgRating === 'number'
+                        ? (currentTicket.userHistory as any).avgRating.toFixed(1)
+                        : '—'}
                       <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
                     </span>
                   </div>
