@@ -1,8 +1,9 @@
-import { call, put, takeLatest } from 'redux-saga/effects';
+import { call, put, takeLatest, select } from 'redux-saga/effects';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { SagaIterator } from 'redux-saga';
 import { communicationApi } from '@/api';
-import type { CommunicationPeriod } from '@/types/communication';
+import type { CommunicationPeriod, CommunicationType } from '@/types/communication';
+import type { RootState } from '@/store';
 import {
   fetchStatsRequest,
   fetchStatsSuccess,
@@ -27,7 +28,8 @@ import {
 // Fetch Stats Saga
 function* fetchStatsSaga(action: PayloadAction<{ period: CommunicationPeriod }>): SagaIterator {
   try {
-    const response = yield call(communicationApi.getCommunicationStats, action.payload.period);
+    const communicationType: CommunicationType = yield select((state: RootState) => state.communication.communicationType);
+    const response = yield call(communicationApi.getCommunicationStats, action.payload.period, communicationType);
     
     if (response.success && response.data) {
       yield put(fetchStatsSuccess(response.data));
@@ -42,7 +44,8 @@ function* fetchStatsSaga(action: PayloadAction<{ period: CommunicationPeriod }>)
 // Fetch Trends Saga
 function* fetchTrendsSaga(action: PayloadAction<{ period: CommunicationPeriod }>): SagaIterator {
   try {
-    const response = yield call(communicationApi.getCommunicationTrends, action.payload.period);
+    const communicationType: CommunicationType = yield select((state: RootState) => state.communication.communicationType);
+    const response = yield call(communicationApi.getCommunicationTrends, action.payload.period, communicationType);
     
     if (response.success && response.data) {
       yield put(fetchTrendsSuccess(response.data));
@@ -57,7 +60,8 @@ function* fetchTrendsSaga(action: PayloadAction<{ period: CommunicationPeriod }>
 // Fetch Astrologer Stats Saga
 function* fetchAstrologerStatsSaga(action: PayloadAction<{ period: CommunicationPeriod }>): SagaIterator {
   try {
-    const response = yield call(communicationApi.getAstrologerCommunicationStats, action.payload.period);
+    const communicationType: CommunicationType = yield select((state: RootState) => state.communication.communicationType);
+    const response = yield call(communicationApi.getAstrologerCommunicationStats, action.payload.period, communicationType);
     
     if (response.success && response.data) {
       yield put(fetchAstrologerStatsSuccess(response.data));
@@ -72,7 +76,8 @@ function* fetchAstrologerStatsSaga(action: PayloadAction<{ period: Communication
 // Fetch Call Duration Stats Saga
 function* fetchCallDurationStatsSaga(action: PayloadAction<{ period: CommunicationPeriod }>): SagaIterator {
   try {
-    const response = yield call(communicationApi.getCallDurationStats, action.payload.period);
+    const communicationType: CommunicationType = yield select((state: RootState) => state.communication.communicationType);
+    const response = yield call(communicationApi.getCallDurationStats, action.payload.period, communicationType);
     
     if (response.success && response.data) {
       yield put(fetchCallDurationStatsSuccess(response.data));
@@ -87,7 +92,8 @@ function* fetchCallDurationStatsSaga(action: PayloadAction<{ period: Communicati
 // Fetch Peak Hours Saga
 function* fetchPeakHoursSaga(action: PayloadAction<{ period: CommunicationPeriod }>): SagaIterator {
   try {
-    const response = yield call(communicationApi.getPeakHours, action.payload.period);
+    const communicationType: CommunicationType = yield select((state: RootState) => state.communication.communicationType);
+    const response = yield call(communicationApi.getPeakHours, action.payload.period, communicationType);
     
     if (response.success && response.data) {
       yield put(fetchPeakHoursSuccess(response.data));
@@ -102,7 +108,8 @@ function* fetchPeakHoursSaga(action: PayloadAction<{ period: CommunicationPeriod
 // Fetch Success Rate Trends Saga
 function* fetchSuccessRateTrendsSaga(action: PayloadAction<{ period: CommunicationPeriod }>): SagaIterator {
   try {
-    const response = yield call(communicationApi.getCallSuccessRateTrends, action.payload.period);
+    const communicationType: CommunicationType = yield select((state: RootState) => state.communication.communicationType);
+    const response = yield call(communicationApi.getCallSuccessRateTrends, action.payload.period, communicationType);
     
     if (response.success && response.data) {
       yield put(fetchSuccessRateTrendsSuccess(response.data));

@@ -7,6 +7,7 @@ import type {
   PeakHoursData,
   CallSuccessRateTrend,
   CommunicationPeriod,
+  CommunicationType,
 } from '@/types/communication';
 
 interface CommunicationState {
@@ -28,8 +29,9 @@ interface CommunicationState {
   // Success Rate Trends
   successRateTrends: CallSuccessRateTrend[];
   
-  // Period
+  // Filters
   period: CommunicationPeriod;
+  communicationType: CommunicationType;
   
   // Loading States
   isLoadingStats: boolean;
@@ -56,6 +58,7 @@ const initialState: CommunicationState = {
   peakHours: [],
   successRateTrends: [],
   period: '7d',
+  communicationType: 'all',
   isLoadingStats: false,
   isLoadingTrends: false,
   isLoadingAstrologerStats: false,
@@ -168,6 +171,11 @@ const communicationSlice = createSlice({
     setPeriod: (state, action: PayloadAction<CommunicationPeriod>) => {
       state.period = action.payload;
     },
+
+    // Set Communication Type
+    setCommunicationType: (state, action: PayloadAction<CommunicationType>) => {
+      state.communicationType = action.payload;
+    },
   },
 });
 
@@ -191,6 +199,7 @@ export const {
   fetchSuccessRateTrendsSuccess,
   fetchSuccessRateTrendsFailure,
   setPeriod,
+  setCommunicationType,
 } = communicationSlice.actions;
 
 export default communicationSlice.reducer;
