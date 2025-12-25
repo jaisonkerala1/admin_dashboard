@@ -26,49 +26,49 @@ export const TicketCategoryBadge: React.FC<TicketCategoryBadgeProps> = ({
         return {
           label: 'Account Issues',
           icon: User,
-          className: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200',
+          className: 'bg-indigo-50 text-indigo-700 border border-indigo-200',
         };
       case 'Calendar Problems':
         return {
           label: 'Calendar Problems',
           icon: Calendar,
-          className: 'bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200',
+          className: 'bg-teal-50 text-teal-700 border border-teal-200',
         };
       case 'Consultation Issues':
         return {
           label: 'Consultation Issues',
           icon: MessageSquare,
-          className: 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-200',
+          className: 'bg-cyan-50 text-cyan-700 border border-cyan-200',
         };
       case 'Payment Problems':
         return {
           label: 'Payment Problems',
           icon: CreditCard,
-          className: 'bg-rose-100 text-rose-800 dark:bg-rose-900 dark:text-rose-200',
+          className: 'bg-rose-50 text-rose-700 border border-rose-200',
         };
       case 'Technical Support':
         return {
           label: 'Technical Support',
           icon: Wrench,
-          className: 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200',
+          className: 'bg-amber-50 text-amber-700 border border-amber-200',
         };
       case 'Feature Request':
         return {
           label: 'Feature Request',
           icon: Lightbulb,
-          className: 'bg-lime-100 text-lime-800 dark:bg-lime-900 dark:text-lime-200',
+          className: 'bg-lime-50 text-lime-700 border border-lime-200',
         };
       case 'Bug Report':
         return {
           label: 'Bug Report',
           icon: Bug,
-          className: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+          className: 'bg-red-50 text-red-700 border border-red-200',
         };
       case 'Other':
         return {
           label: 'Other',
           icon: HelpCircle,
-          className: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200',
+          className: 'bg-gray-50 text-gray-700 border border-gray-200',
         };
       default:
         return {
@@ -84,7 +84,7 @@ export const TicketCategoryBadge: React.FC<TicketCategoryBadgeProps> = ({
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-md ${config.className}`}
+      className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-lg ${config.className}`}
     >
       {showIcon && <Icon className="w-3.5 h-3.5" />}
       {config.label}

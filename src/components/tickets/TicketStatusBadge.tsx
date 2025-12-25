@@ -17,25 +17,25 @@ export const TicketStatusBadge: React.FC<TicketStatusBadgeProps> = ({
         return {
           label: 'Open',
           icon: Clock,
-          className: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+          className: 'bg-blue-50 text-blue-700 border border-blue-200',
         };
       case 'in_progress':
         return {
           label: 'In Progress',
           icon: MessageCircle,
-          className: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+          className: 'bg-amber-50 text-amber-700 border border-amber-200',
         };
       case 'waiting_for_user':
         return {
           label: 'Waiting for User',
           icon: Clock,
-          className: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
+          className: 'bg-purple-50 text-purple-700 border border-purple-200',
         };
       case 'closed':
         return {
           label: 'Closed',
           icon: CheckCircle,
-          className: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200',
+          className: 'bg-gray-50 text-gray-700 border border-gray-200',
         };
       default:
         return {
@@ -51,7 +51,7 @@ export const TicketStatusBadge: React.FC<TicketStatusBadgeProps> = ({
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full ${config.className}`}
+      className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-lg ${config.className}`}
     >
       {showIcon && <Icon className="w-3.5 h-3.5" />}
       {config.label}

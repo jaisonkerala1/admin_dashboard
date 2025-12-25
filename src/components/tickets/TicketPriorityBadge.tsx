@@ -17,25 +17,25 @@ export const TicketPriorityBadge: React.FC<TicketPriorityBadgeProps> = ({
         return {
           label: 'Urgent',
           icon: AlertTriangle,
-          className: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+          className: 'bg-red-50 text-red-700 border border-red-200',
         };
       case 'High':
         return {
           label: 'High',
           icon: AlertCircle,
-          className: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
+          className: 'bg-orange-50 text-orange-700 border border-orange-200',
         };
       case 'Medium':
         return {
           label: 'Medium',
           icon: Flag,
-          className: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+          className: 'bg-yellow-50 text-yellow-700 border border-yellow-200',
         };
       case 'Low':
         return {
           label: 'Low',
           icon: Info,
-          className: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+          className: 'bg-green-50 text-green-700 border border-green-200',
         };
       default:
         return {
@@ -51,7 +51,7 @@ export const TicketPriorityBadge: React.FC<TicketPriorityBadgeProps> = ({
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full ${config.className}`}
+      className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-lg ${config.className}`}
     >
       {showIcon && <Icon className="w-3.5 h-3.5" />}
       {config.label}
