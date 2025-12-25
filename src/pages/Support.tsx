@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
-import { Card, StatCard } from '@/components/common';
+import { StatCard } from '@/components/common';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { fetchTicketsRequest } from '@/store/slices/ticketSlice';
 import { socketService } from '@/services/socketService';

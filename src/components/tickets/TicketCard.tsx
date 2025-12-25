@@ -1,7 +1,6 @@
 import React from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import type { SupportTicket } from '@/types/ticket';
-import { Card } from '@/components/common';
 import { TicketStatusBadge } from './TicketStatusBadge';
 import { TicketPriorityBadge } from './TicketPriorityBadge';
 import { TicketCategoryBadge } from './TicketCategoryBadge';

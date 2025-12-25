@@ -10,7 +10,6 @@ import {
   clearSelection,
   bulkActionRequest,
 } from '@/store/slices/ticketSlice';
-import { Card } from '@/components/common';
 import { TicketCard } from './TicketCard';
 import {
   Search,
