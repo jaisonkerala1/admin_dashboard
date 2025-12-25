@@ -188,8 +188,37 @@ const generateDummySuccessRateTrends = (period: CommunicationPeriod): CallSucces
     // Normalize to ensure they sum to 100
     const total = completedRate + missedRate + rejectedRate;
     
+    let date: Date;
+    if (period === '1d') {
+      // Last 24 hours
+      date = new Date();
+      date.setHours(date.getHours() - i);
+      date.setMinutes(0, 0, 0);
+    } else if (period === '7d') {
+      // Last 7 days
+      date = new Date();
+      date.setDate(date.getDate() - i);
+      date.setHours(0, 0, 0, 0);
+    } else if (period === '30d') {
+      // Last 30 days
+      date = new Date();
+      date.setDate(date.getDate() - i);
+      date.setHours(0, 0, 0, 0);
+    } else if (period === '90d') {
+      // Last 90 days (weekly intervals)
+      date = new Date();
+      date.setDate(date.getDate() - (i * 7));
+      date.setHours(0, 0, 0, 0);
+    } else {
+      // 1 year (monthly intervals)
+      date = new Date();
+      date.setMonth(date.getMonth() - i);
+      date.setDate(1);
+      date.setHours(0, 0, 0, 0);
+    }
+    
     trends.push({
-      date: period === '1d' ? `${23 - i}:00` : period === '7d' ? `Day ${count - i}` : `Period ${count - i}`,
+      date: date.toISOString(),
       completedRate: Math.round((completedRate / total) * 100),
       missedRate: Math.round((missedRate / total) * 100),
       rejectedRate: Math.round((rejectedRate / total) * 100),
