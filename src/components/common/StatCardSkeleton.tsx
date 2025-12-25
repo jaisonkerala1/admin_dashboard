@@ -1,5 +1,4 @@
 import { SkeletonBox, SkeletonCard } from './Skeleton';
-import { cn } from '@/utils/helpers';
 
 interface StatCardSkeletonProps {
   className?: string;

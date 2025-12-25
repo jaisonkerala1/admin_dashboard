@@ -1,5 +1,4 @@
-import { SkeletonBox, SkeletonCard } from './Skeleton';
-import { cn } from '@/utils/helpers';
+import { SkeletonBox, SkeletonCircle, SkeletonCard } from './Skeleton';
 
 interface ChartSkeletonProps {
   height?: number;

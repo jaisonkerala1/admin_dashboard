@@ -1,6 +1,5 @@
 import { StatCardSkeleton } from '@/components/common/StatCardSkeleton';
-import { ChartSkeleton } from '@/components/common/ChartSkeleton';
-import { SkeletonBox, SkeletonCard } from '@/components/common/Skeleton';
+import { SkeletonBox, SkeletonCircle, SkeletonCard } from '@/components/common/Skeleton';
 
 export const CommunicationOverviewSkeleton = () => {
   return (
@@ -23,7 +22,7 @@ export const CommunicationOverviewSkeleton = () => {
         {/* Pie chart placeholder */}
         <div className="h-80 flex items-center justify-center">
           <div className="relative">
-            <SkeletonBox width={200} height={200} radius="50%" />
+            <SkeletonCircle size={200} />
             {/* Legend placeholders */}
             <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-4 mt-4">
               <div className="flex items-center gap-2">

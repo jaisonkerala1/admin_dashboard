@@ -1,5 +1,4 @@
 import { SkeletonBox, SkeletonCircle, SkeletonCard } from './Skeleton';
-import { cn } from '@/utils/helpers';
 
 interface TableSkeletonProps {
   rows?: number;
