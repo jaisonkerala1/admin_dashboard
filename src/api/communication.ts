@@ -52,27 +52,37 @@ const generateDummyTrends = (period: CommunicationPeriod): CommunicationTrend[] 
     const baseVoiceCalls = 45 + Math.random() * 30;
     const baseVideoCalls = 28 + Math.random() * 20;
 
-    let dateLabel = '';
+    let date: Date;
     if (period === '1d') {
-      dateLabel = `${23 - i}:00`;
+      // Last 24 hours
+      date = new Date();
+      date.setHours(date.getHours() - i);
+      date.setMinutes(0, 0, 0);
     } else if (period === '7d') {
-      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-      const date = new Date();
+      // Last 7 days
+      date = new Date();
       date.setDate(date.getDate() - i);
-      dateLabel = days[date.getDay()];
+      date.setHours(0, 0, 0, 0);
     } else if (period === '30d') {
-      const date = new Date();
+      // Last 30 days
+      date = new Date();
       date.setDate(date.getDate() - i);
-      dateLabel = `${date.getDate()}/${date.getMonth() + 1}`;
-    } else if (period === '90d' || period === '1y') {
-      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      const date = new Date();
+      date.setHours(0, 0, 0, 0);
+    } else if (period === '90d') {
+      // Last 90 days (weekly intervals)
+      date = new Date();
+      date.setDate(date.getDate() - (i * 7));
+      date.setHours(0, 0, 0, 0);
+    } else {
+      // 1 year (monthly intervals)
+      date = new Date();
       date.setMonth(date.getMonth() - i);
-      dateLabel = months[date.getMonth()];
+      date.setDate(1);
+      date.setHours(0, 0, 0, 0);
     }
 
     trends.push({
-      date: dateLabel,
+      date: date.toISOString(),
       messages: Math.round(baseMessages),
       voiceCalls: Math.round(baseVoiceCalls),
       videoCalls: Math.round(baseVideoCalls),
