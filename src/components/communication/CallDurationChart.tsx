@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { fetchCallDurationStatsRequest } from '@/store/slices/communicationSlice';
-import { Card, Loader } from '@/components/common';
+import { Card } from '@/components/common';
+import { ChartSkeleton } from '@/components/common';
 import { Clock } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
@@ -16,11 +17,7 @@ export const CallDurationChart: React.FC = () => {
   }, [dispatch, period, communicationType]);
 
   if (isLoadingCallDuration) {
-    return (
-      <div className="flex justify-center items-center h-96">
-        <Loader size="lg" />
-      </div>
-    );
+    return <ChartSkeleton height={384} type="bar" />;
   }
 
   if (callDurationError || !callDurationStats || callDurationStats.length === 0) {

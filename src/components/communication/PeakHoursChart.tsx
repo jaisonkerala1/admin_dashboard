@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { fetchPeakHoursRequest } from '@/store/slices/communicationSlice';
-import { Card, Loader } from '@/components/common';
+import { Card } from '@/components/common';
+import { ChartSkeleton } from '@/components/common';
 import { Clock } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { formatNumber } from '@/utils/formatters';
@@ -17,11 +18,7 @@ export const PeakHoursChart: React.FC = () => {
   }, [dispatch, period, communicationType]);
 
   if (isLoadingPeakHours) {
-    return (
-      <div className="flex justify-center items-center h-96">
-        <Loader size="lg" />
-      </div>
-    );
+    return <ChartSkeleton height={384} type="bar" />;
   }
 
   if (peakHoursError || !peakHours || peakHours.length === 0) {

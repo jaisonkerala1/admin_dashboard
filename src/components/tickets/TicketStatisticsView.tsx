@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { fetchStatisticsRequest, setStatisticsPeriod } from '@/store/slices/ticketSlice';
-import { Card, StatCard, Loader } from '@/components/common';
+import { Card, StatCard } from '@/components/common';
+import { ChartSkeleton } from '@/components/common';
 import {
   LineChart,
   Line,
@@ -50,11 +51,7 @@ export const TicketStatisticsView: React.FC = () => {
   };
 
   if (isLoadingStatistics) {
-    return (
-      <div className="flex justify-center items-center h-96">
-        <Loader size="lg" />
-      </div>
-    );
+    return <ChartSkeleton height={400} type="bar" />;
   }
 
   if (statisticsError || !statistics) {

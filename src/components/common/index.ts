@@ -12,3 +12,10 @@ export { PillBadge } from './PillBadge';
 export type { BadgeVariant } from './PillBadge';
 export { ShowEntriesDropdown } from './ShowEntriesDropdown';
 
+// Skeleton components
+export { Shimmer } from './Shimmer';
+export { SkeletonBox, SkeletonCircle, SkeletonText, SkeletonCard } from './Skeleton';
+export { StatCardSkeleton } from './StatCardSkeleton';
+export { ChartSkeleton } from './ChartSkeleton';
+export { TableSkeleton } from './TableSkeleton';
+

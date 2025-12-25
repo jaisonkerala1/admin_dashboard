@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { fetchStatsRequest } from '@/store/slices/communicationSlice';
-import { Card, StatCard, Loader } from '@/components/common';
+import { Card, StatCard } from '@/components/common';
+import { CommunicationOverviewSkeleton } from './CommunicationOverviewSkeleton';
 import { MessageSquare, Phone, Video, TrendingUp, Clock, Users } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { formatNumber } from '@/utils/formatters';
@@ -19,11 +20,7 @@ export const CommunicationOverview: React.FC = () => {
   }, [dispatch, period, communicationType]);
 
   if (isLoadingStats) {
-    return (
-      <div className="flex justify-center items-center h-96">
-        <Loader size="lg" />
-      </div>
-    );
+    return <CommunicationOverviewSkeleton />;
   }
 
   if (statsError || !stats) {

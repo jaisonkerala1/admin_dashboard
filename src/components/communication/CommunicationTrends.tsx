@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { fetchTrendsRequest } from '@/store/slices/communicationSlice';
-import { Card, Loader } from '@/components/common';
+import { Card } from '@/components/common';
+import { CommunicationTrendsSkeleton } from './CommunicationTrendsSkeleton';
 import { TrendingUp } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { formatNumber } from '@/utils/formatters';
@@ -18,11 +19,7 @@ export const CommunicationTrends: React.FC = () => {
   }, [dispatch, period, communicationType]);
 
   if (isLoadingTrends) {
-    return (
-      <div className="flex justify-center items-center h-96">
-        <Loader size="lg" />
-      </div>
-    );
+    return <CommunicationTrendsSkeleton />;
   }
 
   if (trendsError || !trends || trends.length === 0) {

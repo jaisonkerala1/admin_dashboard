@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { Users, UserCog, Calendar, DollarSign, AlertCircle, TrendingUp, Radio, Eye, Clock, Play, ShoppingBag, Bell, X, MessageSquare, Phone, Video } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
-import { StatCard, Card, Loader, Avatar } from '@/components/common';
+import { StatCard, Card, Avatar } from '@/components/common';
+import { StatCardSkeleton, ChartSkeleton } from '@/components/common';
 import { LiveStreamViewer } from '@/components/liveStream/LiveStreamViewer';
 import { liveStreamsApi } from '@/api';
 import { formatCurrency, formatNumber, formatRelativeTime } from '@/utils/formatters';
@@ -132,8 +133,26 @@ export const Dashboard = () => {
       )}
 
       {isLoading ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader size="lg" text="Loading dashboard..." />
+        <div className="space-y-6">
+          {/* Period Selector Skeleton */}
+          <div className="border-b border-gray-200">
+            <div className="flex gap-6 overflow-x-auto pb-3">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="h-6 w-16 bg-gray-200 rounded shimmer" />
+              ))}
+            </div>
+          </div>
+          
+          {/* Key Stats Skeleton */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+          </div>
+          
+          {/* Chart Skeleton */}
+          <ChartSkeleton height={300} />
         </div>
       ) : error ? (
         <div className="flex items-center gap-2 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">

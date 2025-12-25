@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { fetchSuccessRateTrendsRequest } from '@/store/slices/communicationSlice';
-import { Card, Loader } from '@/components/common';
+import { Card } from '@/components/common';
+import { ChartSkeleton } from '@/components/common';
 import { CheckCircle } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { format } from 'date-fns';
@@ -17,11 +18,7 @@ export const CallSuccessRateChart: React.FC = () => {
   }, [dispatch, period, communicationType]);
 
   if (isLoadingSuccessRate) {
-    return (
-      <div className="flex justify-center items-center h-96">
-        <Loader size="lg" />
-      </div>
-    );
+    return <ChartSkeleton height={320} type="line" />;
   }
 
   if (successRateError || !successRateTrends || successRateTrends.length === 0) {

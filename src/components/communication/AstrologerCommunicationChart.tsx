@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { fetchAstrologerStatsRequest } from '@/store/slices/communicationSlice';
-import { Card, Loader } from '@/components/common';
+import { Card } from '@/components/common';
+import { ChartSkeleton } from '@/components/common';
 import { Users } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { formatNumber } from '@/utils/formatters';
@@ -18,11 +19,7 @@ export const AstrologerCommunicationChart: React.FC = () => {
   }, [dispatch, period, communicationType]);
 
   if (isLoadingAstrologerStats) {
-    return (
-      <div className="flex justify-center items-center h-96">
-        <Loader size="lg" />
-      </div>
-    );
+    return <ChartSkeleton height={384} type="bar" />;
   }
 
   if (astrologerStatsError || !astrologerStats || astrologerStats.length === 0) {
