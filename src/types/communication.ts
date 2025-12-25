@@ -2,7 +2,7 @@
 
 export type CommunicationPeriod = '1d' | '7d' | '30d' | '90d' | '1y';
 
-export type CommunicationType = 'all' | 'admin-astrologer' | 'customer-astrologer';
+export type CommunicationType = 'customer-astrologer' | 'admin-astrologer';
 
 export interface CommunicationStats {
   totalMessages: number;

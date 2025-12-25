@@ -8,13 +8,13 @@ import { formatNumber } from '@/utils/formatters';
 
 export const PeakHoursChart: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { peakHours, period, isLoadingPeakHours, peakHoursError } = useAppSelector(
+  const { peakHours, period, communicationType, isLoadingPeakHours, peakHoursError } = useAppSelector(
     (state) => state.communication
   );
 
   useEffect(() => {
     dispatch(fetchPeakHoursRequest({ period }));
-  }, [dispatch, period]);
+  }, [dispatch, period, communicationType]);
 
   if (isLoadingPeakHours) {
     return (

@@ -8,14 +8,14 @@ import { formatNumber } from '@/utils/formatters';
 
 export const AstrologerCommunicationChart: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { astrologerStats, period, isLoadingAstrologerStats, astrologerStatsError } = useAppSelector(
+  const { astrologerStats, period, communicationType, isLoadingAstrologerStats, astrologerStatsError } = useAppSelector(
     (state) => state.communication
   );
   const [topN, setTopN] = useState(10);
 
   useEffect(() => {
     dispatch(fetchAstrologerStatsRequest({ period }));
-  }, [dispatch, period]);
+  }, [dispatch, period, communicationType]);
 
   if (isLoadingAstrologerStats) {
     return (

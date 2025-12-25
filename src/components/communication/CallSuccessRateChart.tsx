@@ -8,13 +8,13 @@ import { format } from 'date-fns';
 
 export const CallSuccessRateChart: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { successRateTrends, period, isLoadingSuccessRate, successRateError } = useAppSelector(
+  const { successRateTrends, period, communicationType, isLoadingSuccessRate, successRateError } = useAppSelector(
     (state) => state.communication
   );
 
   useEffect(() => {
     dispatch(fetchSuccessRateTrendsRequest({ period }));
-  }, [dispatch, period]);
+  }, [dispatch, period, communicationType]);
 
   if (isLoadingSuccessRate) {
     return (

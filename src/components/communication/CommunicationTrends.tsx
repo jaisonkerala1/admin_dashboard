@@ -9,13 +9,13 @@ import { format } from 'date-fns';
 
 export const CommunicationTrends: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { trends, period, isLoadingTrends, trendsError } = useAppSelector(
+  const { trends, period, communicationType, isLoadingTrends, trendsError } = useAppSelector(
     (state) => state.communication
   );
 
   useEffect(() => {
     dispatch(fetchTrendsRequest({ period }));
-  }, [dispatch, period]);
+  }, [dispatch, period, communicationType]);
 
   if (isLoadingTrends) {
     return (

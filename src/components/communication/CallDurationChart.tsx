@@ -7,13 +7,13 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 
 export const CallDurationChart: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { callDurationStats, period, isLoadingCallDuration, callDurationError } = useAppSelector(
+  const { callDurationStats, period, communicationType, isLoadingCallDuration, callDurationError } = useAppSelector(
     (state) => state.communication
   );
 
   useEffect(() => {
     dispatch(fetchCallDurationStatsRequest({ period }));
-  }, [dispatch, period]);
+  }, [dispatch, period, communicationType]);
 
   if (isLoadingCallDuration) {
     return (

@@ -58,7 +58,7 @@ const initialState: CommunicationState = {
   peakHours: [],
   successRateTrends: [],
   period: '7d',
-  communicationType: 'all',
+  communicationType: 'customer-astrologer',
   isLoadingStats: false,
   isLoadingTrends: false,
   isLoadingAstrologerStats: false,

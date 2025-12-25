@@ -10,13 +10,13 @@ const COLORS = ['#3b82f6', '#10b981', '#8b5cf6'];
 
 export const CommunicationOverview: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { stats, period, isLoadingStats, statsError } = useAppSelector(
+  const { stats, period, communicationType, isLoadingStats, statsError } = useAppSelector(
     (state) => state.communication
   );
 
   useEffect(() => {
     dispatch(fetchStatsRequest({ period }));
-  }, [dispatch, period]);
+  }, [dispatch, period, communicationType]);
 
   if (isLoadingStats) {
     return (
