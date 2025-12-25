@@ -11,7 +11,15 @@ interface CardProps {
 
 export const Card = ({ children, className, title, subtitle, action }: CardProps) => {
   return (
-    <div className={cn('card', className)}>
+    <div 
+      className={cn(
+        'bg-white rounded-2xl p-6 border border-gray-100',
+        'transition-all duration-200 ease-out',
+        'hover:shadow-md hover:border-gray-200 hover:-translate-y-0.5',
+        'shadow-sm',
+        className
+      )}
+    >
       {(title || subtitle || action) && (
         <div className="flex items-start justify-between mb-4">
           <div>
