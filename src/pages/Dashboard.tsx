@@ -9,7 +9,7 @@ import { LiveStreamViewer } from '@/components/liveStream/LiveStreamViewer';
 import { liveStreamsApi } from '@/api';
 import { formatCurrency, formatNumber, formatRelativeTime } from '@/utils/formatters';
 import { ROUTES } from '@/utils/constants';
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { useNotifications } from '@/contexts/NotificationContext';
 import {
@@ -323,7 +323,7 @@ export const Dashboard = () => {
             >
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={chartData}>
+                  <LineChart data={chartData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                     <XAxis 
                       dataKey="label" 
@@ -343,13 +343,16 @@ export const Dashboard = () => {
                       }}
                       labelStyle={{ fontWeight: 600, marginBottom: '4px' }}
                     />
-                    <Bar 
+                    <Line 
+                      type="monotone" 
                       dataKey="serviceRequests" 
-                      fill="#8b5cf6" 
-                      radius={[8, 8, 0, 0]}
+                      stroke="#8b5cf6" 
+                      strokeWidth={2}
+                      dot={{ fill: '#8b5cf6', r: 4 }}
+                      activeDot={{ r: 6 }}
                       name="Service Requests"
                     />
-                  </BarChart>
+                  </LineChart>
                 </ResponsiveContainer>
               </div>
               <div className="mt-4 flex items-center justify-between pt-4 border-t border-gray-100">
@@ -360,7 +363,7 @@ export const Dashboard = () => {
                   <p className="text-sm text-gray-500">Total ({periodLabel})</p>
                 </div>
                 <div className="text-right">
-                  <div className="flex items-center gap-1 text-green-600">
+                  <div className="flex items-center gap-1 text-purple-600">
                     <TrendingUp className="w-4 h-4" />
                     <span className="text-sm font-semibold">{formatNumber(periodStats.serviceRequests)}</span>
                   </div>
