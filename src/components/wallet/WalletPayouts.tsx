@@ -1,5 +1,4 @@
 import { PayoutRequest, PayoutSummary, PayoutStatus } from '@/types/wallet';
-import { Card } from '@/components/common';
 import { Avatar } from '@/components/common';
 import { formatCurrency } from '@/utils/formatters';
 import { formatRelativeTime } from '@/utils/formatters';
@@ -113,18 +112,18 @@ export const WalletPayouts = ({
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {Array.from({ length: 3 }).map((_, i) => (
-            <Card key={i} className="p-5">
+            <div key={i} className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
               <div className="h-20 bg-gray-200 rounded shimmer" />
-            </Card>
+            </div>
           ))}
         </div>
         <div className="space-y-4">
           {Array.from({ length: 5 }).map((_, i) => (
-            <Card key={i} className="p-4">
+            <div key={i} className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
               <div className="h-24 bg-gray-200 rounded shimmer" />
-            </Card>
+            </div>
           ))}
         </div>
       </div>
@@ -132,64 +131,64 @@ export const WalletPayouts = ({
   }
 
   return (
-    <div className="space-y-6">
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="p-5">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center">
-              <Clock className="w-6 h-6 text-amber-600" />
+    <div className="space-y-4 lg:space-y-6">
+      {/* Summary Cards - Minimal Flat Design */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 lg:p-5 hover:shadow-md hover:border-gray-300 transition-all duration-200">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-amber-50 rounded-lg flex items-center justify-center flex-shrink-0">
+              <Clock className="w-5 h-5 text-amber-600" />
             </div>
-            <div>
-              <p className="text-sm text-gray-600 mb-1">Pending Payouts</p>
-              <p className="text-2xl font-bold text-gray-900">{summary.pendingPayouts}</p>
+            <div className="min-w-0">
+              <p className="text-xs text-gray-500 mb-0.5">Pending Payouts</p>
+              <p className="text-xl font-bold text-gray-900 truncate">{summary.pendingPayouts}</p>
             </div>
           </div>
-        </Card>
+        </div>
 
-        <Card className="p-5">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center">
-              <CheckCircle className="w-6 h-6 text-green-600" />
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 lg:p-5 hover:shadow-md hover:border-gray-300 transition-all duration-200">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center flex-shrink-0">
+              <CheckCircle className="w-5 h-5 text-green-600" />
             </div>
-            <div>
-              <p className="text-sm text-gray-600 mb-1">Completed This Month</p>
-              <p className="text-2xl font-bold text-gray-900">{formatCurrency(summary.completedThisMonth)}</p>
+            <div className="min-w-0">
+              <p className="text-xs text-gray-500 mb-0.5">Completed This Month</p>
+              <p className="text-xl font-bold text-gray-900 truncate">{formatCurrency(summary.completedThisMonth)}</p>
             </div>
           </div>
-        </Card>
+        </div>
 
-        <Card className="p-5">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center">
-              <XCircle className="w-6 h-6 text-red-600" />
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 lg:p-5 hover:shadow-md hover:border-gray-300 transition-all duration-200">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-red-50 rounded-lg flex items-center justify-center flex-shrink-0">
+              <XCircle className="w-5 h-5 text-red-600" />
             </div>
-            <div>
-              <p className="text-sm text-gray-600 mb-1">Failed Payouts</p>
-              <p className="text-2xl font-bold text-gray-900">{summary.failedPayouts}</p>
+            <div className="min-w-0">
+              <p className="text-xs text-gray-500 mb-0.5">Failed Payouts</p>
+              <p className="text-xl font-bold text-gray-900 truncate">{summary.failedPayouts}</p>
             </div>
           </div>
-        </Card>
+        </div>
       </div>
 
-      {/* Search and Filter */}
-      <Card className="p-4">
-        <div className="flex flex-col md:flex-row gap-4">
+      {/* Search and Filter - Minimal Design */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+        <div className="flex flex-col sm:flex-row gap-3">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type="text"
-              placeholder="Search by astrologer name or payout ID..."
+              placeholder="Search payouts..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            className="flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm"
           >
-            <Filter className="w-5 h-5" />
+            <Filter className="w-4 h-4" />
             <span>Filter</span>
             {selectedStatus !== 'all' && (
               <span className="bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full">1</span>
@@ -199,11 +198,11 @@ export const WalletPayouts = ({
 
         {showFilters && (
           <div className="mt-4 pt-4 border-t border-gray-200">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+            <label className="block text-xs font-medium text-gray-700 mb-2">Status</label>
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value as PayoutStatus | 'all')}
-              className="w-full md:w-auto px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full sm:w-auto px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               {STATUS_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -213,27 +212,30 @@ export const WalletPayouts = ({
             </select>
           </div>
         )}
-      </Card>
+      </div>
 
-      {/* Payout Requests List */}
+      {/* Payout Requests List - Minimal Card Design */}
       {filteredRequests.length === 0 ? (
-        <Card className="p-12 text-center">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
           <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-500">No payout requests found</p>
-        </Card>
+          <p className="text-gray-500 text-sm">No payout requests found</p>
+        </div>
       ) : (
         <div className="space-y-3">
           {filteredRequests.map((request) => (
-            <Card key={request.id} className="p-4 hover:shadow-md transition-shadow">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4 flex-1">
+            <div
+              key={request.id}
+              className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 lg:p-5 hover:shadow-md hover:border-gray-300 transition-all duration-200"
+            >
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                <div className="flex items-start lg:items-center gap-4 flex-1 min-w-0">
                   <Avatar src={request.astrologerAvatar} name={request.astrologerName} size="md" />
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2 lg:gap-3 mb-2">
                       <p className="font-semibold text-gray-900">{request.astrologerName}</p>
                       {getStatusBadge(request.status)}
                     </div>
-                    <div className="flex items-center gap-4 text-sm text-gray-600">
+                    <div className="flex flex-wrap items-center gap-3 lg:gap-4 text-xs sm:text-sm text-gray-600">
                       <div>
                         <span className="font-medium">Amount: </span>
                         <span className="font-bold text-gray-900">{formatCurrency(request.requestedAmount)}</span>
@@ -248,7 +250,7 @@ export const WalletPayouts = ({
                       </div>
                     </div>
                     {request.rejectionReason && (
-                      <div className="mt-2 text-sm text-red-600">
+                      <div className="mt-2 text-xs sm:text-sm text-red-600">
                         <span className="font-medium">Rejection Reason: </span>
                         <span>{request.rejectionReason}</span>
                       </div>
@@ -257,25 +259,25 @@ export const WalletPayouts = ({
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-shrink-0">
                   <button
                     onClick={() => handleViewDetails(request.id)}
                     className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
                     title="View Details"
                   >
-                    <Eye className="w-5 h-5" />
+                    <Eye className="w-4 h-4 lg:w-5 lg:h-5" />
                   </button>
                   {request.status === 'pending_review' && (
                     <>
                       <button
                         onClick={() => handleApprove(request.id)}
-                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+                        className="px-3 py-1.5 lg:px-4 lg:py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium text-xs lg:text-sm"
                       >
                         Approve
                       </button>
                       <button
                         onClick={() => handleReject(request.id)}
-                        className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+                        className="px-3 py-1.5 lg:px-4 lg:py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium text-xs lg:text-sm"
                       >
                         Reject
                       </button>
@@ -283,7 +285,7 @@ export const WalletPayouts = ({
                   )}
                 </div>
               </div>
-            </Card>
+            </div>
           ))}
         </div>
       )}

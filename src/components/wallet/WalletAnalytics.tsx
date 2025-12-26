@@ -1,5 +1,4 @@
 import { WalletAnalytics as WalletAnalyticsData } from '@/types/wallet';
-import { Card } from '@/components/common';
 import { formatCurrency } from '@/utils/formatters';
 import {
   ResponsiveContainer,
@@ -29,16 +28,16 @@ export const WalletAnalytics = ({ analytics, isLoading }: WalletAnalyticsProps) 
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <Card key={i} className="p-5">
+            <div key={i} className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
               <div className="h-24 bg-gray-200 rounded shimmer" />
-            </Card>
+            </div>
           ))}
         </div>
-        <Card className="p-6">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
           <div className="h-64 bg-gray-200 rounded shimmer" />
-        </Card>
+        </div>
       </div>
     );
   }
@@ -65,96 +64,113 @@ export const WalletAnalytics = ({ analytics, isLoading }: WalletAnalyticsProps) 
 
   return (
     <div className="space-y-6">
-      {/* Performance Metrics Grid */}
-      <div className="grid grid-cols-2 gap-4">
-        <Card className="p-5">
+      {/* Performance Metrics Grid - Minimal Flat Design */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 lg:p-5 hover:shadow-md hover:border-gray-300 transition-all duration-200">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
               <TrendingUp className="w-5 h-5 text-blue-600" />
             </div>
-            <div>
+            <div className="min-w-0">
               <p className="text-xs text-gray-500 mb-1">Avg Transaction Value</p>
-              <p className="text-xl font-bold text-gray-900">{formatCurrency(analytics.averageTransactionValue)}</p>
+              <p className="text-xl font-bold text-gray-900 truncate">{formatCurrency(analytics.averageTransactionValue)}</p>
             </div>
           </div>
           <div className="text-xs text-green-600 flex items-center gap-1">
             <TrendingUp className="w-3 h-3" />
             <span>+5.2% from last month</span>
           </div>
-        </Card>
+        </div>
 
-        <Card className="p-5">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 lg:p-5 hover:shadow-md hover:border-gray-300 transition-all duration-200">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center flex-shrink-0">
               <Activity className="w-5 h-5 text-green-600" />
             </div>
-            <div>
+            <div className="min-w-0">
               <p className="text-xs text-gray-500 mb-1">Daily Active Wallets</p>
-              <p className="text-xl font-bold text-gray-900">{analytics.dailyActiveWallets.toLocaleString()}</p>
+              <p className="text-xl font-bold text-gray-900 truncate">{analytics.dailyActiveWallets.toLocaleString()}</p>
             </div>
           </div>
           <div className="text-xs text-green-600 flex items-center gap-1">
             <TrendingUp className="w-3 h-3" />
             <span>+12.5% from last month</span>
           </div>
-        </Card>
+        </div>
 
-        <Card className="p-5">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 lg:p-5 hover:shadow-md hover:border-gray-300 transition-all duration-200">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center flex-shrink-0">
               <CheckCircle className="w-5 h-5 text-green-600" />
             </div>
-            <div>
+            <div className="min-w-0">
               <p className="text-xs text-gray-500 mb-1">Success Rate</p>
-              <p className="text-xl font-bold text-gray-900">{analytics.transactionSuccessRate.toFixed(1)}%</p>
+              <p className="text-xl font-bold text-gray-900 truncate">{analytics.transactionSuccessRate.toFixed(1)}%</p>
             </div>
           </div>
           <div className="text-xs text-gray-500">Last 30 days</div>
-        </Card>
+        </div>
 
-        <Card className="p-5">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 lg:p-5 hover:shadow-md hover:border-gray-300 transition-all duration-200">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 bg-amber-50 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-amber-50 rounded-lg flex items-center justify-center flex-shrink-0">
               <Clock className="w-5 h-5 text-amber-600" />
             </div>
-            <div>
+            <div className="min-w-0">
               <p className="text-xs text-gray-500 mb-1">Peak Transaction Hour</p>
-              <p className="text-xl font-bold text-gray-900">{analytics.peakTransactionHour}</p>
+              <p className="text-xl font-bold text-gray-900 truncate">{analytics.peakTransactionHour}</p>
             </div>
           </div>
           <div className="text-xs text-gray-500">Most active time</div>
-        </Card>
+        </div>
       </div>
 
-      {/* Transaction Trend Chart */}
-      <Card title="Transaction Trend" subtitle="Deposits vs Withdrawals vs Payments over time">
-        <div className="h-64">
+      {/* Transaction Trend Chart - Orange Line Chart */}
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 lg:p-6 hover:shadow-md hover:border-gray-300 transition-all duration-200">
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold text-gray-900">Transaction Trend</h3>
+          <p className="text-xs text-gray-500 mt-0.5">Deposits vs Withdrawals vs Payments over time</p>
+        </div>
+        <div className="h-64 lg:h-80">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={trendData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis dataKey="date" stroke="#888" tick={{ fontSize: 12 }} />
-              <YAxis stroke="#888" tick={{ fontSize: 12 }} tickFormatter={(value) => `₹${(value / 1000).toFixed(0)}k`} />
+              <XAxis
+                dataKey="date"
+                tick={{ fontSize: 12, fill: '#9ca3af' }}
+                stroke="#9ca3af"
+              />
+              <YAxis
+                tick={{ fontSize: 12, fill: '#9ca3af' }}
+                stroke="#9ca3af"
+                tickFormatter={(value) => `₹${(value / 1000).toFixed(0)}k`}
+              />
               <Tooltip
                 formatter={(value: number) => formatCurrency(value)}
                 contentStyle={{
                   backgroundColor: '#fff',
                   border: '1px solid #e5e7eb',
                   borderRadius: '8px',
+                  padding: '8px 12px'
                 }}
               />
               <Legend />
-              <Line type="monotone" dataKey="deposits" stroke="#10b981" strokeWidth={2} name="Deposits" />
-              <Line type="monotone" dataKey="withdrawals" stroke="#ef4444" strokeWidth={2} name="Withdrawals" />
-              <Line type="monotone" dataKey="payments" stroke="#3b82f6" strokeWidth={2} name="Payments" />
+              <Line type="monotone" dataKey="deposits" stroke="#10b981" strokeWidth={2} name="Deposits" dot={false} />
+              <Line type="monotone" dataKey="withdrawals" stroke="#ef4444" strokeWidth={2} name="Withdrawals" dot={false} />
+              <Line type="monotone" dataKey="payments" stroke="#ea580c" strokeWidth={2} name="Payments" dot={false} />
             </LineChart>
           </ResponsiveContainer>
         </div>
-      </Card>
+      </div>
 
       {/* Transaction by Type & Status */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* By Type - Donut Chart */}
-        <Card title="Transaction by Type" subtitle="Breakdown by transaction type">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 lg:p-6 hover:shadow-md hover:border-gray-300 transition-all duration-200">
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold text-gray-900">Transaction by Type</h3>
+            <p className="text-xs text-gray-500 mt-0.5">Breakdown by transaction type</p>
+          </div>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -177,33 +193,49 @@ export const WalletAnalytics = ({ analytics, isLoading }: WalletAnalyticsProps) 
               </PieChart>
             </ResponsiveContainer>
           </div>
-        </Card>
+        </div>
 
         {/* By Status - Bar Chart */}
-        <Card title="Transaction by Status" subtitle="Breakdown by transaction status">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 lg:p-6 hover:shadow-md hover:border-gray-300 transition-all duration-200">
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold text-gray-900">Transaction by Status</h3>
+            <p className="text-xs text-gray-500 mt-0.5">Breakdown by transaction status</p>
+          </div>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={statusData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis dataKey="name" stroke="#888" tick={{ fontSize: 12 }} />
-                <YAxis stroke="#888" tick={{ fontSize: 12 }} />
+                <XAxis
+                  dataKey="name"
+                  tick={{ fontSize: 12, fill: '#9ca3af' }}
+                  stroke="#9ca3af"
+                />
+                <YAxis
+                  tick={{ fontSize: 12, fill: '#9ca3af' }}
+                  stroke="#9ca3af"
+                />
                 <Tooltip
                   formatter={(value: number) => [value.toLocaleString(), 'Count']}
                   contentStyle={{
                     backgroundColor: '#fff',
                     border: '1px solid #e5e7eb',
                     borderRadius: '8px',
+                    padding: '8px 12px'
                   }}
                 />
                 <Bar dataKey="count" fill="#3b82f6" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
-        </Card>
+        </div>
       </div>
 
       {/* Peak Hours Analysis */}
-      <Card title="Peak Hours Analysis" subtitle="Transaction volume by time of day">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 lg:p-6 hover:shadow-md hover:border-gray-300 transition-all duration-200">
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold text-gray-900">Peak Hours Analysis</h3>
+          <p className="text-xs text-gray-500 mt-0.5">Transaction volume by time of day</p>
+        </div>
         <div className="grid grid-cols-2 gap-4">
           {[
             { label: 'Morning', data: analytics.peakHours.morning, color: 'bg-amber-50 text-amber-600', icon: '🌅' },
@@ -228,7 +260,7 @@ export const WalletAnalytics = ({ analytics, isLoading }: WalletAnalyticsProps) 
             </div>
           ))}
         </div>
-      </Card>
+      </div>
     </div>
   );
 };

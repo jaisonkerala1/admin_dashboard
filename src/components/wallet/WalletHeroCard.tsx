@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { TrendingUp, TrendingDown } from 'lucide-react';
 import { WalletBalance } from '@/types/wallet';
-import { AreaChart, Area, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, ResponsiveContainer } from 'recharts';
+import { formatCurrency } from '@/utils/formatters';
 
 interface WalletHeroCardProps {
   balance: WalletBalance;
@@ -47,106 +47,73 @@ export const WalletHeroCard = ({ balance, periodLabel, weeklyData, isLoading }: 
     index,
   }));
 
-  const formatAmount = (amount: number) => {
-    if (amount >= 10000000) {
-      return `${(amount / 10000000).toFixed(2)}Cr`;
-    } else if (amount >= 100000) {
-      return `${(amount / 100000).toFixed(2)}L`;
-    } else if (amount >= 1000) {
-      return `${(amount / 1000).toFixed(1)}K`;
-    }
-    return amount.toFixed(0);
-  };
+  // Calculate progress percentage (using totalBalance as max, or a reasonable limit)
+  const maxBalance = balance.totalBalance || balance.availableBalance * 1.5;
+  const progressPercentage = Math.min((balance.availableBalance / maxBalance) * 100, 100);
 
   return (
-    <div className="relative bg-gradient-to-br from-blue-600 via-blue-500 to-indigo-600 rounded-2xl shadow-lg p-6 h-[200px] overflow-hidden">
-      {/* Decorative circles */}
-      <div className="absolute top-[-30px] right-[-30px] w-32 h-32 bg-white/10 rounded-full" />
-      <div className="absolute bottom-[-40px] left-[-20px] w-24 h-24 bg-white/8 rounded-full" />
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hover:shadow-md hover:border-gray-300 transition-all duration-200">
+      {/* Card Title */}
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">Platform Wallet Balance</h3>
 
-      {/* Subtle shimmer effect overlay */}
-      <div className="absolute inset-0 opacity-0 hover:opacity-100 transition-opacity duration-300">
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent" style={{
-          animation: 'shimmer 2s infinite',
-          background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%)',
-          backgroundSize: '200% 100%',
-        }} />
-      </div>
-
-      <div className="relative z-10 h-full flex flex-col justify-between text-white">
-        {/* Top row: Period label & Mini chart */}
-        <div className="flex items-start justify-between">
-          <div>
-            <p className="text-sm font-medium text-white/80 tracking-wide">{periodLabel}</p>
-            <p className="text-xs text-white/60 mt-0.5">Wallet Balance</p>
-          </div>
-          
-          {/* Mini Area Chart */}
-          <div className="w-[90px] h-[45px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={chartData}>
-                <defs>
-                  <linearGradient id="walletGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="rgba(255,255,255,0.4)" />
-                    <stop offset="100%" stopColor="rgba(255,255,255,0.05)" />
-                  </linearGradient>
-                </defs>
-                <Area
-                  type="monotone"
-                  dataKey="value"
-                  stroke="rgba(255,255,255,0.9)"
-                  strokeWidth={2}
-                  fill="url(#walletGradient)"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* Main balance amount */}
-        <div>
-          <div className="flex items-baseline gap-1">
-            <span className="text-2xl font-medium text-white/90">₹</span>
-            <span className="text-4xl font-bold tracking-tight">
-              {isLoading ? '---' : formatAmount(displayAmount)}
-            </span>
-          </div>
-        </div>
-
-        {/* Bottom row: Growth indicator & Pending balance */}
-        <div className="flex items-center justify-between">
-          {/* Growth badge */}
-          <div className="flex items-center gap-2">
-            <div
-              className={`flex items-center gap-1 px-2 py-1 rounded-xl ${
-                balance.growthPercentage >= 0
-                  ? 'bg-white/20 backdrop-blur-sm'
-                  : 'bg-red-500/30 backdrop-blur-sm'
-              }`}
-            >
-              {balance.growthPercentage >= 0 ? (
-                <TrendingUp className="w-3.5 h-3.5" />
-              ) : (
-                <TrendingDown className="w-3.5 h-3.5" />
-              )}
-              <span className="text-xs font-semibold">
-                {balance.growthPercentage >= 0 ? '+' : ''}
-                {balance.growthPercentage.toFixed(1)}%
-              </span>
-            </div>
-            <span className="text-xs text-white/60">vs last period</span>
-          </div>
-
-          {/* Pending balance */}
-          {balance.pendingBalance > 0 && (
-            <div className="text-right">
-              <p className="text-xs text-white/60">Pending</p>
-              <p className="text-sm font-semibold text-white/90">
-                ₹{formatAmount(balance.pendingBalance)}
+      {/* Credit Card Style Display */}
+      <div className="relative bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl p-5 mb-4 overflow-hidden">
+        {/* Decorative elements */}
+        <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16" />
+        <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full -ml-12 -mb-12" />
+        
+        <div className="relative z-10">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <p className="text-xs text-white/60 mb-1">Available Balance</p>
+              <p className="text-2xl font-bold text-white">
+                {isLoading ? '---' : formatCurrency(displayAmount)}
               </p>
             </div>
-          )}
+            {/* Mini Orange Line Chart */}
+            <div className="w-24 h-12">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={chartData}>
+                  <Line
+                    type="monotone"
+                    dataKey="value"
+                    stroke="#f97316"
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
         </div>
+      </div>
+
+      {/* Progress Bar */}
+      <div className="mb-4">
+        <div className="flex items-center justify-between text-sm mb-2">
+          <span className="text-gray-600">
+            {formatCurrency(balance.availableBalance)}
+          </span>
+          <span className="text-gray-500">
+            / {formatCurrency(maxBalance)}
+          </span>
+        </div>
+        <div className="w-full bg-gray-200 rounded-full h-2">
+          <div
+            className="bg-blue-600 h-2 rounded-full transition-all duration-500"
+            style={{ width: `${progressPercentage}%` }}
+          />
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="flex gap-3">
+        <button className="flex-1 px-4 py-2.5 bg-blue-900 text-white rounded-lg hover:bg-blue-800 transition-colors font-medium text-sm">
+          Process Payout
+        </button>
+        <button className="flex-1 px-4 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium text-sm">
+          View Details
+        </button>
       </div>
     </div>
   );

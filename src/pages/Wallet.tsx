@@ -63,8 +63,8 @@ export const Wallet = () => {
     <MainLayout>
       <PageHeader title="Wallet" subtitle="Manage platform wallet and transactions" />
 
-      <div className="space-y-6">
-        {/* Period Selector */}
+      <div className="space-y-4 lg:space-y-6">
+        {/* Period Selector - Minimal Banking Style */}
         <div className="flex items-center justify-end">
           <select
             value={period}
@@ -73,7 +73,7 @@ export const Wallet = () => {
               dispatch(setPeriod(newPeriod));
               dispatch(fetchWalletDataRequest({ period: newPeriod }));
             }}
-            className="px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
             {periodOptions.map((opt) => (
               <option key={opt.key} value={opt.key}>
@@ -83,28 +83,31 @@ export const Wallet = () => {
           </select>
         </div>
 
-        {/* Hero Card */}
-        {isLoading ? (
-          <WalletHeroCardSkeleton />
-        ) : data ? (
-          <WalletHeroCard
-            balance={data.balance}
-            periodLabel={periodLabel}
-            weeklyData={weeklyTrendData}
-            isLoading={isLoading}
-          />
-        ) : null}
+        {/* Hero Card and Quick Stats - Responsive Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
+          {/* Hero Card */}
+          {isLoading ? (
+            <WalletHeroCardSkeleton />
+          ) : data ? (
+            <WalletHeroCard
+              balance={data.balance}
+              periodLabel={periodLabel}
+              weeklyData={weeklyTrendData}
+              isLoading={isLoading}
+            />
+          ) : null}
 
-        {/* Quick Stats */}
-        {isLoading ? (
-          <WalletQuickStatsSkeleton />
-        ) : data ? (
-          <WalletQuickStats stats={data.stats} isLoading={isLoading} />
-        ) : null}
+          {/* Quick Stats */}
+          {isLoading ? (
+            <WalletQuickStatsSkeleton />
+          ) : data ? (
+            <WalletQuickStats balance={data.balance} isLoading={isLoading} />
+          ) : null}
+        </div>
 
-        {/* Tabs */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-1">
-          <div className="flex gap-1">
+        {/* Tabs - Minimal Flat Design */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-1">
+          <div className="flex gap-1 overflow-x-auto">
             {[
               { id: 'overview', label: 'Overview' },
               { id: 'transactions', label: 'Transactions' },
@@ -114,9 +117,9 @@ export const Wallet = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as typeof activeTab)}
-                className={`flex-1 px-4 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 ${
+                className={`flex-1 min-w-[100px] px-3 py-2 rounded-lg font-medium text-sm transition-all duration-200 whitespace-nowrap ${
                   activeTab === tab.id
-                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md'
+                    ? 'bg-blue-900 text-white shadow-sm'
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                 }`}
               >
