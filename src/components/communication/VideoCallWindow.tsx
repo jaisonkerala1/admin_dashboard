@@ -29,6 +29,8 @@ export const VideoCallWindow = ({
   const [isVideoMuted, setIsVideoMuted] = useState(callType === 'voice');
   const [isConnected, setIsConnected] = useState(false);
   const [duration, setDuration] = useState(0);
+  const [videoError, setVideoError] = useState<string | null>(null);
+  const [hasVideo, setHasVideo] = useState(callType === 'video');
 
   const clientRef = useRef<IAgoraRTCClient | null>(null);
   const localAudioTrackRef = useRef<IMicrophoneAudioTrack | null>(null);
@@ -101,14 +103,36 @@ export const VideoCallWindow = ({
       localAudioTrackRef.current = audioTrack;
 
       if (callType === 'video') {
-        const videoTrack = await AgoraRTC.createCameraVideoTrack();
-        localVideoTrackRef.current = videoTrack;
-        
-        if (localVideoRef.current) {
-          videoTrack.play(localVideoRef.current);
-        }
+        try {
+          // Check if camera is available before trying to create track
+          const devices = await AgoraRTC.getCameras();
+          if (devices.length === 0) {
+            throw new Error('No camera device found');
+          }
 
-        await client.publish([audioTrack, videoTrack]);
+          const videoTrack = await AgoraRTC.createCameraVideoTrack({
+            cameraId: devices[0].deviceId,
+          });
+          localVideoTrackRef.current = videoTrack;
+          setHasVideo(true);
+          
+          if (localVideoRef.current) {
+            videoTrack.play(localVideoRef.current);
+          }
+
+          await client.publish([audioTrack, videoTrack]);
+        } catch (videoError: any) {
+          console.warn('⚠️ Camera not available, continuing with audio-only:', videoError);
+          setVideoError(
+            videoError?.code === 'DEVICE_NOT_FOUND' || videoError?.message?.includes('device')
+              ? 'Camera not found. Continuing with audio-only call.'
+              : 'Video unavailable. Continuing with audio-only call.'
+          );
+          setHasVideo(false);
+          setIsVideoMuted(true);
+          // Continue with audio-only
+          await client.publish([audioTrack]);
+        }
       } else {
         await client.publish([audioTrack]);
       }
@@ -116,7 +140,14 @@ export const VideoCallWindow = ({
       setIsConnected(true);
     } catch (error) {
       console.error('Failed to initialize Agora:', error);
-      handleEnd();
+      // Only end call if audio also fails
+      if (!localAudioTrackRef.current) {
+        handleEnd();
+      } else {
+        // If audio works but something else fails, show error but continue
+        setVideoError('Connection issue. Audio may still work.');
+        setIsConnected(true);
+      }
     }
   };
 
@@ -188,6 +219,9 @@ export const VideoCallWindow = ({
               <p className="text-gray-300 text-sm">
                 {isConnected ? formatDuration(duration) : 'Connecting...'}
               </p>
+              {videoError && (
+                <p className="text-yellow-400 text-xs mt-1">{videoError}</p>
+              )}
             </div>
           </div>
           
@@ -219,7 +253,7 @@ export const VideoCallWindow = ({
         </div>
 
         {/* Local video (picture-in-picture) */}
-        {callType === 'video' && !isVideoMuted && (
+        {callType === 'video' && hasVideo && !isVideoMuted && (
           <div
             ref={localVideoRef}
             className="absolute top-20 right-6 w-32 h-40 bg-gray-700 rounded-lg overflow-hidden shadow-lg"
@@ -245,7 +279,7 @@ export const VideoCallWindow = ({
             )}
           </button>
 
-          {callType === 'video' && (
+          {callType === 'video' && hasVideo && (
             <button
               onClick={toggleVideo}
               className={`p-4 rounded-full transition-colors ${

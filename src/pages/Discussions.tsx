@@ -1,6 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
 import { 
-  Search, 
   MessageSquare,
   Heart,
   Eye,
@@ -17,7 +16,7 @@ import {
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
-import { Card, Loader, EmptyState, Avatar } from '@/components/common';
+import { Card, Loader, EmptyState, Avatar, SearchBar } from '@/components/common';
 import { discussionsApi } from '@/api';
 import { Discussion } from '@/types';
 import { formatDateTime, formatNumber } from '@/utils/formatters';
@@ -168,14 +167,16 @@ export const Discussions = () => {
       <Card>
         {/* Filters */}
         <div className="flex flex-col md:flex-row gap-3 mb-6">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-              type="text"
+          <div className="flex-1">
+            <SearchBar
               placeholder="Search discussions by title or content..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              onSearch={(query) => {
+                setSearch(query);
+              }}
+              onClear={() => {
+                setSearch('');
+              }}
             />
           </div>
           <button
