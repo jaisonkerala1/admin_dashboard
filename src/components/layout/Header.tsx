@@ -1,11 +1,14 @@
-import { Bell, Search, Menu } from 'lucide-react';
-import { Avatar } from '@/components/common';
+import { useState } from 'react';
+import { Bell, Menu } from 'lucide-react';
+import { Avatar, SearchBar } from '@/components/common';
 
 interface HeaderProps {
   onMenuClick?: () => void;
 }
 
 export const Header = ({ onMenuClick }: HeaderProps) => {
+  const [headerSearch, setHeaderSearch] = useState('');
+
   return (
     <header className="h-16 bg-gray-50 border-b border-gray-200 fixed top-0 right-0 left-0 lg:left-64 z-30">
       <div className="flex items-center justify-between h-full px-4 lg:px-6">
@@ -19,14 +22,14 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
 
         {/* Search */}
         <div className="flex-1 max-w-xl">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
-            />
-          </div>
+          <SearchBar
+            value={headerSearch}
+            onSearch={(q) => setHeaderSearch(q)}
+            onClear={() => setHeaderSearch('')}
+            placeholder="Search..."
+            className="max-w-xl"
+            debounceMs={0}
+          />
         </div>
 
         {/* Right section */}
