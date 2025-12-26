@@ -67,15 +67,15 @@ export const AreaChartCard: React.FC<AreaChartCardProps> = ({
         )
       }
     >
-      <div style={{ height: `${height}px` }} className="overflow-visible">
+      <div style={{ height: `${height}px` }}>
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={data}
             margin={{
               left: 12,
               right: 12,
-              top: 20,
-              bottom: 20,
+              top: 12,
+              bottom: 8,
             }}
           >
             <defs>
@@ -97,7 +97,9 @@ export const AreaChartCard: React.FC<AreaChartCardProps> = ({
               dataKey="label"
               tickLine={false}
               axisLine={false}
-              tickMargin={8}
+              tickMargin={10}
+              height={28}
+              minTickGap={12}
               tick={{ fontSize: 12, fill: '#9ca3af' }}
               tickFormatter={(value) => {
                 // Show abbreviated labels for better readability
@@ -112,9 +114,17 @@ export const AreaChartCard: React.FC<AreaChartCardProps> = ({
               axisLine={false}
               tick={{ fontSize: 12, fill: '#9ca3af' }}
               tickMargin={8}
-              domain={[0, 'auto']}
-              allowDataOverflow={false}
-              padding={{ top: 10, bottom: 10 }}
+              allowDecimals={false}
+              // Add a bit of headroom so peaks don't touch the top,
+              // while keeping 0 pinned to the bottom (no "squashed" plot).
+              domain={[
+                0,
+                (dataMax: number) => {
+                  const max = Number.isFinite(dataMax) ? dataMax : 0;
+                  const pad = Math.max(1, Math.ceil(max * 0.1));
+                  return max + pad;
+                },
+              ]}
             />
             <Tooltip
               cursor={false}
