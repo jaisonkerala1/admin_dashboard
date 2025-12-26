@@ -5,12 +5,11 @@ import { formatCurrency } from '@/utils/formatters';
 
 interface WalletHeroCardProps {
   balance: WalletBalance;
-  periodLabel: string;
   weeklyData: number[];
   isLoading?: boolean;
 }
 
-export const WalletHeroCard = ({ balance, periodLabel, weeklyData, isLoading }: WalletHeroCardProps) => {
+export const WalletHeroCard = ({ balance, weeklyData, isLoading }: WalletHeroCardProps) => {
   const [displayAmount, setDisplayAmount] = useState(0);
 
   // Animate count-up

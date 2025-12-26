@@ -91,7 +91,6 @@ export const Wallet = () => {
           ) : data ? (
             <WalletHeroCard
               balance={data.balance}
-              periodLabel={periodLabel}
               weeklyData={weeklyTrendData}
               isLoading={isLoading}
             />
