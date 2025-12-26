@@ -31,29 +31,34 @@ export const WalletQuickStats = ({ balance, isLoading }: WalletQuickStatsProps) 
   const pendingAmount = balance?.pendingBalance || 0;
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 lg:p-6 hover:shadow-md hover:border-gray-300 transition-all duration-200">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 hover:shadow-md hover:border-gray-300 transition-all duration-200">
       {/* Card Title */}
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Account Summary</h3>
+      <h3 className="text-sm font-semibold text-gray-900 mb-3">Account Summary</h3>
 
-      {/* Account Information */}
-      <div className="mb-4">
-        <p className="text-sm text-gray-600 mb-2">
-          You have <span className="font-semibold text-gray-900">{formatCurrency(totalInAccount)}</span> in your wallet
+      {/* Compact Account Information */}
+      <div className="space-y-3">
+        <div>
+          <p className="text-xs text-gray-500 mb-1">Total Balance</p>
+          <p className="text-lg font-semibold text-gray-900">
+            {formatCurrency(totalInAccount)}
+          </p>
           {pendingAmount > 0 && (
-            <span className="text-gray-500">
-              {' '}with <span className="font-medium">{formatCurrency(pendingAmount)}</span> pending
-            </span>
-          )}
-          .
-        </p>
-
-        {/* Earnings Increase with Orange Line Graph */}
-        <div className="mt-4 p-4 bg-orange-50 rounded-xl border border-orange-100">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-sm font-semibold text-orange-900">
-              {earningsIncrease}% increase in earnings
+            <p className="text-xs text-gray-500 mt-1">
+              {formatCurrency(pendingAmount)} pending
             </p>
-            <div className="w-20 h-10">
+          )}
+        </div>
+
+        {/* Compact Earnings Increase with Orange Line Graph */}
+        <div className="pt-3 border-t border-gray-100">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs text-gray-500 mb-0.5">Earnings Growth</p>
+              <p className="text-sm font-semibold text-orange-900">
+                +{earningsIncrease}%
+              </p>
+            </div>
+            <div className="w-16 h-8">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={trendData}>
                   <Line
