@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { 
@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { Card, Loader, EmptyState, RoundAvatar, PillBadge, ShowEntriesDropdown, StatCard } from '@/components/common';
+import { LiveStreamViewer } from '@/components/liveStream/LiveStreamViewer';
 import { formatNumber } from '@/utils/formatters';
 import { RootState } from '@/store';
 import {
@@ -41,6 +42,8 @@ export const LiveStreams = () => {
     selectedIds, 
     stats 
   } = useSelector((state: RootState) => state.liveStreams);
+  
+  const [selectedStream, setSelectedStream] = useState<any | null>(null);
 
   useEffect(() => {
     dispatch(fetchStreamsRequest());
@@ -100,8 +103,8 @@ export const LiveStreams = () => {
   const getStatusBadge = (stream: any) => {
     if (stream.isLive) {
       return (
-        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700 border border-red-200">
-          <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-semibold bg-red-500 text-white shadow-sm">
+          <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
           LIVE
         </span>
       );
@@ -371,12 +374,22 @@ export const LiveStreams = () => {
                       <td className="px-4 py-4">
                         <div className="flex items-center gap-2">
                           {stream.isLive && (
-                            <button
-                              className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                              title="End Stream"
-                            >
-                              <Ban className="w-4 h-4" />
-                            </button>
+                            <>
+                              <button
+                                onClick={() => setSelectedStream(stream)}
+                                className="flex items-center gap-1.5 px-3 py-1.5 bg-red-500 text-white text-sm font-medium rounded-lg hover:bg-red-600 transition-colors"
+                                title="Watch Live Stream"
+                              >
+                                <Play className="w-4 h-4" />
+                                Watch
+                              </button>
+                              <button
+                                className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                title="End Stream"
+                              >
+                                <Ban className="w-4 h-4" />
+                              </button>
+                            </>
                           )}
                         </div>
                       </td>
@@ -429,6 +442,15 @@ export const LiveStreams = () => {
                         <span>{formatNumber(stream.likes)}</span>
                       </div>
                       {getStatusBadge(stream)}
+                      {stream.isLive && (
+                        <button
+                          onClick={() => setSelectedStream(stream)}
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-red-500 text-white text-sm font-medium rounded-lg hover:bg-red-600 transition-colors"
+                        >
+                          <Play className="w-4 h-4" />
+                          Watch
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -502,11 +524,19 @@ export const LiveStreams = () => {
                   </div>
 
                       {stream.isLive && (
-                        <button className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg border border-red-200">
-                          <Ban className="w-4 h-4" />
-                        End Stream
-                      </button>
-                    )}
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setSelectedStream(stream)}
+                            className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm bg-red-500 text-white font-medium rounded-lg hover:bg-red-600 transition-colors"
+                          >
+                            <Play className="w-4 h-4" />
+                            Watch Live
+                          </button>
+                          <button className="px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg border border-red-200">
+                            <Ban className="w-4 h-4" />
+                          </button>
+                        </div>
+                      )}
                   </div>
                 </div>
               </div>
@@ -561,6 +591,18 @@ export const LiveStreams = () => {
           </>
         )}
       </Card>
+
+      {/* Live Stream Viewer Modal */}
+      {selectedStream && (
+        <LiveStreamViewer
+          stream={selectedStream}
+          onClose={() => setSelectedStream(null)}
+          onEndStream={() => {
+            setSelectedStream(null);
+            dispatch(fetchStreamsRequest());
+          }}
+        />
+      )}
     </MainLayout>
   );
 };

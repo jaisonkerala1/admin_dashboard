@@ -3,7 +3,7 @@ import { Avatar } from '@/components/common';
 
 export const Header = () => {
   return (
-    <header className="h-16 bg-white border-b border-gray-200 fixed top-0 right-0 left-64 z-10">
+    <header className="h-16 bg-gray-50 border-b border-gray-200 fixed top-0 right-0 left-64 z-10">
       <div className="flex items-center justify-between h-full px-6">
         {/* Search */}
         <div className="flex-1 max-w-xl">
