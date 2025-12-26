@@ -1,6 +1,5 @@
 import { WalletBalance } from '@/types/wallet';
 import { formatCurrency } from '@/utils/formatters';
-import { ArrowRight, Download } from 'lucide-react';
 import { LineChart, Line, ResponsiveContainer } from 'recharts';
 
 interface WalletQuickStatsProps {
@@ -23,10 +22,7 @@ export const WalletQuickStats = ({ balance, isLoading }: WalletQuickStatsProps) 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 lg:p-6">
         <div className="h-5 w-48 bg-gray-200 rounded shimmer mb-4" />
         <div className="h-20 bg-gray-200 rounded shimmer mb-4" />
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="h-10 flex-1 bg-gray-200 rounded shimmer" />
-          <div className="h-10 flex-1 bg-gray-200 rounded shimmer" />
-        </div>
+        <div className="h-16 bg-gray-200 rounded shimmer" />
       </div>
     );
   }
@@ -72,18 +68,6 @@ export const WalletQuickStats = ({ balance, isLoading }: WalletQuickStatsProps) 
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Action Buttons */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <button className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-900 text-white rounded-lg hover:bg-blue-800 transition-colors font-medium text-sm">
-          <ArrowRight className="w-4 h-4" />
-          Start a Transfer
-        </button>
-        <button className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium text-sm">
-          <Download className="w-4 h-4" />
-          Make a Deposit
-        </button>
       </div>
     </div>
   );

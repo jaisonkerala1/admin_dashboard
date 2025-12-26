@@ -83,6 +83,7 @@ export const Wallet = () => {
               balance={data.balance}
               weeklyData={weeklyTrendData}
               isLoading={isLoading}
+              onProcessPayout={() => setActiveTab('payouts')}
             />
           ) : null}
 

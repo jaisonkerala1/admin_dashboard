@@ -7,9 +7,10 @@ interface WalletHeroCardProps {
   balance: WalletBalance;
   weeklyData: number[];
   isLoading?: boolean;
+  onProcessPayout?: () => void;
 }
 
-export const WalletHeroCard = ({ balance, weeklyData, isLoading }: WalletHeroCardProps) => {
+export const WalletHeroCard = ({ balance, weeklyData, isLoading, onProcessPayout }: WalletHeroCardProps) => {
   const [displayAmount, setDisplayAmount] = useState(0);
 
   // Animate count-up
@@ -55,14 +56,14 @@ export const WalletHeroCard = ({ balance, weeklyData, isLoading }: WalletHeroCar
       {/* Card Title */}
       <h3 className="text-lg font-semibold text-gray-900 mb-4">Platform Wallet Balance</h3>
 
-      {/* Credit Card Style Display */}
-      <div className="relative bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl p-5 mb-4 overflow-hidden">
+      {/* Credit Card Style Display - Credit Card Aspect Ratio (1.586:1) */}
+      <div className="relative bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl p-5 mb-4 overflow-hidden" style={{ aspectRatio: '1.586' }}>
         {/* Decorative elements */}
         <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16" />
         <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full -ml-12 -mb-12" />
         
-        <div className="relative z-10">
-          <div className="flex items-center justify-between mb-4">
+        <div className="relative z-10 h-full flex flex-col justify-between">
+          <div className="flex items-center justify-between">
             <div>
               <p className="text-xs text-white/60 mb-1">Available Balance</p>
               <p className="text-2xl font-bold text-white">
@@ -107,7 +108,10 @@ export const WalletHeroCard = ({ balance, weeklyData, isLoading }: WalletHeroCar
 
       {/* Action Buttons */}
       <div className="flex gap-3">
-        <button className="flex-1 px-4 py-2.5 bg-blue-900 text-white rounded-lg hover:bg-blue-800 transition-colors font-medium text-sm">
+        <button
+          onClick={onProcessPayout}
+          className="flex-1 px-4 py-2.5 bg-blue-900 text-white rounded-lg hover:bg-blue-800 transition-colors font-medium text-sm"
+        >
           Process Payout
         </button>
         <button className="flex-1 px-4 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium text-sm">
