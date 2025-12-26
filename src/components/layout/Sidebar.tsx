@@ -38,7 +38,8 @@ const navigation = [
   { name: 'Communication', href: ROUTES.COMMUNICATION, icon: MessageCircle },
   { name: 'Communication Analytics', href: ROUTES.COMMUNICATION_ANALYTICS, icon: TrendingUp },
   { name: 'Analytics', href: ROUTES.ANALYTICS, icon: BarChart3 },
-  { name: 'Earnings', href: ROUTES.EARNINGS, icon: Wallet },
+  { name: 'Earnings', href: ROUTES.EARNINGS, icon: TrendingUp },
+  { name: 'Wallet', href: ROUTES.WALLET, icon: Wallet },
   { name: 'Support & Tickets', href: ROUTES.SUPPORT, icon: LifeBuoy },
   { name: 'Approval Requests', href: ROUTES.APPROVALS, icon: CheckCircle },
 ];

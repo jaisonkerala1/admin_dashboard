@@ -18,6 +18,7 @@ import {
   Communication,
   CommunicationAnalytics,
   Earnings,
+  Wallet,
   Calendar,
   Support,
   Approvals,
@@ -53,6 +54,7 @@ function App() {
         <Route path={ROUTES.COMMUNICATION_ANALYTICS} element={<CommunicationAnalytics />} />
         <Route path={ROUTES.ANALYTICS} element={<Analytics />} />
         <Route path={ROUTES.EARNINGS} element={<Earnings />} />
+        <Route path={ROUTES.WALLET} element={<Wallet />} />
         <Route path={ROUTES.CALENDAR} element={<Calendar />} />
         <Route path={`${ROUTES.SUPPORT}/*`} element={<Support />} />
         <Route path={ROUTES.APPROVALS} element={<Approvals />} />

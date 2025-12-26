@@ -35,6 +35,7 @@ export const ROUTES = {
   COMMUNICATION: '/communication',
   COMMUNICATION_ANALYTICS: '/communication-analytics',
   EARNINGS: '/earnings',
+  WALLET: '/wallet',
   SUPPORT: '/support',
   APPROVALS: '/approvals',
 } as const;
