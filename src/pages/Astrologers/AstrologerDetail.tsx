@@ -388,27 +388,43 @@ export const AstrologerDetail = () => {
                   <p className="text-sm font-medium text-gray-900">{formatDateTime(astrologer.createdAt)}</p>
                 </div>
               </div>
-              {(astrologer.specialization || []).length > 0 && (
-                <div className="flex items-start gap-3">
-                  <Star className="w-5 h-5 text-gray-400 mt-0.5" />
-                  <div className="flex-1">
-                    <p className="text-xs text-gray-500 mb-2">Specializations</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {(astrologer.specialization || []).slice(0, 3).map((spec, i) => (
-                        <span key={i} className="px-2 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-lg">
-                          {spec}
-                        </span>
-                      ))}
-                      {(astrologer.specialization || []).length > 3 && (
-                        <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-lg">
-                          +{(astrologer.specialization || []).length - 3}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
+
+            {/* Bio */}
+            {astrologer.bio && (
+              <div className="border-t border-gray-200 pt-6 mt-6">
+                <p className="text-xs text-gray-500 mb-2 font-medium">About</p>
+                <p className="text-sm text-gray-700 leading-relaxed">{astrologer.bio}</p>
+              </div>
+            )}
+
+            {/* Specializations */}
+            {(astrologer.specialization || []).length > 0 && (
+              <div className="border-t border-gray-200 pt-6 mt-6">
+                <p className="text-xs text-gray-500 mb-2 font-medium">Specializations</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {(astrologer.specialization || []).map((spec, i) => (
+                    <span key={i} className="px-2 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-lg">
+                      {spec}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Languages */}
+            {(astrologer.languages || []).length > 0 && (
+              <div className="border-t border-gray-200 pt-6 mt-6">
+                <p className="text-xs text-gray-500 mb-2 font-medium">Languages</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {(astrologer.languages || []).map((lang, i) => (
+                    <span key={i} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-lg">
+                      {lang}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </Card>
 
@@ -711,28 +727,6 @@ export const AstrologerDetail = () => {
 
       {/* Additional Sections Below */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-        {/* Bio */}
-        {astrologer.bio && (
-          <Card title="About">
-            <p className="text-gray-600">{astrologer.bio}</p>
-          </Card>
-        )}
-
-        {/* Languages */}
-        <Card title="Languages">
-          <div className="flex flex-wrap gap-2">
-            {(astrologer.languages || []).length > 0 ? (
-              (astrologer.languages || []).map((lang, i) => (
-                <span key={i} className="px-3 py-1.5 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg">
-                  {lang}
-                </span>
-              ))
-            ) : (
-              <span className="text-gray-500 text-sm">No languages listed</span>
-            )}
-          </div>
-        </Card>
-
         {/* Service Charges */}
         <Card title="Service Charges">
           <div className="grid grid-cols-3 gap-4">
