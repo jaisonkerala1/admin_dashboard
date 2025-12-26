@@ -144,12 +144,14 @@ export const AreaChartCard: React.FC<AreaChartCardProps> = ({
               formatter={(value: number) => [value, name || dataKey]}
             />
             <Area
-              type="natural"
+              // 'natural' can overshoot below 0 between points; monotone avoids that.
+              type="monotone"
               dataKey={dataKey}
               fill={`url(#${gradientId})`}
               fillOpacity={0.4}
               stroke={colorValue}
               strokeWidth={2}
+              baseValue={0}
             />
           </AreaChart>
         </ResponsiveContainer>
