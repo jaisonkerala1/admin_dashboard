@@ -3,13 +3,12 @@ import { Link } from 'react-router-dom';
 import { Users, UserCog, Calendar, DollarSign, AlertCircle, TrendingUp, Radio, Eye, Clock, Play, ShoppingBag, Bell, X, MessageSquare, Phone, Video } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
-import { StatCard, Card, Avatar } from '@/components/common';
+import { StatCard, Card, Avatar, AreaChartCard } from '@/components/common';
 import { StatCardSkeleton, ChartSkeleton } from '@/components/common';
 import { LiveStreamViewer } from '@/components/liveStream/LiveStreamViewer';
 import { liveStreamsApi } from '@/api';
 import { formatCurrency, formatNumber, formatRelativeTime } from '@/utils/formatters';
 import { ROUTES } from '@/utils/constants';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { useNotifications } from '@/contexts/NotificationContext';
 import {
@@ -253,124 +252,60 @@ export const Dashboard = () => {
           {/* Weekly Activity Charts */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Consultations Chart */}
-            <Card 
-              title={
-                <div className="flex items-center gap-2">
-                  <Calendar className="w-5 h-5 text-blue-600" />
-                  <span>Consultations</span>
-                </div>
-              }
-            >
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                    <XAxis 
-                      dataKey="label" 
-                      tick={{ fontSize: 12 }}
-                      stroke="#9ca3af"
-                    />
-                    <YAxis 
-                      tick={{ fontSize: 12 }}
-                      stroke="#9ca3af"
-                    />
-                    <Tooltip 
-                      contentStyle={{
-                        backgroundColor: '#fff',
-                        border: '1px solid #e5e7eb',
-                        borderRadius: '8px',
-                        padding: '8px 12px'
-                      }}
-                      labelStyle={{ fontWeight: 600, marginBottom: '4px' }}
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="consultations" 
-                      stroke="#3b82f6" 
-                      strokeWidth={2}
-                      dot={{ fill: '#3b82f6', r: 4 }}
-                      activeDot={{ r: 6 }}
-                      name="Consultations"
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="mt-4 flex items-center justify-between pt-4 border-t border-gray-100">
-                <div>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {formatNumber(periodStats.consultations)}
-                  </p>
-                  <p className="text-sm text-gray-500">Total ({periodLabel})</p>
-                </div>
-                <div className="text-right">
-                  <div className="flex items-center gap-1 text-green-600">
-                    <TrendingUp className="w-4 h-4" />
-                    <span className="text-sm font-semibold">{formatNumber(periodStats.completedConsultations)} completed</span>
+            <AreaChartCard
+              data={chartData}
+              dataKey="consultations"
+              title="Consultations"
+              icon={Calendar}
+              iconColor="text-blue-600"
+              color="#3b82f6"
+              name="Consultations"
+              footer={
+                <>
+                  <div>
+                    <p className="text-2xl font-bold text-gray-900">
+                      {formatNumber(periodStats.consultations)}
+                    </p>
+                    <p className="text-sm text-gray-500">Total ({periodLabel})</p>
                   </div>
-                  <p className="text-xs text-gray-500">in period</p>
-                </div>
-              </div>
-            </Card>
+                  <div className="text-right">
+                    <div className="flex items-center gap-1 text-green-600">
+                      <TrendingUp className="w-4 h-4" />
+                      <span className="text-sm font-semibold">{formatNumber(periodStats.completedConsultations)} completed</span>
+                    </div>
+                    <p className="text-xs text-gray-500">in period</p>
+                  </div>
+                </>
+              }
+            />
 
             {/* Service Requests Chart */}
-            <Card 
-              title={
-                <div className="flex items-center gap-2">
-                  <ShoppingBag className="w-5 h-5 text-purple-600" />
-                  <span>Service Requests</span>
-                </div>
-              }
-            >
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                    <XAxis 
-                      dataKey="label" 
-                      tick={{ fontSize: 12 }}
-                      stroke="#9ca3af"
-                    />
-                    <YAxis 
-                      tick={{ fontSize: 12 }}
-                      stroke="#9ca3af"
-                    />
-                    <Tooltip 
-                      contentStyle={{
-                        backgroundColor: '#fff',
-                        border: '1px solid #e5e7eb',
-                        borderRadius: '8px',
-                        padding: '8px 12px'
-                      }}
-                      labelStyle={{ fontWeight: 600, marginBottom: '4px' }}
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="serviceRequests" 
-                      stroke="#8b5cf6" 
-                      strokeWidth={2}
-                      dot={{ fill: '#8b5cf6', r: 4 }}
-                      activeDot={{ r: 6 }}
-                      name="Service Requests"
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="mt-4 flex items-center justify-between pt-4 border-t border-gray-100">
-                <div>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {formatNumber(periodStats.serviceRequests)}
-                  </p>
-                  <p className="text-sm text-gray-500">Total ({periodLabel})</p>
-                </div>
-                <div className="text-right">
-                  <div className="flex items-center gap-1 text-purple-600">
-                    <TrendingUp className="w-4 h-4" />
-                    <span className="text-sm font-semibold">{formatNumber(periodStats.serviceRequests)}</span>
+            <AreaChartCard
+              data={chartData}
+              dataKey="serviceRequests"
+              title="Service Requests"
+              icon={ShoppingBag}
+              iconColor="text-purple-600"
+              color="#8b5cf6"
+              name="Service Requests"
+              footer={
+                <>
+                  <div>
+                    <p className="text-2xl font-bold text-gray-900">
+                      {formatNumber(periodStats.serviceRequests)}
+                    </p>
+                    <p className="text-sm text-gray-500">Total ({periodLabel})</p>
                   </div>
-                  <p className="text-xs text-gray-500">in period</p>
-                </div>
-              </div>
-            </Card>
+                  <div className="text-right">
+                    <div className="flex items-center gap-1 text-purple-600">
+                      <TrendingUp className="w-4 h-4" />
+                      <span className="text-sm font-semibold">{formatNumber(periodStats.serviceRequests)}</span>
+                    </div>
+                    <p className="text-xs text-gray-500">in period</p>
+                  </div>
+                </>
+              }
+            />
           </div>
 
           {/* Currently Live Section */}

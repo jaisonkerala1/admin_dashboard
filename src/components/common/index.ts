@@ -13,6 +13,8 @@ export type { BadgeVariant } from './PillBadge';
 export { ShowEntriesDropdown } from './ShowEntriesDropdown';
 export { SearchBar } from './SearchBar';
 export type { SearchBarProps } from './SearchBar';
+export { AreaChartCard } from './AreaChartCard';
+export type { AreaChartCardProps } from './AreaChartCard';
 
 // Skeleton components
 export { Shimmer } from './Shimmer';
