@@ -52,11 +52,18 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     
-    if (!isControlled) {
+    // For controlled components, we need parent to update immediately
+    // So we call onSearch immediately, but parent can debounce if needed
+    if (isControlled) {
+      // In controlled mode, call onSearch immediately so parent updates value
+      // Parent will handle debouncing the actual search operation
+      onSearch(newValue);
+    } else {
+      // Update local state immediately for UI responsiveness
       setLocalValue(newValue);
+      // Debounced search callback
+      handleSearch(newValue);
     }
-    
-    handleSearch(newValue);
   };
 
   // Handle clear

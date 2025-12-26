@@ -177,6 +177,7 @@ export const Discussions = () => {
               onClear={() => {
                 setSearch('');
               }}
+              debounceMs={300}
             />
           </div>
           <button
