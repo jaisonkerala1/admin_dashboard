@@ -74,8 +74,9 @@ export const AreaChartCard: React.FC<AreaChartCardProps> = ({
             margin={{
               left: 12,
               right: 12,
+              // Keep some breathing room so the stroke/fill never feels clipped
               top: 12,
-              bottom: 8,
+              bottom: 18,
             }}
           >
             <defs>
