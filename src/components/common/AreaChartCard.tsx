@@ -67,15 +67,15 @@ export const AreaChartCard: React.FC<AreaChartCardProps> = ({
         )
       }
     >
-      <div style={{ height: `${height}px` }}>
+      <div style={{ height: `${height}px` }} className="overflow-visible">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={data}
             margin={{
               left: 12,
               right: 12,
-              top: 12,
-              bottom: 12,
+              top: 20,
+              bottom: 20,
             }}
           >
             <defs>
@@ -112,6 +112,9 @@ export const AreaChartCard: React.FC<AreaChartCardProps> = ({
               axisLine={false}
               tick={{ fontSize: 12, fill: '#9ca3af' }}
               tickMargin={8}
+              domain={[0, 'auto']}
+              allowDataOverflow={false}
+              padding={{ top: 10, bottom: 10 }}
             />
             <Tooltip
               cursor={false}
