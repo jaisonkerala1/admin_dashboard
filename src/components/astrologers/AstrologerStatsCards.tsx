@@ -1,4 +1,4 @@
-import { Calendar, CheckCircle, Package, TrendingUp, TrendingDown, BarChart3 } from 'lucide-react';
+import { CheckCircle, Package, TrendingUp, TrendingDown, BarChart3 } from 'lucide-react';
 import { formatNumber } from '@/utils/formatters';
 
 interface AstrologerStatsCardsProps {

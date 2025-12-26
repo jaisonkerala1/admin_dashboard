@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Mail, Phone, Star, Calendar, DollarSign, Clock, CheckCircle, Ban, Package, MessageSquare, FileText, ThumbsUp, MessageCircle, Video, Edit2, Globe } from 'lucide-react';
+import { Mail, Phone, Star, Calendar, DollarSign, Clock, CheckCircle, Ban, Package, MessageSquare, FileText, ThumbsUp, MessageCircle, Edit2 } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Card, Loader, Avatar, StatusBadge, Modal } from '@/components/common';
@@ -240,25 +240,6 @@ export const AstrologerDetail = () => {
     });
   };
 
-  const handleVoiceCall = () => {
-    if (!astrologer) return;
-    navigate('/communication', {
-      state: {
-        selectedAstrologerId: astrologer._id,
-        action: 'voice_call'
-      }
-    });
-  };
-
-  const handleVideoCall = () => {
-    if (!astrologer) return;
-    navigate('/communication', {
-      state: {
-        selectedAstrologerId: astrologer._id,
-        action: 'video_call'
-      }
-    });
-  };
 
   if (isLoading) {
     return (
@@ -280,12 +261,6 @@ export const AstrologerDetail = () => {
     );
   }
 
-  const getStatus = () => {
-    if (astrologer.isSuspended) return 'suspended';
-    if (astrologer.isApproved) return 'approved';
-    return 'pending';
-  };
-
   const getServiceStatus = (service: Service) => {
     if (service.isDeleted) return 'rejected';
     if (service.isActive) return 'approved';
@@ -294,7 +269,7 @@ export const AstrologerDetail = () => {
 
   // Calculate statistics for stat cards
   const totalConsultations = consultations.length;
-  const completedConsultations = consultations.filter(c => c.status === 'completed' || c.status === 'done').length;
+  const completedConsultations = consultations.filter(c => c.status === 'completed').length;
   const totalServiceRequests = serviceRequests.length;
   
   // Calculate percentages (simplified - can be enhanced with period comparison)
@@ -522,7 +497,7 @@ export const AstrologerDetail = () => {
                                   <span className="px-2.5 py-1 bg-orange-100 text-orange-700 text-xs font-medium rounded-lg">
                                     Cancelled
                                   </span>
-                                ) : consultation.status === 'completed' || consultation.status === 'done' ? (
+                                ) : consultation.status === 'completed' ? (
                                   <span className="px-2.5 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-lg flex items-center gap-1">
                                     <CheckCircle className="w-3 h-3" />
                                     Done
