@@ -31,6 +31,7 @@ export const AstrologerDetail = () => {
   const [showSuspendModal, setShowSuspendModal] = useState(false);
   const [suspensionReason, setSuspensionReason] = useState('');
   const [activeTab, setActiveTab] = useState<'consultations' | 'serviceRequests'>('consultations');
+  const [activeContentTab, setActiveContentTab] = useState<'services' | 'reviews' | 'posts'>('services');
 
   useEffect(() => {
     if (id) {
@@ -638,197 +639,250 @@ export const AstrologerDetail = () => {
         </div>
       </div>
 
-      {/* Services, Reviews, Discussions - Full Width */}
-      <div className="mt-6 space-y-6">
-        {/* Services */}
-        <Card 
-          title={
-            <div className="flex items-center gap-2">
-              <Package className="w-5 h-5 text-gray-600" />
-              <span className="text-lg font-semibold text-gray-900">Services Offered</span>
-              <span className="px-2.5 py-0.5 bg-blue-50 text-blue-700 text-xs font-semibold rounded-lg">
-                {services.length}
-              </span>
+      {/* Services, Reviews, Discussions - Tabbed Section */}
+      <div className="mt-6">
+        <Card>
+          {/* Tab Navigation - LinkedIn Style */}
+          <div className="border-b border-gray-200 mb-6">
+            <div className="flex gap-8 -mb-px">
+              <button
+                onClick={() => setActiveContentTab('services')}
+                className={`pb-4 px-1 text-sm font-medium transition-colors relative ${
+                  activeContentTab === 'services'
+                    ? 'text-gray-900'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                <span className="flex items-center gap-2">
+                  Services
+                  <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${
+                    activeContentTab === 'services'
+                      ? 'bg-gray-900 text-white'
+                      : 'bg-gray-100 text-gray-600'
+                  }`}>
+                    {services.length}
+                  </span>
+                </span>
+                {activeContentTab === 'services' && (
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900" />
+                )}
+              </button>
+              <button
+                onClick={() => setActiveContentTab('reviews')}
+                className={`pb-4 px-1 text-sm font-medium transition-colors relative ${
+                  activeContentTab === 'reviews'
+                    ? 'text-gray-900'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                <span className="flex items-center gap-2">
+                  Reviews
+                  <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${
+                    activeContentTab === 'reviews'
+                      ? 'bg-gray-900 text-white'
+                      : 'bg-gray-100 text-gray-600'
+                  }`}>
+                    {reviews.length}
+                  </span>
+                </span>
+                {activeContentTab === 'reviews' && (
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900" />
+                )}
+              </button>
+              <button
+                onClick={() => setActiveContentTab('posts')}
+                className={`pb-4 px-1 text-sm font-medium transition-colors relative ${
+                  activeContentTab === 'posts'
+                    ? 'text-gray-900'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                <span className="flex items-center gap-2">
+                  Posts & Discussions
+                  <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${
+                    activeContentTab === 'posts'
+                      ? 'bg-gray-900 text-white'
+                      : 'bg-gray-100 text-gray-600'
+                  }`}>
+                    {discussions.length}
+                  </span>
+                </span>
+                {activeContentTab === 'posts' && (
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900" />
+                )}
+              </button>
             </div>
-          }
-        >
-          {servicesLoading ? (
-            <div className="flex justify-center py-12">
-              <Loader size="sm" text="Loading services..." />
-            </div>
-          ) : services.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {services.map((service) => (
-                <div
-                  key={service._id}
-                  className="p-5 bg-white border border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-md transition-all duration-200"
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <h4 className="font-semibold text-gray-900 text-base">{service.name}</h4>
-                    <StatusBadge status={getServiceStatus(service)} />
-                  </div>
-                  {service.description && (
-                    <p className="text-sm text-gray-600 mb-4 line-clamp-2 leading-relaxed">
-                      {service.description}
-                    </p>
-                  )}
-                  <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                    <div className="flex flex-col gap-1">
-                      <span className="text-base font-bold text-gray-900">
-                        {formatCurrency(service.price)}
-                      </span>
-                      {service.duration && (
-                        <span className="text-xs text-gray-500">
-                          {service.duration} mins
-                        </span>
-                      )}
-                    </div>
-                    <span className="px-2.5 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-lg">
-                      {service.category}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <Package className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-              <p className="text-gray-500 text-sm">No services offered yet</p>
-            </div>
-          )}
-        </Card>
+          </div>
 
-        {/* Reviews */}
-        <Card 
-          title={
-            <div className="flex items-center gap-2">
-              <MessageSquare className="w-5 h-5 text-gray-600" />
-              <span className="text-lg font-semibold text-gray-900">Recent Reviews</span>
-              <span className="px-2.5 py-0.5 bg-yellow-50 text-yellow-700 text-xs font-semibold rounded-lg">
-                {reviews.length}
-              </span>
-            </div>
-          }
-        >
-          {reviewsLoading ? (
-            <div className="flex justify-center py-12">
-              <Loader size="sm" text="Loading reviews..." />
-            </div>
-          ) : reviews.length > 0 ? (
-            <div className="space-y-4">
-              {reviews.map((review) => (
-                <div
-                  key={review._id}
-                  className="p-5 bg-white border border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-sm transition-all duration-200"
-                >
-                  <div className="flex items-start gap-4">
-                    <Avatar
-                      src={review.clientAvatar}
-                      name={review.clientName || 'Anonymous'}
-                      size="md"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="flex-1">
-                          <p className="font-semibold text-gray-900 text-base mb-1.5">
-                            {review.clientName || 'Anonymous'}
+          {/* Tab Content */}
+          <div>
+            {/* Services Tab */}
+            {activeContentTab === 'services' && (
+              <div>
+                {servicesLoading ? (
+                  <div className="flex justify-center py-12">
+                    <Loader size="sm" text="Loading services..." />
+                  </div>
+                ) : services.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {services.map((service) => (
+                      <div
+                        key={service._id}
+                        className="p-5 bg-white border border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-md transition-all duration-200"
+                      >
+                        <div className="flex items-start justify-between mb-3">
+                          <h4 className="font-semibold text-gray-900 text-base">{service.name}</h4>
+                          <StatusBadge status={getServiceStatus(service)} />
+                        </div>
+                        {service.description && (
+                          <p className="text-sm text-gray-600 mb-4 line-clamp-2 leading-relaxed">
+                            {service.description}
                           </p>
-                          <div className="flex items-center gap-3">
-                            <div className="flex items-center gap-0.5">
-                              {[...Array(5)].map((_, i) => (
-                                <Star
-                                  key={i}
-                                  className={`w-4 h-4 ${
-                                    i < review.rating
-                                      ? 'text-yellow-400 fill-yellow-400'
-                                      : 'text-gray-300'
-                                  }`}
-                                />
-                              ))}
-                            </div>
-                            <span className="text-xs text-gray-500">
-                              {formatDateTime(review.createdAt)}
+                        )}
+                        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                          <div className="flex flex-col gap-1">
+                            <span className="text-base font-bold text-gray-900">
+                              {formatCurrency(service.price)}
                             </span>
+                            {service.duration && (
+                              <span className="text-xs text-gray-500">
+                                {service.duration} mins
+                              </span>
+                            )}
+                          </div>
+                          <span className="px-2.5 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-lg">
+                            {service.category}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <Package className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                    <p className="text-gray-500 text-sm">No services offered yet</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Reviews Tab */}
+            {activeContentTab === 'reviews' && (
+              <div>
+                {reviewsLoading ? (
+                  <div className="flex justify-center py-12">
+                    <Loader size="sm" text="Loading reviews..." />
+                  </div>
+                ) : reviews.length > 0 ? (
+                  <div className="space-y-4">
+                    {reviews.map((review) => (
+                      <div
+                        key={review._id}
+                        className="p-5 bg-white border border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-sm transition-all duration-200"
+                      >
+                        <div className="flex items-start gap-4">
+                          <Avatar
+                            src={review.clientAvatar}
+                            name={review.clientName || 'Anonymous'}
+                            size="md"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between mb-3">
+                              <div className="flex-1">
+                                <p className="font-semibold text-gray-900 text-base mb-1.5">
+                                  {review.clientName || 'Anonymous'}
+                                </p>
+                                <div className="flex items-center gap-3">
+                                  <div className="flex items-center gap-0.5">
+                                    {[...Array(5)].map((_, i) => (
+                                      <Star
+                                        key={i}
+                                        className={`w-4 h-4 ${
+                                          i < review.rating
+                                            ? 'text-yellow-400 fill-yellow-400'
+                                            : 'text-gray-300'
+                                        }`}
+                                      />
+                                    ))}
+                                  </div>
+                                  <span className="text-xs text-gray-500">
+                                    {formatDateTime(review.createdAt)}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                            {review.reviewText && (
+                              <p className="text-sm text-gray-700 leading-relaxed mt-2">{review.reviewText}</p>
+                            )}
                           </div>
                         </div>
                       </div>
-                      {review.reviewText && (
-                        <p className="text-sm text-gray-700 leading-relaxed mt-2">{review.reviewText}</p>
-                      )}
-                    </div>
+                    ))}
                   </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <MessageSquare className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-              <p className="text-gray-500 text-sm">No reviews yet</p>
-            </div>
-          )}
-        </Card>
+                ) : (
+                  <div className="text-center py-12">
+                    <MessageSquare className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                    <p className="text-gray-500 text-sm">No reviews yet</p>
+                  </div>
+                )}
+              </div>
+            )}
 
-        {/* Discussions/Posts */}
-        <Card 
-          title={
-            <div className="flex items-center gap-2">
-              <FileText className="w-5 h-5 text-gray-600" />
-              <span className="text-lg font-semibold text-gray-900">Recent Posts & Discussions</span>
-              <span className="px-2.5 py-0.5 bg-blue-50 text-blue-700 text-xs font-semibold rounded-lg">
-                {discussions.length}
-              </span>
-            </div>
-          }
-        >
-          {discussionsLoading ? (
-            <div className="flex justify-center py-12">
-              <Loader size="sm" text="Loading discussions..." />
-            </div>
-          ) : discussions.length > 0 ? (
-            <div className="space-y-4">
-              {discussions.map((discussion) => (
-                <div
-                  key={discussion._id}
-                  className="p-5 bg-white border border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-sm transition-all duration-200"
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <h4 className="font-semibold text-gray-900 text-base flex-1 pr-4">{discussion.title}</h4>
-                    {discussion.isPinned && (
-                      <span className="px-2.5 py-1 bg-blue-50 text-blue-700 text-xs font-semibold rounded-lg flex-shrink-0">
-                        Pinned
-                      </span>
-                    )}
+            {/* Posts & Discussions Tab */}
+            {activeContentTab === 'posts' && (
+              <div>
+                {discussionsLoading ? (
+                  <div className="flex justify-center py-12">
+                    <Loader size="sm" text="Loading discussions..." />
                   </div>
-                  {discussion.content && (
-                    <p className="text-sm text-gray-600 mb-4 line-clamp-2 leading-relaxed">
-                      {discussion.content}
-                    </p>
-                  )}
-                  <div className="flex items-center gap-5 text-sm text-gray-500 pt-3 border-t border-gray-100">
-                    <div className="flex items-center gap-1.5">
-                      <ThumbsUp className="w-4 h-4" />
-                      <span className="font-medium">{formatNumber(discussion.likeCount || 0)}</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <MessageSquare className="w-4 h-4" />
-                      <span className="font-medium">{formatNumber(discussion.commentCount || 0)}</span>
-                    </div>
-                    <span className="text-xs">{formatDateTime(discussion.createdAt)}</span>
-                    {discussion.category && (
-                      <span className="ml-auto px-2.5 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-lg">
-                        {discussion.category}
-                      </span>
-                    )}
+                ) : discussions.length > 0 ? (
+                  <div className="space-y-4">
+                    {discussions.map((discussion) => (
+                      <div
+                        key={discussion._id}
+                        className="p-5 bg-white border border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-sm transition-all duration-200"
+                      >
+                        <div className="flex items-start justify-between mb-3">
+                          <h4 className="font-semibold text-gray-900 text-base flex-1 pr-4">{discussion.title}</h4>
+                          {discussion.isPinned && (
+                            <span className="px-2.5 py-1 bg-blue-50 text-blue-700 text-xs font-semibold rounded-lg flex-shrink-0">
+                              Pinned
+                            </span>
+                          )}
+                        </div>
+                        {discussion.content && (
+                          <p className="text-sm text-gray-600 mb-4 line-clamp-2 leading-relaxed">
+                            {discussion.content}
+                          </p>
+                        )}
+                        <div className="flex items-center gap-5 text-sm text-gray-500 pt-3 border-t border-gray-100">
+                          <div className="flex items-center gap-1.5">
+                            <ThumbsUp className="w-4 h-4" />
+                            <span className="font-medium">{formatNumber(discussion.likeCount || 0)}</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <MessageSquare className="w-4 h-4" />
+                            <span className="font-medium">{formatNumber(discussion.commentCount || 0)}</span>
+                          </div>
+                          <span className="text-xs">{formatDateTime(discussion.createdAt)}</span>
+                          {discussion.category && (
+                            <span className="ml-auto px-2.5 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-lg">
+                              {discussion.category}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <FileText className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-              <p className="text-gray-500 text-sm">No discussions posted yet</p>
-            </div>
-          )}
+                ) : (
+                  <div className="text-center py-12">
+                    <FileText className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                    <p className="text-gray-500 text-sm">No discussions posted yet</p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </Card>
 
         {/* Suspension Info */}
