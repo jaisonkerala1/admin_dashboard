@@ -32,13 +32,11 @@ export const WalletQuickStatsSkeleton = () => {
           <SkeletonBox width={120} height={18} radius={4} />
         </div>
         <div className="pt-3 border-t border-gray-100">
-          <div className="flex items-center justify-between">
-            <div>
-              <SkeletonBox width={90} height={10} radius={4} className="mb-1" />
-              <SkeletonBox width={50} height={14} radius={4} />
-            </div>
-            <SkeletonBox width={64} height={32} radius={4} />
+          <div className="mb-2">
+            <SkeletonBox width={90} height={10} radius={4} className="mb-1" />
+            <SkeletonBox width={50} height={14} radius={4} />
           </div>
+          <SkeletonBox width="100%" height={80} radius={4} />
         </div>
       </div>
     </div>

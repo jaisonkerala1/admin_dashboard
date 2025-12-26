@@ -49,28 +49,27 @@ export const WalletQuickStats = ({ balance, isLoading }: WalletQuickStatsProps) 
           )}
         </div>
 
-        {/* Compact Earnings Increase with Orange Line Graph */}
+        {/* Earnings Growth with Large Orange Line Graph */}
         <div className="pt-3 border-t border-gray-100">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs text-gray-500 mb-0.5">Earnings Growth</p>
-              <p className="text-sm font-semibold text-orange-900">
-                +{earningsIncrease}%
-              </p>
-            </div>
-            <div className="w-16 h-8">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={trendData}>
-                  <Line
-                    type="monotone"
-                    dataKey="value"
-                    stroke="#ea580c"
-                    strokeWidth={2}
-                    dot={false}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
+          <div className="mb-2">
+            <p className="text-xs text-gray-500 mb-0.5">Earnings Growth</p>
+            <p className="text-sm font-semibold text-orange-900">
+              +{earningsIncrease}%
+            </p>
+          </div>
+          {/* Large Graph Starting from Left */}
+          <div className="w-full h-20 -ml-2 -mr-2">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={trendData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
+                <Line
+                  type="monotone"
+                  dataKey="value"
+                  stroke="#ea580c"
+                  strokeWidth={2.5}
+                  dot={false}
+                />
+              </LineChart>
+            </ResponsiveContainer>
           </div>
         </div>
       </div>
