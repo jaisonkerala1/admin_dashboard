@@ -6,14 +6,6 @@ import { WalletApiResponse, WalletPeriod, WalletTransaction, WalletAnalytics, Pa
  * Ready to swap with real backend endpoints
  */
 
-const generateWeeklyTrend = (): number[] => {
-  const base = 500000;
-  return Array.from({ length: 7 }, (_, i) => {
-    const variation = (Math.sin(i * 0.5) + 1) * 0.3;
-    return base * (0.7 + variation);
-  });
-};
-
 const generateTransactions = (count: number): WalletTransaction[] => {
   const types: WalletTransaction['type'][] = ['deposit', 'withdrawal', 'payment', 'refund', 'commission', 'payout'];
   const statuses: WalletTransaction['status'][] = ['completed', 'pending', 'failed'];

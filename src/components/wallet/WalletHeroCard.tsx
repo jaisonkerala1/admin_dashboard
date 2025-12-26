@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 import { WalletBalance } from '@/types/wallet';
-import { formatCurrency } from '@/utils/formatters';
 import { AreaChart, Area, ResponsiveContainer } from 'recharts';
 
 interface WalletHeroCardProps {

@@ -2,7 +2,7 @@ import { WalletTransaction, WalletBalance, WalletStats } from '@/types/wallet';
 import { WalletTransactionCard } from './WalletTransactionCard';
 import { Card } from '@/components/common';
 import { formatCurrency } from '@/utils/formatters';
-import { Users, Wallet, Clock, TrendingUp } from 'lucide-react';
+import { Users, Wallet, Clock } from 'lucide-react';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
 
 interface WalletOverviewProps {

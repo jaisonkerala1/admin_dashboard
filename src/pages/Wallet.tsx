@@ -10,7 +10,6 @@ import { WalletHeroCardSkeleton, WalletQuickStatsSkeleton } from '@/components/w
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { fetchWalletDataRequest, setPeriod } from '@/store/slices/walletSlice';
 import { WalletPeriod } from '@/types/wallet';
-import { format } from 'date-fns';
 
 export const Wallet = () => {
   const dispatch = useAppDispatch();
