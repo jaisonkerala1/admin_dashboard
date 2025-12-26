@@ -425,6 +425,52 @@ export const AstrologerDetail = () => {
                 </div>
               </div>
             )}
+
+            {/* Service Charges */}
+            <div className="border-t border-gray-200 pt-6 mt-6">
+              <p className="text-xs text-gray-500 mb-3 font-medium">Service Charges</p>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between p-2.5 bg-gray-50 rounded-lg">
+                  <span className="text-xs text-gray-600">Rate per Min</span>
+                  <span className="text-sm font-semibold text-gray-900">{formatCurrency(astrologer.consultationCharge || 0)}</span>
+                </div>
+                <div className="flex items-center justify-between p-2.5 bg-gray-50 rounded-lg">
+                  <span className="text-xs text-gray-600">Call</span>
+                  <span className="text-sm font-semibold text-gray-900">{formatCurrency(astrologer.callCharge || 0)}/min</span>
+                </div>
+                <div className="flex items-center justify-between p-2.5 bg-gray-50 rounded-lg">
+                  <span className="text-xs text-gray-600">Chat</span>
+                  <span className="text-sm font-semibold text-gray-900">{formatCurrency(astrologer.chatCharge || 0)}/min</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Performance Metrics */}
+            <div className="border-t border-gray-200 pt-6 mt-6">
+              <p className="text-xs text-gray-500 mb-3 font-medium">Performance Metrics</p>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="text-center p-3 bg-gray-50 rounded-lg">
+                  <Star className="w-5 h-5 text-yellow-500 mx-auto mb-1" />
+                  <p className="text-lg font-bold text-gray-900">{(astrologer.rating || 0).toFixed(1)}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">Rating</p>
+                </div>
+                <div className="text-center p-3 bg-gray-50 rounded-lg">
+                  <DollarSign className="w-5 h-5 text-green-500 mx-auto mb-1" />
+                  <p className="text-lg font-bold text-gray-900">{formatCurrency(astrologer.totalEarnings || 0)}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">Earnings</p>
+                </div>
+                <div className="text-center p-3 bg-gray-50 rounded-lg">
+                  <Clock className="w-5 h-5 text-purple-500 mx-auto mb-1" />
+                  <p className="text-lg font-bold text-gray-900">{astrologer.experience || 0}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">Years</p>
+                </div>
+                <div className="text-center p-3 bg-gray-50 rounded-lg">
+                  <MessageSquare className="w-5 h-5 text-blue-500 mx-auto mb-1" />
+                  <p className="text-lg font-bold text-gray-900">{formatNumber(astrologer.totalReviews || 0)}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">Reviews</p>
+                </div>
+              </div>
+            </div>
           </div>
         </Card>
 
@@ -659,117 +705,7 @@ export const AstrologerDetail = () => {
             )}
           </Card>
 
-          {/* Discussions/Posts */}
-          <Card 
-            title={
-              <div className="flex items-center gap-2">
-                <FileText className="w-5 h-5" />
-                <span>Recent Posts & Discussions</span>
-                <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">
-                  {discussions.length}
-                </span>
-              </div>
-            }
-          >
-            {discussionsLoading ? (
-              <div className="flex justify-center py-8">
-                <Loader size="sm" text="Loading discussions..." />
-              </div>
-            ) : discussions.length > 0 ? (
-              <div className="space-y-4">
-                {discussions.map((discussion) => (
-                  <div
-                    key={discussion._id}
-                    className="p-4 border border-gray-200 rounded-lg hover:bg-blue-50 transition-all"
-                  >
-                    <div className="flex items-start justify-between mb-2">
-                      <h4 className="font-semibold text-gray-900">{discussion.title}</h4>
-                      {discussion.isPinned && (
-                        <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-medium rounded">
-                          Pinned
-                        </span>
-                      )}
-                    </div>
-                    {discussion.content && (
-                      <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-                        {discussion.content}
-                      </p>
-                    )}
-                    <div className="flex items-center gap-4 text-sm text-gray-500">
-                      <div className="flex items-center gap-1">
-                        <ThumbsUp className="w-4 h-4" />
-                        <span>{formatNumber(discussion.likeCount || 0)}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <MessageSquare className="w-4 h-4" />
-                        <span>{formatNumber(discussion.commentCount || 0)}</span>
-                      </div>
-                      <span>{formatDateTime(discussion.createdAt)}</span>
-                      {discussion.category && (
-                        <span className="ml-auto px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded">
-                          {discussion.category}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <FileText className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-500">No discussions posted yet</p>
-              </div>
-            )}
-          </Card>
-
         </div>
-      </div>
-
-      {/* Additional Sections Below */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-        {/* Service Charges */}
-        <Card title="Service Charges">
-          <div className="grid grid-cols-3 gap-4">
-            <div className="text-center p-4 bg-gray-50 rounded-lg">
-              <p className="text-sm text-gray-600 mb-1">Rate per Min</p>
-              <p className="text-xl font-bold text-gray-900">{formatCurrency(astrologer.consultationCharge || 0)}</p>
-            </div>
-            <div className="text-center p-4 bg-gray-50 rounded-lg">
-              <p className="text-sm text-gray-600 mb-1">Call</p>
-              <p className="text-xl font-bold text-gray-900">{formatCurrency(astrologer.callCharge || 0)}/min</p>
-            </div>
-            <div className="text-center p-4 bg-gray-50 rounded-lg">
-              <p className="text-sm text-gray-600 mb-1">Chat</p>
-              <p className="text-xl font-bold text-gray-900">{formatCurrency(astrologer.chatCharge || 0)}/min</p>
-            </div>
-          </div>
-        </Card>
-
-        {/* Additional Stats */}
-        <Card title="Performance Metrics">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="text-center p-4 bg-gray-50 rounded-lg">
-              <Star className="w-6 h-6 text-yellow-500 mx-auto mb-2" />
-              <p className="text-2xl font-bold text-gray-900">{(astrologer.rating || 0).toFixed(1)}</p>
-              <p className="text-xs text-gray-500 mt-1">Rating</p>
-            </div>
-            <div className="text-center p-4 bg-gray-50 rounded-lg">
-              <DollarSign className="w-6 h-6 text-green-500 mx-auto mb-2" />
-              <p className="text-2xl font-bold text-gray-900">{formatCurrency(astrologer.totalEarnings || 0)}</p>
-              <p className="text-xs text-gray-500 mt-1">Total Earnings</p>
-            </div>
-            <div className="text-center p-4 bg-gray-50 rounded-lg">
-              <Clock className="w-6 h-6 text-purple-500 mx-auto mb-2" />
-              <p className="text-2xl font-bold text-gray-900">{astrologer.experience || 0}</p>
-              <p className="text-xs text-gray-500 mt-1">Years Experience</p>
-            </div>
-            <div className="text-center p-4 bg-gray-50 rounded-lg">
-              <MessageSquare className="w-6 h-6 text-blue-500 mx-auto mb-2" />
-              <p className="text-2xl font-bold text-gray-900">{formatNumber(astrologer.totalReviews || 0)}</p>
-              <p className="text-xs text-gray-500 mt-1">Total Reviews</p>
-            </div>
-          </div>
-        </Card>
       </div>
 
       {/* Services, Reviews, Discussions - Full Width */}
