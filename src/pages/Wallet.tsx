@@ -20,16 +20,6 @@ export const Wallet = () => {
     dispatch(fetchWalletDataRequest({ period }));
   }, [dispatch, period]);
 
-  const periodLabel = useMemo(() => {
-    const map: Record<WalletPeriod, string> = {
-      today: 'Today',
-      thisWeek: 'This Week',
-      thisMonth: 'This Month',
-      thisYear: 'This Year',
-    };
-    return map[period];
-  }, [period]);
-
   const periodOptions: { key: WalletPeriod; label: string }[] = useMemo(
     () => [
       { key: 'today', label: 'Today' },
