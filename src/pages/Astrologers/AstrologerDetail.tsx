@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Mail, Phone, Star, Calendar, DollarSign, Clock, CheckCircle, Ban, Package, MessageSquare, FileText, ThumbsUp, MessageCircle, Video } from 'lucide-react';
+import { Mail, Phone, Star, Calendar, DollarSign, Clock, CheckCircle, Ban, Package, MessageSquare, FileText, ThumbsUp, MessageCircle, Video, Edit2, Globe } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Card, Loader, Avatar, StatusBadge, Modal } from '@/components/common';
+import { AstrologerStatsCards } from '@/components/astrologers/AstrologerStatsCards';
 import { astrologersApi, servicesApi, reviewsApi, discussionsApi, consultationsApi, poojaRequestsApi } from '@/api';
 import { Astrologer, Service, Review, Discussion, Consultation, PoojaRequest } from '@/types';
 import { formatCurrency, formatNumber, formatDateTime } from '@/utils/formatters';
@@ -29,6 +30,7 @@ export const AstrologerDetail = () => {
   const [isSuspending, setIsSuspending] = useState(false);
   const [showSuspendModal, setShowSuspendModal] = useState(false);
   const [suspensionReason, setSuspensionReason] = useState('');
+  const [activeTab, setActiveTab] = useState<'consultations' | 'serviceRequests'>('consultations');
 
   useEffect(() => {
     if (id) {
@@ -290,6 +292,25 @@ export const AstrologerDetail = () => {
     return 'pending';
   };
 
+  // Calculate statistics for stat cards
+  const totalConsultations = consultations.length;
+  const completedConsultations = consultations.filter(c => c.status === 'completed' || c.status === 'done').length;
+  const totalServiceRequests = serviceRequests.length;
+  
+  // Calculate percentages (simplified - can be enhanced with period comparison)
+  const consultationsPercentage = totalConsultations > 0 ? ((completedConsultations / totalConsultations) * 100) : 0;
+  const completedPercentage = totalConsultations > 0 ? ((completedConsultations / totalConsultations) * 100) : 0;
+  const serviceRequestsPercentage = 0; // Can be calculated with period comparison if needed
+
+  // Get verification status badge text
+  const getVerificationStatus = () => {
+    if (astrologer.isSuspended) return { text: 'Suspended', color: 'bg-red-100 text-red-700' };
+    if (astrologer.isApproved) return { text: 'Verified', color: 'bg-green-100 text-green-700' };
+    return { text: 'Pending Verification', color: 'bg-yellow-100 text-yellow-700' };
+  };
+
+  const verificationStatus = getVerificationStatus();
+
   return (
     <MainLayout>
       <PageHeader
@@ -330,408 +351,249 @@ export const AstrologerDetail = () => {
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Profile Card */}
+        {/* Profile Card - Left Side */}
         <Card className="lg:col-span-1">
-          <div className="flex flex-col items-center text-center">
-            <div className="relative">
-            <Avatar src={astrologer.profilePicture} name={astrologer.name} size="xl" />
-              {astrologer.isOnline && (
-                <div className="absolute -bottom-2 -right-2 flex items-center justify-center">
-                  <div className="w-5 h-5 bg-green-500 border-4 border-white rounded-full" />
-                  <div className="absolute w-5 h-5 bg-green-400 rounded-full animate-ping" />
-                </div>
-              )}
-            </div>
-            <h2 className="mt-4 text-xl font-bold text-gray-900">{astrologer.name}</h2>
-            {astrologer.isOnline && (
-              <div className="flex items-center gap-1.5 mt-2 px-3 py-1 bg-green-100 text-green-700 text-sm font-medium rounded-full">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                <span>Online Now</span>
-              </div>
-            )}
-            {!astrologer.isOnline && astrologer.lastSeen && (
-              <p className="mt-2 text-sm text-gray-500">
-                Last seen {formatDateTime(astrologer.lastSeen)}
-              </p>
-            )}
-            <StatusBadge status={getStatus()} className="mt-2" />
-            
-            <div className="w-full mt-6 space-y-3 border-t border-gray-200 pt-6">
-              <div className="flex items-center gap-2 text-gray-600">
-                <Mail className="w-4 h-4" />
-                <span className="text-sm">{astrologer.email}</span>
-              </div>
-              <div className="flex items-center gap-2 text-gray-600">
-                <Phone className="w-4 h-4" />
-                <span className="text-sm">{astrologer.phone}</span>
-              </div>
-              <div className="flex items-center gap-2 text-gray-600">
-                <Calendar className="w-4 h-4" />
-                <span className="text-sm">Joined {formatDateTime(astrologer.createdAt)}</span>
+          <div className="flex flex-col">
+            {/* Profile Picture with Edit Icon */}
+            <div className="relative flex justify-center mb-4">
+              <div className="relative">
+                <Avatar src={astrologer.profilePicture} name={astrologer.name} size="xl" />
+                {astrologer.isOnline && (
+                  <div className="absolute -bottom-2 -right-2 flex items-center justify-center">
+                    <div className="w-5 h-5 bg-green-500 border-4 border-white rounded-full" />
+                    <div className="absolute w-5 h-5 bg-green-400 rounded-full animate-ping" />
+                  </div>
+                )}
+                {/* Edit Icon Overlay */}
+                <button className="absolute top-0 right-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors shadow-md">
+                  <Edit2 className="w-4 h-4" />
+                </button>
               </div>
             </div>
 
-            {/* Communication Actions */}
-            <div className="w-full mt-6 pt-6 border-t border-gray-200">
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
-                Quick Actions
-              </p>
-              <div className="space-y-2">
-                {/* Message Button */}
-                <button
-                  onClick={handleMessage}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium"
-                >
-                  <MessageCircle className="w-4 h-4" />
-                  <span>Send Message</span>
-                </button>
-                
-                {/* Voice & Video Calls */}
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    onClick={handleVoiceCall}
-                    disabled={!astrologer.isOnline}
-                    className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg transition-colors font-medium ${
-                      astrologer.isOnline
-                        ? 'bg-green-600 text-white hover:bg-green-700'
-                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                    }`}
-                    title={astrologer.isOnline ? 'Voice Call' : 'Astrologer is offline'}
-                  >
-                    <Phone className="w-4 h-4" />
-                    <span className="text-sm">Call</span>
-                  </button>
-                  
-                  <button
-                    onClick={handleVideoCall}
-                    disabled={!astrologer.isOnline}
-                    className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg transition-colors font-medium ${
-                      astrologer.isOnline
-                        ? 'bg-blue-600 text-white hover:bg-blue-700'
-                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                    }`}
-                    title={astrologer.isOnline ? 'Video Call' : 'Astrologer is offline'}
-                  >
-                    <Video className="w-4 h-4" />
-                    <span className="text-sm">Video</span>
-                  </button>
+            {/* Name */}
+            <h2 className="text-xl font-bold text-gray-900 text-center mb-3">{astrologer.name}</h2>
+
+            {/* Status Badge */}
+            <div className="flex justify-center mb-4">
+              <span className={`px-3 py-1 rounded-lg text-sm font-medium ${verificationStatus.color}`}>
+                {verificationStatus.text}
+              </span>
+            </div>
+
+            {/* Primary Action Button */}
+            <button
+              onClick={handleMessage}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium mb-6"
+            >
+              <MessageCircle className="w-4 h-4" />
+              <span>Send Message</span>
+            </button>
+
+            {/* Info Fields */}
+            <div className="space-y-4 border-t border-gray-200 pt-6">
+              <div className="flex items-start gap-3">
+                <Mail className="w-5 h-5 text-gray-400 mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-xs text-gray-500 mb-0.5">Email</p>
+                  <p className="text-sm font-medium text-gray-900">{astrologer.email}</p>
                 </div>
-                
-                {!astrologer.isOnline && (
-                  <p className="text-xs text-gray-500 text-center mt-2">
-                    Calls available when astrologer is online
-                  </p>
-                )}
               </div>
+              <div className="flex items-start gap-3">
+                <Phone className="w-5 h-5 text-gray-400 mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-xs text-gray-500 mb-0.5">Phone</p>
+                  <p className="text-sm font-medium text-gray-900">{astrologer.phone}</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <Calendar className="w-5 h-5 text-gray-400 mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-xs text-gray-500 mb-0.5">Joined</p>
+                  <p className="text-sm font-medium text-gray-900">{formatDateTime(astrologer.createdAt)}</p>
+                </div>
+              </div>
+              {(astrologer.specialization || []).length > 0 && (
+                <div className="flex items-start gap-3">
+                  <Star className="w-5 h-5 text-gray-400 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="text-xs text-gray-500 mb-2">Specializations</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {(astrologer.specialization || []).slice(0, 3).map((spec, i) => (
+                        <span key={i} className="px-2 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-lg">
+                          {spec}
+                        </span>
+                      ))}
+                      {(astrologer.specialization || []).length > 3 && (
+                        <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-lg">
+                          +{(astrologer.specialization || []).length - 3}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </Card>
 
-        {/* Details */}
+        {/* Right Side - Stats and Tabs */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Card>
-              <div className="flex items-center gap-3">
-                <Star className="w-8 h-8 text-yellow-500" />
-                <div>
-                  <p className="text-2xl font-bold">{(astrologer.rating || 0).toFixed(1)}</p>
-                  <p className="text-xs text-gray-500">Rating</p>
-                </div>
-              </div>
-            </Card>
-            <Card>
-              <div className="flex items-center gap-3">
-                <Calendar className="w-8 h-8 text-blue-500" />
-                <div>
-                  <p className="text-2xl font-bold">{formatNumber(astrologer.totalConsultations || 0)}</p>
-                  <p className="text-xs text-gray-500">Consultations</p>
-                </div>
-              </div>
-            </Card>
-            <Card>
-              <div className="flex items-center gap-3">
-                <DollarSign className="w-8 h-8 text-green-500" />
-                <div>
-                  <p className="text-2xl font-bold">{formatCurrency(astrologer.totalEarnings || 0)}</p>
-                  <p className="text-xs text-gray-500">Earnings</p>
-                </div>
-              </div>
-            </Card>
-            <Card>
-              <div className="flex items-center gap-3">
-                <Clock className="w-8 h-8 text-purple-500" />
-                <div>
-                  <p className="text-2xl font-bold">{astrologer.experience || 0}</p>
-                  <p className="text-xs text-gray-500">Years Exp</p>
-                </div>
-              </div>
-            </Card>
-          </div>
-
-          {/* Bio */}
-          {astrologer.bio && (
-            <Card title="About">
-              <p className="text-gray-600">{astrologer.bio}</p>
-            </Card>
-          )}
-
-          {/* Specializations */}
-          <Card title="Specializations">
-            <div className="flex flex-wrap gap-2">
-              {(astrologer.specialization || []).length > 0 ? (
-                (astrologer.specialization || []).map((spec, i) => (
-                  <span key={i} className="badge bg-primary-100 text-primary-700">{spec}</span>
-                ))
-              ) : (
-                <span className="text-gray-500 text-sm">No specializations listed</span>
-              )}
-            </div>
-          </Card>
-
-          {/* Languages */}
-          <Card title="Languages">
-            <div className="flex flex-wrap gap-2">
-              {(astrologer.languages || []).length > 0 ? (
-                (astrologer.languages || []).map((lang, i) => (
-                  <span key={i} className="badge bg-gray-100 text-gray-700">{lang}</span>
-                ))
-              ) : (
-                <span className="text-gray-500 text-sm">No languages listed</span>
-              )}
-            </div>
-          </Card>
-
-          {/* Charges */}
-          <Card title="Service Charges">
-            <div className="grid grid-cols-3 gap-4">
-              <div className="text-center p-4 bg-gray-50 rounded-lg">
-                <p className="text-sm text-gray-600 mb-1">Rate per Min</p>
-                <p className="text-xl font-bold text-gray-900">{formatCurrency(astrologer.consultationCharge || 0)}</p>
-              </div>
-              <div className="text-center p-4 bg-gray-50 rounded-lg">
-                <p className="text-sm text-gray-600 mb-1">Call</p>
-                <p className="text-xl font-bold text-gray-900">{formatCurrency(astrologer.callCharge || 0)}/min</p>
-              </div>
-              <div className="text-center p-4 bg-gray-50 rounded-lg">
-                <p className="text-sm text-gray-600 mb-1">Chat</p>
-                <p className="text-xl font-bold text-gray-900">{formatCurrency(astrologer.chatCharge || 0)}/min</p>
+          {/* Statistics Cards */}
+          <AstrologerStatsCards
+            totalConsultations={totalConsultations}
+            completedConsultations={completedConsultations}
+            serviceRequests={totalServiceRequests}
+            consultationsPercentage={consultationsPercentage}
+            completedPercentage={completedPercentage}
+            serviceRequestsPercentage={serviceRequestsPercentage}
+          />
+          {/* Tabbed Section: Consultations & Service Requests */}
+          <Card>
+            {/* Tabs */}
+            <div className="border-b border-gray-200 mb-4">
+              <div className="flex gap-6">
+                <button
+                  onClick={() => setActiveTab('consultations')}
+                  className={`pb-3 px-1 text-sm font-medium transition-colors ${
+                    activeTab === 'consultations'
+                      ? 'text-blue-600 border-b-2 border-blue-600'
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  Consultations ({consultations.length})
+                </button>
+                <button
+                  onClick={() => setActiveTab('serviceRequests')}
+                  className={`pb-3 px-1 text-sm font-medium transition-colors ${
+                    activeTab === 'serviceRequests'
+                      ? 'text-blue-600 border-b-2 border-blue-600'
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  Service Requests ({serviceRequests.length})
+                </button>
               </div>
             </div>
-          </Card>
 
-          {/* Services */}
-          <Card 
-            title={
-              <div className="flex items-center gap-2">
-                <Package className="w-5 h-5" />
-                <span>Services Offered</span>
-                <span className="px-2 py-0.5 bg-primary-100 text-primary-700 text-xs font-medium rounded-full">
-                  {services.length}
-                </span>
-              </div>
-            }
-          >
-            {servicesLoading ? (
-              <div className="flex justify-center py-8">
-                <Loader size="sm" text="Loading services..." />
-              </div>
-            ) : services.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {services.map((service) => (
-                  <div
-                    key={service._id}
-                    className="p-4 border border-gray-200 rounded-lg hover:border-primary-300 hover:bg-primary-50/30 transition-all"
-                  >
-                    <div className="flex items-start justify-between mb-2">
-                      <h4 className="font-semibold text-gray-900">{service.name}</h4>
-                      <StatusBadge status={getServiceStatus(service)} />
-                    </div>
-                    {service.description && (
-                      <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-                        {service.description}
-                      </p>
-                    )}
-                    <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                      <div className="flex items-center gap-4 text-sm">
-                        <span className="text-gray-600">
-                          <span className="font-medium text-gray-900">
-                            {formatCurrency(service.price)}
-                          </span>
-                        </span>
-                        {service.duration && (
-                          <span className="text-gray-500">
-                            {service.duration} mins
-                          </span>
-                        )}
-                      </div>
-                      <span className="text-xs text-gray-500">
-                        {service.category}
-                      </span>
-                    </div>
+            {/* Tab Content */}
+            {activeTab === 'consultations' ? (
+              <div>
+                {consultationsLoading ? (
+                  <div className="flex justify-center py-8">
+                    <Loader size="sm" text="Loading consultations..." />
                   </div>
-                ))}
+                ) : consultations.length > 0 ? (
+                  <div className="space-y-3">
+                    {consultations.map((consultation) => {
+                      const consultationDate = new Date(consultation.scheduledTime || consultation.createdAt);
+                      const timeRange = consultationDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                      const endTime = new Date(consultationDate.getTime() + (consultation.duration || 0) * 60000);
+                      const endTimeStr = endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                      
+                      return (
+                        <div
+                          key={consultation._id}
+                          className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                        >
+                          <div className="flex items-center gap-4 flex-1">
+                            <div className="text-sm font-medium text-gray-900 min-w-[60px]">
+                              {consultationDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}
+                            </div>
+                            <div className="flex-1">
+                              <div className="text-sm font-medium text-gray-900 capitalize">
+                                {consultation.type || 'Consultation'}
+                              </div>
+                              <div className="text-xs text-gray-500 mt-0.5">
+                                {timeRange} - {endTimeStr}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-4">
+                              <div className="text-right">
+                                <div className="text-sm font-semibold text-gray-900">
+                                  {formatCurrency(consultation.amount || 0)}
+                                </div>
+                                <div className="text-xs text-gray-500">
+                                  {formatCurrency(astrologer.consultationCharge || 0)}/hr
+                                </div>
+                              </div>
+                              <div>
+                                {consultation.status === 'cancelled' ? (
+                                  <span className="px-2.5 py-1 bg-orange-100 text-orange-700 text-xs font-medium rounded-lg">
+                                    Cancelled
+                                  </span>
+                                ) : consultation.status === 'completed' || consultation.status === 'done' ? (
+                                  <span className="px-2.5 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-lg flex items-center gap-1">
+                                    <CheckCircle className="w-3 h-3" />
+                                    Done
+                                  </span>
+                                ) : (
+                                  <span className="px-2.5 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-lg">
+                                    Booked
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                    <p className="text-gray-500">No consultations yet</p>
+                  </div>
+                )}
               </div>
             ) : (
-              <div className="text-center py-8">
-                <Package className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-500">No services offered yet</p>
-              </div>
-            )}
-          </Card>
-
-          {/* Consultations */}
-          <Card 
-            title={
-              <div className="flex items-center gap-2">
-                <Calendar className="w-5 h-5" />
-                <span>Recent Consultations</span>
-                <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">
-                  {consultations.length}
-                </span>
-              </div>
-            }
-          >
-            {consultationsLoading ? (
-              <div className="flex justify-center py-8">
-                <Loader size="sm" text="Loading consultations..." />
-              </div>
-            ) : consultations.length > 0 ? (
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="border-b border-gray-200">
-                    <tr>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Client</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Date</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Duration</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Amount</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-100">
-                    {consultations.map((consultation) => (
-                      <tr key={consultation._id} className="hover:bg-gray-50">
-                        <td className="px-4 py-3">
-                          <div className="flex items-center gap-2">
-                            <Avatar
-                              name={consultation.clientName || 'Unknown'}
-                              size="sm"
-                            />
-                            <div>
+              <div>
+                {serviceRequestsLoading ? (
+                  <div className="flex justify-center py-8">
+                    <Loader size="sm" text="Loading service requests..." />
+                  </div>
+                ) : serviceRequests.length > 0 ? (
+                  <div className="space-y-3">
+                    {serviceRequests.map((req) => {
+                      const requestDate = req.requestedDate ? new Date(req.requestedDate) : new Date(req.createdAt || '');
+                      return (
+                        <div
+                          key={req._id}
+                          className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                        >
+                          <div className="flex items-center gap-4 flex-1">
+                            <div className="text-sm font-medium text-gray-900 min-w-[80px]">
+                              {requestDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}
+                            </div>
+                            <div className="flex-1">
                               <div className="text-sm font-medium text-gray-900">
-                                {consultation.clientName || 'Unknown User'}
+                                {req.serviceName}
                               </div>
-                              <div className="text-xs text-gray-500">
-                                {consultation.clientPhone}
+                              <div className="text-xs text-gray-500 mt-0.5">
+                                {req.customerName}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-4">
+                              <div className="text-right">
+                                <div className="text-sm font-semibold text-gray-900">
+                                  {formatCurrency(req.price || 0)}
+                                </div>
+                              </div>
+                              <div>
+                                <StatusBadge status={req.status} />
                               </div>
                             </div>
                           </div>
-                        </td>
-                        <td className="px-4 py-3">
-                          <div className="text-sm">
-                            <div className="text-gray-900">
-                              {new Date(consultation.scheduledTime || consultation.createdAt).toLocaleDateString()}
-                            </div>
-                            <div className="text-gray-500 text-xs">
-                              {new Date(consultation.scheduledTime || consultation.createdAt).toLocaleTimeString([], {
-                                hour: '2-digit',
-                                minute: '2-digit'
-                              })}
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-4 py-3">
-                          <span className="text-sm text-gray-900">
-                            {consultation.duration || 'N/A'} min
-                          </span>
-                        </td>
-                        <td className="px-4 py-3">
-                          <span className="text-sm font-semibold text-gray-900">
-                            {formatCurrency(consultation.amount || 0)}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3">
-                          <StatusBadge status={consultation.status} />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-500">No consultations yet</p>
-              </div>
-            )}
-          </Card>
-
-          {/* Service Requests */}
-          <Card 
-            title={
-              <div className="flex items-center gap-2">
-                <Package className="w-5 h-5" />
-                <span>Recent Service Requests</span>
-                <span className="px-2 py-0.5 bg-purple-100 text-purple-700 text-xs font-medium rounded-full">
-                  {serviceRequests.length}
-                </span>
-              </div>
-            }
-          >
-            {serviceRequestsLoading ? (
-              <div className="flex justify-center py-8">
-                <Loader size="sm" text="Loading service requests..." />
-              </div>
-            ) : serviceRequests.length > 0 ? (
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="border-b border-gray-200">
-                    <tr>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Customer</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Service</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Schedule</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Amount</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-100">
-                    {serviceRequests.map((req) => (
-                      <tr key={req._id} className="hover:bg-gray-50">
-                        <td className="px-4 py-3">
-                          <div className="text-sm">
-                            <div className="font-medium text-gray-900">{req.customerName}</div>
-                            <div className="text-xs text-gray-500">{req.customerPhone}</div>
-                          </div>
-                        </td>
-                        <td className="px-4 py-3">
-                          <div className="text-sm">
-                            <div className="font-medium text-gray-900">{req.serviceName}</div>
-                            <div className="text-xs text-gray-500">{req.serviceCategory}</div>
-                          </div>
-                        </td>
-                        <td className="px-4 py-3">
-                          <div className="text-sm">
-                            <div className="text-gray-900">{req.requestedDate}</div>
-                            <div className="text-xs text-gray-500">{req.requestedTime}</div>
-                          </div>
-                        </td>
-                        <td className="px-4 py-3">
-                          <span className="text-sm font-semibold text-gray-900">
-                            {formatCurrency(req.price || 0)}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3">
-                          <StatusBadge status={req.status} />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <Package className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-500">No service requests yet</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <Package className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                    <p className="text-gray-500">No service requests yet</p>
+                  </div>
+                )}
               </div>
             )}
           </Card>
@@ -869,16 +731,282 @@ export const AstrologerDetail = () => {
             )}
           </Card>
 
-          {/* Suspension Info */}
-          {astrologer.isSuspended && astrologer.suspensionReason && (
-            <Card title="Suspension Details" className="border-red-200 bg-red-50">
-              <p className="text-red-800">{astrologer.suspensionReason}</p>
-              <p className="text-sm text-red-600 mt-2">
-                Suspended on {formatDateTime(astrologer.suspendedAt!)}
-              </p>
-            </Card>
-          )}
         </div>
+      </div>
+
+      {/* Additional Sections Below */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+        {/* Bio */}
+        {astrologer.bio && (
+          <Card title="About">
+            <p className="text-gray-600">{astrologer.bio}</p>
+          </Card>
+        )}
+
+        {/* Languages */}
+        <Card title="Languages">
+          <div className="flex flex-wrap gap-2">
+            {(astrologer.languages || []).length > 0 ? (
+              (astrologer.languages || []).map((lang, i) => (
+                <span key={i} className="px-3 py-1.5 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg">
+                  {lang}
+                </span>
+              ))
+            ) : (
+              <span className="text-gray-500 text-sm">No languages listed</span>
+            )}
+          </div>
+        </Card>
+
+        {/* Service Charges */}
+        <Card title="Service Charges">
+          <div className="grid grid-cols-3 gap-4">
+            <div className="text-center p-4 bg-gray-50 rounded-lg">
+              <p className="text-sm text-gray-600 mb-1">Rate per Min</p>
+              <p className="text-xl font-bold text-gray-900">{formatCurrency(astrologer.consultationCharge || 0)}</p>
+            </div>
+            <div className="text-center p-4 bg-gray-50 rounded-lg">
+              <p className="text-sm text-gray-600 mb-1">Call</p>
+              <p className="text-xl font-bold text-gray-900">{formatCurrency(astrologer.callCharge || 0)}/min</p>
+            </div>
+            <div className="text-center p-4 bg-gray-50 rounded-lg">
+              <p className="text-sm text-gray-600 mb-1">Chat</p>
+              <p className="text-xl font-bold text-gray-900">{formatCurrency(astrologer.chatCharge || 0)}/min</p>
+            </div>
+          </div>
+        </Card>
+
+        {/* Additional Stats */}
+        <Card title="Performance Metrics">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="text-center p-4 bg-gray-50 rounded-lg">
+              <Star className="w-6 h-6 text-yellow-500 mx-auto mb-2" />
+              <p className="text-2xl font-bold text-gray-900">{(astrologer.rating || 0).toFixed(1)}</p>
+              <p className="text-xs text-gray-500 mt-1">Rating</p>
+            </div>
+            <div className="text-center p-4 bg-gray-50 rounded-lg">
+              <DollarSign className="w-6 h-6 text-green-500 mx-auto mb-2" />
+              <p className="text-2xl font-bold text-gray-900">{formatCurrency(astrologer.totalEarnings || 0)}</p>
+              <p className="text-xs text-gray-500 mt-1">Total Earnings</p>
+            </div>
+            <div className="text-center p-4 bg-gray-50 rounded-lg">
+              <Clock className="w-6 h-6 text-purple-500 mx-auto mb-2" />
+              <p className="text-2xl font-bold text-gray-900">{astrologer.experience || 0}</p>
+              <p className="text-xs text-gray-500 mt-1">Years Experience</p>
+            </div>
+            <div className="text-center p-4 bg-gray-50 rounded-lg">
+              <MessageSquare className="w-6 h-6 text-blue-500 mx-auto mb-2" />
+              <p className="text-2xl font-bold text-gray-900">{formatNumber(astrologer.totalReviews || 0)}</p>
+              <p className="text-xs text-gray-500 mt-1">Total Reviews</p>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      {/* Services, Reviews, Discussions - Full Width */}
+      <div className="mt-6 space-y-6">
+        {/* Services */}
+        <Card 
+          title={
+            <div className="flex items-center gap-2">
+              <Package className="w-5 h-5" />
+              <span>Services Offered</span>
+              <span className="px-2 py-0.5 bg-primary-100 text-primary-700 text-xs font-medium rounded-full">
+                {services.length}
+              </span>
+            </div>
+          }
+        >
+          {servicesLoading ? (
+            <div className="flex justify-center py-8">
+              <Loader size="sm" text="Loading services..." />
+            </div>
+          ) : services.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {services.map((service) => (
+                <div
+                  key={service._id}
+                  className="p-4 border border-gray-200 rounded-lg hover:border-primary-300 hover:bg-primary-50/30 transition-all"
+                >
+                  <div className="flex items-start justify-between mb-2">
+                    <h4 className="font-semibold text-gray-900">{service.name}</h4>
+                    <StatusBadge status={getServiceStatus(service)} />
+                  </div>
+                  {service.description && (
+                    <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                      {service.description}
+                    </p>
+                  )}
+                  <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                    <div className="flex items-center gap-4 text-sm">
+                      <span className="text-gray-600">
+                        <span className="font-medium text-gray-900">
+                          {formatCurrency(service.price)}
+                        </span>
+                      </span>
+                      {service.duration && (
+                        <span className="text-gray-500">
+                          {service.duration} mins
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-xs text-gray-500">
+                      {service.category}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <Package className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+              <p className="text-gray-500">No services offered yet</p>
+            </div>
+          )}
+        </Card>
+
+        {/* Reviews */}
+        <Card 
+          title={
+            <div className="flex items-center gap-2">
+              <MessageSquare className="w-5 h-5" />
+              <span>Recent Reviews</span>
+              <span className="px-2 py-0.5 bg-yellow-100 text-yellow-700 text-xs font-medium rounded-full">
+                {reviews.length}
+              </span>
+            </div>
+          }
+        >
+          {reviewsLoading ? (
+            <div className="flex justify-center py-8">
+              <Loader size="sm" text="Loading reviews..." />
+            </div>
+          ) : reviews.length > 0 ? (
+            <div className="space-y-4">
+              {reviews.map((review) => (
+                <div
+                  key={review._id}
+                  className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-all"
+                >
+                  <div className="flex items-start gap-3">
+                    <Avatar
+                      src={review.clientAvatar}
+                      name={review.clientName || 'Anonymous'}
+                      size="md"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between mb-2">
+                        <div>
+                          <p className="font-medium text-gray-900">
+                            {review.clientName || 'Anonymous'}
+                          </p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <div className="flex items-center">
+                              {[...Array(5)].map((_, i) => (
+                                <Star
+                                  key={i}
+                                  className={`w-4 h-4 ${
+                                    i < review.rating
+                                      ? 'text-yellow-400 fill-yellow-400'
+                                      : 'text-gray-300'
+                                  }`}
+                                />
+                              ))}
+                            </div>
+                            <span className="text-sm text-gray-500">
+                              {formatDateTime(review.createdAt)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      {review.reviewText && (
+                        <p className="text-gray-700 text-sm mt-2">{review.reviewText}</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <MessageSquare className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+              <p className="text-gray-500">No reviews yet</p>
+            </div>
+          )}
+        </Card>
+
+        {/* Discussions/Posts */}
+        <Card 
+          title={
+            <div className="flex items-center gap-2">
+              <FileText className="w-5 h-5" />
+              <span>Recent Posts & Discussions</span>
+              <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">
+                {discussions.length}
+              </span>
+            </div>
+          }
+        >
+          {discussionsLoading ? (
+            <div className="flex justify-center py-8">
+              <Loader size="sm" text="Loading discussions..." />
+            </div>
+          ) : discussions.length > 0 ? (
+            <div className="space-y-4">
+              {discussions.map((discussion) => (
+                <div
+                  key={discussion._id}
+                  className="p-4 border border-gray-200 rounded-lg hover:bg-blue-50 transition-all"
+                >
+                  <div className="flex items-start justify-between mb-2">
+                    <h4 className="font-semibold text-gray-900">{discussion.title}</h4>
+                    {discussion.isPinned && (
+                      <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-medium rounded">
+                        Pinned
+                      </span>
+                    )}
+                  </div>
+                  {discussion.content && (
+                    <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                      {discussion.content}
+                    </p>
+                  )}
+                  <div className="flex items-center gap-4 text-sm text-gray-500">
+                    <div className="flex items-center gap-1">
+                      <ThumbsUp className="w-4 h-4" />
+                      <span>{formatNumber(discussion.likeCount || 0)}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <MessageSquare className="w-4 h-4" />
+                      <span>{formatNumber(discussion.commentCount || 0)}</span>
+                    </div>
+                    <span>{formatDateTime(discussion.createdAt)}</span>
+                    {discussion.category && (
+                      <span className="ml-auto px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded">
+                        {discussion.category}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <FileText className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+              <p className="text-gray-500">No discussions posted yet</p>
+            </div>
+          )}
+        </Card>
+
+        {/* Suspension Info */}
+        {astrologer.isSuspended && astrologer.suspensionReason && (
+          <Card title="Suspension Details" className="border-red-200 bg-red-50">
+            <p className="text-red-800">{astrologer.suspensionReason}</p>
+            <p className="text-sm text-red-600 mt-2">
+              Suspended on {formatDateTime(astrologer.suspendedAt!)}
+            </p>
+          </Card>
+        )}
       </div>
 
       {/* Suspend Modal */}
