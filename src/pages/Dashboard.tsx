@@ -5,6 +5,7 @@ import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { StatCard, Card, Avatar, AreaChartCard } from '@/components/common';
 import { StatCardSkeleton, ChartSkeleton } from '@/components/common';
+import { OnlineAstrologerCircleCard } from '@/components/astrologers';
 import { LiveStreamViewer } from '@/components/liveStream/LiveStreamViewer';
 import { LiveStreamStoryRounds } from '@/components/liveStream/LiveStreamStoryRounds';
 import { liveStreamsApi } from '@/api';
@@ -310,7 +311,7 @@ export const Dashboard = () => {
           </div>
 
 
-          {/* Currently Online Astrologers - Mobile-First Design */}
+          {/* Currently Online Astrologers - Flutter App Style (Circular Cards) */}
           {onlineAstrologers.length > 0 && (
             <Card
               title={
@@ -331,51 +332,13 @@ export const Dashboard = () => {
                 </div>
               }
             >
-              <div className="space-y-2 sm:space-y-3">
-                {onlineAstrologers.slice(0, 5).map((astrologer) => (
-                  <Link 
+              {/* Grid Layout: 1 column on mobile, 2 columns on desktop (lg breakpoint) */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-6 sm:gap-8 lg:gap-6 xl:gap-8 py-2">
+                {onlineAstrologers.slice(0, 6).map((astrologer) => (
+                  <OnlineAstrologerCircleCard
                     key={astrologer._id}
-                    to={`${ROUTES.ASTROLOGERS}/${astrologer._id}`}
-                    className="block p-2.5 sm:p-3 rounded-lg border border-gray-100 hover:border-green-200 hover:bg-green-50/30 active:bg-green-50/50 transition-all"
-                  >
-                    <div className="flex items-center gap-3">
-                      {/* Avatar */}
-                      <div className="relative flex-shrink-0">
-                        <Avatar
-                          src={astrologer.profilePicture}
-                          name={astrologer.name}
-                          size="sm"
-                          className="w-10 h-10 sm:w-12 sm:h-12"
-                        />
-                        <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-white rounded-full" />
-                      </div>
-
-                      {/* Info - Mobile Optimized */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <p className="font-semibold text-sm sm:text-base text-gray-900 truncate">
-                            {astrologer.name}
-                          </p>
-                          <span className="flex-shrink-0 px-1.5 py-0.5 bg-green-500 text-white text-[10px] sm:text-xs font-medium rounded">
-                            <span className="hidden sm:inline">Online</span>
-                            <span className="sm:hidden">●</span>
-                          </span>
-                        </div>
-                        <p className="text-xs sm:text-sm text-gray-600 truncate mb-1">
-                          {astrologer.specialization?.slice(0, 2).join(', ') || 'Astrologer'}
-                        </p>
-                        <div className="flex items-center gap-3 text-xs sm:text-sm">
-                          <span className="text-gray-600">
-                            ⭐ {astrologer.rating?.toFixed(1) || '0.0'}
-                          </span>
-                          <span className="text-gray-300">•</span>
-                          <span className="text-gray-600">
-                            {formatNumber(astrologer.totalConsultations || 0)} sessions
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
+                    astrologer={astrologer}
+                  />
                 ))}
               </div>
             </Card>
