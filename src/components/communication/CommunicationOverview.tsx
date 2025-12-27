@@ -46,43 +46,31 @@ export const CommunicationOverview: React.FC = () => {
           title="Total Messages"
           value={formatNumber(stats.totalMessages)}
           icon={MessageSquare}
-          iconColor="text-blue-600"
-          iconBgColor="bg-blue-50"
         />
         <StatCard
           title="Voice Calls"
           value={formatNumber(stats.totalVoiceCalls)}
           icon={Phone}
-          iconColor="text-green-600"
-          iconBgColor="bg-green-50"
         />
         <StatCard
           title="Video Calls"
           value={formatNumber(stats.totalVideoCalls)}
           icon={Video}
-          iconColor="text-purple-600"
-          iconBgColor="bg-purple-50"
         />
         <StatCard
           title="Total Communications"
           value={formatNumber(stats.totalCommunications)}
           icon={TrendingUp}
-          iconColor="text-indigo-600"
-          iconBgColor="bg-indigo-50"
         />
         <StatCard
           title="Avg Call Duration"
           value={`${stats.avgCallDuration.toFixed(1)} min`}
           icon={Clock}
-          iconColor="text-amber-600"
-          iconBgColor="bg-amber-50"
         />
         <StatCard
           title="Active Conversations"
           value={formatNumber(stats.activeConversations)}
           icon={Users}
-          iconColor="text-teal-600"
-          iconBgColor="bg-teal-50"
         />
       </div>
 

@@ -160,43 +160,31 @@ export const ServiceRequests = () => {
             title="Total"
             value={stats.total}
             icon={Users}
-            iconColor="text-blue-600"
-            iconBgColor="bg-blue-100"
           />
           <StatCard
             title="Pending"
             value={stats.pending}
             icon={Clock}
-            iconColor="text-amber-600"
-            iconBgColor="bg-amber-100"
           />
           <StatCard
             title="Confirmed"
             value={stats.confirmed}
             icon={CheckCircle2}
-            iconColor="text-blue-600"
-            iconBgColor="bg-blue-100"
           />
           <StatCard
             title="In Progress"
             value={stats.inProgress}
             icon={Activity}
-            iconColor="text-purple-600"
-            iconBgColor="bg-purple-100"
           />
           <StatCard
             title="Completed"
             value={stats.completed}
             icon={CheckCircle2}
-            iconColor="text-green-600"
-            iconBgColor="bg-green-100"
           />
           <StatCard
             title="Revenue"
             value={formatCurrency(stats.totalRevenue)}
             icon={DollarSign}
-            iconColor="text-emerald-600"
-            iconBgColor="bg-emerald-100"
           />
         </div>
       </div>

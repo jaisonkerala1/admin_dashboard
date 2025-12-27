@@ -159,43 +159,31 @@ export const Services = () => {
             title="Total"
             value={stats.total}
             icon={Package}
-            iconColor="text-blue-600"
-            iconBgColor="bg-blue-100"
           />
           <StatCard
             title="Active"
             value={stats.active}
             icon={CheckCircle2}
-            iconColor="text-green-600"
-            iconBgColor="bg-green-100"
           />
           <StatCard
             title="Inactive"
             value={stats.inactive}
             icon={XCircle}
-            iconColor="text-gray-600"
-            iconBgColor="bg-gray-100"
           />
           <StatCard
             title="Total Bookings"
             value={stats.totalBookings}
             icon={TrendingUp}
-            iconColor="text-purple-600"
-            iconBgColor="bg-purple-100"
           />
           <StatCard
             title="Avg Rating"
             value={stats.averageRating.toFixed(1)}
             icon={Star}
-            iconColor="text-yellow-600"
-            iconBgColor="bg-yellow-100"
           />
           <StatCard
             title="Revenue"
             value={formatCurrency(stats.totalRevenue)}
             icon={DollarSign}
-            iconColor="text-emerald-600"
-            iconBgColor="bg-emerald-100"
           />
         </div>
       </div>

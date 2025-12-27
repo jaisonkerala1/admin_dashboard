@@ -221,29 +221,21 @@ export const Dashboard = () => {
                 title="Total Messages"
                 value={formatNumber(communicationStats.totalMessages)}
                 icon={MessageSquare}
-                iconColor="text-blue-600"
-                iconBgColor="bg-blue-50"
               />
               <StatCard
                 title="Voice Calls"
                 value={formatNumber(communicationStats.totalVoiceCalls)}
                 icon={Phone}
-                iconColor="text-green-600"
-                iconBgColor="bg-green-50"
               />
               <StatCard
                 title="Video Calls"
                 value={formatNumber(communicationStats.totalVideoCalls)}
                 icon={Video}
-                iconColor="text-purple-600"
-                iconBgColor="bg-purple-50"
               />
               <StatCard
                 title="Total Communications"
                 value={formatNumber(communicationStats.totalCommunications)}
                 icon={TrendingUp}
-                iconColor="text-indigo-600"
-                iconBgColor="bg-indigo-50"
               />
             </div>
           )}
@@ -268,7 +260,6 @@ export const Dashboard = () => {
               dataKey="consultations"
               title="Consultations"
               icon={Calendar}
-              iconColor="text-blue-600"
               color="#3b82f6"
               name="Consultations"
               footer={
@@ -296,7 +287,6 @@ export const Dashboard = () => {
               dataKey="serviceRequests"
               title="Service Requests"
               icon={ShoppingBag}
-              iconColor="text-purple-600"
               color="#8b5cf6"
               name="Service Requests"
               footer={

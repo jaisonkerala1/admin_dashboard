@@ -33,7 +33,7 @@ export const AreaChartCard: React.FC<AreaChartCardProps> = ({
   dataKey,
   title,
   icon: Icon,
-  iconColor = 'text-gray-600',
+  iconColor = 'text-gray-600', // Google Search Console style - minimal flat color
   color,
   name,
   footer,

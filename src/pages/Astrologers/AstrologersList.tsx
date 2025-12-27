@@ -175,29 +175,21 @@ export const AstrologersList = () => {
             title="Total"
             value={stats.total}
             icon={Users}
-            iconColor="text-blue-600"
-            iconBgColor="bg-blue-100"
           />
           <StatCard
             title="Active"
             value={stats.active}
             icon={UserCheck}
-            iconColor="text-green-600"
-            iconBgColor="bg-green-100"
           />
           <StatCard
             title="Pending Approvals"
             value={stats.pending}
             icon={Clock}
-            iconColor="text-yellow-600"
-            iconBgColor="bg-yellow-100"
             />
           <StatCard
             title="Inactive"
             value={stats.inactive}
             icon={XCircle}
-            iconColor="text-red-600"
-            iconBgColor="bg-red-100"
           />
         </div>
           </div>

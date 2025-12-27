@@ -19,8 +19,8 @@ export const StatCard = ({
   value, 
   icon: Icon, 
   trend, 
-  iconColor = 'text-primary-600',
-  iconBgColor = 'bg-primary-50',
+  iconColor = 'text-gray-600',
+  iconBgColor = 'bg-gray-50',
   className 
 }: StatCardProps) => {
   return (

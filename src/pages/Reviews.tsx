@@ -153,43 +153,31 @@ export const Reviews = () => {
             title="Total"
             value={stats.total}
             icon={MessageSquare}
-            iconColor="text-blue-600"
-            iconBgColor="bg-blue-100"
           />
           <StatCard
             title="Avg Rating"
             value={stats.averageRating.toFixed(1)}
             icon={Star}
-            iconColor="text-amber-600"
-            iconBgColor="bg-amber-100"
           />
           <StatCard
             title="Verified"
             value={stats.verified}
             icon={CheckCircle2}
-            iconColor="text-green-600"
-            iconBgColor="bg-green-100"
           />
           <StatCard
             title="Public"
             value={stats.public}
             icon={Eye}
-            iconColor="text-indigo-600"
-            iconBgColor="bg-indigo-100"
           />
           <StatCard
             title="Moderated"
             value={stats.moderated}
             icon={Shield}
-            iconColor="text-purple-600"
-            iconBgColor="bg-purple-100"
           />
           <StatCard
             title="5 Stars"
             value={stats.rating5}
             icon={Star}
-            iconColor="text-yellow-600"
-            iconBgColor="bg-yellow-100"
             />
           </div>
         </div>

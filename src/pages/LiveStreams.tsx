@@ -169,43 +169,31 @@ export const LiveStreams = () => {
             title="Total"
             value={stats.total}
             icon={Radio}
-            iconColor="text-blue-600"
-            iconBgColor="bg-blue-100"
           />
           <StatCard
             title="Live Now"
             value={stats.live}
             icon={Play}
-            iconColor="text-red-600"
-            iconBgColor="bg-red-100"
           />
           <StatCard
             title="Ended"
             value={stats.ended}
             icon={StopCircle}
-            iconColor="text-gray-600"
-            iconBgColor="bg-gray-100"
           />
           <StatCard
             title="Total Views"
             value={formatNumber(stats.totalViews)}
             icon={Eye}
-            iconColor="text-purple-600"
-            iconBgColor="bg-purple-100"
           />
           <StatCard
             title="Total Likes"
             value={formatNumber(stats.totalLikes)}
             icon={Heart}
-            iconColor="text-pink-600"
-            iconBgColor="bg-pink-100"
           />
           <StatCard
             title="Peak Viewers"
             value={stats.peakViewers}
             icon={TrendingUp}
-            iconColor="text-emerald-600"
-            iconBgColor="bg-emerald-100"
             />
           </div>
         </div>
