@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft,
   Save,
+  Search,
   Calendar,
   Clock,
   DollarSign,

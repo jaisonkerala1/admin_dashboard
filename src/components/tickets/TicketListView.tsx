@@ -43,11 +43,6 @@ export const TicketListView: React.FC = () => {
     dispatch(fetchTicketsRequest({}));
   }, [dispatch, filters, pagination.currentPage]);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    dispatch(setFilters({ search: searchInput }));
-  };
-
   const handleFilterChange = (key: string, value: any) => {
     dispatch(setFilters({ [key]: value }));
   };

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Filter, Ban, CheckCircle } from 'lucide-react';
+import { Search, Filter, Ban, CheckCircle } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Card, Loader, EmptyState, Avatar, StatusBadge, Modal, SearchBar } from '@/components/common';
