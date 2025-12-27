@@ -14,6 +14,7 @@ import {
 import { MainLayout } from '@/components/layout';
 import { Card, Loader, EmptyState, RoundAvatar, PillBadge, ShowEntriesDropdown, StatCard, SearchBar } from '@/components/common';
 import { LiveStreamViewer } from '@/components/liveStream/LiveStreamViewer';
+import { LiveStreamStoryRounds } from '@/components/liveStream/LiveStreamStoryRounds';
 import { formatNumber } from '@/utils/formatters';
 import { RootState } from '@/store';
 import {
@@ -236,6 +237,16 @@ export const LiveStreams = () => {
           ))}
         </div>
       </div>
+
+      {/* Instagram-Style Story Rounds for Currently Live Streams */}
+      {!isLoading && streams.filter(s => s.isLive).length > 0 && (
+        <Card className="mb-6">
+          <LiveStreamStoryRounds
+            streams={streams.filter(s => s.isLive)}
+            onStreamClick={(stream) => setSelectedStream(stream)}
+          />
+        </Card>
+      )}
 
       <Card>
         {/* Table Controls */}
