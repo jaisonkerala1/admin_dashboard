@@ -102,7 +102,7 @@ export const OnlineAstrologerDetailCard = ({
             <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 truncate">
               {astrologer.name}
             </h3>
-            {astrologer.isVerified && (
+            {astrologer.isApproved && (
               <CheckCircle 
                 className="w-4 h-4 text-orange-500 flex-shrink-0" 
                 fill="currentColor"
@@ -138,9 +138,9 @@ export const OnlineAstrologerDetailCard = ({
       </div>
 
       {/* Specializations (Orange Tags) */}
-      {astrologer.specializations && astrologer.specializations.length > 0 && (
+      {astrologer.specialization && astrologer.specialization.length > 0 && (
         <div className="flex flex-wrap gap-2">
-          {astrologer.specializations.slice(0, 3).map((spec, index) => (
+          {astrologer.specialization.slice(0, 3).map((spec: string, index: number) => (
             <span
               key={index}
               className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400"
@@ -148,9 +148,9 @@ export const OnlineAstrologerDetailCard = ({
               {spec}
             </span>
           ))}
-          {astrologer.specializations.length > 3 && (
+          {astrologer.specialization.length > 3 && (
             <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
-              +{astrologer.specializations.length - 3} more
+              +{astrologer.specialization.length - 3} more
             </span>
           )}
         </div>
