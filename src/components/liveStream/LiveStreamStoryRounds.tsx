@@ -1,9 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Eye, Play } from 'lucide-react';
-import { RoundAvatar } from '@/components/common';
+import { Eye } from 'lucide-react';
 import { formatNumber } from '@/utils/formatters';
-import { ROUTES } from '@/utils/constants';
 import { getImageUrl } from '@/utils/helpers';
 
 interface LiveStream {
@@ -59,7 +56,6 @@ export const LiveStreamStoryRounds: React.FC<LiveStreamStoryRoundsProps> = ({
         <div className="flex gap-4 min-w-max">
           {streams.map((stream) => {
             const astrologerName = stream.astrologerId?.name || 'Unknown';
-            const profilePicture = stream.astrologerId?.profilePicture;
             const thumbnailUrl = stream.thumbnailUrl;
             const viewerCount = stream.viewerCount || 0;
 
