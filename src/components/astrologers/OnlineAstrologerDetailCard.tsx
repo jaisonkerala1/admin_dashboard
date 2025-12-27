@@ -53,13 +53,13 @@ export const OnlineAstrologerDetailCard = ({
     <Link
       to={`/astrologers/${astrologer._id}`}
       onClick={onClick}
-      className="group block bg-gray-50 dark:bg-gray-800 rounded-2xl p-4 transition-all duration-300 hover:shadow-md hover:-translate-y-1 border border-gray-100 dark:border-gray-700"
+      className="group block bg-[#F8F9FA] rounded-2xl p-4 transition-all duration-300 hover:shadow-md hover:-translate-y-1 border border-gray-200"
     >
       {/* Top Section: Profile + Name + Message Button */}
       <div className="flex items-start gap-3 mb-3">
         {/* Profile Picture with Online Indicator */}
         <div className="relative flex-shrink-0">
-          <div className="w-14 h-14 rounded-full overflow-hidden bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600">
+          <div className="w-14 h-14 rounded-full overflow-hidden bg-white border border-gray-200">
             {imageUrl ? (
               <img
                 src={imageUrl}
@@ -88,7 +88,7 @@ export const OnlineAstrologerDetailCard = ({
 
           {/* Green Online Indicator */}
           <div 
-            className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-gray-50 dark:border-gray-800"
+            className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white"
             style={{
               boxShadow: '0 1px 3px rgba(34, 197, 94, 0.4)',
             }}
@@ -98,7 +98,7 @@ export const OnlineAstrologerDetailCard = ({
         {/* Name with Verified Badge */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 mb-1">
-            <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 truncate">
+            <h3 className="text-base font-semibold text-gray-900 truncate">
               {astrologer.name}
             </h3>
             {astrologer.isApproved && (
@@ -110,15 +110,15 @@ export const OnlineAstrologerDetailCard = ({
           </div>
 
           {/* Rating and Reviews Count */}
-          <div className="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-400">
+          <div className="flex items-center gap-1.5 text-sm text-gray-600">
             <div className="flex items-center gap-1">
-              <Star className="w-3.5 h-3.5 fill-gray-600 text-gray-600 dark:fill-gray-400 dark:text-gray-400" />
+              <Star className="w-3.5 h-3.5 fill-gray-500 text-gray-500" />
               <span className="font-medium">{astrologer.rating ? astrologer.rating.toFixed(1) : '0.0'}</span>
             </div>
-            <span className="text-gray-300 dark:text-gray-600">•</span>
-            <span className="text-sm">{astrologer.experience || 0}y</span>
-            <span className="text-gray-300 dark:text-gray-600">•</span>
-            <span className="text-sm">{formatCount(astrologer.totalReviews || astrologer.totalConsultations)}</span>
+            <span className="text-gray-300">•</span>
+            <span className="text-sm font-medium text-gray-500">{astrologer.experience || 0}y</span>
+            <span className="text-gray-300">•</span>
+            <span className="text-sm font-medium text-gray-500">{formatCount(astrologer.totalReviews || astrologer.totalConsultations)}</span>
           </div>
         </div>
 
@@ -138,13 +138,13 @@ export const OnlineAstrologerDetailCard = ({
           {astrologer.specialization.slice(0, 3).map((spec: string, index: number) => (
             <span
               key={index}
-              className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400"
+              className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] uppercase tracking-wider font-bold bg-[#FFF4E5] text-orange-700 border border-orange-100"
             >
               {spec}
             </span>
           ))}
           {astrologer.specialization.length > 3 && (
-            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-600">
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-white text-gray-500 border border-gray-200">
               +{astrologer.specialization.length - 3}
             </span>
           )}
