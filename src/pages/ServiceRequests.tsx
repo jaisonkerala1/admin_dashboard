@@ -438,80 +438,88 @@ export const ServiceRequests = () => {
               ))}
             </div>
 
-            {/* Mobile View */}
-            <div className="md:hidden space-y-4">
+            {/* Mobile View - Optimized Mobile-First Design */}
+            <div className="md:hidden space-y-3">
               {paginatedRequests.map((request) => (
                 <div
                   key={request._id}
-                  className="border border-gray-200 rounded-xl p-4 hover:border-blue-300 hover:shadow-sm transition-all"
+                  className="border border-gray-200 rounded-xl bg-white overflow-hidden hover:border-gray-300 active:bg-gray-50 transition-all"
                 >
-                  <div className="flex items-start gap-3 mb-3">
-                    <input
-                      type="checkbox"
-                      checked={selectedIds.has(request._id)}
-                      onChange={() => handleSelectOne(request._id)}
-                      className="w-4 h-4 mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between mb-2">
-                        <p className="font-semibold text-gray-900">{request.customerName}</p>
-                        {getStatusBadge(request.status)}
-                      </div>
-                      <p className="text-sm text-gray-500 mb-3">{request.customerPhone}</p>
-                      
-                      <div className="mb-3">
-                        <p className="text-xs text-gray-500 mb-1">Service</p>
+                  {/* Header */}
+                  <div className="p-3 border-b border-gray-100">
+                    <div className="flex items-start gap-3">
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.has(request._id)}
+                        onChange={() => handleSelectOne(request._id)}
+                        className="mt-1 w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-2 mb-2">
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold text-base text-gray-900 truncate">{request.customerName}</p>
+                            <p className="text-xs text-gray-500 mt-0.5">{request.customerPhone}</p>
+                          </div>
+                          {getStatusBadge(request.status)}
+                        </div>
+                        
+                        {/* Service Info */}
                         <Link
                           to={request.serviceId ? `${ROUTES.SERVICES}/${request.serviceId}` : '#'}
-                          className="font-medium text-gray-900 hover:text-blue-600"
+                          className="block mb-3 p-2 -mx-2 rounded-lg hover:bg-gray-50 active:bg-gray-100 transition-colors"
                         >
-                          {request.serviceName}
+                          <p className="text-xs text-gray-500 mb-0.5">Service</p>
+                          <p className="font-medium text-sm text-gray-900 truncate">{request.serviceName}</p>
+                          <p className="text-xs text-gray-500 mt-0.5">{request.serviceCategory}</p>
                         </Link>
-                        <p className="text-xs text-gray-500">{request.serviceCategory}</p>
-                      </div>
-                      
-                      {request.astrologerId && (
-                        <Link 
-                          to={`${ROUTES.ASTROLOGERS}/${request.astrologerId._id}`}
-                          className="flex items-center gap-2 mb-3 hover:opacity-80"
-                        >
-                          <RoundAvatar
-                            src={request.astrologerId.profilePicture}
-                            size="sm"
-                            name={request.astrologerId.name}
-                            isOnline={false}
-                          />
-                          <div>
-                            <p className="text-xs text-gray-500">Astrologer</p>
-                            <p className="text-sm font-medium text-gray-900 hover:text-blue-600">
-                              {request.astrologerId.name}
-                            </p>
-                          </div>
-                        </Link>
-                      )}
-                      
-                      <div className="grid grid-cols-2 gap-3 text-sm">
-                        <div>
-                          <p className="text-gray-500 text-xs mb-1">Requested</p>
-                          <p className="font-medium text-gray-900">{formatDate(request.requestedDate)}</p>
-                          <p className="text-xs text-gray-500">{request.requestedTime}</p>
-                        </div>
-                        <div>
-                          <p className="text-gray-500 text-xs mb-1">Price</p>
-                          <p className="font-semibold text-gray-900">{formatCurrency(request.price)}</p>
-                        </div>
-                      </div>
-                      
-                      <div className="mt-3 pt-3 border-t border-gray-200">
-                        <Link
-                          to={`${ROUTES.SERVICE_REQUESTS}/${request._id}`}
-                          className="flex items-center justify-center gap-2 w-full px-3 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-lg"
-                        >
-                          <Eye className="w-4 h-4" />
-                          View Details
-                        </Link>
+                        
+                        {/* Astrologer Info */}
+                        {request.astrologerId && (
+                          <Link 
+                            to={`${ROUTES.ASTROLOGERS}/${request.astrologerId._id}`}
+                            className="flex items-center gap-2 p-2 -mx-2 rounded-lg hover:bg-gray-50 active:bg-gray-100 transition-colors"
+                          >
+                            <RoundAvatar
+                              src={request.astrologerId.profilePicture}
+                              size="sm"
+                              name={request.astrologerId.name}
+                              isOnline={false}
+                              className="flex-shrink-0"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs text-gray-500">Astrologer</p>
+                              <p className="text-sm font-medium text-gray-900 truncate">
+                                {request.astrologerId.name}
+                              </p>
+                            </div>
+                          </Link>
+                        )}
                       </div>
                     </div>
+                  </div>
+
+                  {/* Details Grid */}
+                  <div className="p-3 bg-gray-50/30">
+                    <div className="grid grid-cols-2 gap-3 mb-3">
+                      <div className="bg-white p-2.5 rounded-lg border border-gray-100">
+                        <p className="text-gray-500 text-xs mb-1">Requested</p>
+                        <p className="font-semibold text-sm text-gray-900">{formatDate(request.requestedDate)}</p>
+                        <p className="text-xs text-gray-500 mt-0.5">{request.requestedTime}</p>
+                      </div>
+                      <div className="bg-white p-2.5 rounded-lg border border-gray-100">
+                        <p className="text-gray-500 text-xs mb-1">Price</p>
+                        <p className="font-semibold text-base text-gray-900">{formatCurrency(request.price)}</p>
+                      </div>
+                    </div>
+                    
+                    {/* Footer Action */}
+                    <Link
+                      to={`${ROUTES.SERVICE_REQUESTS}/${request._id}`}
+                      className="flex items-center justify-center gap-2 w-full px-4 py-2.5 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 active:bg-blue-200 rounded-lg transition-colors touch-manipulation"
+                    >
+                      <Eye className="w-4 h-4" />
+                      View Details
+                    </Link>
                   </div>
                 </div>
               ))}

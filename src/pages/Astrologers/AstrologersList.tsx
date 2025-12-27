@@ -516,76 +516,84 @@ export const AstrologersList = () => {
             </table>
             </div>
 
-            {/* Mobile Cards */}
-            <div className="block sm:hidden space-y-4">
+            {/* Mobile Cards - Optimized Mobile-First Design */}
+            <div className="block sm:hidden space-y-3">
               {paginatedAstrologers.map((astrologer) => (
                 <div 
                   key={astrologer._id}
-                  className="border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow"
+                  className="border border-gray-200 rounded-xl bg-white overflow-hidden hover:border-gray-300 active:bg-gray-50 transition-all"
                 >
-                  <div className="flex items-start gap-3">
-                    <input
-                      type="checkbox"
-                      checked={selectedIds.has(astrologer._id)}
-                      onChange={(e) => handleSelectOne(astrologer._id, e.target.checked)}
-                      className="mt-1 w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    
-                    <Link 
-                      to={`/astrologers/${astrologer._id}`}
-                      className="flex-1"
-                    >
-                      <div className="flex items-start gap-3">
-                        <RoundAvatar 
-                          src={astrologer.profilePicture} 
-                          name={astrologer.name}
-                          isOnline={astrologer.isOnline}
-                          size="md"
-                        />
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-gray-900">{astrologer.name}</h3>
-                          <div className="flex items-center gap-3 mt-1">
-                            <span className="text-sm text-gray-600">⭐ {(astrologer.rating || 0).toFixed(1)}</span>
-                            <span className="text-sm text-gray-600">•</span>
-                            <span className="text-sm font-semibold text-gray-900">₹{astrologer.consultationCharge || 0}/min</span>
+                  {/* Header Section */}
+                  <div className="p-3 border-b border-gray-100">
+                    <div className="flex items-start gap-3">
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.has(astrologer._id)}
+                        onChange={(e) => handleSelectOne(astrologer._id, e.target.checked)}
+                        className="mt-1 w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0"
+                      />
+                      
+                      <Link 
+                        to={`/astrologers/${astrologer._id}`}
+                        className="flex-1 min-w-0"
+                      >
+                        <div className="flex items-start gap-3">
+                          <RoundAvatar 
+                            src={astrologer.profilePicture} 
+                            name={astrologer.name}
+                            isOnline={astrologer.isOnline}
+                            size="md"
+                            className="flex-shrink-0"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <h3 className="font-semibold text-base text-gray-900 truncate">{astrologer.name}</h3>
+                              {getApprovalBadge(astrologer)}
+                            </div>
+                            <div className="flex items-center gap-2 flex-wrap mb-2">
+                              <span className="text-xs text-gray-600">⭐ {(astrologer.rating || 0).toFixed(1)}</span>
+                              <span className="text-gray-300">•</span>
+                              <span className="text-xs font-semibold text-gray-900">₹{astrologer.consultationCharge || 0}/min</span>
+                              <span className="text-gray-300">•</span>
+                              <span className="text-xs text-gray-600">{astrologer.experience}y</span>
+                            </div>
+                            <PillBadge variant={getStatusVariant(astrologer)} label={getStatusLabel(astrologer)} className="text-xs" />
+                            <p className="text-xs text-gray-500 mt-1.5 truncate">
+                              {(astrologer.specialization || []).slice(0, 2).join(', ')}
+                            </p>
                           </div>
-                          <div className="flex items-center gap-2 mt-2 flex-wrap">
-                            <PillBadge variant={getStatusVariant(astrologer)} label={getStatusLabel(astrologer)} />
-                            {getApprovalBadge(astrologer)}
-                          </div>
-                          <p className="text-xs text-gray-500 mt-2">
-                            {(astrologer.specialization || []).slice(0, 2).join(', ')} • {astrologer.experience} years
-                          </p>
                         </div>
-                      </div>
-                    </Link>
+                      </Link>
+                    </div>
                   </div>
                   
-                  <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-gray-100">
-                    {/* Communication Button */}
-                    <button
-                      onClick={() => handleCommunication(astrologer, 'message')}
-                      className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors"
-                    >
-                      <MessageCircle className="w-4 h-4" />
-                      Send Message
-                    </button>
-                    
-                    {/* Standard Actions */}
+                  {/* Actions Section - Touch-Friendly */}
+                  <div className="p-3 bg-gray-50/50">
                     <div className="flex items-center gap-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleCommunication(astrologer, 'message');
+                        }}
+                        className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 text-sm font-medium text-white bg-indigo-600 active:bg-indigo-700 rounded-lg transition-colors touch-manipulation"
+                      >
+                        <MessageCircle className="w-4 h-4" />
+                        Message
+                      </button>
                       <Link
                         to={`/astrologers/${astrologer._id}`}
-                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        className="flex items-center justify-center px-3 py-2.5 text-gray-600 hover:text-blue-600 hover:bg-white active:bg-gray-100 rounded-lg transition-colors touch-manipulation"
                       >
                         <Eye className="w-4 h-4" />
-                        View
                       </Link>
-                      <button className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // Handle edit
+                        }}
+                        className="flex items-center justify-center px-3 py-2.5 text-gray-600 hover:text-gray-900 hover:bg-white active:bg-gray-100 rounded-lg transition-colors touch-manipulation"
+                      >
                         <Edit2 className="w-4 h-4" />
-                        Edit
-                      </button>
-                      <button className="px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors">
-                        <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
                   </div>

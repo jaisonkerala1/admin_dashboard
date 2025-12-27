@@ -393,68 +393,72 @@ export const Dashboard = () => {
             </Card>
           )}
 
-          {/* Currently Online Astrologers */}
+          {/* Currently Online Astrologers - Mobile-First Design */}
           {onlineAstrologers.length > 0 && (
             <Card
               title={
-                <div className="flex items-center gap-2">
-                  <div className="relative">
-                    <UserCog className="w-5 h-5 text-green-500" />
-                    <div className="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="relative">
+                      <UserCog className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />
+                      <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-500 rounded-full animate-pulse" />
+                    </div>
+                    <span className="text-base sm:text-lg font-semibold">Currently Online</span>
+                    <span className="px-1.5 sm:px-2 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded-full">
+                      {onlineAstrologers.length}
+                    </span>
                   </div>
-                  <span>Currently Online</span>
-                  <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded-full">
-                    {onlineAstrologers.length} Available
-                  </span>
+                  <Link to={ROUTES.ASTROLOGERS} className="text-xs sm:text-sm text-primary-600 hover:text-primary-700 font-medium whitespace-nowrap">
+                    View All
+                  </Link>
                 </div>
               }
-              action={
-                <Link to={ROUTES.ASTROLOGERS} className="text-sm text-primary-600 hover:text-primary-700 font-medium">
-                  View All Astrologers
-                </Link>
-              }
             >
-              <div className="space-y-3">
+              <div className="space-y-2 sm:space-y-3">
                 {onlineAstrologers.slice(0, 5).map((astrologer) => (
-                  <div 
+                  <Link 
                     key={astrologer._id}
-                    className="flex items-center gap-4 p-3 rounded-lg border border-gray-100 hover:border-green-200 hover:bg-green-50/30 transition-all"
+                    to={`${ROUTES.ASTROLOGERS}/${astrologer._id}`}
+                    className="block p-2.5 sm:p-3 rounded-lg border border-gray-100 hover:border-green-200 hover:bg-green-50/30 active:bg-green-50/50 transition-all"
                   >
-                    {/* Astrologer Info */}
-                    <Link to={`${ROUTES.ASTROLOGERS}/${astrologer._id}`} className="flex items-center gap-3 flex-1 min-w-0 hover:opacity-80 transition-opacity">
-                      <Avatar
-                        src={astrologer.profilePicture}
-                        name={astrologer.name}
-                        size="md"
-                      />
+                    <div className="flex items-center gap-3">
+                      {/* Avatar */}
+                      <div className="relative flex-shrink-0">
+                        <Avatar
+                          src={astrologer.profilePicture}
+                          name={astrologer.name}
+                          size="sm"
+                          className="w-10 h-10 sm:w-12 sm:h-12"
+                        />
+                        <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-white rounded-full" />
+                      </div>
+
+                      {/* Info - Mobile Optimized */}
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <p className="font-medium text-gray-900 truncate">
+                        <div className="flex items-center gap-2 mb-1">
+                          <p className="font-semibold text-sm sm:text-base text-gray-900 truncate">
                             {astrologer.name}
                           </p>
-                          <div className="flex items-center gap-1 px-2 py-0.5 bg-green-500 text-white text-xs font-medium rounded">
-                            <div className="w-1.5 h-1.5 bg-white rounded-full" />
-                            Online
-                          </div>
+                          <span className="flex-shrink-0 px-1.5 py-0.5 bg-green-500 text-white text-[10px] sm:text-xs font-medium rounded">
+                            <span className="hidden sm:inline">Online</span>
+                            <span className="sm:hidden">●</span>
+                          </span>
                         </div>
-                        <p className="text-sm text-gray-600 truncate">
+                        <p className="text-xs sm:text-sm text-gray-600 truncate mb-1">
                           {astrologer.specialization?.slice(0, 2).join(', ') || 'Astrologer'}
                         </p>
-                      </div>
-                    </Link>
-
-                    {/* Astrologer Stats */}
-                    <div className="flex items-center gap-4 text-sm">
-                      <div className="text-center">
-                        <p className="font-semibold text-gray-900">{astrologer.rating?.toFixed(1) || '0.0'}</p>
-                        <p className="text-xs text-gray-500">Rating</p>
-                      </div>
-                      <div className="text-center">
-                        <p className="font-semibold text-gray-900">{formatNumber(astrologer.totalConsultations || 0)}</p>
-                        <p className="text-xs text-gray-500">Sessions</p>
+                        <div className="flex items-center gap-3 text-xs sm:text-sm">
+                          <span className="text-gray-600">
+                            ⭐ {astrologer.rating?.toFixed(1) || '0.0'}
+                          </span>
+                          <span className="text-gray-300">•</span>
+                          <span className="text-gray-600">
+                            {formatNumber(astrologer.totalConsultations || 0)} sessions
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </Card>

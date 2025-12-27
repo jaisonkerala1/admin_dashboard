@@ -449,76 +449,89 @@ export const Consultations = () => {
               ))}
             </div>
 
-            {/* Mobile View */}
-            <div className="md:hidden space-y-4">
+            {/* Mobile View - Optimized Mobile-First Design */}
+            <div className="md:hidden space-y-3">
               {paginatedConsultations.map((consultation) => (
                 <div
                   key={consultation._id}
-                  className="border border-gray-200 rounded-xl p-4 hover:border-blue-300 hover:shadow-sm transition-all"
+                  className="border border-gray-200 rounded-xl bg-white overflow-hidden hover:border-gray-300 active:bg-gray-50 transition-all"
                 >
-                  <div className="flex items-start gap-3 mb-3">
-                    <input
-                      type="checkbox"
-                      checked={selectedIds.has(consultation._id)}
-                      onChange={() => handleSelectOne(consultation._id)}
-                      className="w-4 h-4 mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between mb-2">
-                        <p className="font-semibold text-gray-900">{consultation.clientName}</p>
-                        {getStatusBadge(consultation.status)}
-                      </div>
-                      <p className="text-sm text-gray-500 mb-3">{consultation.clientPhone}</p>
-                      
-                      {consultation.astrologerId && (
-                        <Link 
-                          to={`${ROUTES.ASTROLOGERS}/${consultation.astrologerId._id}`}
-                          className="flex items-center gap-2 mb-3 hover:opacity-80"
-                        >
-                          <RoundAvatar
-                            src={consultation.astrologerId.profilePicture}
-                            name={consultation.astrologerId.name}
-                            size="sm"
-                            isOnline={false}
-                          />
-                          <div>
-                            <p className="text-xs text-gray-500">Astrologer</p>
-                            <p className="text-sm font-medium text-gray-900 hover:text-blue-600">
-                              {consultation.astrologerId.name}
-                            </p>
+                  {/* Header */}
+                  <div className="p-3 border-b border-gray-100">
+                    <div className="flex items-start gap-3">
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.has(consultation._id)}
+                        onChange={() => handleSelectOne(consultation._id)}
+                        className="mt-1 w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-2 mb-2">
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold text-base text-gray-900 truncate">{consultation.clientName}</p>
+                            <p className="text-xs text-gray-500 mt-0.5">{consultation.clientPhone}</p>
                           </div>
-                        </Link>
-                      )}
-                      
-                      <div className="grid grid-cols-2 gap-3 text-sm">
-                        <div>
-                          <p className="text-gray-500 text-xs mb-1">Scheduled</p>
-                          <p className="font-medium text-gray-900">
-                            {new Date(consultation.scheduledTime).toLocaleDateString()}
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            {new Date(consultation.scheduledTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                          </p>
+                          {getStatusBadge(consultation.status)}
                         </div>
-                        <div>
-                          <p className="text-gray-500 text-xs mb-1">Type & Duration</p>
-                          <div className="space-y-1">
-                            {getTypeIcon(consultation.type)}
-                            <p className="text-sm text-gray-900">{formatDuration(consultation.duration)}</p>
-                          </div>
+                        
+                        {consultation.astrologerId && (
+                          <Link 
+                            to={`${ROUTES.ASTROLOGERS}/${consultation.astrologerId._id}`}
+                            className="flex items-center gap-2 mb-3 p-2 -mx-2 rounded-lg hover:bg-gray-50 active:bg-gray-100 transition-colors"
+                          >
+                            <RoundAvatar
+                              src={consultation.astrologerId.profilePicture}
+                              name={consultation.astrologerId.name}
+                              size="sm"
+                              isOnline={false}
+                              className="flex-shrink-0"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs text-gray-500">Astrologer</p>
+                              <p className="text-sm font-medium text-gray-900 truncate">
+                                {consultation.astrologerId.name}
+                              </p>
+                            </div>
+                          </Link>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Details Grid */}
+                  <div className="p-3 bg-gray-50/30">
+                    <div className="grid grid-cols-2 gap-3 mb-3">
+                      <div className="bg-white p-2.5 rounded-lg border border-gray-100">
+                        <p className="text-gray-500 text-xs mb-1">Scheduled</p>
+                        <p className="font-semibold text-sm text-gray-900">
+                          {new Date(consultation.scheduledTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                        </p>
+                        <p className="text-xs text-gray-500 mt-0.5">
+                          {new Date(consultation.scheduledTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </p>
+                      </div>
+                      <div className="bg-white p-2.5 rounded-lg border border-gray-100">
+                        <p className="text-gray-500 text-xs mb-1">Type & Duration</p>
+                        <div className="flex items-center gap-1.5 mb-1">
+                          {getTypeIcon(consultation.type)}
                         </div>
+                        <p className="text-xs font-medium text-gray-900">{formatDuration(consultation.duration)}</p>
                       </div>
-                      
-                      <div className="mt-3 pt-3 border-t border-gray-200 flex items-center justify-between">
-                        <p className="font-semibold text-gray-900">{formatCurrency(consultation.amount)}</p>
-                        <button 
-                          onClick={() => setSelectedConsultation(consultation)}
-                          className="flex items-center gap-2 px-3 py-1.5 text-sm text-blue-600 hover:bg-blue-50 rounded-lg"
-                        >
-                          <Eye className="w-4 h-4" />
-                          View
-                        </button>
+                    </div>
+                    
+                    {/* Footer Actions */}
+                    <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                      <div>
+                        <p className="text-xs text-gray-500">Amount</p>
+                        <p className="font-semibold text-base text-gray-900">{formatCurrency(consultation.amount)}</p>
                       </div>
+                      <button 
+                        onClick={() => setSelectedConsultation(consultation)}
+                        className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 active:bg-blue-200 rounded-lg transition-colors touch-manipulation"
+                      >
+                        <Eye className="w-4 h-4" />
+                        View
+                      </button>
                     </div>
                   </div>
                 </div>
