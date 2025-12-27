@@ -5,7 +5,7 @@ import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { StatCard, Card, AreaChartCard } from '@/components/common';
 import { StatCardSkeleton, ChartSkeleton } from '@/components/common';
-import { OnlineAstrologerCircleCard } from '@/components/astrologers';
+import { OnlineAstrologerDetailCard } from '@/components/astrologers';
 import { LiveStreamViewer } from '@/components/liveStream/LiveStreamViewer';
 import { LiveStreamStoryRounds } from '@/components/liveStream/LiveStreamStoryRounds';
 import { liveStreamsApi } from '@/api';
@@ -332,12 +332,16 @@ export const Dashboard = () => {
                 </div>
               }
             >
-              {/* Grid Layout: 1 column on mobile, 2 columns on desktop (lg breakpoint) */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-6 sm:gap-8 lg:gap-6 xl:gap-8 py-2">
+              {/* Single column layout on mobile, 2 columns on desktop for better detail visibility */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {onlineAstrologers.slice(0, 6).map((astrologer) => (
-                  <OnlineAstrologerCircleCard
+                  <OnlineAstrologerDetailCard
                     key={astrologer._id}
                     astrologer={astrologer}
+                    onMessage={(id) => {
+                      // Navigate to communication page with this astrologer
+                      window.location.href = `/communication?astrologerId=${id}`;
+                    }}
                   />
                 ))}
               </div>
