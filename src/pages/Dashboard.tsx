@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Users, UserCog, Calendar, DollarSign, AlertCircle, TrendingUp, ShoppingBag, Bell, X, MessageSquare, Phone, Video } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
-import { StatCard, Card, Avatar, AreaChartCard } from '@/components/common';
+import { StatCard, Card, AreaChartCard } from '@/components/common';
 import { StatCardSkeleton, ChartSkeleton } from '@/components/common';
 import { OnlineAstrologerCircleCard } from '@/components/astrologers';
 import { LiveStreamViewer } from '@/components/liveStream/LiveStreamViewer';
