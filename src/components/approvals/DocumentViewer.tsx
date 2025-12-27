@@ -61,6 +61,19 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({ documents }) => 
                 alt={getDocumentTypeLabel(doc.type)}
                 className="w-full h-full object-cover cursor-pointer"
                 onClick={() => setSelectedImage(doc.url)}
+                onError={(e) => {
+                  console.error('Failed to load image:', doc.url);
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  const parent = target.parentElement;
+                  if (parent) {
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'w-full h-full flex items-center justify-center text-gray-500 text-sm';
+                    errorDiv.textContent = 'Failed to load image';
+                    parent.appendChild(errorDiv);
+                  }
+                }}
+                crossOrigin="anonymous"
               />
               <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
                 <button

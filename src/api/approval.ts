@@ -1,4 +1,5 @@
 import apiClient from './client';
+import { BACKEND_URL } from '@/utils/constants';
 import type {
   ApprovalRequest,
   ApprovalStats,
@@ -10,13 +11,60 @@ import type {
 
 // Helper to transform backend response to frontend format
 function transformApprovalRequest(backendRequest: any): ApprovalRequest {
+  // Transform verificationDocuments to documents array format
+  let documents: any[] = [];
+  
+  if (backendRequest.documents && Array.isArray(backendRequest.documents)) {
+    // If backend already returns documents array, use it
+    documents = backendRequest.documents;
+  } else if (backendRequest.verificationDocuments && backendRequest.requestType === 'verification_badge') {
+    // Transform verificationDocuments object to documents array
+    const verificationDocs = backendRequest.verificationDocuments;
+    const baseUrl = BACKEND_URL;
+    
+    if (verificationDocs.idProof) {
+      documents.push({
+        type: 'id_proof',
+        url: verificationDocs.idProof.startsWith('http') 
+          ? verificationDocs.idProof 
+          : `${baseUrl}${verificationDocs.idProof}`,
+        uploadedAt: backendRequest.submittedAt,
+      });
+    }
+    if (verificationDocs.certificate) {
+      documents.push({
+        type: 'certificate',
+        url: verificationDocs.certificate.startsWith('http')
+          ? verificationDocs.certificate
+          : `${baseUrl}${verificationDocs.certificate}`,
+        uploadedAt: backendRequest.submittedAt,
+      });
+    }
+    if (verificationDocs.storefront) {
+      documents.push({
+        type: 'storefront',
+        url: verificationDocs.storefront.startsWith('http')
+          ? verificationDocs.storefront
+          : `${baseUrl}${verificationDocs.storefront}`,
+        uploadedAt: backendRequest.submittedAt,
+      });
+    }
+  }
+
+  // Helper to ensure absolute URL for images
+  const getAbsoluteUrl = (url: string | undefined | null): string | undefined => {
+    if (!url) return undefined;
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    return `${BACKEND_URL}${url.startsWith('/') ? url : '/' + url}`;
+  };
+
   return {
     _id: backendRequest._id,
     astrologerId: backendRequest.astrologerId?._id || backendRequest.astrologerId,
     astrologerName: backendRequest.astrologerName,
     astrologerEmail: backendRequest.astrologerEmail,
     astrologerPhone: backendRequest.astrologerPhone,
-    astrologerAvatar: backendRequest.astrologerAvatar || backendRequest.astrologerId?.profilePicture,
+    astrologerAvatar: getAbsoluteUrl(backendRequest.astrologerAvatar || backendRequest.astrologerId?.profilePicture),
     requestType: backendRequest.requestType,
     status: backendRequest.status,
     submittedAt: backendRequest.submittedAt,
@@ -24,7 +72,7 @@ function transformApprovalRequest(backendRequest: any): ApprovalRequest {
     reviewedBy: backendRequest.reviewedBy,
     rejectionReason: backendRequest.rejectionReason,
     notes: backendRequest.notes,
-    documents: backendRequest.documents || [], // Backend doesn't return documents yet, but keep for compatibility
+    documents: documents,
     astrologerData: backendRequest.astrologerData || {
       experience: backendRequest.astrologerId?.experience || 0,
       specializations: backendRequest.astrologerId?.specializations || [],
