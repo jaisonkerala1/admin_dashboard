@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft,
   Save,
-  Search,
   Calendar,
   Clock,
   DollarSign,
@@ -12,7 +11,7 @@ import {
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
-import { Card, Loader, Avatar } from '@/components/common';
+import { Card, Loader, Avatar, SearchBar } from '@/components/common';
 import { poojaRequestsApi, astrologersApi, servicesApi } from '@/api';
 import { Astrologer, Service } from '@/types';
 import { useToastContext } from '@/contexts/ToastContext';
@@ -225,12 +224,11 @@ export const CreateServiceRequest = () => {
                 Select Astrologer *
               </h3>
               <div className="mb-4">
-                <input
-                  type="text"
-                  value={astrologerSearch}
-                  onChange={(e) => setAstrologerSearch(e.target.value)}
+                <SearchBar
                   placeholder="Search astrologers..."
-                  className="input w-full"
+                  value={astrologerSearch}
+                  onSearch={(query) => setAstrologerSearch(query)}
+                  onClear={() => setAstrologerSearch('')}
                 />
               </div>
               {isLoadingAstrologers ? (
@@ -282,12 +280,11 @@ export const CreateServiceRequest = () => {
                   Select Service (Optional)
                 </h3>
                 <div className="mb-4">
-                  <input
-                    type="text"
-                    value={serviceSearch}
-                    onChange={(e) => setServiceSearch(e.target.value)}
+                  <SearchBar
                     placeholder="Search services..."
-                    className="input w-full"
+                    value={serviceSearch}
+                    onSearch={(query) => setServiceSearch(query)}
+                    onClear={() => setServiceSearch('')}
                   />
                 </div>
                 {isLoadingServices ? (

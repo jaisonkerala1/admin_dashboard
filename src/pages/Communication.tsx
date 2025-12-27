@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
-import { MessageCircle, Search, Loader2, Home } from 'lucide-react';
+import { MessageCircle, Loader2, Home } from 'lucide-react';
 import { ChatWindow, VideoCallWindow } from '@/components/communication';
 import { IncomingCallModal } from '@/components/communication/IncomingCallModal';
 import { OutgoingCallModal } from '@/components/communication/OutgoingCallModal';
-import { RoundAvatar } from '@/components/common/RoundAvatar';
+import { RoundAvatar, SearchBar } from '@/components/common';
 import { PillBadge } from '@/components/common/PillBadge';
 import { socketService } from '@/services/socketService';
 import { astrologersApi } from '@/api/astrologers';
@@ -446,14 +446,12 @@ export const Communication = () => {
           </div>
           
           {/* Search */}
-          <div className="relative mb-4">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+          <div className="mb-4">
+            <SearchBar
               placeholder="Search astrologers..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              value={searchQuery}
+              onSearch={(query) => setSearchQuery(query)}
+              onClear={() => setSearchQuery('')}
             />
           </div>
 

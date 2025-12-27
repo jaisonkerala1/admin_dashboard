@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { AlertCircle, AlertTriangle, CalendarDays, UserCheck, UserX, Settings, CalendarClock, ListChecks } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
-import { Card, Loader, StatCard } from '@/components/common';
+import { Card, Loader, StatCard, SearchBar } from '@/components/common';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   fetchAllHolidaysRequest,
@@ -95,12 +95,14 @@ export const Calendar = () => {
           className="px-3 py-2 border border-gray-200 rounded-lg bg-white"
         />
       </div>
-      <input
-        value={filters.searchTerm}
-        onChange={(e) => dispatch(setFilters({ searchTerm: e.target.value }))}
-        placeholder="Search astrologer..."
-        className="px-3 py-2 border border-gray-200 rounded-lg bg-white w-full sm:w-64"
-      />
+      <div className="w-full sm:w-64">
+        <SearchBar
+          placeholder="Search astrologer..."
+          value={filters.searchTerm}
+          onSearch={(query) => dispatch(setFilters({ searchTerm: query }))}
+          onClear={() => dispatch(setFilters({ searchTerm: '' }))}
+        />
+      </div>
       <label className="inline-flex items-center gap-2 text-sm text-gray-700">
         <input
           type="checkbox"

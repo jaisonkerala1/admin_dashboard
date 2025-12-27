@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Search, Filter, Ban, CheckCircle } from 'lucide-react';
+import { Filter, Ban, CheckCircle } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
-import { Card, Loader, EmptyState, Avatar, StatusBadge, Modal } from '@/components/common';
+import { Card, Loader, EmptyState, Avatar, StatusBadge, Modal, SearchBar } from '@/components/common';
 import { usersApi } from '@/api';
 import { User } from '@/types';
 import { formatCurrency, formatRelativeTime } from '@/utils/formatters';
@@ -73,14 +73,12 @@ export const Users = () => {
 
       <Card>
         <div className="flex flex-col md:flex-row gap-4 mb-6">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input
-              type="text"
+          <div className="flex-1">
+            <SearchBar
               placeholder="Search users..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="input pl-10"
+              onSearch={(query) => setSearch(query)}
+              onClear={() => setSearch('')}
             />
           </div>
           <div className="flex items-center gap-2">

@@ -1,8 +1,8 @@
 import { useState, useMemo } from 'react';
 import { WalletTransaction, WalletTransactionType, WalletTransactionStatus } from '@/types/wallet';
 import { WalletTransactionCard } from './WalletTransactionCard';
-import { Card } from '@/components/common';
-import { Search, Filter, Download, X } from 'lucide-react';
+import { Card, SearchBar } from '@/components/common';
+import { Filter, Download, X } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface WalletTransactionsProps {
@@ -107,14 +107,12 @@ export const WalletTransactions = ({ transactions, isLoading }: WalletTransactio
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
         <div className="flex flex-col sm:flex-row gap-3">
           {/* Search */}
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-              type="text"
+          <div className="flex-1">
+            <SearchBar
               placeholder="Search transactions..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              onSearch={(query) => setSearchQuery(query)}
+              onClear={() => setSearchQuery('')}
             />
           </div>
 

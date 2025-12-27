@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { 
-  Search, 
   Phone, 
   Video, 
   MessageCircle, 
@@ -20,7 +19,7 @@ import {
   Star
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
-import { Card, Loader, EmptyState, RoundAvatar, PillBadge, ShowEntriesDropdown, StatCard, Modal, Avatar } from '@/components/common';
+import { Card, Loader, EmptyState, RoundAvatar, PillBadge, ShowEntriesDropdown, StatCard, Modal, Avatar, SearchBar } from '@/components/common';
 import { formatCurrency, formatDuration } from '@/utils/formatters';
 import { RootState } from '@/store';
 import { Consultation } from '@/types';
@@ -160,14 +159,12 @@ export const Consultations = () => {
           </div>
           
           {/* Search Bar */}
-          <div className="relative w-full md:w-80">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input
-              type="text"
+          <div className="w-full md:w-80">
+            <SearchBar
               placeholder="Search client, astrologer..."
               value={search}
-              onChange={(e) => dispatch(setSearch(e.target.value))}
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              onSearch={(query) => dispatch(setSearch(query))}
+              onClear={() => dispatch(setSearch(''))}
             />
           </div>
         </div>

@@ -11,8 +11,8 @@ import {
   bulkActionRequest,
 } from '@/store/slices/ticketSlice';
 import { TicketCard } from './TicketCard';
+import { SearchBar } from '@/components/common';
 import {
-  Search,
   Filter,
   ChevronLeft,
   ChevronRight,
@@ -89,18 +89,20 @@ export const TicketListView: React.FC = () => {
       <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
         <div className="flex flex-col lg:flex-row gap-3">
           {/* Search */}
-          <form onSubmit={handleSearch} className="flex-1">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input
-                type="text"
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                placeholder="Search by ticket #, title, description, or user name..."
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:bg-white transition-all"
-              />
-            </div>
-          </form>
+          <div className="flex-1">
+            <SearchBar
+              placeholder="Search by ticket #, title, description, or user name..."
+              value={searchInput}
+              onSearch={(query) => {
+                setSearchInput(query);
+                dispatch(setFilters({ search: query }));
+              }}
+              onClear={() => {
+                setSearchInput('');
+                dispatch(setFilters({ search: '' }));
+              }}
+            />
+          </div>
 
           {/* Filter Toggle */}
           <button

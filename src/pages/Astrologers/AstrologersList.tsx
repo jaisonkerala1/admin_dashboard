@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, Edit2, Trash2, Eye, UserX, Users, UserCheck, Clock, XCircle, MessageCircle, Phone, Video } from 'lucide-react';
+import { Edit2, Trash2, Eye, UserX, Users, UserCheck, Clock, XCircle, MessageCircle, Phone, Video } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
-import { Card, Loader, EmptyState, RoundAvatar, PillBadge, ShowEntriesDropdown, StatCard } from '@/components/common';
+import { Card, Loader, EmptyState, RoundAvatar, PillBadge, ShowEntriesDropdown, StatCard, SearchBar } from '@/components/common';
 import { astrologersApi } from '@/api';
 import { Astrologer } from '@/types';
 import { formatRelativeTime } from '@/utils/formatters';
@@ -159,14 +159,12 @@ export const AstrologersList = () => {
           </div>
           
           {/* Search Bar */}
-          <div className="relative w-full md:w-80">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input
-              type="text"
+          <div className="w-full md:w-80">
+            <SearchBar
               placeholder="Search name, email, or etc..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              onSearch={(query) => setSearch(query)}
+              onClear={() => setSearch('')}
             />
           </div>
         </div>

@@ -2,7 +2,8 @@ import { PayoutRequest, PayoutSummary, PayoutStatus } from '@/types/wallet';
 import { Avatar } from '@/components/common';
 import { formatCurrency } from '@/utils/formatters';
 import { formatRelativeTime } from '@/utils/formatters';
-import { CheckCircle, XCircle, Clock, AlertCircle, Eye, Filter, Search } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, AlertCircle, Eye, Filter } from 'lucide-react';
+import { SearchBar } from '@/components/common';
 import { useState, useMemo } from 'react';
 
 interface WalletPayoutsProps {
@@ -174,14 +175,12 @@ export const WalletPayouts = ({
       {/* Search and Filter - Minimal Design */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
         <div className="flex flex-col sm:flex-row gap-3">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-              type="text"
+          <div className="flex-1">
+            <SearchBar
               placeholder="Search payouts..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              onSearch={(query) => setSearchQuery(query)}
+              onClear={() => setSearchQuery('')}
             />
           </div>
           <button
