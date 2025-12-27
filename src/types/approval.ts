@@ -25,6 +25,10 @@ export interface ApprovalRequest {
   astrologerData: {
     experience: number;
     specializations: string[];
+    languages?: string[];
+    bio?: string;
+    awards?: string;
+    certificates?: string;
     consultationsCount: number;
     rating: number;
   };

@@ -73,11 +73,15 @@ function transformApprovalRequest(backendRequest: any): ApprovalRequest {
     rejectionReason: backendRequest.rejectionReason,
     notes: backendRequest.notes,
     documents: documents,
-    astrologerData: backendRequest.astrologerData || {
-      experience: backendRequest.astrologerId?.experience || 0,
-      specializations: backendRequest.astrologerId?.specializations || [],
-      consultationsCount: 0,
-      rating: 0,
+    astrologerData: {
+      experience: backendRequest.astrologerData?.experience || backendRequest.astrologerId?.experience || 0,
+      specializations: backendRequest.astrologerData?.specializations || backendRequest.astrologerId?.specializations || [],
+      languages: backendRequest.astrologerData?.languages || backendRequest.astrologerId?.languages || [],
+      bio: backendRequest.astrologerData?.bio || backendRequest.astrologerId?.bio || '',
+      awards: backendRequest.astrologerData?.awards || backendRequest.astrologerId?.awards || '',
+      certificates: backendRequest.astrologerData?.certificates || backendRequest.astrologerId?.certificates || '',
+      consultationsCount: backendRequest.astrologerData?.consultationsCount || 0,
+      rating: backendRequest.astrologerData?.rating || 0,
     },
   };
 }

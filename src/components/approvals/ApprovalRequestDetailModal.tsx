@@ -145,8 +145,49 @@ export const ApprovalRequestDetailModal: React.FC<ApprovalRequestDetailModalProp
             </div>
           )}
 
-          {/* Documents */}
-          {request.documents && request.documents.length > 0 && (
+          {/* Languages (for onboarding) */}
+          {request.requestType === 'onboarding' && request.astrologerData.languages && request.astrologerData.languages.length > 0 && (
+            <div>
+              <p className="text-sm text-gray-500 mb-2">Languages</p>
+              <div className="flex flex-wrap gap-2">
+                {request.astrologerData.languages.map((lang, index) => (
+                  <span
+                    key={index}
+                    className="px-3 py-1 bg-green-50 text-green-700 rounded-full text-sm"
+                  >
+                    {lang}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Bio (for onboarding) */}
+          {request.requestType === 'onboarding' && request.astrologerData.bio && (
+            <div>
+              <p className="text-sm text-gray-500 mb-2">Bio</p>
+              <p className="text-sm text-gray-900 whitespace-pre-wrap">{request.astrologerData.bio}</p>
+            </div>
+          )}
+
+          {/* Awards (for onboarding) */}
+          {request.requestType === 'onboarding' && request.astrologerData.awards && (
+            <div>
+              <p className="text-sm text-gray-500 mb-2">Awards</p>
+              <p className="text-sm text-gray-900 whitespace-pre-wrap">{request.astrologerData.awards}</p>
+            </div>
+          )}
+
+          {/* Certificates (for onboarding) */}
+          {request.requestType === 'onboarding' && request.astrologerData.certificates && (
+            <div>
+              <p className="text-sm text-gray-500 mb-2">Certificates</p>
+              <p className="text-sm text-gray-900 whitespace-pre-wrap">{request.astrologerData.certificates}</p>
+            </div>
+          )}
+
+          {/* Documents (only for verification_badge) */}
+          {request.requestType === 'verification_badge' && request.documents && request.documents.length > 0 && (
             <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Documents</h3>
               <DocumentViewer documents={request.documents} />
