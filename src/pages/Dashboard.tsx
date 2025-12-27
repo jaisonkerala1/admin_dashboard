@@ -8,7 +8,7 @@ import { StatCardSkeleton, ChartSkeleton } from '@/components/common';
 import { LiveStreamViewer } from '@/components/liveStream/LiveStreamViewer';
 import { LiveStreamStoryRounds } from '@/components/liveStream/LiveStreamStoryRounds';
 import { liveStreamsApi } from '@/api';
-import { formatCurrency, formatNumber, formatRelativeTime } from '@/utils/formatters';
+import { formatCurrency, formatNumber } from '@/utils/formatters';
 import { ROUTES } from '@/utils/constants';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { useNotifications } from '@/contexts/NotificationContext';
