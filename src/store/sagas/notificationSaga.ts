@@ -1,5 +1,5 @@
 import { takeLatest, put } from 'redux-saga/effects';
-import { fetchNotificationsRequest, fetchNotificationsSuccess, fetchNotificationsFailure } from '../slices/notificationSlice';
+import { fetchNotificationsRequest, fetchNotificationsFailure } from '../slices/notificationSlice';
 
 function* fetchNotificationsSaga() {
   try {

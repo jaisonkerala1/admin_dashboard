@@ -29,7 +29,7 @@ import { NotificationType } from '@/types/notification';
 export const Notifications: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { notifications, isLoading, unreadCount } = useAppSelector((state) => state.notification);
+  const { notifications, unreadCount } = useAppSelector((state) => state.notification);
 
   useEffect(() => {
     dispatch(fetchNotificationsRequest());
