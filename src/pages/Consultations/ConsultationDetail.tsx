@@ -13,15 +13,13 @@ import {
   MapPin,
   Star,
   Activity,
-  CheckCircle,
-  XCircle,
   AlertCircle
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { Card, Loader, Avatar } from '@/components/common';
 import { consultationsApi } from '@/api';
 import { Consultation } from '@/types';
-import { formatCurrency, formatDateTime, formatDuration } from '@/utils/formatters';
+import { formatCurrency, formatDuration } from '@/utils/formatters';
 import { useToastContext } from '@/contexts/ToastContext';
 import { ROUTES } from '@/utils/constants';
 

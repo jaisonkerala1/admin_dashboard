@@ -15,15 +15,12 @@ import {
   AlertCircle,
   Eye,
   Trash2,
-  Activity,
-  Clock,
-  Star
+  Activity
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
-import { Card, Loader, EmptyState, RoundAvatar, PillBadge, ShowEntriesDropdown, StatCard, Avatar, SearchBar } from '@/components/common';
+import { Card, Loader, EmptyState, RoundAvatar, PillBadge, ShowEntriesDropdown, StatCard, SearchBar } from '@/components/common';
 import { formatCurrency, formatDuration } from '@/utils/formatters';
 import { RootState } from '@/store';
-import { Consultation } from '@/types';
 import {
   fetchConsultationsRequest,
   setFilter,
@@ -426,7 +423,7 @@ export const Consultations = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <button 
-                      onClick={() => setSelectedConsultation(consultation)}
+                      onClick={() => navigate(`${ROUTES.CONSULTATIONS}/${consultation._id}`)}
                       className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
                     >
                       <Eye className="w-4 h-4" />
@@ -513,7 +510,7 @@ export const Consultations = () => {
                         <p className="font-semibold text-base text-gray-900">{formatCurrency(consultation.amount)}</p>
                       </div>
                       <button 
-                        onClick={() => setSelectedConsultation(consultation)}
+                        onClick={() => navigate(`${ROUTES.CONSULTATIONS}/${consultation._id}`)}
                         className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 active:bg-blue-200 rounded-lg transition-colors touch-manipulation"
                       >
                         <Eye className="w-4 h-4" />
