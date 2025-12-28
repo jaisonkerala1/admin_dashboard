@@ -14,6 +14,9 @@ import {
   bulkActionsRequest,
   bulkActionsSuccess,
   bulkActionsFailure,
+  addAstrologersRequest,
+  addAstrologersSuccess,
+  addAstrologersFailure,
 } from '../slices/rankingsSlice';
 import { RankingCategoryId, BulkActionRequest } from '@/types';
 import { RootState } from '../index';
@@ -202,6 +205,33 @@ function* bulkActionsSaga(action: PayloadAction<BulkActionRequest>): SagaIterato
   }
 }
 
+// Add astrologers saga
+function* addAstrologersSaga(
+  action: PayloadAction<{
+    astrologerIds: string[];
+    category: RankingCategoryId;
+  }>
+): SagaIterator {
+  try {
+    const { astrologerIds, category } = action.payload;
+    const response = yield call(rankingsApi.addAstrologers, category, astrologerIds);
+
+    if (response.success) {
+      yield put(
+        addAstrologersSuccess({
+          category,
+          rankings: response.data || [],
+          stats: response.stats,
+        })
+      );
+    } else {
+      yield put(addAstrologersFailure(response.message || 'Failed to add astrologers'));
+    }
+  } catch (error: any) {
+    yield put(addAstrologersFailure(error.message || 'Failed to add astrologers'));
+  }
+}
+
 // Watcher saga
 export default function* rankingsSaga(): SagaIterator {
   yield takeLatest(fetchRankingsRequest.type, fetchRankingsSaga);
@@ -211,5 +241,6 @@ export default function* rankingsSaga(): SagaIterator {
   yield takeLatest(hideAstrologer.type, hideAstrologerSaga);
   yield takeLatest(unhideAstrologer.type, unhideAstrologerSaga);
   yield takeLatest(bulkActionsRequest.type, bulkActionsSaga);
+  yield takeLatest(addAstrologersRequest.type, addAstrologersSaga);
 }
 

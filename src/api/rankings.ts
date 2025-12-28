@@ -67,5 +67,15 @@ export const rankingsApi = {
     const response = await apiClient.get(`/admin/rankings/${category}/preview`);
     return response.data;
   },
+
+  addAstrologers: async (
+    category: RankingCategoryId,
+    astrologerIds: string[]
+  ): Promise<RankingsResponse> => {
+    const response = await apiClient.post(`/admin/rankings/${category}/add`, {
+      astrologerIds,
+    });
+    return response.data;
+  },
 };
 

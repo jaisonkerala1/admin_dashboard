@@ -191,6 +191,37 @@ const rankingsSlice = createSlice({
       state.activeCategory = action.payload;
     },
 
+    // Add astrologers to ranking
+    addAstrologersRequest: (
+      state,
+      action: PayloadAction<{
+        astrologerIds: string[];
+        category: RankingCategoryId;
+      }>
+    ) => {
+      state.isLoading = true;
+      state.error = null;
+    },
+    addAstrologersSuccess: (
+      state,
+      action: PayloadAction<{
+        category: RankingCategoryId;
+        rankings: AstrologerRanking[];
+        stats: CategoryStats;
+      }>
+    ) => {
+      state.isLoading = false;
+      state.error = null;
+      state.categories[action.payload.category] = action.payload.rankings;
+      state.stats[action.payload.category] = action.payload.stats;
+      state.lastUpdated[action.payload.category] = new Date().toISOString();
+      state.hasUnsavedChanges = true;
+    },
+    addAstrologersFailure: (state, action: PayloadAction<string>) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    },
+
     // Reset changes
     resetChanges: (state) => {
       state.hasUnsavedChanges = false;
@@ -211,6 +242,9 @@ export const {
   bulkActionsSuccess,
   bulkActionsFailure,
   setActiveCategory,
+  addAstrologersRequest,
+  addAstrologersSuccess,
+  addAstrologersFailure,
   resetChanges,
 } = rankingsSlice.actions;
 

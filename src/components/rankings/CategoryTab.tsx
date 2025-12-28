@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import { UserPlus } from 'lucide-react';
 import { RankingCard } from './RankingCard';
 import { RankingStats } from './RankingStats';
 import { BulkActions } from './BulkActions';
+import { AddAstrologerModal } from './AddAstrologerModal';
 import { Card, Loader, EmptyState } from '@/components/common';
 import { AstrologerRanking, RankingCategoryId, CategoryStats } from '@/types';
 import { Trophy } from 'lucide-react';
@@ -12,6 +14,7 @@ import {
   hideAstrologer,
   unhideAstrologer,
   bulkActionsRequest,
+  addAstrologersRequest,
 } from '@/store/slices/rankingsSlice';
 
 interface CategoryTabProps {
@@ -24,6 +27,7 @@ interface CategoryTabProps {
 export const CategoryTab = ({ category, rankings, stats, isLoading }: CategoryTabProps) => {
   const dispatch = useAppDispatch();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   const handlePin = (id: string) => {
     dispatch(pinAstrologer({ astrologerId: id, category }));
@@ -97,6 +101,17 @@ export const CategoryTab = ({ category, rankings, stats, isLoading }: CategoryTa
     setSelectedIds(new Set());
   };
 
+  const handleAddAstrologers = (astrologerIds: string[]) => {
+    dispatch(
+      addAstrologersRequest({
+        astrologerIds,
+        category,
+      })
+    );
+  };
+
+  const existingAstrologerIds = new Set(rankings.map((r) => r.astrologerId));
+
   if (isLoading) {
     return (
       <div className="py-12">
@@ -109,6 +124,17 @@ export const CategoryTab = ({ category, rankings, stats, isLoading }: CategoryTa
     <div className="space-y-6">
       {/* Statistics */}
       <RankingStats stats={stats} />
+
+      {/* Add Astrologer Button */}
+      <div className="flex justify-end">
+        <button
+          onClick={() => setIsAddModalOpen(true)}
+          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          <UserPlus className="w-4 h-4" />
+          Add Astrologers
+        </button>
+      </div>
 
       {/* Bulk Actions */}
       <BulkActions
@@ -147,6 +173,15 @@ export const CategoryTab = ({ category, rankings, stats, isLoading }: CategoryTa
           </div>
         )}
       </Card>
+
+      {/* Add Astrologer Modal */}
+      <AddAstrologerModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onAdd={handleAddAstrologers}
+        existingAstrologerIds={existingAstrologerIds}
+        category={category.charAt(0).toUpperCase() + category.slice(1)}
+      />
     </div>
   );
 };
