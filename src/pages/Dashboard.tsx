@@ -333,7 +333,7 @@ export const Dashboard = () => {
               }
             >
               {/* Single column layout on mobile, 2 columns on desktop for better detail visibility */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
                 {onlineAstrologers.slice(0, 6).map((astrologer) => (
                   <OnlineAstrologerDetailCard
                     key={astrologer._id}
