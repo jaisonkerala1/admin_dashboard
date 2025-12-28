@@ -32,7 +32,8 @@ export const RankingCard = ({
   const getScoreDisplay = () => {
     switch (category) {
       case 'top':
-        return `${astrologer.rating.toFixed(1)} ⭐ (${formatNumber(astrologer.totalReviews)} reviews)`;
+        const rating = astrologer.rating > 0 ? astrologer.rating.toFixed(1) : '0.0';
+        return `${rating} ⭐ (${formatNumber(astrologer.totalReviews)} reviews)`;
       case 'experienced':
         return `${astrologer.experience} years`;
       case 'popular':
