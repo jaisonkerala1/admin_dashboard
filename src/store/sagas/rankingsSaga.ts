@@ -1,4 +1,4 @@
-import { call, put, takeLatest, select } from 'redux-saga/effects';
+import { call, put, takeLatest } from 'redux-saga/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { SagaIterator } from 'redux-saga';
 import { rankingsApi } from '@/api';
@@ -18,7 +18,6 @@ import {
   addAstrologersFailure,
 } from '../slices/rankingsSlice';
 import { RankingCategoryId, BulkActionRequest } from '@/types';
-import { RootState } from '../index';
 
 // Fetch rankings saga
 function* fetchRankingsSaga(action: PayloadAction<RankingCategoryId>): SagaIterator {

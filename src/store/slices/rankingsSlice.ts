@@ -51,7 +51,7 @@ const rankingsSlice = createSlice({
   initialState,
   reducers: {
     // Fetch rankings
-    fetchRankingsRequest: (state, action: PayloadAction<RankingCategoryId>) => {
+    fetchRankingsRequest: (state, _action: PayloadAction<RankingCategoryId>) => {
       state.isLoading = true;
       state.error = null;
     },
