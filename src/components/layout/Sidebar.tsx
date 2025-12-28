@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,
+  Bell,
   Users,
   UserCog,
   Calendar,
@@ -27,6 +28,7 @@ import { CheckCircle } from 'lucide-react';
 
 const navigation = [
   { name: 'Dashboard', href: ROUTES.DASHBOARD, icon: LayoutDashboard },
+  { name: 'Notifications', href: ROUTES.NOTIFICATIONS, icon: Bell },
   { name: 'Astrologers', href: ROUTES.ASTROLOGERS, icon: UserCog },
   { name: 'Users', href: ROUTES.USERS, icon: Users },
   { name: 'Consultations', href: ROUTES.CONSULTATIONS, icon: Calendar },
@@ -52,7 +54,8 @@ interface SidebarProps {
 
 export const Sidebar = ({ isOpen = true, onClose }: SidebarProps) => {
   const { logout } = useAuth();
-  const { unreadCount } = useNotifications();
+  const { unreadCount: communicationUnread } = useNotifications();
+  const { unreadCount: notificationsUnread } = useAppSelector((state) => state.notification);
   const pendingApprovals = useAppSelector((state) => state.approval.stats?.totalPending || 0);
 
   return (
@@ -115,10 +118,16 @@ export const Sidebar = ({ isOpen = true, onClose }: SidebarProps) => {
                   )}
                 />
                 <span className="flex-1">{item.name}</span>
+                {/* Unread badge for Notifications */}
+                {item.href === ROUTES.NOTIFICATIONS && notificationsUnread > 0 && (
+                  <span className="ml-auto inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold text-white bg-primary-600 rounded-full min-w-[20px]">
+                    {notificationsUnread > 99 ? '99+' : notificationsUnread}
+                  </span>
+                )}
                 {/* Unread badge for Communication */}
-                {item.href === ROUTES.COMMUNICATION && unreadCount > 0 && (
+                {item.href === ROUTES.COMMUNICATION && communicationUnread > 0 && (
                   <span className="ml-auto inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold text-white bg-red-500 rounded-full min-w-[20px]">
-                    {unreadCount > 99 ? '99+' : unreadCount}
+                    {communicationUnread > 99 ? '99+' : communicationUnread}
                   </span>
                 )}
                 {/* Pending badge for Approval Requests */}

@@ -38,6 +38,7 @@ export const ROUTES = {
   WALLET: '/wallet',
   SUPPORT: '/support',
   APPROVALS: '/approvals',
+  NOTIFICATIONS: '/notifications',
 } as const;
 
 export const ASTROLOGER_STATUS = {

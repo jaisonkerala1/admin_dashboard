@@ -1,6 +1,9 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Bell, Menu } from 'lucide-react';
 import { Avatar, SearchBar } from '@/components/common';
+import { useAppSelector } from '@/store/hooks';
+import { ROUTES } from '@/utils/constants';
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -8,6 +11,7 @@ interface HeaderProps {
 
 export const Header = ({ onMenuClick }: HeaderProps) => {
   const [headerSearch, setHeaderSearch] = useState('');
+  const { unreadCount } = useAppSelector((state) => state.notification);
 
   return (
     <header className="h-16 bg-gray-50 border-b border-gray-200 fixed top-0 right-0 left-0 lg:left-64 z-30">
@@ -35,10 +39,17 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
         {/* Right section */}
         <div className="flex items-center gap-2 lg:gap-4 ml-2 lg:ml-0">
           {/* Notifications */}
-          <button className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors">
+          <Link 
+            to={ROUTES.NOTIFICATIONS}
+            className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          >
             <Bell className="w-5 h-5 text-gray-600" />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
-          </button>
+            {unreadCount > 0 && (
+              <span className="absolute top-1 right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white ring-2 ring-gray-50">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
+            )}
+          </Link>
 
           {/* Admin Profile */}
           <div className="hidden sm:flex items-center gap-3 pl-2 lg:pl-4 border-l border-gray-200">

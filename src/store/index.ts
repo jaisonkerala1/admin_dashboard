@@ -13,6 +13,7 @@ import ticketReducer from './slices/ticketSlice';
 import communicationReducer from './slices/communicationSlice';
 import approvalReducer from './slices/approvalSlice';
 import walletReducer from './slices/walletSlice';
+import notificationReducer from './slices/notificationSlice';
 import rootSaga from './sagas';
 
 // Create saga middleware
@@ -34,6 +35,7 @@ export const store = configureStore({
     communication: communicationReducer,
     approval: approvalReducer,
     wallet: walletReducer,
+    notification: notificationReducer,
     // Add more reducers here as needed
   },
   middleware: (getDefaultMiddleware) =>

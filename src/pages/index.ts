@@ -17,6 +17,7 @@ export { CommunicationAnalytics } from './CommunicationAnalytics';
 export { Earnings } from './Earnings';
 export { Wallet } from './Wallet';
 export { Calendar } from './Calendar';
+export { Notifications } from './Notifications';
 export { Support } from './Support';
 export { Approvals } from './Approvals';
 

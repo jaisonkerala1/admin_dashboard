@@ -12,6 +12,7 @@ import { ticketSaga } from './ticketSaga';
 import { communicationSaga } from './communicationSaga';
 import { approvalSaga } from './approvalSaga';
 import { walletSaga } from './walletSaga';
+import notificationSaga from './notificationSaga';
 
 // Root saga: combines all sagas
 export default function* rootSaga() {
@@ -29,6 +30,7 @@ export default function* rootSaga() {
     communicationSaga(),
     approvalSaga(),
     walletSaga(),
+    notificationSaga(),
     // Add more sagas here as needed
   ]);
 }
