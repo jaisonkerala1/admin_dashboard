@@ -217,17 +217,13 @@ function* addAstrologersSaga(
     const response = yield call(rankingsApi.addAstrologers, category, astrologerIds);
 
     if (response.success) {
-      yield put(
-        addAstrologersSuccess({
-          category,
-          rankings: response.data || [],
-          stats: response.stats,
-        })
-      );
+      // Refetch rankings to get the latest data with all astrologers
+      yield put(fetchRankingsRequest(category));
     } else {
       yield put(addAstrologersFailure(response.message || 'Failed to add astrologers'));
     }
   } catch (error: any) {
+    console.error('Add astrologers error:', error);
     yield put(addAstrologersFailure(error.message || 'Failed to add astrologers'));
   }
 }

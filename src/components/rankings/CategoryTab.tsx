@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { UserPlus } from 'lucide-react';
 import { RankingCard } from './RankingCard';
 import { RankingStats } from './RankingStats';
@@ -7,7 +7,8 @@ import { AddAstrologerModal } from './AddAstrologerModal';
 import { Card, Loader, EmptyState } from '@/components/common';
 import { AstrologerRanking, RankingCategoryId, CategoryStats } from '@/types';
 import { Trophy } from 'lucide-react';
-import { useAppDispatch } from '@/store/hooks';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { useToastContext } from '@/contexts/ToastContext';
 import {
   pinAstrologer,
   unpinAstrologer,
@@ -15,6 +16,7 @@ import {
   unhideAstrologer,
   bulkActionsRequest,
   addAstrologersRequest,
+  fetchRankingsRequest,
 } from '@/store/slices/rankingsSlice';
 
 interface CategoryTabProps {
@@ -26,8 +28,17 @@ interface CategoryTabProps {
 
 export const CategoryTab = ({ category, rankings, stats, isLoading }: CategoryTabProps) => {
   const dispatch = useAppDispatch();
+  const { success, error: toastError } = useToastContext();
+  const { error: rankingsError } = useAppSelector((state) => state.rankings);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+  // Show toast notifications for errors
+  useEffect(() => {
+    if (rankingsError) {
+      toastError(rankingsError);
+    }
+  }, [rankingsError, toastError]);
 
   const handlePin = (id: string) => {
     dispatch(pinAstrologer({ astrologerId: id, category }));
@@ -102,6 +113,7 @@ export const CategoryTab = ({ category, rankings, stats, isLoading }: CategoryTa
   };
 
   const handleAddAstrologers = (astrologerIds: string[]) => {
+    setLastAddedCount(astrologerIds.length);
     dispatch(
       addAstrologersRequest({
         astrologerIds,
@@ -109,6 +121,18 @@ export const CategoryTab = ({ category, rankings, stats, isLoading }: CategoryTa
       })
     );
   };
+
+  // Track previous rankings count to detect additions
+  const prevRankingsCount = useRef(rankings.length);
+  const [lastAddedCount, setLastAddedCount] = useState(0);
+
+  useEffect(() => {
+    if (rankings.length > prevRankingsCount.current && !isLoading && lastAddedCount > 0) {
+      success(`Successfully added ${lastAddedCount} astrologer(s) to ${category} rankings`);
+      setLastAddedCount(0);
+    }
+    prevRankingsCount.current = rankings.length;
+  }, [rankings.length, isLoading, category, success, lastAddedCount]);
 
   const existingAstrologerIds = new Set(rankings.map((r) => r.astrologerId));
 
