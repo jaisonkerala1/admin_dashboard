@@ -1,4 +1,5 @@
-import { NavLink } from 'react-router-dom';
+import { useState } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   Users,
@@ -17,10 +18,12 @@ import {
   LogOut,
   TrendingUp,
   X,
+  Loader2,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { useAppSelector } from '@/store/hooks';
+import { useToastContext } from '@/contexts/ToastContext';
 import { cn } from '@/utils/helpers';
 import { APP_NAME, ROUTES } from '@/utils/constants';
 import { CheckCircle } from 'lucide-react';
@@ -52,8 +55,11 @@ interface SidebarProps {
 
 export const Sidebar = ({ isOpen = true, onClose }: SidebarProps) => {
   const { logout } = useAuth();
+  const navigate = useNavigate();
+  const { error: showError, success: showSuccess } = useToastContext();
   const { unreadCount: communicationUnread } = useNotifications();
   const pendingApprovals = useAppSelector((state) => state.approval.stats?.totalPending || 0);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   return (
     <>
@@ -135,11 +141,37 @@ export const Sidebar = ({ isOpen = true, onClose }: SidebarProps) => {
         {/* Logout */}
         <div className="p-4 border-t border-gray-200">
           <button
-            onClick={logout}
-            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-all"
+            onClick={async () => {
+              if (isLoggingOut) return; // Prevent multiple clicks
+              
+              setIsLoggingOut(true);
+              try {
+                await logout();
+                showSuccess('Logged out successfully');
+                navigate(ROUTES.LOGIN);
+              } catch (error: any) {
+                // Logout will still clear local state even if API fails
+                showError(error.message || 'Failed to logout. Please try again.');
+                // Still navigate to login even on error
+                navigate(ROUTES.LOGIN);
+              } finally {
+                setIsLoggingOut(false);
+              }
+            }}
+            disabled={isLoggingOut}
+            className={cn(
+              "flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium transition-all",
+              isLoggingOut
+                ? "text-gray-400 cursor-not-allowed bg-gray-50"
+                : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+            )}
           >
-            <LogOut className="w-5 h-5" />
-            Logout
+            {isLoggingOut ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <LogOut className="w-5 h-5" />
+            )}
+            {isLoggingOut ? 'Logging out...' : 'Logout'}
           </button>
         </div>
       </aside>

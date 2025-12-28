@@ -1,8 +1,10 @@
 import { useState, useRef, useEffect, KeyboardEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Bell, Menu, LogOut, User, Settings, ChevronDown } from 'lucide-react';
+import { Bell, Menu, LogOut, User, Settings, ChevronDown, Loader2 } from 'lucide-react';
 import { Avatar, SearchBar } from '@/components/common';
 import { useAppSelector } from '@/store/hooks';
+import { useToastContext } from '@/contexts/ToastContext';
+import { cn } from '@/utils/helpers';
 import { ROUTES } from '@/utils/constants';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -13,11 +15,13 @@ interface HeaderProps {
 export const Header = ({ onMenuClick }: HeaderProps) => {
   const [headerSearch, setHeaderSearch] = useState('');
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const { unreadCount } = useAppSelector((state) => state.notification);
   const { logout } = useAuth();
   const navigate = useNavigate();
+  const { error: showError, success: showSuccess } = useToastContext();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -43,9 +47,23 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
   };
 
   const handleLogout = async () => {
+    if (isLoggingOut) return; // Prevent multiple clicks
+    
     setIsProfileOpen(false);
-    await logout();
-    navigate(ROUTES.LOGIN);
+    setIsLoggingOut(true);
+    
+    try {
+      await logout();
+      showSuccess('Logged out successfully');
+      navigate(ROUTES.LOGIN);
+    } catch (error: any) {
+      // Logout will still clear local state even if API fails
+      showError(error.message || 'Failed to logout. Please try again.');
+      // Still navigate to login even on error
+      navigate(ROUTES.LOGIN);
+    } finally {
+      setIsLoggingOut(false);
+    }
   };
 
   return (
@@ -146,12 +164,22 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
 
                 <button
                   onClick={handleLogout}
-                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors focus:outline-none focus:bg-red-50 text-left"
+                  disabled={isLoggingOut}
+                  className={cn(
+                    "w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors focus:outline-none text-left",
+                    isLoggingOut
+                      ? "text-red-400 bg-red-50 cursor-not-allowed"
+                      : "text-red-600 hover:bg-red-50 focus:bg-red-50"
+                  )}
                   role="menuitem"
                   tabIndex={0}
                 >
-                  <LogOut className="w-4 h-4" aria-hidden="true" />
-                  Logout
+                  {isLoggingOut ? (
+                    <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
+                  ) : (
+                    <LogOut className="w-4 h-4" aria-hidden="true" />
+                  )}
+                  {isLoggingOut ? 'Logging out...' : 'Logout'}
                 </button>
               </div>
             )}
