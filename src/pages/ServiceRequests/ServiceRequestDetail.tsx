@@ -10,7 +10,6 @@ import {
   AlertCircle,
   DollarSign,
   User,
-  Mail,
   Phone,
   Clock
 } from 'lucide-react';
