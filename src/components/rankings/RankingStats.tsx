@@ -1,14 +1,13 @@
 import { StatCard } from '@/components/common';
-import { CategoryStats, RankingCategoryId } from '@/types';
+import { CategoryStats } from '@/types';
 import { formatNumber } from '@/utils/formatters';
-import { Trophy, Users, TrendingUp, Eye, EyeOff } from 'lucide-react';
+import { Trophy, Users, TrendingUp, EyeOff } from 'lucide-react';
 
 interface RankingStatsProps {
   stats: CategoryStats | null;
-  category: RankingCategoryId;
 }
 
-export const RankingStats = ({ stats, category }: RankingStatsProps) => {
+export const RankingStats = ({ stats }: RankingStatsProps) => {
   if (!stats) {
     return (
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">

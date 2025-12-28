@@ -1,5 +1,6 @@
 import { call, put, takeLatest, select } from 'redux-saga/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
+import { SagaIterator } from 'redux-saga';
 import { rankingsApi } from '@/api';
 import {
   fetchRankingsRequest,
@@ -18,7 +19,7 @@ import { RankingCategoryId, BulkActionRequest } from '@/types';
 import { RootState } from '../index';
 
 // Fetch rankings saga
-function* fetchRankingsSaga(action: PayloadAction<RankingCategoryId>) {
+function* fetchRankingsSaga(action: PayloadAction<RankingCategoryId>): SagaIterator {
   try {
     const category = action.payload;
     const response = yield call(rankingsApi.getRankings, category, {
@@ -45,7 +46,7 @@ function* fetchRankingsSaga(action: PayloadAction<RankingCategoryId>) {
 // Reorder rankings saga
 function* reorderRankingsSaga(
   action: PayloadAction<{ category: RankingCategoryId; order: string[] }>
-) {
+): SagaIterator {
   try {
     const { category, order } = action.payload;
     
@@ -76,7 +77,7 @@ function* pinAstrologerSaga(
     category: RankingCategoryId;
     position?: number;
   }>
-) {
+): SagaIterator {
   try {
     const { astrologerId, category, position } = action.payload;
     
@@ -104,7 +105,7 @@ function* unpinAstrologerSaga(
     astrologerId: string;
     category: RankingCategoryId;
   }>
-) {
+): SagaIterator {
   try {
     const { astrologerId, category } = action.payload;
     
@@ -132,7 +133,7 @@ function* hideAstrologerSaga(
     astrologerId: string;
     category: RankingCategoryId;
   }>
-) {
+): SagaIterator {
   try {
     const { astrologerId, category } = action.payload;
     
@@ -160,7 +161,7 @@ function* unhideAstrologerSaga(
     astrologerId: string;
     category: RankingCategoryId;
   }>
-) {
+): SagaIterator {
   try {
     const { astrologerId, category } = action.payload;
     
@@ -183,7 +184,7 @@ function* unhideAstrologerSaga(
 }
 
 // Bulk actions saga
-function* bulkActionsSaga(action: PayloadAction<BulkActionRequest>) {
+function* bulkActionsSaga(action: PayloadAction<BulkActionRequest>): SagaIterator {
   try {
     yield put(bulkActionsRequest(action.payload));
 
@@ -202,7 +203,7 @@ function* bulkActionsSaga(action: PayloadAction<BulkActionRequest>) {
 }
 
 // Watcher saga
-export default function* rankingsSaga() {
+export default function* rankingsSaga(): SagaIterator {
   yield takeLatest(fetchRankingsRequest.type, fetchRankingsSaga);
   yield takeLatest(reorderRankings.type, reorderRankingsSaga);
   yield takeLatest(pinAstrologer.type, pinAstrologerSaga);

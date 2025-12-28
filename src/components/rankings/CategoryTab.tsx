@@ -108,12 +108,11 @@ export const CategoryTab = ({ category, rankings, stats, isLoading }: CategoryTa
   return (
     <div className="space-y-6">
       {/* Statistics */}
-      <RankingStats stats={stats} category={category} />
+      <RankingStats stats={stats} />
 
       {/* Bulk Actions */}
       <BulkActions
         selectedCount={selectedIds.size}
-        category={category}
         onPin={handleBulkPin}
         onUnpin={handleBulkUnpin}
         onHide={handleBulkHide}

@@ -3,7 +3,6 @@ import {
   AstrologerRanking,
   RankingCategoryId,
   CategoryStats,
-  RankingUpdate,
   BulkActionRequest,
 } from '@/types';
 

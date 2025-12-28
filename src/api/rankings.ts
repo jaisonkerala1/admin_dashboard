@@ -1,5 +1,5 @@
 import apiClient from './client';
-import { RankingsResponse, RankingCategoryId, RankingUpdate, BulkActionRequest, ApiResponse } from '@/types';
+import { RankingsResponse, RankingCategoryId, BulkActionRequest, ApiResponse } from '@/types';
 
 export const rankingsApi = {
   getRankings: async (

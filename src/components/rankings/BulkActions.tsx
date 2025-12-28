@@ -1,9 +1,7 @@
 import { Pin, EyeOff, Eye, X } from 'lucide-react';
-import { RankingCategoryId } from '@/types';
 
 interface BulkActionsProps {
   selectedCount: number;
-  category: RankingCategoryId;
   onPin: () => void;
   onUnpin: () => void;
   onHide: () => void;
@@ -13,7 +11,6 @@ interface BulkActionsProps {
 
 export const BulkActions = ({
   selectedCount,
-  category,
   onPin,
   onUnpin,
   onHide,
