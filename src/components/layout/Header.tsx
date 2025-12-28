@@ -1,9 +1,10 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Bell, Menu } from 'lucide-react';
+import { useState, useRef, useEffect, KeyboardEvent } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Bell, Menu, LogOut, User, Settings, ChevronDown } from 'lucide-react';
 import { Avatar, SearchBar } from '@/components/common';
 import { useAppSelector } from '@/store/hooks';
 import { ROUTES } from '@/utils/constants';
+import { useAuth } from '@/hooks/useAuth';
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -11,7 +12,41 @@ interface HeaderProps {
 
 export const Header = ({ onMenuClick }: HeaderProps) => {
   const [headerSearch, setHeaderSearch] = useState('');
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const { unreadCount } = useAppSelector((state) => state.notification);
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setIsProfileOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Handle keyboard navigation for accessibility
+  const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
+    if (event.key === 'Escape') {
+      setIsProfileOpen(false);
+      buttonRef.current?.focus();
+    } else if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      setIsProfileOpen(!isProfileOpen);
+    }
+  };
+
+  const handleLogout = async () => {
+    setIsProfileOpen(false);
+    await logout();
+    navigate(ROUTES.LOGIN);
+  };
 
   return (
     <header className="h-16 bg-gray-50 border-b border-gray-200 fixed top-0 right-0 left-0 lg:left-64 z-30">
@@ -20,6 +55,7 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
         <button
           onClick={onMenuClick}
           className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors mr-2"
+          aria-label="Toggle menu"
         >
           <Menu className="w-5 h-5 text-gray-600" />
         </button>
@@ -42,22 +78,83 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
           <Link 
             to={ROUTES.NOTIFICATIONS}
             className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            aria-label={`Notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ''}`}
           >
             <Bell className="w-5 h-5 text-gray-600" />
             {unreadCount > 0 && (
-              <span className="absolute top-1 right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white ring-2 ring-gray-50">
+              <span className="absolute top-1 right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white ring-2 ring-gray-50" aria-label={`${unreadCount} unread notifications`}>
                 {unreadCount > 9 ? '9+' : unreadCount}
               </span>
             )}
           </Link>
 
-          {/* Admin Profile */}
-          <div className="hidden sm:flex items-center gap-3 pl-2 lg:pl-4 border-l border-gray-200">
-            <div className="text-right hidden lg:block">
-              <p className="text-sm font-medium text-gray-900">Admin</p>
-              <p className="text-xs text-gray-500">Platform Manager</p>
-            </div>
-            <Avatar name="Admin" size="md" />
+          {/* Admin Profile Dropdown */}
+          <div className="relative" ref={profileRef}>
+            <button
+              ref={buttonRef}
+              onClick={() => setIsProfileOpen(!isProfileOpen)}
+              onKeyDown={handleKeyDown}
+              className="flex items-center gap-2 sm:gap-3 pl-2 lg:pl-4 border-l border-gray-200 hover:bg-gray-100/50 py-1.5 px-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+              aria-label="Admin profile menu"
+              aria-expanded={isProfileOpen}
+              aria-haspopup="true"
+            >
+              <div className="text-right hidden lg:block">
+                <p className="text-sm font-semibold text-gray-900 leading-tight">Admin</p>
+                <p className="text-[11px] text-gray-500 font-medium">Platform Manager</p>
+              </div>
+              <Avatar name="Admin" size="sm" />
+              <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${isProfileOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
+            </button>
+
+            {/* Dropdown Menu */}
+            {isProfileOpen && (
+              <div 
+                className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200"
+                role="menu"
+                aria-orientation="vertical"
+                aria-labelledby="profile-menu-button"
+              >
+                <div className="px-4 py-3 border-b border-gray-50 mb-1 lg:hidden">
+                  <p className="text-sm font-semibold text-gray-900">Admin</p>
+                  <p className="text-xs text-gray-500">Platform Manager</p>
+                </div>
+
+                <Link
+                  to="/profile"
+                  className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors focus:outline-none focus:bg-gray-50"
+                  onClick={() => setIsProfileOpen(false)}
+                  role="menuitem"
+                  tabIndex={0}
+                >
+                  <User className="w-4 h-4 text-gray-400" aria-hidden="true" />
+                  Profile Settings
+                </Link>
+                
+                <Link
+                  to="/settings"
+                  className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors focus:outline-none focus:bg-gray-50"
+                  onClick={() => setIsProfileOpen(false)}
+                  role="menuitem"
+                  tabIndex={0}
+                >
+                  <Settings className="w-4 h-4 text-gray-400" aria-hidden="true" />
+                  System Settings
+                </Link>
+
+                <div className="h-px bg-gray-100 my-1" role="separator" />
+
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors focus:outline-none focus:bg-red-50 text-left"
+                  role="menuitem"
+                  tabIndex={0}
+                >
+                  <LogOut className="w-4 h-4" aria-hidden="true" />
+                  Logout
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

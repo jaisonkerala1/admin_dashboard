@@ -6,5 +6,9 @@ export const authApi = {
     const response = await apiClient.post('/admin/login', data);
     return response.data;
   },
+  logout: async (): Promise<ApiResponse<{ loggedOutAt: string }>> => {
+    const response = await apiClient.post('/admin/logout');
+    return response.data;
+  },
 };
 

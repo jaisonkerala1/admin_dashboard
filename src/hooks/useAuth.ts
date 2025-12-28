@@ -1,6 +1,7 @@
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { loginRequest, logout as logoutAction } from '@/store/slices/authSlice';
 import { store } from '@/store';
+import { authApi } from '@/api';
 
 export const useAuth = () => {
   const dispatch = useAppDispatch();
@@ -24,8 +25,17 @@ export const useAuth = () => {
     });
   };
 
-  const logout = () => {
-    dispatch(logoutAction());
+  const logout = async () => {
+    try {
+      // Call backend logout API
+      await authApi.logout();
+    } catch (error) {
+      // Even if backend call fails, proceed with local logout
+      console.error('Logout API error:', error);
+    } finally {
+      // Always dispatch logout action to clear local state
+      dispatch(logoutAction());
+    }
   };
 
   return {
