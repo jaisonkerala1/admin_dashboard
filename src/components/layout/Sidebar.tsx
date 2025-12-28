@@ -1,7 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,
-  Bell,
   Users,
   UserCog,
   Calendar,
