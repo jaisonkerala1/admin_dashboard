@@ -154,22 +154,34 @@ export const Communication = () => {
     filterAstrologers();
   }, [astrologers, searchQuery, filterStatus, lastActivity, unreadCounts]);
 
-  // Handle pre-selection from navigation state (from profile page)
+  // Handle pre-selection from navigation state (from profile page) or URL query parameter
   useEffect(() => {
-    if (!location.state?.selectedAstrologerId || astrologers.length === 0) return;
+    if (astrologers.length === 0) return;
+
+    // Check for astrologerId in URL query parameter (from Dashboard message button)
+    const searchParams = new URLSearchParams(location.search);
+    const astrologerIdFromQuery = searchParams.get('astrologerId');
+    
+    // Check for astrologerId in location state (from profile page)
+    const astrologerIdFromState = location.state?.selectedAstrologerId;
+    
+    // Use query parameter first, then state
+    const astrologerId = astrologerIdFromQuery || astrologerIdFromState;
+    
+    if (!astrologerId) return;
 
     const preSelectedAstrologer = astrologers.find(
-      a => a._id === location.state.selectedAstrologerId
+      a => a._id === astrologerId
     );
 
     if (preSelectedAstrologer) {
-      console.log('📍 Pre-selecting astrologer from profile:', preSelectedAstrologer.name);
+      console.log('📍 Pre-selecting astrologer:', preSelectedAstrologer.name);
       setSelectedAstrologer(preSelectedAstrologer);
       setLocalUnreadCounts((prev) => ({ ...prev, [preSelectedAstrologer._id]: 0 }));
       setLastActivity((prev) => ({ ...prev, [preSelectedAstrologer._id]: Date.now() }));
 
-      // Handle the requested action
-      const action = location.state.action;
+      // Handle the requested action (only from state, not from query param)
+      const action = location.state?.action;
       if (action === 'voice_call' && preSelectedAstrologer.isOnline) {
         console.log('📞 Auto-initiating voice call...');
         setTimeout(() => handleCall('voice'), 500); // Small delay to ensure chat window is ready
@@ -179,12 +191,12 @@ export const Communication = () => {
       } else if (action === 'voice_call' || action === 'video_call') {
         console.warn('⚠️ Cannot initiate call - astrologer is offline');
       }
-      // For 'message' action, just opening the chat window is enough (default behavior)
+      // For 'message' action or query param, just opening the chat window is enough (default behavior)
 
-      // Clear the navigation state to prevent re-triggering
+      // Clear the query parameter and navigation state to prevent re-triggering
       navigate(location.pathname, { replace: true, state: {} });
     }
-  }, [astrologers, location.state]);
+  }, [astrologers, location.state, location.search]);
 
   const loadAstrologers = async () => {
     try {

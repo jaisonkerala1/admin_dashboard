@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Users, UserCog, Calendar, DollarSign, AlertCircle, TrendingUp, ShoppingBag, Bell, X, MessageSquare, Phone, Video } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
@@ -25,6 +25,7 @@ import { fetchStatsRequest } from '@/store/slices/communicationSlice';
 
 export const Dashboard = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { requestPermission } = useNotifications();
   const { period, isLoading, error, periodStats, chartData, globalStats, liveStreams, liveLoading, onlineAstrologers, onlineLoading } =
     useAppSelector((s) => s.dashboard);
@@ -340,7 +341,7 @@ export const Dashboard = () => {
                     astrologer={astrologer}
                     onMessage={(id) => {
                       // Navigate to communication page with this astrologer
-                      window.location.href = `/communication?astrologerId=${id}`;
+                      navigate(`/communication?astrologerId=${id}`);
                     }}
                   />
                 ))}
