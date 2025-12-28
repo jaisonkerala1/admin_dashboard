@@ -54,7 +54,6 @@ const rankingsSlice = createSlice({
     fetchRankingsRequest: (state, action: PayloadAction<RankingCategoryId>) => {
       state.isLoading = true;
       state.error = null;
-      state.activeCategory = action.payload;
     },
     fetchRankingsSuccess: (
       state,

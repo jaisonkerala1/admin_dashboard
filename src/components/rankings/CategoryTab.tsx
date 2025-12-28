@@ -28,9 +28,10 @@ interface CategoryTabProps {
 export const CategoryTab = ({ category, rankings, stats, isLoading }: CategoryTabProps) => {
   const dispatch = useAppDispatch();
   const { success, error: toastError } = useToastContext();
-  const { error: rankingsError } = useAppSelector((state) => state.rankings);
+  const { error: rankingsError, lastUpdated } = useAppSelector((state) => state.rankings);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [showHidden, setShowHidden] = useState(false);
 
   // Show toast notifications for errors
   useEffect(() => {
@@ -121,18 +122,23 @@ export const CategoryTab = ({ category, rankings, stats, isLoading }: CategoryTa
     );
   };
 
-  // Track previous rankings count to detect additions
-  const prevRankingsCount = useRef(rankings.length);
+  // Track previous update timestamp to detect successful refresh after add
+  const prevLastUpdated = useRef<string | null>(lastUpdated[category] || null);
   const [lastAddedCount, setLastAddedCount] = useState(0);
 
   useEffect(() => {
-    if (rankings.length > prevRankingsCount.current && !isLoading && lastAddedCount > 0) {
+    const currentUpdated = lastUpdated[category] || null;
+    const updatedChanged = currentUpdated && currentUpdated !== prevLastUpdated.current;
+
+    if (updatedChanged && !isLoading && !rankingsError && lastAddedCount > 0) {
       success(`Successfully added ${lastAddedCount} astrologer(s) to ${category} rankings`);
       setLastAddedCount(0);
     }
-    prevRankingsCount.current = rankings.length;
-  }, [rankings.length, isLoading, category, success, lastAddedCount]);
+    prevLastUpdated.current = currentUpdated;
+  }, [isLoading, category, success, lastAddedCount, lastUpdated, rankingsError]);
 
+  const visibleRankings = rankings.filter((r) => !r.isHidden);
+  const hiddenRankings = rankings.filter((r) => r.isHidden);
   const existingAstrologerIds = new Set(rankings.map((r) => r.astrologerId));
 
   if (isLoading) {
@@ -171,7 +177,7 @@ export const CategoryTab = ({ category, rankings, stats, isLoading }: CategoryTa
 
       {/* Rankings List */}
       <Card>
-        {rankings.length === 0 ? (
+        {visibleRankings.length === 0 ? (
           <EmptyState
             icon={Trophy}
             title="No rankings found"
@@ -179,7 +185,7 @@ export const CategoryTab = ({ category, rankings, stats, isLoading }: CategoryTa
           />
         ) : (
           <div className="space-y-3">
-            {rankings.map((astrologer, index) => (
+            {visibleRankings.map((astrologer, index) => (
               <RankingCard
                 key={astrologer.astrologerId}
                 astrologer={astrologer}
@@ -196,6 +202,40 @@ export const CategoryTab = ({ category, rankings, stats, isLoading }: CategoryTa
           </div>
         )}
       </Card>
+
+      {/* Hidden List (collapsible) */}
+      {hiddenRankings.length > 0 && (
+        <div className="space-y-3">
+          <button
+            onClick={() => setShowHidden((v) => !v)}
+            className="text-sm font-medium text-gray-700 hover:text-gray-900"
+          >
+            {showHidden ? 'Hide' : 'Show'} hidden astrologers ({hiddenRankings.length})
+          </button>
+
+          {showHidden && (
+            <Card>
+              <div className="space-y-3">
+                {hiddenRankings.map((astrologer, index) => (
+                  <RankingCard
+                    key={astrologer.astrologerId}
+                    astrologer={astrologer}
+                    // Hidden items are shown after the visible list; keep a stable display rank
+                    rank={astrologer.liveRank || visibleRankings.length + index + 1}
+                    category={category}
+                    onPin={handlePin}
+                    onUnpin={handleUnpin}
+                    onHide={handleHide}
+                    onUnhide={handleUnhide}
+                    isSelected={selectedIds.has(astrologer.astrologerId)}
+                    onSelect={handleSelect}
+                  />
+                ))}
+              </div>
+            </Card>
+          )}
+        </div>
+      )}
 
       {/* Add Astrologer Modal */}
       <AddAstrologerModal

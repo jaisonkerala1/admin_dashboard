@@ -59,7 +59,6 @@ export const AstrologerRankings = () => {
 
   const handleCategoryChange = (category: RankingCategoryId) => {
     dispatch(setActiveCategory(category));
-    dispatch(fetchRankingsRequest(category));
   };
 
   const activeCategoryData = categories.find((c) => c.id === activeCategory);

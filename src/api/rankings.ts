@@ -8,6 +8,7 @@ export const rankingsApi = {
       includeHidden?: boolean;
       limit?: number;
       recalculate?: boolean;
+      includeAll?: boolean;
     }
   ): Promise<RankingsResponse> => {
     const response = await apiClient.get(`/admin/rankings/${category}`, { params });

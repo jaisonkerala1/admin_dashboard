@@ -26,7 +26,9 @@ function* fetchRankingsSaga(action: PayloadAction<RankingCategoryId>): SagaItera
     const category = action.payload;
     const response = yield call(rankingsApi.getRankings, category, {
       includeHidden: true,
+      limit: 50,
       recalculate: false,
+      includeAll: false,
     });
 
     if (response.success) {
@@ -51,24 +53,21 @@ function* reorderRankingsSaga(
 ): SagaIterator {
   try {
     const { category, order } = action.payload;
-    
-    // Optimistic update
-    yield put(reorderRankings({ category, order }));
 
     // Call API
     const response = yield call(rankingsApi.reorderRankings, category, order);
 
     if (!response.success) {
-      // Revert on failure - refetch rankings
-      yield put(fetchRankingsRequest(category));
       yield put(fetchRankingsFailure(response.message || 'Failed to reorder rankings'));
+      yield put(fetchRankingsRequest(category));
+      return;
     }
-  } catch (error: any) {
-    // Revert on error - refetch rankings
-    const state: RootState = yield select();
-    const category = state.rankings.activeCategory;
+
+    // Refetch to reflect server truth (pinned positions / final list)
     yield put(fetchRankingsRequest(category));
+  } catch (error: any) {
     yield put(fetchRankingsFailure(error.message || 'Failed to reorder rankings'));
+    yield put(fetchRankingsRequest(action.payload.category));
   }
 }
 
@@ -82,22 +81,19 @@ function* pinAstrologerSaga(
 ): SagaIterator {
   try {
     const { astrologerId, category, position } = action.payload;
-    
-    // Optimistic update
-    yield put(pinAstrologer({ astrologerId, category, position }));
 
     const response = yield call(rankingsApi.pinAstrologer, astrologerId, category, position);
 
     if (!response.success) {
-      // Revert on failure
-      yield put(unpinAstrologer({ astrologerId, category }));
       yield put(fetchRankingsFailure(response.message || 'Failed to pin astrologer'));
+      yield put(fetchRankingsRequest(category));
+      return;
     }
+
+    yield put(fetchRankingsRequest(category));
   } catch (error: any) {
-    // Revert on error
-    const { astrologerId, category } = action.payload;
-    yield put(unpinAstrologer({ astrologerId, category }));
     yield put(fetchRankingsFailure(error.message || 'Failed to pin astrologer'));
+    yield put(fetchRankingsRequest(action.payload.category));
   }
 }
 
@@ -110,22 +106,19 @@ function* unpinAstrologerSaga(
 ): SagaIterator {
   try {
     const { astrologerId, category } = action.payload;
-    
-    // Optimistic update
-    yield put(unpinAstrologer({ astrologerId, category }));
 
     const response = yield call(rankingsApi.unpinAstrologer, astrologerId, category);
 
     if (!response.success) {
-      // Revert on failure - refetch
-      yield put(fetchRankingsRequest(category));
       yield put(fetchRankingsFailure(response.message || 'Failed to unpin astrologer'));
+      yield put(fetchRankingsRequest(category));
+      return;
     }
-  } catch (error: any) {
-    // Revert on error - refetch
-    const { category } = action.payload;
+
     yield put(fetchRankingsRequest(category));
+  } catch (error: any) {
     yield put(fetchRankingsFailure(error.message || 'Failed to unpin astrologer'));
+    yield put(fetchRankingsRequest(action.payload.category));
   }
 }
 
@@ -138,22 +131,19 @@ function* hideAstrologerSaga(
 ): SagaIterator {
   try {
     const { astrologerId, category } = action.payload;
-    
-    // Optimistic update
-    yield put(hideAstrologer({ astrologerId, category }));
 
     const response = yield call(rankingsApi.hideAstrologer, astrologerId, category);
 
     if (!response.success) {
-      // Revert on failure
-      yield put(unhideAstrologer({ astrologerId, category }));
       yield put(fetchRankingsFailure(response.message || 'Failed to hide astrologer'));
+      yield put(fetchRankingsRequest(category));
+      return;
     }
+
+    yield put(fetchRankingsRequest(category));
   } catch (error: any) {
-    // Revert on error
-    const { astrologerId, category } = action.payload;
-    yield put(unhideAstrologer({ astrologerId, category }));
     yield put(fetchRankingsFailure(error.message || 'Failed to hide astrologer'));
+    yield put(fetchRankingsRequest(action.payload.category));
   }
 }
 
@@ -166,30 +156,25 @@ function* unhideAstrologerSaga(
 ): SagaIterator {
   try {
     const { astrologerId, category } = action.payload;
-    
-    // Optimistic update
-    yield put(unhideAstrologer({ astrologerId, category }));
 
     const response = yield call(rankingsApi.unhideAstrologer, astrologerId, category);
 
     if (!response.success) {
-      // Revert on failure - refetch
-      yield put(fetchRankingsRequest(category));
       yield put(fetchRankingsFailure(response.message || 'Failed to unhide astrologer'));
+      yield put(fetchRankingsRequest(category));
+      return;
     }
-  } catch (error: any) {
-    // Revert on error - refetch
-    const { category } = action.payload;
+
     yield put(fetchRankingsRequest(category));
+  } catch (error: any) {
     yield put(fetchRankingsFailure(error.message || 'Failed to unhide astrologer'));
+    yield put(fetchRankingsRequest(action.payload.category));
   }
 }
 
 // Bulk actions saga
 function* bulkActionsSaga(action: PayloadAction<BulkActionRequest>): SagaIterator {
   try {
-    yield put(bulkActionsRequest(action.payload));
-
     const response = yield call(rankingsApi.bulkActions, action.payload);
 
     if (response.success) {
