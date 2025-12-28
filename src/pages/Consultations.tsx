@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   Search,
   Phone, 
@@ -20,7 +20,7 @@ import {
   Star
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
-import { Card, Loader, EmptyState, RoundAvatar, PillBadge, ShowEntriesDropdown, StatCard, Modal, Avatar, SearchBar } from '@/components/common';
+import { Card, Loader, EmptyState, RoundAvatar, PillBadge, ShowEntriesDropdown, StatCard, Avatar, SearchBar } from '@/components/common';
 import { formatCurrency, formatDuration } from '@/utils/formatters';
 import { RootState } from '@/store';
 import { Consultation } from '@/types';
@@ -56,6 +56,7 @@ const typeConfig = {
 
 export const Consultations = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { 
     consultations, 
     isLoading, 
@@ -66,8 +67,6 @@ export const Consultations = () => {
     selectedIds, 
     stats 
   } = useSelector((state: RootState) => state.consultations);
-  
-  const [selectedConsultation, setSelectedConsultation] = useState<Consultation | null>(null);
 
   useEffect(() => {
     dispatch(fetchConsultationsRequest());
@@ -361,7 +360,7 @@ export const Consultations = () => {
                       <td className="px-4 py-4">
                         <div className="flex items-center gap-2">
                           <button
-                            onClick={() => setSelectedConsultation(consultation)}
+                            onClick={() => navigate(`${ROUTES.CONSULTATIONS}/${consultation._id}`)}
                             className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                             title="View Details"
                           >
@@ -575,268 +574,6 @@ export const Consultations = () => {
         )}
       </Card>
 
-      {/* Modern Consultation Detail Modal */}
-      {selectedConsultation && (
-        <Modal
-          isOpen={true}
-          onClose={() => setSelectedConsultation(null)}
-          title=""
-          size="2xl"
-        >
-          <div className="space-y-6">
-            {/* Header Section */}
-            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 pb-4 border-b border-gray-200">
-              <div className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                  <Calendar className="w-5 h-5 text-blue-600" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900">Consultation Details</h3>
-                  <p className="text-sm text-gray-500 mt-0.5">ID: {selectedConsultation._id.slice(-8)}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                {getStatusBadge(selectedConsultation.status)}
-              </div>
-            </div>
-
-            {/* Two Column Layout - Mobile First */}
-            <div className="flex flex-col lg:flex-row gap-6">
-              
-              {/* RIGHT SIDEBAR - Shows FIRST on mobile */}
-              <div className="order-1 lg:order-2 w-full lg:w-[35%] space-y-4">
-                
-                {/* Quick Info Cards */}
-                <div className="space-y-3">
-                  {/* Scheduled Time */}
-                  <div className="bg-white border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors">
-                    <div className="flex items-center gap-2 text-gray-500 mb-2">
-                      <Calendar className="w-4 h-4" />
-                      <span className="text-xs font-medium uppercase tracking-wide">Scheduled</span>
-                    </div>
-                    <p className="text-sm font-semibold text-gray-900">
-                      {new Date(selectedConsultation.scheduledTime).toLocaleDateString('en-US', { 
-                        month: 'short', 
-                        day: 'numeric', 
-                        year: 'numeric' 
-                      })}
-                    </p>
-                    <p className="text-xs text-gray-600 mt-1">
-                      {new Date(selectedConsultation.scheduledTime).toLocaleTimeString('en-US', { 
-                        hour: 'numeric', 
-                        minute: '2-digit',
-                        hour12: true 
-                      })}
-                    </p>
-                  </div>
-
-                  {/* Duration */}
-                  <div className="bg-white border border-gray-200 rounded-lg p-4 hover:border-purple-300 transition-colors">
-                    <div className="flex items-center gap-2 text-gray-500 mb-2">
-                      <Clock className="w-4 h-4" />
-                      <span className="text-xs font-medium uppercase tracking-wide">Duration</span>
-                    </div>
-                    <p className="text-sm font-semibold text-gray-900">
-                      {formatDuration(selectedConsultation.duration)}
-                    </p>
-                  </div>
-
-                  {/* Amount */}
-                  <div className="bg-white border border-gray-200 rounded-lg p-4 hover:border-green-300 transition-colors">
-                    <div className="flex items-center gap-2 text-gray-500 mb-2">
-                      <DollarSign className="w-4 h-4" />
-                      <span className="text-xs font-medium uppercase tracking-wide">Amount</span>
-                    </div>
-                    <p className="text-lg font-bold text-gray-900">
-                      {formatCurrency(selectedConsultation.amount)}
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">{selectedConsultation.currency}</p>
-                  </div>
-
-                  {/* Type */}
-                  <div className="bg-white border border-gray-200 rounded-lg p-4">
-                    <div className="flex items-center gap-2 text-gray-500 mb-2">
-                      <Activity className="w-4 h-4" />
-                      <span className="text-xs font-medium uppercase tracking-wide">Type</span>
-                    </div>
-                    <div className="mt-2">
-                      {getTypeIcon(selectedConsultation.type)}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Timestamps */}
-                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                  <h4 className="text-xs font-semibold text-gray-700 uppercase tracking-wide mb-3">Timeline</h4>
-                  <div className="space-y-2 text-xs">
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-600">Created</span>
-                      <span className="text-gray-900 font-medium">
-                        {new Date(selectedConsultation.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                      </span>
-                    </div>
-                    {selectedConsultation.startedAt && (
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-600">Started</span>
-                        <span className="text-gray-900 font-medium">
-                          {new Date(selectedConsultation.startedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                        </span>
-                      </div>
-                    )}
-                    {selectedConsultation.completedAt && (
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-600">Completed</span>
-                        <span className="text-gray-900 font-medium">
-                          {new Date(selectedConsultation.completedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                        </span>
-                      </div>
-                    )}
-                    {selectedConsultation.cancelledAt && (
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-600">Cancelled</span>
-                        <span className="text-gray-900 font-medium">
-                          {new Date(selectedConsultation.cancelledAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* LEFT CONTENT - Shows SECOND on mobile */}
-              <div className="order-2 lg:order-1 w-full lg:w-[65%] space-y-6">
-                
-                {/* Client Information */}
-                <div>
-                  <h4 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                    <Users className="w-4 h-4 text-gray-500" />
-                    Client Information
-                  </h4>
-                  <div className="bg-white border border-gray-200 rounded-lg p-4 space-y-3">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-semibold">
-                          {selectedConsultation.clientName.charAt(0).toUpperCase()}
-                        </div>
-                        <div>
-                          <p className="font-semibold text-gray-900">{selectedConsultation.clientName}</p>
-                          <p className="text-sm text-gray-600">{selectedConsultation.clientPhone}</p>
-                        </div>
-                      </div>
-                    </div>
-                    {selectedConsultation.clientEmail && (
-                      <div className="pt-3 border-t border-gray-100">
-                        <p className="text-xs text-gray-500 mb-1">Email</p>
-                        <p className="text-sm text-gray-900">{selectedConsultation.clientEmail}</p>
-                      </div>
-                    )}
-                    {(selectedConsultation.clientAge || selectedConsultation.clientGender) && (
-                      <div className="pt-3 border-t border-gray-100 flex gap-4">
-                        {selectedConsultation.clientAge && (
-                          <div>
-                            <p className="text-xs text-gray-500 mb-1">Age</p>
-                            <p className="text-sm text-gray-900">{selectedConsultation.clientAge} years</p>
-                          </div>
-                        )}
-                        {selectedConsultation.clientGender && (
-                          <div>
-                            <p className="text-xs text-gray-500 mb-1">Gender</p>
-                            <p className="text-sm text-gray-900 capitalize">{selectedConsultation.clientGender}</p>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Astrologer */}
-                {selectedConsultation.astrologerId && (
-                  <div>
-                    <h4 className="text-sm font-semibold text-gray-900 mb-3">Astrologer</h4>
-                    <Link
-                      to={`${ROUTES.ASTROLOGERS}/${selectedConsultation.astrologerId._id}`}
-                      className="bg-white border border-gray-200 rounded-lg p-4 hover:border-blue-300 hover:shadow-sm transition-all block"
-                    >
-                      <div className="flex items-center gap-3">
-                        <Avatar
-                          src={selectedConsultation.astrologerId.profilePicture}
-                          name={selectedConsultation.astrologerId.name}
-                          size="lg"
-                        />
-                        <div>
-                          <p className="font-semibold text-gray-900 hover:text-blue-600 transition-colors">
-                            {selectedConsultation.astrologerId.name}
-                          </p>
-                          <p className="text-sm text-gray-600">{selectedConsultation.astrologerId.email}</p>
-                        </div>
-                      </div>
-                    </Link>
-                  </div>
-                )}
-
-                {/* Topics */}
-                {selectedConsultation.consultationTopics && selectedConsultation.consultationTopics.length > 0 && (
-                  <div>
-                    <h4 className="text-sm font-semibold text-gray-900 mb-3">Topics</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedConsultation.consultationTopics.map((topic, idx) => (
-                        <span
-                          key={idx}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-700 text-sm font-medium rounded-full border border-blue-200 hover:bg-blue-100 transition-colors"
-                        >
-                          <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-                          {topic}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Notes */}
-                {selectedConsultation.notes && (
-                  <div>
-                    <h4 className="text-sm font-semibold text-gray-900 mb-3">Notes</h4>
-                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                      <p className="text-sm text-gray-900 whitespace-pre-wrap">{selectedConsultation.notes}</p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Rating & Feedback */}
-                {selectedConsultation.rating && (
-                  <div>
-                    <h4 className="text-sm font-semibold text-gray-900 mb-3">Client Feedback</h4>
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                      <div className="flex items-center gap-2 mb-3">
-                        <div className="flex items-center">
-                          {Array.from({ length: 5 }).map((_, i) => (
-                            <Star
-                              key={i}
-                              className={`w-5 h-5 ${
-                                i < selectedConsultation.rating!
-                                  ? 'fill-amber-400 text-amber-400'
-                                  : 'text-gray-300'
-                              }`}
-                            />
-                          ))}
-                        </div>
-                        <span className="text-sm font-semibold text-gray-900">
-                          {selectedConsultation.rating}/5
-                        </span>
-                      </div>
-                      {selectedConsultation.feedback && (
-                        <p className="text-sm text-gray-900">{selectedConsultation.feedback}</p>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-              </div>
-            </div>
-
-          </div>
-        </Modal>
-      )}
     </MainLayout>
   );
 };

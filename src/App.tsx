@@ -6,6 +6,7 @@ import {
   AstrologerDetail,
   Users,
   Consultations,
+  ConsultationDetail,
   Services,
   ServiceDetail,
   ServiceRequests,
@@ -44,6 +45,7 @@ function App() {
         <Route path="/astrologers/:id" element={<AstrologerDetail />} />
         <Route path={ROUTES.USERS} element={<Users />} />
         <Route path={ROUTES.CONSULTATIONS} element={<Consultations />} />
+        <Route path={ROUTES.CONSULTATION_DETAIL} element={<ConsultationDetail />} />
         <Route path={ROUTES.SERVICES} element={<Services />} />
               <Route path={`${ROUTES.SERVICES}/:id`} element={<ServiceDetail />} />
               <Route path={ROUTES.SERVICE_REQUESTS} element={<ServiceRequests />} />
