@@ -194,7 +194,7 @@ const rankingsSlice = createSlice({
     // Add astrologers to ranking
     addAstrologersRequest: (
       state,
-      action: PayloadAction<{
+      _action: PayloadAction<{
         astrologerIds: string[];
         category: RankingCategoryId;
       }>
