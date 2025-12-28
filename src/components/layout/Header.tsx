@@ -112,7 +112,10 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
               ref={buttonRef}
               onClick={() => setIsProfileOpen(!isProfileOpen)}
               onKeyDown={handleKeyDown}
-              className="flex items-center gap-2 sm:gap-3 pl-2 lg:pl-4 border-l border-gray-200 hover:bg-gray-100/50 py-1.5 px-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+              className={cn(
+                "flex items-center gap-2 sm:gap-3 pl-2 lg:pl-4 border-l border-gray-200 hover:bg-gray-100/50 py-1.5 px-2 rounded-lg transition-colors focus:outline-none",
+                isProfileOpen ? "" : "focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+              )}
               aria-label="Admin profile menu"
               aria-expanded={isProfileOpen}
               aria-haspopup="true"
