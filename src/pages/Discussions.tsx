@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
-import { Card, Loader, EmptyState, Avatar, SearchBar } from '@/components/common';
+import { Card, Loader, EmptyState, Avatar, SearchBar, StatCard } from '@/components/common';
 import { discussionsApi } from '@/api';
 import { Discussion } from '@/types';
 import { formatDateTime, formatNumber } from '@/utils/formatters';
@@ -73,14 +73,12 @@ export const Discussions = () => {
     }
   };
 
-  // Calculate stats
+  // Calculate stats - only from current page data
   const stats = {
     total: pagination.total,
     public: discussions.filter(d => d.isPublic).length,
     moderated: discussions.filter(d => d.isModerated).length,
     pinned: discussions.filter(d => d.isPinned).length,
-    totalComments: discussions.reduce((sum, d) => sum + d.commentCount, 0),
-    totalViews: discussions.reduce((sum, d) => sum + d.viewCount, 0),
     totalLikes: discussions.reduce((sum, d) => sum + d.likeCount, 0),
   };
 
@@ -92,76 +90,32 @@ export const Discussions = () => {
       />
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-7 gap-3 mb-6">
-        <Card className="!p-4 border-l-4 border-l-blue-500">
-          <div className="flex items-center gap-2">
-            <MessageSquare className="w-5 h-5 text-blue-600" />
-            <div>
-              <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
-              <p className="text-xs text-gray-600">Total</p>
-            </div>
-          </div>
-        </Card>
-        
-        <Card className="!p-4 border-l-4 border-l-green-500">
-          <div className="flex items-center gap-2">
-            <Eye className="w-5 h-5 text-green-600" />
-            <div>
-              <p className="text-2xl font-bold text-gray-900">{stats.public}</p>
-              <p className="text-xs text-gray-600">Public</p>
-            </div>
-          </div>
-        </Card>
-        
-        <Card className="!p-4 border-l-4 border-l-purple-500">
-          <div className="flex items-center gap-2">
-            <Shield className="w-5 h-5 text-purple-600" />
-            <div>
-              <p className="text-2xl font-bold text-gray-900">{stats.moderated}</p>
-              <p className="text-xs text-gray-600">Moderated</p>
-            </div>
-          </div>
-        </Card>
-        
-        <Card className="!p-4 border-l-4 border-l-amber-500">
-          <div className="flex items-center gap-2">
-            <Pin className="w-5 h-5 text-amber-600" />
-            <div>
-              <p className="text-2xl font-bold text-gray-900">{stats.pinned}</p>
-              <p className="text-xs text-gray-600">Pinned</p>
-            </div>
-          </div>
-        </Card>
-        
-        <Card className="!p-4 border-l-4 border-l-indigo-500">
-          <div className="flex items-center gap-2">
-            <MessageSquare className="w-5 h-5 text-indigo-600" />
-            <div>
-              <p className="text-2xl font-bold text-gray-900">{formatNumber(stats.totalComments)}</p>
-              <p className="text-xs text-gray-600">Comments</p>
-            </div>
-          </div>
-        </Card>
-        
-        <Card className="!p-4 border-l-4 border-l-pink-500">
-          <div className="flex items-center gap-2">
-            <Heart className="w-5 h-5 text-pink-600" />
-            <div>
-              <p className="text-2xl font-bold text-gray-900">{formatNumber(stats.totalLikes)}</p>
-              <p className="text-xs text-gray-600">Likes</p>
-            </div>
-          </div>
-        </Card>
-        
-        <Card className="!p-4 border-l-4 border-l-emerald-500">
-          <div className="flex items-center gap-2">
-            <Eye className="w-5 h-5 text-emerald-600" />
-            <div>
-              <p className="text-2xl font-bold text-gray-900">{formatNumber(stats.totalViews)}</p>
-              <p className="text-xs text-gray-600">Views</p>
-            </div>
-          </div>
-        </Card>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
+        <StatCard
+          title="Total"
+          value={stats.total}
+          icon={MessageSquare}
+        />
+        <StatCard
+          title="Public"
+          value={stats.public}
+          icon={Eye}
+        />
+        <StatCard
+          title="Moderated"
+          value={stats.moderated}
+          icon={Shield}
+        />
+        <StatCard
+          title="Pinned"
+          value={stats.pinned}
+          icon={Pin}
+        />
+        <StatCard
+          title="Likes"
+          value={formatNumber(stats.totalLikes)}
+          icon={Heart}
+        />
       </div>
 
       <Card>
