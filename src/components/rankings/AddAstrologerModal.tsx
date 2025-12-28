@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, X, UserPlus, Loader2 } from 'lucide-react';
+import { UserPlus } from 'lucide-react';
 import { Modal, SearchBar, Avatar, Loader } from '@/components/common';
 import { astrologersApi } from '@/api';
 import { Astrologer } from '@/types';
@@ -24,7 +24,7 @@ export const AddAstrologerModal = ({
   const [astrologers, setAstrologers] = useState<Astrologer[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  const { success, error: toastError } = useToastContext();
+  const { error: toastError } = useToastContext();
 
   useEffect(() => {
     if (isOpen && search.length >= 2) {
