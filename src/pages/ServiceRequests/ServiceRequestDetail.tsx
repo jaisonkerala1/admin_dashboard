@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { format } from 'date-fns';
 import { 
   ArrowLeft,
   ClipboardList,
@@ -7,10 +8,13 @@ import {
   Package,
   CheckCircle,
   AlertCircle,
-  DollarSign
+  DollarSign,
+  User,
+  Mail,
+  Phone,
+  Clock
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
-import { PageHeader } from '@/components/layout/PageHeader';
 import { Card, Loader, Avatar, Modal } from '@/components/common';
 import { poojaRequestsApi } from '@/api';
 import { PoojaRequest } from '@/types';
@@ -122,222 +126,270 @@ export const ServiceRequestDetail = () => {
 
   return (
     <MainLayout>
-      <PageHeader
-        title="Service Request Details"
-        subtitle={`Request ID: ${request._id}`}
-        action={
+      <div className="space-y-4">
+        {/* Header */}
+        <div className="flex items-center gap-4">
           <button
             onClick={() => navigate(ROUTES.SERVICE_REQUESTS)}
-            className="btn btn-secondary"
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Service Requests
+            <ArrowLeft className="w-5 h-5" />
           </button>
-        }
-      />
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Status Card */}
-        <Card className="lg:col-span-1">
-          <div className="flex flex-col items-center text-center">
-            <div className="p-6 bg-primary-50 rounded-full">
-              <ClipboardList className="w-16 h-16 text-primary-600" />
-            </div>
-            <h2 className="mt-4 text-xl font-bold text-gray-900">Service Request</h2>
-            <div className={`mt-2 px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(request.status)}`}>
-              {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
-            </div>
-            
-            <div className="w-full mt-6 space-y-3 border-t border-gray-200 pt-6">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-600">Price</span>
-                <span className="font-semibold text-gray-900">{formatCurrency(request.price || 0, request.currency)}</span>
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-sm font-mono text-gray-500">
+                {request._id.slice(-8).toUpperCase()}
+              </span>
+              <div className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(request.status)}`}>
+                {request.status.charAt(0).toUpperCase() + request.status.slice(1).replace('_', ' ')}
               </div>
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-600">Date</span>
-                <span className="font-semibold text-gray-900">{formatDateTime(request.requestedDate)}</span>
-              </div>
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-600">Time</span>
-                <span className="font-semibold text-gray-900">{request.requestedTime}</span>
-              </div>
-              {request.completedAt && (
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600">Completed</span>
-                  <span className="font-semibold text-gray-900">{formatDateTime(request.completedAt)}</span>
-                </div>
-              )}
             </div>
-
-            {/* Admin Actions */}
-            <div className="w-full mt-6 space-y-2">
-              {request.status === SERVICE_REQUEST_STATUS.PENDING && (
-                <button
-                  onClick={() => handleUpdateStatus(SERVICE_REQUEST_STATUS.CONFIRMED)}
-                  disabled={isUpdating}
-                  className="w-full btn btn-primary"
-                >
-                  {isUpdating ? 'Confirming...' : (
-                    <>
-                      <CheckCircle className="w-4 h-4 mr-2" />
-                      Confirm Request
-                    </>
-                  )}
-                </button>
-              )}
-              {request.status === SERVICE_REQUEST_STATUS.CONFIRMED && (
-                <button
-                  onClick={() => handleUpdateStatus(SERVICE_REQUEST_STATUS.IN_PROGRESS)}
-                  disabled={isUpdating}
-                  className="w-full btn btn-primary"
-                >
-                  {isUpdating ? 'Starting...' : (
-                    <>
-                      <CheckCircle className="w-4 h-4 mr-2" />
-                      Start Service
-                    </>
-                  )}
-                </button>
-              )}
-              {request.status === SERVICE_REQUEST_STATUS.IN_PROGRESS && (
-                <button
-                  onClick={() => handleUpdateStatus(SERVICE_REQUEST_STATUS.COMPLETED)}
-                  disabled={isUpdating}
-                  className="w-full btn btn-primary"
-                >
-                  {isUpdating ? 'Completing...' : (
-                    <>
-                      <CheckCircle className="w-4 h-4 mr-2" />
-                      Mark as Completed
-                    </>
-                  )}
-                </button>
-              )}
-              {(request.status === SERVICE_REQUEST_STATUS.PENDING || request.status === SERVICE_REQUEST_STATUS.CONFIRMED) && (
-                <button
-                  onClick={() => setShowCancelModal(true)}
-                  className="w-full btn btn-secondary"
-                >
-                  Cancel Request
-                </button>
-              )}
-            </div>
+            <h1 className="text-2xl font-bold text-gray-900">
+              {request.serviceName}
+            </h1>
           </div>
-        </Card>
+        </div>
 
-        {/* Details Section */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Customer Info */}
-          <Card>
-            <h3 className="text-lg font-semibold mb-4">Client Information</h3>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-4">
-                <Avatar 
-                  name={request.customerName} 
-                  size="lg" 
-                />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-4">
+            {/* Service Info */}
+            <Card className="p-6">
+              <div className="flex items-start justify-between mb-4">
                 <div>
-                  <h4 className="font-semibold text-gray-900">
-                    {request.customerName}
-                  </h4>
-                  <p className="text-sm text-gray-600">
-                    {request.customerPhone}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </Card>
-
-          {/* Astrologer Info */}
-          <Card>
-            <h3 className="text-lg font-semibold mb-4">Assigned Astrologer</h3>
-            <div className="flex items-center gap-4">
-              <Link 
-                to={`${ROUTES.ASTROLOGERS}/${request.astrologerId._id}`}
-                className="flex items-center gap-4 hover:opacity-80 transition-opacity"
-              >
-                <Avatar 
-                  src={request.astrologerId.profilePicture}
-                  name={request.astrologerId.name} 
-                  size="lg" 
-                />
-                <div className="flex-1">
-                  <h4 className="font-semibold text-gray-900">
-                    {request.astrologerId.name}
-                  </h4>
-                  <p className="text-sm text-gray-600">
-                    {request.astrologerId.email}
-                  </p>
-                </div>
-              </Link>
-              <button
-                onClick={() => navigate(`${ROUTES.ASTROLOGERS}/${request.astrologerId._id}`)}
-                className="btn btn-secondary"
-              >
-                View Profile
-              </button>
-            </div>
-          </Card>
-
-          {/* Service Info */}
-          <Card>
-            <h3 className="text-lg font-semibold mb-4">Service Details</h3>
-            <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-              <Package className="w-10 h-10 text-primary-600" />
-              <div className="flex-1">
-                <h4 className="font-semibold text-gray-900">
-                  {request.serviceName}
-                </h4>
-                <p className="text-sm text-gray-600">
-                  {request.serviceCategory}
-                </p>
-              </div>
-              {request.serviceId && (
-                <Link to={`${ROUTES.SERVICES}/${request.serviceId}`} className="text-sm text-primary-600 font-medium hover:text-primary-700">
-                  View Service →
-                </Link>
-              )}
-            </div>
-          </Card>
-
-          {/* Details */}
-          <Card>
-            <h3 className="text-lg font-semibold mb-4">Request Details</h3>
-            {request.specialInstructions ? (
-              <div>
-                <p className="text-sm font-medium text-gray-700 mb-2">Special Instructions:</p>
-                <p className="text-gray-700 whitespace-pre-wrap">{request.specialInstructions}</p>
-              </div>
-            ) : (
-              <p className="text-gray-500 italic">No special instructions provided.</p>
-            )}
-            {request.notes && (
-              <div className="mt-4 pt-4 border-t border-gray-200">
-                <p className="text-sm font-medium text-gray-700 mb-2">Admin Notes:</p>
-                <p className="text-gray-700 whitespace-pre-wrap">{request.notes}</p>
-              </div>
-            )}
-          </Card>
-
-          {/* Statistics */}
-          <div className="grid grid-cols-2 gap-4">
-            <Card className="!p-4 border-l-4 border-l-blue-500">
-              <div className="flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-blue-600" />
-                <div>
-                  <p className="text-xs text-gray-600">Created</p>
-                  <p className="text-sm font-semibold text-gray-900">{formatDateTime(request.createdAt)}</p>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    Service Information
+                  </h3>
+                  <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
+                    <Package className="w-10 h-10 text-gray-400" />
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-gray-900">
+                        {request.serviceName}
+                      </h4>
+                      <p className="text-sm text-gray-600">
+                        {request.serviceCategory}
+                      </p>
+                    </div>
+                    {request.serviceId && (
+                      <Link 
+                        to={`${ROUTES.SERVICES}/${request.serviceId}`} 
+                        className="text-sm text-primary-600 font-medium hover:text-primary-700"
+                      >
+                        View Service →
+                      </Link>
+                    )}
+                  </div>
                 </div>
               </div>
             </Card>
-            
-            <Card className="!p-4 border-l-4 border-l-purple-500">
-              <div className="flex items-center gap-2">
-                <DollarSign className="w-5 h-5 text-purple-600" />
+
+            {/* Request Details */}
+            <Card className="p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Request Details
+              </h3>
+              {request.specialInstructions ? (
                 <div>
-                  <p className="text-xs text-gray-600">Price</p>
-                  <p className="text-sm font-semibold text-gray-900">{formatCurrency(request.price || 0, request.currency)}</p>
+                  <p className="text-sm font-medium text-gray-700 mb-2">Special Instructions:</p>
+                  <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">{request.specialInstructions}</p>
                 </div>
+              ) : (
+                <p className="text-gray-500 italic">No special instructions provided.</p>
+              )}
+              {request.notes && (
+                <div className="mt-4 pt-4 border-t border-gray-100">
+                  <p className="text-sm font-medium text-gray-700 mb-2">Admin Notes:</p>
+                  <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">{request.notes}</p>
+                </div>
+              )}
+            </Card>
+
+            {/* Admin Actions */}
+            <Card className="p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Actions
+              </h3>
+              <div className="space-y-2">
+                {request.status === SERVICE_REQUEST_STATUS.PENDING && (
+                  <button
+                    onClick={() => handleUpdateStatus(SERVICE_REQUEST_STATUS.CONFIRMED)}
+                    disabled={isUpdating}
+                    className="w-full px-5 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium transition-all shadow-sm flex items-center justify-center gap-2"
+                  >
+                    <CheckCircle className="w-4 h-4" />
+                    {isUpdating ? 'Confirming...' : 'Confirm Request'}
+                  </button>
+                )}
+                {request.status === SERVICE_REQUEST_STATUS.CONFIRMED && (
+                  <button
+                    onClick={() => handleUpdateStatus(SERVICE_REQUEST_STATUS.IN_PROGRESS)}
+                    disabled={isUpdating}
+                    className="w-full px-5 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium transition-all shadow-sm flex items-center justify-center gap-2"
+                  >
+                    <CheckCircle className="w-4 h-4" />
+                    {isUpdating ? 'Starting...' : 'Start Service'}
+                  </button>
+                )}
+                {request.status === SERVICE_REQUEST_STATUS.IN_PROGRESS && (
+                  <button
+                    onClick={() => handleUpdateStatus(SERVICE_REQUEST_STATUS.COMPLETED)}
+                    disabled={isUpdating}
+                    className="w-full px-5 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium transition-all shadow-sm flex items-center justify-center gap-2"
+                  >
+                    <CheckCircle className="w-4 h-4" />
+                    {isUpdating ? 'Completing...' : 'Mark as Completed'}
+                  </button>
+                )}
+                {(request.status === SERVICE_REQUEST_STATUS.PENDING || request.status === SERVICE_REQUEST_STATUS.CONFIRMED) && (
+                  <button
+                    onClick={() => setShowCancelModal(true)}
+                    className="w-full px-5 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 text-sm font-medium transition-all"
+                  >
+                    Cancel Request
+                  </button>
+                )}
+              </div>
+            </Card>
+          </div>
+
+          {/* Sidebar */}
+          <div className="space-y-4">
+            {/* Request Details */}
+            <Card className="p-6">
+              <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">
+                Request Details
+              </h3>
+              <div className="space-y-5">
+                {/* Status */}
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-tighter mb-2">
+                    Status
+                  </label>
+                  <div className={`inline-block px-3 py-1.5 rounded-lg text-sm font-medium ${getStatusColor(request.status)}`}>
+                    {request.status.charAt(0).toUpperCase() + request.status.slice(1).replace('_', ' ')}
+                  </div>
+                </div>
+
+                {/* Price */}
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-tighter mb-2">
+                    Price
+                  </label>
+                  <div className="flex items-center gap-2 text-sm font-medium text-gray-900">
+                    <DollarSign className="w-4 h-4 text-primary-500" />
+                    {formatCurrency(request.price || 0, request.currency)}
+                  </div>
+                </div>
+
+                {/* Requested Date */}
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-tighter mb-2">
+                    Requested Date
+                  </label>
+                  <div className="flex items-center gap-2 text-sm font-medium text-gray-900">
+                    <Calendar className="w-4 h-4 text-primary-500" />
+                    {formatDateTime(request.requestedDate)}
+                  </div>
+                </div>
+
+                {/* Requested Time */}
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-tighter mb-2">
+                    Requested Time
+                  </label>
+                  <div className="flex items-center gap-2 text-sm font-medium text-gray-900">
+                    <Clock className="w-4 h-4 text-primary-500" />
+                    {request.requestedTime}
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            {/* Client Information */}
+            <Card className="p-6">
+              <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">
+                Client Information
+              </h3>
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center">
+                    <User className="w-5 h-5 text-gray-400" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-sm font-bold text-gray-900 truncate">
+                      {request.customerName}
+                    </div>
+                  </div>
+                </div>
+                {request.customerPhone && (
+                  <div className="flex items-center gap-3 group">
+                    <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-primary-50 transition-colors">
+                      <Phone className="w-4 h-4 text-gray-400 group-hover:text-primary-500" />
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      {request.customerPhone}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </Card>
+
+            {/* Astrologer Information */}
+            <Card className="p-6">
+              <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">
+                Assigned Astrologer
+              </h3>
+              <div className="space-y-4">
+                <Link 
+                  to={`${ROUTES.ASTROLOGERS}/${request.astrologerId._id}`}
+                  className="flex items-center gap-3 group"
+                >
+                  <Avatar 
+                    src={request.astrologerId.profilePicture}
+                    name={request.astrologerId.name} 
+                    size="md"
+                    className="border border-gray-100"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <div className="text-sm font-bold text-gray-900 truncate">
+                      {request.astrologerId.name}
+                    </div>
+                    <div className="text-[10px] text-gray-400 font-mono truncate">
+                      {request.astrologerId.email}
+                    </div>
+                  </div>
+                </Link>
+                <button
+                  onClick={() => navigate(`${ROUTES.ASTROLOGERS}/${request.astrologerId._id}`)}
+                  className="w-full px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 text-sm font-medium transition-all"
+                >
+                  View Profile
+                </button>
+              </div>
+            </Card>
+
+            {/* Timeline */}
+            <Card className="p-6">
+              <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">
+                Timeline
+              </h3>
+              <div className="space-y-4 text-sm">
+                <div className="relative pl-6 pb-4 border-l border-gray-100">
+                  <div className="absolute left-[-5px] top-0 w-2.5 h-2.5 rounded-full bg-blue-500 border-2 border-white shadow-sm" />
+                  <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Created</div>
+                  <div className="text-gray-900 font-medium">
+                    {format(new Date(request.createdAt), 'MMM d, yyyy h:mm a')}
+                  </div>
+                </div>
+                {request.completedAt && (
+                  <div className="relative pl-6 last:pb-0">
+                    <div className="absolute left-[-5px] top-0 w-2.5 h-2.5 rounded-full bg-green-500 border-2 border-white shadow-sm" />
+                    <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Completed</div>
+                    <div className="text-gray-900 font-medium">
+                      {format(new Date(request.completedAt), 'MMM d, yyyy h:mm a')}
+                    </div>
+                  </div>
+                )}
               </div>
             </Card>
           </div>
