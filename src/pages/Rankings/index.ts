@@ -1,0 +1,2 @@
+export { AstrologerRankings } from './AstrologerRankings';
+

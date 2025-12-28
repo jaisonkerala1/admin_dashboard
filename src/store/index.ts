@@ -14,6 +14,7 @@ import communicationReducer from './slices/communicationSlice';
 import approvalReducer from './slices/approvalSlice';
 import walletReducer from './slices/walletSlice';
 import notificationReducer from './slices/notificationSlice';
+import rankingsReducer from './slices/rankingsSlice';
 import rootSaga from './sagas';
 
 // Create saga middleware
@@ -36,6 +37,7 @@ export const store = configureStore({
     approval: approvalReducer,
     wallet: walletReducer,
     notification: notificationReducer,
+    rankings: rankingsReducer,
     // Add more reducers here as needed
   },
   middleware: (getDefaultMiddleware) =>

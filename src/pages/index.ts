@@ -20,4 +20,5 @@ export { Calendar } from './Calendar';
 export { Notifications } from './Notifications';
 export { Support } from './Support';
 export { Approvals } from './Approvals';
+export { AstrologerRankings } from './Rankings';
 

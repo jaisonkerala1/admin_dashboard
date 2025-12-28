@@ -81,6 +81,7 @@ export interface DashboardStats {
 }
 
 export * from './astrologer';
+export * from './ranking';
 export * from './user';
 export * from './earnings';
 export * from './availability';

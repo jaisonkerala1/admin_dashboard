@@ -19,6 +19,7 @@ import {
   TrendingUp,
   X,
   Loader2,
+  Trophy,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNotifications } from '@/contexts/NotificationContext';
@@ -46,6 +47,7 @@ const navigation = [
   { name: 'Wallet', href: ROUTES.WALLET, icon: Wallet },
   { name: 'Support & Tickets', href: ROUTES.SUPPORT, icon: LifeBuoy },
   { name: 'Approval Requests', href: ROUTES.APPROVALS, icon: CheckCircle },
+  { name: 'Astrologer Rankings', href: ROUTES.RANKINGS, icon: Trophy },
 ];
 
 interface SidebarProps {
