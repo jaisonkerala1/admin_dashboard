@@ -15,7 +15,6 @@ import {
   bulkActionsSuccess,
   bulkActionsFailure,
   addAstrologersRequest,
-  addAstrologersSuccess,
   addAstrologersFailure,
 } from '../slices/rankingsSlice';
 import { RankingCategoryId, BulkActionRequest } from '@/types';

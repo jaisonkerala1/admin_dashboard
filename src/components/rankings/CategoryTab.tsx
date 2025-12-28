@@ -16,7 +16,6 @@ import {
   unhideAstrologer,
   bulkActionsRequest,
   addAstrologersRequest,
-  fetchRankingsRequest,
 } from '@/store/slices/rankingsSlice';
 
 interface CategoryTabProps {
