@@ -12,15 +12,9 @@ interface ApprovalRequestCardProps {
 }
 
 export const ApprovalRequestCard: React.FC<ApprovalRequestCardProps> = ({ request, onClick }) => {
-  const getStatusBorderColor = () => {
-    if (request.status === 'pending') return 'border-l-orange-500';
-    if (request.status === 'approved') return 'border-l-green-500';
-    return 'border-l-red-500';
-  };
-
   return (
     <div className="cursor-pointer" onClick={onClick}>
-      <Card className={`p-4 hover:shadow-md transition-all border-l-4 ${getStatusBorderColor()}`}>
+      <Card className="p-4 hover:shadow-md transition-all">
         <div className="flex items-start gap-4">
           {/* Avatar */}
           <div className="flex-shrink-0">
