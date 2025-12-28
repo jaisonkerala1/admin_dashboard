@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
-import { Card, Loader, Avatar, Modal } from '@/components/common';
+import { Card, Loader, Avatar, Modal, StatCard } from '@/components/common';
 import { servicesApi, astrologersApi } from '@/api';
 import { Service, Astrologer } from '@/types';
 import { formatCurrency, formatNumber, formatDateTime } from '@/utils/formatters';
@@ -330,47 +330,26 @@ export const ServiceDetail = () => {
 
           {/* Statistics */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Card className="!p-4 border-l-4 border-l-blue-500">
-              <div className="flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-blue-600" />
-                <div>
-                  <p className="text-2xl font-bold text-gray-900">{formatNumber(service.totalBookings || 0)}</p>
-                  <p className="text-xs text-gray-600">Total Bookings</p>
-                </div>
-              </div>
-            </Card>
-            
-            <Card className="!p-4 border-l-4 border-l-green-500">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-5 h-5 text-green-600" />
-                <div>
-                  <p className="text-2xl font-bold text-gray-900">{formatNumber(service.completedBookings || 0)}</p>
-                  <p className="text-xs text-gray-600">Completed</p>
-                </div>
-              </div>
-            </Card>
-            
-            <Card className="!p-4 border-l-4 border-l-yellow-500">
-              <div className="flex items-center gap-2">
-                <Star className="w-5 h-5 text-yellow-600" />
-                <div>
-                  <p className="text-2xl font-bold text-gray-900">{(service.averageRating || 0).toFixed(1)}</p>
-                  <p className="text-xs text-gray-600">Avg Rating</p>
-                </div>
-              </div>
-            </Card>
-            
-            <Card className="!p-4 border-l-4 border-l-purple-500">
-              <div className="flex items-center gap-2">
-                <DollarSign className="w-5 h-5 text-purple-600" />
-                <div>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {formatCurrency((service.price || 0) * (service.totalBookings || 0))}
-                  </p>
-                  <p className="text-xs text-gray-600">Total Revenue</p>
-                </div>
-              </div>
-            </Card>
+            <StatCard
+              title="Total Bookings"
+              value={formatNumber(service.totalBookings || 0)}
+              icon={TrendingUp}
+            />
+            <StatCard
+              title="Completed"
+              value={formatNumber(service.completedBookings || 0)}
+              icon={CheckCircle}
+            />
+            <StatCard
+              title="Avg Rating"
+              value={`${(service.averageRating || 0).toFixed(1)} ⭐`}
+              icon={Star}
+            />
+            <StatCard
+              title="Total Revenue"
+              value={formatCurrency((service.price || 0) * (service.totalBookings || 0))}
+              icon={DollarSign}
+            />
           </div>
 
           {/* Additional Info */}
