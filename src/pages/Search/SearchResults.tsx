@@ -11,7 +11,6 @@ import {
   setCurrentPage,
 } from '@/store/slices/searchSlice';
 import {
-  selectSearchQuery,
   selectSearchResults,
   selectIsSearching,
 } from '@/store/selectors/searchSelectors';
