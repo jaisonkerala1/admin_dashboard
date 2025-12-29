@@ -14,6 +14,8 @@ export interface SearchBarProps {
   debounceMs?: number;
   /** Custom className */
   className?: string;
+  /** Keyboard event handler */
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 /**
@@ -27,6 +29,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   onClear,
   debounceMs = 500,
   className = '',
+  onKeyDown,
 }) => {
   const [localValue, setLocalValue] = useState('');
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -108,6 +111,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           type="text"
           value={currentValue}
           onChange={handleChange}
+          onKeyDown={onKeyDown}
           placeholder={placeholder}
           className="w-full h-full pl-12 pr-12 bg-transparent rounded-full text-gray-900 placeholder:text-gray-400 text-[15px] font-medium focus:outline-none focus:ring-0"
         />

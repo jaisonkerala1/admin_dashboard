@@ -40,6 +40,7 @@ export const ROUTES = {
   APPROVALS: '/approvals',
   NOTIFICATIONS: '/notifications',
   RANKINGS: '/rankings',
+  SEARCH: '/search',
 } as const;
 
 export const ASTROLOGER_STATUS = {

@@ -2,26 +2,43 @@ import { useState, useRef, useEffect, KeyboardEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Bell, Menu, LogOut, User, Settings, ChevronDown, Loader2 } from 'lucide-react';
 import { Avatar, SearchBar } from '@/components/common';
-import { useAppSelector } from '@/store/hooks';
+import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { useToastContext } from '@/contexts/ToastContext';
 import { cn } from '@/utils/helpers';
 import { ROUTES } from '@/utils/constants';
 import { useAuth } from '@/hooks/useAuth';
+import {
+  setSearchQuery,
+  performSearchRequest,
+  setShowDropdown,
+  selectNextResult,
+  selectPreviousResult,
+  resetSelection,
+  clearSearch,
+  addRecentSearch,
+} from '@/store/slices/searchSlice';
+import { selectSelectedResult } from '@/store/selectors/searchSelectors';
+import { GlobalSearchDropdown } from '@/components/search/GlobalSearchDropdown';
 
 interface HeaderProps {
   onMenuClick?: () => void;
 }
 
 export const Header = ({ onMenuClick }: HeaderProps) => {
-  const [headerSearch, setHeaderSearch] = useState('');
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const searchRef = useRef<HTMLDivElement>(null);
   const { unreadCount } = useAppSelector((state) => state.notification);
   const { logout } = useAuth();
-  const navigate = useNavigate();
   const { error: showError, success: showSuccess } = useToastContext();
+  
+  const searchQuery = useAppSelector((state) => state.search.query);
+  const showDropdown = useAppSelector((state) => state.search.showDropdown);
+  const selectedResult = useAppSelector(selectSelectedResult);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -33,6 +50,19 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Global keyboard shortcut (Ctrl/Cmd + K)
+  useEffect(() => {
+    const handleKeyDown = (e: globalThis.KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        searchRef.current?.querySelector('input')?.focus();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   // Handle keyboard navigation for accessibility
@@ -79,15 +109,62 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
         </button>
 
         {/* Search */}
-        <div className="flex-1 max-w-xl">
+        <div className="flex-1 max-w-xl relative" ref={searchRef}>
           <SearchBar
-            value={headerSearch}
-            onSearch={(q) => setHeaderSearch(q)}
-            onClear={() => setHeaderSearch('')}
-            placeholder="Search..."
+            value={searchQuery}
+            onSearch={(q) => {
+              dispatch(setSearchQuery(q));
+              if (q.trim().length >= 2) {
+                dispatch(performSearchRequest({ query: q, limit: 5 }));
+              }
+            }}
+            onClear={() => dispatch(clearSearch())}
+            onKeyDown={(e) => {
+              switch (e.key) {
+                case 'Enter':
+                  if (selectedResult) {
+                    // Navigate to selected result
+                    const routes: Record<string, string> = {
+                      astrologer: `/astrologers/${selectedResult._id}`,
+                      consultation: `/consultations/${selectedResult._id}`,
+                      service: `/services/${selectedResult._id}`,
+                      serviceRequest: `/service-requests/${selectedResult._id}`,
+                    };
+                    if (routes[selectedResult.type]) {
+                      navigate(routes[selectedResult.type]);
+                      dispatch(addRecentSearch(searchQuery));
+                      dispatch(setShowDropdown(false));
+                      dispatch(resetSelection());
+                    }
+                  } else if (searchQuery.trim()) {
+                    // Navigate to full search page
+                    navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+                    dispatch(addRecentSearch(searchQuery));
+                    dispatch(setShowDropdown(false));
+                  }
+                  break;
+                  
+                case 'ArrowDown':
+                  e.preventDefault();
+                  dispatch(selectNextResult());
+                  break;
+                  
+                case 'ArrowUp':
+                  e.preventDefault();
+                  dispatch(selectPreviousResult());
+                  break;
+                  
+                case 'Escape':
+                  dispatch(setShowDropdown(false));
+                  dispatch(resetSelection());
+                  break;
+              }
+            }}
+            placeholder="Search astrologers, consultations, services... (Ctrl+K)"
             className="max-w-xl"
             debounceMs={0}
           />
+          <GlobalSearchDropdown />
         </div>
 
         {/* Right section */}
