@@ -508,85 +508,77 @@ export const AstrologersList = () => {
             </table>
             </div>
 
-            {/* Mobile Cards - Optimized Mobile-First Design */}
-            <div className="block sm:hidden space-y-3">
+            {/* Mobile Cards - Compact Mobile Design */}
+            <div className="block sm:hidden space-y-2">
               {paginatedAstrologers.map((astrologer) => (
                 <div 
                   key={astrologer._id}
-                  className="border border-gray-200 rounded-xl bg-white overflow-hidden hover:border-gray-300 active:bg-gray-50 transition-all"
+                  className="border border-gray-200 rounded-lg bg-white overflow-hidden hover:border-gray-300 active:bg-gray-50 transition-all"
                 >
-                  {/* Header Section */}
-                  <div className="p-3 border-b border-gray-100">
-                    <div className="flex items-start gap-3">
+                  {/* Compact Header Section */}
+                  <div className="p-2.5">
+                    <div className="flex items-center gap-2.5">
                       <input
                         type="checkbox"
                         checked={selectedIds.has(astrologer._id)}
                         onChange={(e) => handleSelectOne(astrologer._id, e.target.checked)}
-                        className="mt-1 w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0"
+                        className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 flex-shrink-0"
                       />
                       
                       <Link 
                         to={`/astrologers/${astrologer._id}`}
                         className="flex-1 min-w-0"
                       >
-                        <div className="flex items-start gap-3">
+                        <div className="flex items-center gap-2.5">
                           <RoundAvatar 
                             src={astrologer.profilePicture} 
                             name={astrologer.name}
                             isOnline={astrologer.isOnline}
-                            size="md"
+                            size="sm"
                             className="flex-shrink-0"
                           />
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1">
-                              <h3 className="font-semibold text-base text-gray-900 truncate">{astrologer.name}</h3>
+                            <div className="flex items-center gap-1.5 mb-0.5">
+                              <h3 className="font-semibold text-sm text-gray-900 truncate">{astrologer.name}</h3>
                               {getApprovalBadge(astrologer)}
                             </div>
-                            <div className="flex items-center gap-2 flex-wrap mb-2">
+                            <div className="flex items-center gap-1.5 flex-wrap mb-1">
                               <span className="text-xs text-gray-600">⭐ {(astrologer.rating || 0).toFixed(1)}</span>
                               <span className="text-gray-300">•</span>
-                              <span className="text-xs font-semibold text-gray-900">₹{astrologer.consultationCharge || 0}/min</span>
+                              <span className="text-xs font-medium text-gray-900">₹{astrologer.consultationCharge || 0}/min</span>
                               <span className="text-gray-300">•</span>
                               <span className="text-xs text-gray-600">{astrologer.experience}y</span>
                             </div>
-                            <PillBadge variant={getStatusVariant(astrologer)} label={getStatusLabel(astrologer)} className="text-xs" />
-                            <p className="text-xs text-gray-500 mt-1.5 truncate">
-                              {(astrologer.specialization || []).slice(0, 2).join(', ')}
-                            </p>
+                            <div className="flex items-center gap-1.5">
+                              <PillBadge variant={getStatusVariant(astrologer)} label={getStatusLabel(astrologer)} className="text-xs" />
+                              <p className="text-xs text-gray-500 truncate">
+                                {(astrologer.specialization || []).slice(0, 2).join(', ')}
+                              </p>
+                            </div>
                           </div>
                         </div>
                       </Link>
-                    </div>
-                  </div>
-                  
-                  {/* Actions Section - Touch-Friendly */}
-                  <div className="p-3 bg-gray-50/50">
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleCommunication(astrologer, 'message');
-                        }}
-                        className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 text-sm font-medium text-white bg-indigo-600 active:bg-indigo-700 rounded-lg transition-colors touch-manipulation"
-                      >
-                        <MessageCircle className="w-4 h-4" />
-                        Message
-                      </button>
-                      <Link
-                        to={`/astrologers/${astrologer._id}`}
-                        className="flex items-center justify-center px-3 py-2.5 text-gray-600 hover:text-blue-600 hover:bg-white active:bg-gray-100 rounded-lg transition-colors touch-manipulation"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </Link>
-                      <button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          // Handle edit
-                        }}
-                        className="flex items-center justify-center px-3 py-2.5 text-gray-600 hover:text-gray-900 hover:bg-white active:bg-gray-100 rounded-lg transition-colors touch-manipulation"
-                      >
-                        <Edit2 className="w-4 h-4" />
-                      </button>
+                      
+                      {/* Compact Actions - Minimal Icons */}
+                      <div className="flex items-center gap-1 flex-shrink-0">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleCommunication(astrologer, 'message');
+                          }}
+                          className="p-1.5 text-indigo-600 hover:bg-indigo-50 active:bg-indigo-100 rounded-md transition-colors touch-manipulation"
+                          title="Message"
+                        >
+                          <MessageCircle className="w-4 h-4" />
+                        </button>
+                        <Link
+                          to={`/astrologers/${astrologer._id}`}
+                          className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 active:bg-blue-100 rounded-md transition-colors touch-manipulation"
+                          title="View"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 </div>
