@@ -84,9 +84,12 @@ export const LiveStreamViewer = ({ stream, onClose, onEndStream }: LiveStreamVie
       }
 
       const data = await response.json();
+      console.log('🔴 Full response data:', data);
       console.log('🔴 Token received:', { hasToken: !!data.data.token, appId: data.data.appId });
 
       const { token, channelName, appId } = data.data;
+      
+      console.log('🔴 Extracted values:', { token: token?.substring(0, 20) + '...', channelName, appId });
 
       if (!token || !appId) {
         throw new Error('Agora credentials not configured on server');
