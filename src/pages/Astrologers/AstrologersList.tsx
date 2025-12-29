@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Edit2, Trash2, Eye, UserX, Users, UserCheck, Clock, XCircle, MessageCircle, Phone, Video } from 'lucide-react';
+import { Edit2, Trash2, Eye, UserX, Users, UserCheck, Clock, XCircle, MessageCircle, Phone, Video, BadgeCheck } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { Card, Loader, EmptyState, RoundAvatar, PillBadge, ShowEntriesDropdown, StatCard, SearchBar } from '@/components/common';
 import { astrologersApi } from '@/api';
@@ -331,7 +331,7 @@ export const AstrologersList = () => {
                             <div className="flex items-center gap-1.5">
                               <p className="font-semibold text-gray-900 text-base">{astrologer.name}</p>
                               {astrologer.isVerified && (
-                                <PillBadge variant="blue" label="Verified" showDot={false} />
+                                <BadgeCheck className="w-4 h-4 text-white fill-[#1877F2] flex-shrink-0" />
                               )}
                             </div>
                             <p className="text-sm text-gray-500">{astrologer.name.split(' ')[0]}</p>
@@ -486,7 +486,7 @@ export const AstrologersList = () => {
                             <div className="flex items-center gap-1.5">
                               <p className="font-semibold text-gray-900">{astrologer.name}</p>
                               {astrologer.isVerified && (
-                                <PillBadge variant="blue" label="Verified" showDot={false} />
+                                <BadgeCheck className="w-4 h-4 text-white fill-[#1877F2] flex-shrink-0" />
                               )}
                             </div>
                             <p className="text-xs text-gray-500">
@@ -576,7 +576,7 @@ export const AstrologersList = () => {
                             <div className="flex items-center gap-1.5 mb-0.5">
                               <h3 className="font-semibold text-sm text-gray-900 truncate">{astrologer.name}</h3>
                               {astrologer.isVerified && (
-                                <PillBadge variant="blue" label="Verified" showDot={false} className="text-xs" />
+                                <BadgeCheck className="w-3.5 h-3.5 text-white fill-[#1877F2] flex-shrink-0" />
                               )}
                               {getApprovalBadge(astrologer)}
                             </div>

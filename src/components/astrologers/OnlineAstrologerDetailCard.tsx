@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { MessageSquare, CheckCircle, Star } from 'lucide-react';
+import { MessageSquare, BadgeCheck, Star } from 'lucide-react';
 import { getImageUrl } from '@/utils/helpers';
 import { Astrologer } from '@/types';
 
@@ -102,13 +102,10 @@ export const OnlineAstrologerDetailCard = ({
               {astrologer.name}
             </h3>
             {astrologer.isVerified && (
-              <div className="flex-shrink-0 w-3.5 h-3.5 sm:w-4 sm:h-4 bg-blue-500 rounded-full flex items-center justify-center">
-                <CheckCircle 
-                  className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white" 
-                  fill="currentColor"
-                  stroke="none"
-                />
-              </div>
+              <BadgeCheck 
+                className="w-4 h-4 sm:w-5 sm:h-5 text-white fill-[#1877F2] flex-shrink-0" 
+                strokeWidth={2}
+              />
             )}
           </div>
 

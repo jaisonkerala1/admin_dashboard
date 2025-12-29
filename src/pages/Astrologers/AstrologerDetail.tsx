@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Mail, Phone, Star, Calendar, DollarSign, Clock, CheckCircle, Ban, Package, MessageSquare, FileText, ThumbsUp, MessageCircle, Edit2, ChevronDown, ChevronUp, Plus, Trash2 } from 'lucide-react';
+import { Mail, Phone, Star, Calendar, DollarSign, Clock, CheckCircle, Ban, Package, MessageSquare, FileText, ThumbsUp, MessageCircle, Edit2, ChevronDown, ChevronUp, Plus, Trash2, BadgeCheck } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Card, Loader, Avatar, StatusBadge, Modal, PillBadge } from '@/components/common';
@@ -394,8 +394,13 @@ export const AstrologerDetail = () => {
               </div>
             </div>
 
-            {/* Name */}
-            <h2 className="text-xl font-bold text-gray-900 text-center mb-3">{astrologer.name}</h2>
+            {/* Name with Verified Badge */}
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <h2 className="text-xl font-bold text-gray-900">{astrologer.name}</h2>
+              {astrologer.isVerified && (
+                <BadgeCheck className="w-5 h-5 text-white fill-[#1877F2] flex-shrink-0" />
+              )}
+            </div>
 
             {/* Status Badge - Blue Verified Badge (Facebook-inspired) */}
             {verificationStatus.show && (
@@ -403,7 +408,7 @@ export const AstrologerDetail = () => {
                 <PillBadge
                   variant={verificationStatus.variant}
                   label={verificationStatus.text}
-                  showDot={false}
+                  showDot={verificationStatus.variant !== 'blue'}
                 />
               </div>
             )}
