@@ -3,6 +3,8 @@ import {
   Review,
   ReviewStats,
   ModerateReviewRequest,
+  CreateReviewRequest,
+  UpdateReviewRequest,
   PaginationParams,
   ApiResponse,
 } from '@/types';
@@ -20,8 +22,22 @@ interface ReviewsListResponse {
 }
 
 export const reviewsApi = {
-  getAll: async (params?: PaginationParams): Promise<ReviewsListResponse> => {
+  getAll: async (params?: PaginationParams & {
+    astrologerId?: string;
+    isAdminCreated?: boolean;
+    search?: string;
+  }): Promise<ReviewsListResponse> => {
     const response = await apiClient.get('/admin/reviews', { params });
+    return response.data;
+  },
+
+  create: async (data: CreateReviewRequest): Promise<ApiResponse<Review>> => {
+    const response = await apiClient.post('/admin/reviews', data);
+    return response.data;
+  },
+
+  update: async (id: string, data: UpdateReviewRequest): Promise<ApiResponse<Review>> => {
+    const response = await apiClient.put(`/admin/reviews/${id}`, data);
     return response.data;
   },
 

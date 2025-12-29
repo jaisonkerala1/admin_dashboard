@@ -1,10 +1,11 @@
 import { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Mail, Phone, Star, Calendar, DollarSign, Clock, CheckCircle, Ban, Package, MessageSquare, FileText, ThumbsUp, MessageCircle, Edit2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Mail, Phone, Star, Calendar, DollarSign, Clock, CheckCircle, Ban, Package, MessageSquare, FileText, ThumbsUp, MessageCircle, Edit2, ChevronDown, ChevronUp, Plus, Trash2 } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
-import { Card, Loader, Avatar, StatusBadge, Modal } from '@/components/common';
+import { Card, Loader, Avatar, StatusBadge, Modal, PillBadge } from '@/components/common';
 import { AstrologerStatsCards } from '@/components/astrologers/AstrologerStatsCards';
+import { ReviewFormModal } from '@/components/reviews/ReviewFormModal';
 import { astrologersApi, servicesApi, reviewsApi, discussionsApi, consultationsApi, poojaRequestsApi } from '@/api';
 import { Astrologer, Service, Review, Discussion, Consultation, PoojaRequest } from '@/types';
 import { formatCurrency, formatNumber, formatDateTime } from '@/utils/formatters';
@@ -35,6 +36,9 @@ export const AstrologerDetail = () => {
   const [isBioExpanded, setIsBioExpanded] = useState(false);
   const bioRef = useRef<HTMLParagraphElement>(null);
   const [showBioExpandButton, setShowBioExpandButton] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [editingReview, setEditingReview] = useState<Review | null>(null);
+  const [deletingReviewId, setDeletingReviewId] = useState<string | null>(null);
 
   useEffect(() => {
     if (id) {
@@ -132,6 +136,29 @@ export const AstrologerDetail = () => {
       console.error('Failed to load reviews:', err);
     } finally {
       setReviewsLoading(false);
+    }
+  };
+
+  const handleDeleteReview = async () => {
+    if (!deletingReviewId) return;
+    try {
+      await reviewsApi.delete(deletingReviewId);
+      toast.success('Review deleted successfully');
+      setDeletingReviewId(null);
+      loadReviews();
+      if (astrologer) {
+        loadAstrologer(); // Refresh astrologer to update rating
+      }
+    } catch (error: any) {
+      console.error('Failed to delete review:', error);
+      toast.error(error?.response?.data?.message || 'Failed to delete review');
+    }
+  };
+
+  const handleReviewModalSuccess = () => {
+    loadReviews();
+    if (astrologer) {
+      loadAstrologer(); // Refresh astrologer to update rating
     }
   };
 
@@ -811,55 +838,109 @@ export const AstrologerDetail = () => {
             {/* Reviews Tab */}
             {activeContentTab === 'reviews' && (
               <div>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900">Reviews</h3>
+                  <button
+                    onClick={() => {
+                      setEditingReview(null);
+                      setShowReviewModal(true);
+                    }}
+                    className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Add Review
+                  </button>
+                </div>
                 {reviewsLoading ? (
                   <div className="flex justify-center py-12">
                     <Loader size="sm" text="Loading reviews..." />
                   </div>
                 ) : reviews.length > 0 ? (
                   <div className="space-y-4">
-                    {reviews.map((review) => (
-                      <div
-                        key={review._id}
-                        className="p-5 bg-white border border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-sm transition-all duration-200"
-                      >
-                        <div className="flex items-start gap-4">
-                          <Avatar
-                            src={review.clientAvatar}
-                            name={review.clientName || 'Anonymous'}
-                            size="md"
-                          />
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-start justify-between mb-3">
-                              <div className="flex-1">
-                                <p className="font-semibold text-gray-900 text-base mb-1.5">
-                                  {review.clientName || 'Anonymous'}
-                                </p>
-                                <div className="flex items-center gap-3">
-                                  <div className="flex items-center gap-0.5">
-                                    {[...Array(5)].map((_, i) => (
-                                      <Star
-                                        key={i}
-                                        className={`w-4 h-4 ${
-                                          i < review.rating
-                                            ? 'text-yellow-400 fill-yellow-400'
-                                            : 'text-gray-300'
-                                        }`}
+                    {reviews.map((review) => {
+                      const displayDate = review.customCreatedAt || review.createdAt;
+                      const isCustomDate = !!review.customCreatedAt;
+                      return (
+                        <div
+                          key={review._id}
+                          className="p-5 bg-white border border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-sm transition-all duration-200"
+                        >
+                          <div className="flex items-start gap-4">
+                            <Avatar
+                              src={review.clientAvatar}
+                              name={review.clientName || 'Anonymous'}
+                              size="md"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-start justify-between mb-3">
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-2 mb-1.5">
+                                    <p className="font-semibold text-gray-900 text-base">
+                                      {review.clientName || 'Anonymous'}
+                                    </p>
+                                    {review.isAdminCreated && (
+                                      <PillBadge
+                                        variant="blue"
+                                        label="Admin"
+                                        title="This review was created by admin"
                                       />
-                                    ))}
+                                    )}
+                                    {isCustomDate && (
+                                      <PillBadge
+                                        variant="purple"
+                                        label="Custom Date"
+                                        title={`Original: ${formatDateTime(review.createdAt)}, Custom: ${formatDateTime(review.customCreatedAt!)}`}
+                                      />
+                                    )}
                                   </div>
-                                  <span className="text-xs text-gray-500">
-                                    {formatDateTime(review.createdAt)}
-                                  </span>
+                                  <div className="flex items-center gap-3">
+                                    <div className="flex items-center gap-0.5">
+                                      {[...Array(5)].map((_, i) => (
+                                        <Star
+                                          key={i}
+                                          className={`w-4 h-4 ${
+                                            i < review.rating
+                                              ? 'text-yellow-400 fill-yellow-400'
+                                              : 'text-gray-300'
+                                          }`}
+                                        />
+                                      ))}
+                                    </div>
+                                    <span className="text-xs text-gray-500">
+                                      {formatDateTime(displayDate)}
+                                    </span>
+                                  </div>
                                 </div>
+                                {review.isAdminCreated && (
+                                  <div className="flex items-center gap-2 ml-4">
+                                    <button
+                                      onClick={() => {
+                                        setEditingReview(review);
+                                        setShowReviewModal(true);
+                                      }}
+                                      className="p-2 text-gray-600 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+                                      title="Edit review"
+                                    >
+                                      <Edit2 className="w-4 h-4" />
+                                    </button>
+                                    <button
+                                      onClick={() => setDeletingReviewId(review._id)}
+                                      className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                      title="Delete review"
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                    </button>
+                                  </div>
+                                )}
                               </div>
+                              {review.reviewText && (
+                                <p className="text-sm text-gray-700 leading-relaxed mt-2">{review.reviewText}</p>
+                              )}
                             </div>
-                            {review.reviewText && (
-                              <p className="text-sm text-gray-700 leading-relaxed mt-2">{review.reviewText}</p>
-                            )}
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 ) : (
                   <div className="text-center py-12">
@@ -967,6 +1048,45 @@ export const AstrologerDetail = () => {
               className="btn btn-danger btn-md"
             >
               {isSuspending ? 'Suspending...' : 'Suspend'}
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Review Form Modal */}
+      <ReviewFormModal
+        isOpen={showReviewModal}
+        onClose={() => {
+          setShowReviewModal(false);
+          setEditingReview(null);
+        }}
+        onSuccess={handleReviewModalSuccess}
+        astrologerId={id}
+        review={editingReview || undefined}
+      />
+
+      {/* Delete Review Confirmation Modal */}
+      <Modal
+        isOpen={!!deletingReviewId}
+        onClose={() => setDeletingReviewId(null)}
+        title="Delete Review"
+      >
+        <div className="space-y-4">
+          <p className="text-gray-600">
+            Are you sure you want to delete this review? This action cannot be undone.
+          </p>
+          <div className="flex gap-3 justify-end">
+            <button
+              onClick={() => setDeletingReviewId(null)}
+              className="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleDeleteReview}
+              className="px-6 py-2.5 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700"
+            >
+              Delete
             </button>
           </div>
         </div>

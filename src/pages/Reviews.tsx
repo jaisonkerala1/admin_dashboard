@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { 
@@ -9,11 +9,17 @@ import {
   CheckCircle2,
   Shield,
   Trash2,
-  ThumbsUp
+  ThumbsUp,
+  Plus,
+  Edit2
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
-import { Card, Loader, EmptyState, RoundAvatar, PillBadge, ShowEntriesDropdown, StatCard, SearchBar } from '@/components/common';
+import { Card, Loader, EmptyState, RoundAvatar, PillBadge, ShowEntriesDropdown, StatCard, SearchBar, Modal } from '@/components/common';
+import { ReviewFormModal } from '@/components/reviews/ReviewFormModal';
+import { reviewsApi } from '@/api';
+import { Review } from '@/types';
 import { formatDateTime } from '@/utils/formatters';
+import { useToastContext } from '@/contexts/ToastContext';
 import { RootState } from '@/store';
 import {
   fetchReviewsRequest,
@@ -30,6 +36,7 @@ import { ROUTES } from '@/utils/constants';
 
 export const Reviews = () => {
   const dispatch = useDispatch();
+  const toast = useToastContext();
   const { 
     reviews, 
     isLoading, 
@@ -41,9 +48,30 @@ export const Reviews = () => {
     stats 
   } = useSelector((state: RootState) => state.reviews);
 
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [editingReview, setEditingReview] = useState<Review | null>(null);
+  const [deletingReviewId, setDeletingReviewId] = useState<string | null>(null);
+
   useEffect(() => {
     dispatch(fetchReviewsRequest());
   }, [dispatch]);
+
+  const handleReviewModalSuccess = () => {
+    dispatch(fetchReviewsRequest());
+  };
+
+  const handleDeleteReview = async () => {
+    if (!deletingReviewId) return;
+    try {
+      await reviewsApi.delete(deletingReviewId);
+      toast.success('Review deleted successfully');
+      setDeletingReviewId(null);
+      dispatch(fetchReviewsRequest());
+    } catch (error: any) {
+      console.error('Failed to delete review:', error);
+      toast.error(error?.response?.data?.message || 'Failed to delete review');
+    }
+  };
 
   // Client-side filtering
   const filteredReviews = reviews.filter(r => {
@@ -136,14 +164,28 @@ export const Reviews = () => {
             <p className="text-gray-500 mt-1">Manage all reviews and ratings on the platform</p>
           </div>
           
-          {/* Search Bar */}
-          <div className="w-full md:w-80">
-            <SearchBar
-              placeholder="Search reviews, clients..."
-              value={search}
-              onSearch={(query) => dispatch(setSearch(query))}
-              onClear={() => dispatch(setSearch(''))}
-            />
+          <div className="flex flex-col sm:flex-row gap-3">
+            {/* Search Bar */}
+            <div className="w-full md:w-80">
+              <SearchBar
+                placeholder="Search reviews, clients..."
+                value={search}
+                onSearch={(query) => dispatch(setSearch(query))}
+                onClear={() => dispatch(setSearch(''))}
+              />
+            </div>
+            
+            {/* Add Review Button */}
+            <button
+              onClick={() => {
+                setEditingReview(null);
+                setShowReviewModal(true);
+              }}
+              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium whitespace-nowrap"
+            >
+              <Plus className="w-5 h-5" />
+              Add Review
+            </button>
           </div>
         </div>
 
@@ -295,7 +337,15 @@ export const Reviews = () => {
                         />
                       </td>
                       <td className="px-4 py-4">
-                        <p className="font-medium text-gray-900">{review.clientName}</p>
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium text-gray-900">{review.clientName}</p>
+                          {review.isAdminCreated && (
+                            <PillBadge variant="blue" label="Admin" showDot={false} />
+                          )}
+                          {review.customCreatedAt && (
+                            <PillBadge variant="purple" label="Custom Date" showDot={false} />
+                          )}
+                        </div>
                       </td>
                       <td className="px-4 py-4">
                         {review.astrologerId ? (
@@ -326,7 +376,7 @@ export const Reviews = () => {
                         <p className="text-sm text-gray-900 max-w-xs truncate">{review.reviewText}</p>
                       </td>
                       <td className="px-4 py-4 text-sm text-gray-500">
-                        {formatDateTime(review.createdAt)}
+                        {formatDateTime(review.customCreatedAt || review.createdAt)}
                       </td>
                       <td className="px-4 py-4">
                         <div className="flex flex-wrap gap-1">
@@ -340,12 +390,27 @@ export const Reviews = () => {
                       </td>
                       <td className="px-4 py-4">
                         <div className="flex items-center gap-2">
-                          <button
-                            className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                            title="Delete"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+                          {review.isAdminCreated && (
+                            <button
+                              onClick={() => {
+                                setEditingReview(review);
+                                setShowReviewModal(true);
+                              }}
+                              className="p-1.5 text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+                              title="Edit"
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </button>
+                          )}
+                          {review.isAdminCreated && (
+                            <button
+                              onClick={() => setDeletingReviewId(review._id)}
+                              className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                              title="Delete"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -371,18 +436,47 @@ export const Reviews = () => {
                     <div className="flex-1">
                 <div className="flex items-start justify-between mb-3">
                     <div>
-                          <p className="font-semibold text-gray-900">{review.clientName}</p>
+                          <div className="flex items-center gap-2">
+                            <p className="font-semibold text-gray-900">{review.clientName}</p>
+                            {review.isAdminCreated && (
+                              <PillBadge variant="blue" label="Admin" showDot={false} />
+                            )}
+                            {review.customCreatedAt && (
+                              <PillBadge variant="purple" label="Custom Date" showDot={false} />
+                            )}
+                          </div>
                           <div className="flex items-center gap-2 mt-1">
                             {getRatingStars(review.rating)}
                             <span className="text-sm font-medium text-gray-700">{review.rating}</span>
                     </div>
                   </div>
-                        <div className="flex gap-1">
+                        <div className="flex items-center gap-2">
                           {review.isVerified && <PillBadge variant="approved" label="✓" showDot={false} />}
                           {review.isPublic ? (
                             <Eye className="w-4 h-4 text-indigo-600" />
                           ) : (
                             <EyeOff className="w-4 h-4 text-gray-400" />
+                          )}
+                          {review.isAdminCreated && (
+                            <>
+                              <button
+                                onClick={() => {
+                                  setEditingReview(review);
+                                  setShowReviewModal(true);
+                                }}
+                                className="p-1.5 text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+                                title="Edit"
+                              >
+                                <Edit2 className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => setDeletingReviewId(review._id)}
+                                className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                title="Delete"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </>
                           )}
                   </div>
                 </div>
@@ -409,7 +503,7 @@ export const Reviews = () => {
                       <p className="text-sm text-gray-700 mb-3 line-clamp-3">{review.reviewText}</p>
                       
                       <div className="flex items-center justify-between text-xs text-gray-500">
-                        <span>{formatDateTime(review.createdAt)}</span>
+                        <span>{formatDateTime(review.customCreatedAt || review.createdAt)}</span>
                         {review.helpfulCount > 0 && (
                           <div className="flex items-center gap-1">
                             <ThumbsUp className="w-3 h-3" />
@@ -471,6 +565,44 @@ export const Reviews = () => {
           </>
         )}
       </Card>
+
+      {/* Review Form Modal */}
+      <ReviewFormModal
+        isOpen={showReviewModal}
+        onClose={() => {
+          setShowReviewModal(false);
+          setEditingReview(null);
+        }}
+        onSuccess={handleReviewModalSuccess}
+        review={editingReview || undefined}
+      />
+
+      {/* Delete Review Confirmation Modal */}
+      <Modal
+        isOpen={!!deletingReviewId}
+        onClose={() => setDeletingReviewId(null)}
+        title="Delete Review"
+      >
+        <div className="space-y-4">
+          <p className="text-gray-600">
+            Are you sure you want to delete this review? This action cannot be undone.
+          </p>
+          <div className="flex gap-3 justify-end">
+            <button
+              onClick={() => setDeletingReviewId(null)}
+              className="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleDeleteReview}
+              className="px-6 py-2.5 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      </Modal>
     </MainLayout>
   );
 };

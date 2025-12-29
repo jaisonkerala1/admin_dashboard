@@ -36,9 +36,33 @@ export interface Review {
   // Meta
   source: string;
   
+  // Admin review fields
+  isAdminCreated?: boolean;
+  createdByAdmin?: string;
+  customReviewerName?: string;
+  customReviewerAvatar?: string;
+  customCreatedAt?: string;
+  
   // Timestamps
   createdAt: string;
   updatedAt: string;
+}
+
+export interface CreateReviewRequest {
+  astrologerId: string;
+  rating: number;
+  reviewText: string;
+  customReviewerName: string;
+  customReviewerAvatar?: string;
+  customCreatedAt?: string; // ISO date string
+}
+
+export interface UpdateReviewRequest {
+  rating?: number;
+  reviewText?: string;
+  customReviewerName?: string;
+  customReviewerAvatar?: string;
+  customCreatedAt?: string;
 }
 
 export interface ReviewStats {
