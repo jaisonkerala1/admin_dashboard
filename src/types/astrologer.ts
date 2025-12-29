@@ -17,6 +17,9 @@ export interface Astrologer {
   isApproved: boolean;
   approvedAt?: string;
   approvedBy?: string;
+  isVerified?: boolean;
+  verificationStatus?: 'none' | 'pending' | 'approved' | 'rejected';
+  verificationApprovedAt?: string;
   isSuspended: boolean;
   suspendedAt?: string;
   suspensionReason?: string;

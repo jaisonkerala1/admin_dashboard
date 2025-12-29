@@ -89,8 +89,11 @@ export const AstrologerDetail = () => {
         callCharge: data.callCharge || (data as any).ratePerMinute || 0,
         chatCharge: data.chatCharge || (data as any).ratePerMinute || 0,
         totalEarnings: data.totalEarnings || 0,
-        totalConsultations: data.totalConsultations || 0,
+        totalConsultations: data.totalConsultations ?? 0,
         isApproved: data.isApproved ?? false,
+        isVerified: data.isVerified ?? false,
+        verificationStatus: data.verificationStatus,
+        verificationApprovedAt: data.verificationApprovedAt,
         isSuspended: data.isSuspended ?? false,
         bio: data.bio || '',
       };
@@ -317,11 +320,16 @@ export const AstrologerDetail = () => {
   const completedPercentage = totalConsultations > 0 ? ((completedConsultations / totalConsultations) * 100) : 0;
   const serviceRequestsPercentage = 0; // Can be calculated with period comparison if needed
 
-  // Get verification status badge text
+  // Get verification status badge (Facebook-inspired blue badge for verified astrologers)
   const getVerificationStatus = () => {
-    if (astrologer.isSuspended) return { text: 'Suspended', color: 'bg-red-100 text-red-700' };
-    if (astrologer.isApproved) return { text: 'Verified', color: 'bg-green-100 text-green-700' };
-    return { text: 'Pending Verification', color: 'bg-yellow-100 text-yellow-700' };
+    if (astrologer.isSuspended) {
+      return { text: 'Suspended', variant: 'rejected' as const, show: true };
+    }
+    if (astrologer.isVerified) {
+      return { text: 'Verified', variant: 'blue' as const, show: true };
+    }
+    // Don't show badge if not verified and not suspended
+    return { text: '', variant: 'pending' as const, show: false };
   };
 
   const verificationStatus = getVerificationStatus();
@@ -389,12 +397,16 @@ export const AstrologerDetail = () => {
             {/* Name */}
             <h2 className="text-xl font-bold text-gray-900 text-center mb-3">{astrologer.name}</h2>
 
-            {/* Status Badge */}
-            <div className="flex justify-center mb-4">
-              <span className={`px-3 py-1 rounded-lg text-sm font-medium ${verificationStatus.color}`}>
-                {verificationStatus.text}
-              </span>
-            </div>
+            {/* Status Badge - Blue Verified Badge (Facebook-inspired) */}
+            {verificationStatus.show && (
+              <div className="flex justify-center mb-4">
+                <PillBadge
+                  variant={verificationStatus.variant}
+                  label={verificationStatus.text}
+                  showDot={false}
+                />
+              </div>
+            )}
 
             {/* Primary Action Button */}
             <button
