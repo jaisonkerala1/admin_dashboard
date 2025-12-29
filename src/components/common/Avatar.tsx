@@ -1,10 +1,11 @@
+import React from 'react';
 import { cn, getInitials, getImageUrl } from '@/utils/helpers';
 
 interface AvatarProps {
   src?: string;
   alt?: string;
   name?: string;
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl';
   className?: string;
 }
 
@@ -14,34 +15,37 @@ export const Avatar = ({ src, alt, name, size = 'md', className }: AvatarProps) 
     md: 'w-10 h-10 text-sm',
     lg: 'w-12 h-12 text-base',
     xl: 'w-16 h-16 text-lg',
+    '2xl': 'w-24 h-24 text-2xl',
+    '3xl': 'w-32 h-32 text-3xl',
   };
 
   const imageUrl = getImageUrl(src);
+  const [imageError, setImageError] = React.useState(false);
 
-  if (imageUrl) {
+  // Show initials if no image URL or image failed to load
+  if (!imageUrl || imageError) {
     return (
-      <img
-        src={imageUrl}
-        alt={alt || name || 'Avatar'}
-        className={cn('rounded-full object-cover', sizeClasses[size], className)}
-        onError={(e) => {
-          // Hide broken image and show initials fallback
-          e.currentTarget.style.display = 'none';
-        }}
-      />
+      <div
+        className={cn(
+          'rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-semibold',
+          sizeClasses[size],
+          className
+        )}
+      >
+        {name ? getInitials(name) : '?'}
+      </div>
     );
   }
 
   return (
-    <div
-      className={cn(
-        'rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-semibold',
-        sizeClasses[size],
-        className
-      )}
-    >
-      {name ? getInitials(name) : '?'}
-    </div>
+    <img
+      src={imageUrl}
+      alt={alt || name || 'Avatar'}
+      className={cn('rounded-full object-cover', sizeClasses[size], className)}
+      onError={() => {
+        setImageError(true);
+      }}
+    />
   );
 };
 

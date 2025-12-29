@@ -345,16 +345,16 @@ export const AstrologerDetail = () => {
             {/* Profile Picture with Edit Icon */}
             <div className="relative flex justify-center mb-4">
               <div className="relative">
-                <Avatar src={astrologer.profilePicture} name={astrologer.name} size="xl" />
+                <Avatar src={astrologer.profilePicture} name={astrologer.name} size="3xl" />
                 {astrologer.isOnline && (
-                  <div className="absolute -bottom-2 -right-2 flex items-center justify-center">
-                    <div className="w-5 h-5 bg-green-500 border-4 border-white rounded-full" />
-                    <div className="absolute w-5 h-5 bg-green-400 rounded-full animate-ping" />
+                  <div className="absolute -bottom-1 -right-1 flex items-center justify-center">
+                    <div className="w-6 h-6 bg-green-500 border-4 border-white rounded-full" />
+                    <div className="absolute w-6 h-6 bg-green-400 rounded-full animate-ping" />
                   </div>
                 )}
                 {/* Edit Icon Overlay */}
-                <button className="absolute top-0 right-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors shadow-md">
-                  <Edit2 className="w-4 h-4" />
+                <button className="absolute top-0 right-0 w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors shadow-lg">
+                  <Edit2 className="w-5 h-5" />
                 </button>
               </div>
             </div>
