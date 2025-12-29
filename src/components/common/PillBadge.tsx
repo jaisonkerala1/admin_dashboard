@@ -6,6 +6,9 @@ export type BadgeVariant =
   | 'busy'
   | 'on-call'
   | 'inactive'
+  // generic colors
+  | 'blue'
+  | 'purple'
   // approvals / generic
   | 'pending'
   | 'active'
@@ -25,6 +28,7 @@ interface PillBadgeProps {
   label?: string;
   showDot?: boolean;
   className?: string;
+  title?: string;
 }
 
 const variantStyles: Record<BadgeVariant, { bg: string; text: string; dot: string }> = {
@@ -52,6 +56,16 @@ const variantStyles: Record<BadgeVariant, { bg: string; text: string; dot: strin
     bg: 'bg-red-100',
     text: 'text-red-700',
     dot: 'bg-red-500'
+  },
+  blue: {
+    bg: 'bg-blue-100',
+    text: 'text-blue-700',
+    dot: 'bg-blue-500'
+  },
+  purple: {
+    bg: 'bg-purple-100',
+    text: 'text-purple-700',
+    dot: 'bg-purple-500'
   },
   pending: {
     bg: 'bg-yellow-100',
@@ -111,6 +125,8 @@ const defaultLabels: Record<BadgeVariant, string> = {
   busy: 'Busy',
   'on-call': 'On Call',
   inactive: 'Inactive',
+  blue: 'Info',
+  purple: 'Info',
   pending: 'Pending',
   confirmed: 'Confirmed',
   inProgress: 'In Progress',
@@ -127,13 +143,15 @@ export const PillBadge: React.FC<PillBadgeProps> = ({
   variant, 
   label, 
   showDot = true,
-  className = '' 
+  className = '',
+  title
 }) => {
   const styles = variantStyles[variant];
   const displayLabel = label || defaultLabels[variant];
 
   return (
     <span 
+      title={title}
       className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${styles.bg} ${styles.text} ${className}`}
     >
       {showDot && (

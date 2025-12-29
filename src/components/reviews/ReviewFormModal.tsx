@@ -4,8 +4,15 @@ import { Modal } from '@/components/common';
 import { Avatar } from '@/components/common';
 import { astrologersApi } from '@/api';
 import { reviewsApi } from '@/api';
-import { Astrologer, Review, CreateReviewRequest, UpdateReviewRequest } from '@/types';
+import { Review, CreateReviewRequest, UpdateReviewRequest } from '@/types';
 import { useToastContext } from '@/contexts/ToastContext';
+
+type AstrologerLite = {
+  _id: string;
+  name: string;
+  email?: string;
+  profilePicture?: string;
+};
 
 interface ReviewFormModalProps {
   isOpen: boolean;
@@ -24,11 +31,11 @@ export const ReviewFormModal = ({
 }: ReviewFormModalProps) => {
   const toast = useToastContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [astrologers, setAstrologers] = useState<Astrologer[]>([]);
+  const [astrologers, setAstrologers] = useState<AstrologerLite[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [showAstrologerDropdown, setShowAstrologerDropdown] = useState(false);
   const [selectedAstrologerId, setSelectedAstrologerId] = useState<string>(initialAstrologerId || '');
-  const [selectedAstrologer, setSelectedAstrologer] = useState<Astrologer | null>(null);
+  const [selectedAstrologer, setSelectedAstrologer] = useState<AstrologerLite | null>(null);
   const [reviewerName, setReviewerName] = useState('');
   const [reviewerAvatar, setReviewerAvatar] = useState('');
   const [rating, setRating] = useState<number>(0);
@@ -48,7 +55,12 @@ export const ReviewFormModal = ({
   useEffect(() => {
     if (review) {
       setSelectedAstrologerId(review.astrologerId?._id || '');
-      setSelectedAstrologer(review.astrologerId);
+      setSelectedAstrologer(review.astrologerId ? {
+        _id: review.astrologerId._id,
+        name: review.astrologerId.name,
+        email: review.astrologerId.email,
+        profilePicture: review.astrologerId.profilePicture
+      } : null);
       setReviewerName(review.customReviewerName || review.clientName || '');
       setReviewerAvatar(review.customReviewerAvatar || review.clientAvatar || '');
       setRating(review.rating);
@@ -88,7 +100,13 @@ export const ReviewFormModal = ({
         page: 1,
         limit: 20
       });
-      setAstrologers(response.data || []);
+      const data = (response.data || []).map((a: any) => ({
+        _id: a._id,
+        name: a.name,
+        email: a.email,
+        profilePicture: a.profilePicture
+      })) as AstrologerLite[];
+      setAstrologers(data);
     } catch (error) {
       console.error('Failed to load astrologers:', error);
     }
@@ -98,7 +116,12 @@ export const ReviewFormModal = ({
     try {
       const response = await astrologersApi.getById(id);
       if (response.data) {
-        setSelectedAstrologer(response.data);
+        setSelectedAstrologer({
+          _id: response.data._id,
+          name: response.data.name,
+          email: (response.data as any).email,
+          profilePicture: (response.data as any).profilePicture
+        });
       }
     } catch (error) {
       console.error('Failed to load astrologer details:', error);
@@ -107,10 +130,10 @@ export const ReviewFormModal = ({
 
   const filteredAstrologers = astrologers.filter(a =>
     a.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    a.email.toLowerCase().includes(searchQuery.toLowerCase())
+    (a.email || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleSelectAstrologer = (astrologer: Astrologer) => {
+  const handleSelectAstrologer = (astrologer: AstrologerLite) => {
     setSelectedAstrologerId(astrologer._id);
     setSelectedAstrologer(astrologer);
     setShowAstrologerDropdown(false);
