@@ -281,7 +281,6 @@ export const AstrologersList = () => {
               options={sortOptions}
               value={currentSortValue}
               onChange={handleSortChange}
-              label="Sort by"
             />
           </div>
           
