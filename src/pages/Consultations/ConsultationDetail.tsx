@@ -132,8 +132,8 @@ export const ConsultationDetail = () => {
           </button>
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-sm font-mono text-gray-500">
-                {consultation._id.slice(-8).toUpperCase()}
+              <span className="text-sm text-gray-500">
+                Consultation ID: <span className="font-mono">{consultation._id}</span>
               </span>
               <div className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(status)}`}>
                 {getStatusLabel(status)}
@@ -317,6 +317,16 @@ export const ConsultationDetail = () => {
                   <div className="flex items-center gap-2 text-sm font-medium text-gray-900">
                     <DollarSign className="w-4 h-4 text-primary-500" />
                     {formatCurrency(consultation.amount, consultation.currency)}
+                  </div>
+                </div>
+
+                {/* Consultation ID */}
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-tighter mb-2">
+                    Consultation ID
+                  </label>
+                  <div className="text-sm font-medium text-gray-900 font-mono break-all">
+                    {consultation._id}
                   </div>
                 </div>
               </div>

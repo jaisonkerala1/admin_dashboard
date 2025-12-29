@@ -136,8 +136,8 @@ export const ServiceRequestDetail = () => {
           </button>
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-sm font-mono text-gray-500">
-                {request._id.slice(-8).toUpperCase()}
+              <span className="text-sm text-gray-500">
+                Service Request ID: <span className="font-mono">{request._id}</span>
               </span>
               <div className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(request.status)}`}>
                 {request.status.charAt(0).toUpperCase() + request.status.slice(1).replace('_', ' ')}
@@ -299,6 +299,16 @@ export const ServiceRequestDetail = () => {
                   <div className="flex items-center gap-2 text-sm font-medium text-gray-900">
                     <Clock className="w-4 h-4 text-primary-500" />
                     {request.requestedTime}
+                  </div>
+                </div>
+
+                {/* Service Request ID */}
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-tighter mb-2">
+                    Service Request ID
+                  </label>
+                  <div className="text-sm font-medium text-gray-900 font-mono break-all">
+                    {request._id}
                   </div>
                 </div>
               </div>
