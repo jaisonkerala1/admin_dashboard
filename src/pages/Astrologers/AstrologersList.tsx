@@ -20,21 +20,51 @@ export const AstrologersList = () => {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [entriesPerPage, setEntriesPerPage] = useState(8);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalEntries, setTotalEntries] = useState(0);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [tabCounts, setTabCounts] = useState({
+    total: 0,
+    active: 0,
+    pending: 0,
+    inactive: 0,
+  });
+
+  // Fetch dashboard stats for counts
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/admin/dashboard/stats`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('admin_token')}`
+          }
+        });
+        const result = await response.json();
+        if (result.success) {
+          setTabCounts({
+            total: result.data.astrologers.total,
+            active: result.data.astrologers.active,
+            pending: result.data.astrologers.pendingApprovals,
+            inactive: result.data.astrologers.suspended,
+          });
+        }
+      } catch (err) {
+        console.error('Failed to fetch stats:', err);
+      }
+    };
+    fetchStats();
+  }, []);
 
   useEffect(() => {
     loadAstrologers();
-  }, [search, sortBy, sortOrder]);
+  }, [search, sortBy, sortOrder, filter, currentPage, entriesPerPage]);
 
   useEffect(() => {
-    setCurrentPage(1); // Reset to first page when filter changes
-  }, [filter, entriesPerPage, sortBy, sortOrder]);
+    setCurrentPage(1); // Reset to first page when search or filter changes
+  }, [filter, search, entriesPerPage]);
 
   // Listen for real-time astrologer status changes
   useEffect(() => {
     const handleStatusChange = (data: { astrologerId: string; isOnline: boolean; lastSeen: string }) => {
-      console.log('📡 [ASTROLOGER STATUS] Received status update:', data);
-      
       setAstrologers(prev => 
         prev.map(astrologer => 
           astrologer._id === data.astrologerId
@@ -44,19 +74,22 @@ export const AstrologersList = () => {
       );
     };
 
-    // Subscribe to status changes
     const unsubscribe = socketService.onAstrologerStatusChange(handleStatusChange);
-
-    // Cleanup
-    return () => {
-      unsubscribe();
-    };
+    return () => unsubscribe();
   }, []);
 
   const loadAstrologers = async () => {
     try {
       setIsLoading(true);
-      const response = await astrologersApi.getAll({ search, sortBy, sortOrder });
+      const response = await astrologersApi.getAll({ 
+        search, 
+        sortBy, 
+        sortOrder,
+        status: filter !== 'all' ? filter : undefined,
+        page: currentPage,
+        limit: entriesPerPage
+      } as any);
+      
       let data: Astrologer[] = response.data || [];
       
       // Ensure defaults for any missing fields
@@ -65,6 +98,7 @@ export const AstrologersList = () => {
         specialization: a.specialization || a.specializations || [],
         rating: a.rating ?? 0,
         totalReviews: a.totalReviews ?? 0,
+        totalConsultations: a.totalConsultations ?? 0,
         consultationCharge: a.consultationCharge || a.ratePerMinute || 0,
         isApproved: a.isApproved ?? false,
         isVerified: a.isVerified ?? false,
@@ -73,6 +107,11 @@ export const AstrologersList = () => {
       }));
       
       setAstrologers(data);
+      if (response.pagination) {
+        setTotalEntries(response.pagination.total);
+      } else {
+        setTotalEntries(data.length);
+      }
     } catch (err) {
       console.error('Failed to load astrologers:', err);
     } finally {
@@ -80,27 +119,19 @@ export const AstrologersList = () => {
     }
   };
 
-  // Filter astrologers based on selected tab
-  const filteredAstrologers = astrologers.filter(a => {
-    if (filter === 'active') return a.isApproved && !a.isSuspended;
-    if (filter === 'pending') return !a.isApproved && !a.isSuspended;
-    if (filter === 'inactive') return a.isSuspended;
-    return true; // 'all'
-  });
-
-  // Pagination
-  const totalPages = Math.ceil(filteredAstrologers.length / entriesPerPage);
-  const startIndex = (currentPage - 1) * entriesPerPage;
-  const endIndex = startIndex + entriesPerPage;
-  const paginatedAstrologers = filteredAstrologers.slice(startIndex, endIndex);
-
-  // Stats
+  // Stats are now from tabCounts
   const stats = {
-    total: astrologers.length,
-    active: astrologers.filter(a => a.isApproved && !a.isSuspended).length,
-    pending: astrologers.filter(a => !a.isApproved && !a.isSuspended).length,
-    inactive: astrologers.filter(a => a.isSuspended).length,
+    total: tabCounts.total,
+    active: tabCounts.active,
+    pending: tabCounts.pending,
+    inactive: tabCounts.inactive,
   };
+
+  // Pagination calculation from server data
+  const totalPages = Math.ceil(totalEntries / entriesPerPage);
+  const startIndex = (currentPage - 1) * entriesPerPage;
+  const endIndex = startIndex + astrologers.length;
+  const paginatedAstrologers = astrologers; // Already paginated by server
 
   // Selection handlers
   const handleSelectAll = (checked: boolean) => {
@@ -664,7 +695,7 @@ export const AstrologersList = () => {
         {!isLoading && paginatedAstrologers.length > 0 && (
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-6 pt-6 border-t border-gray-200">
             <p className="text-sm text-gray-600">
-              Showing {startIndex + 1} to {Math.min(endIndex, filteredAstrologers.length)} of {filteredAstrologers.length} entries
+              Showing {startIndex + 1} to {Math.min(endIndex, totalEntries)} of {totalEntries} entries
             </p>
             
             <div className="flex items-center gap-1">
