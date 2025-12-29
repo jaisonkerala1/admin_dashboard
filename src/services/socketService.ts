@@ -18,6 +18,7 @@ class SocketService {
   private ticketStatusCallbacks: Array<(data: any) => void> = [];
   private ticketAssignCallbacks: Array<(data: any) => void> = [];
   private ticketPriorityCallbacks: Array<(data: any) => void> = [];
+  private astrologerStatusCallbacks: Array<(data: { astrologerId: string; isOnline: boolean; lastSeen: string }) => void> = [];
 
   connect() {
     if (this.socket?.connected) {
@@ -219,6 +220,12 @@ class SocketService {
     this.socket.on('ticket:priority_changed', (data: any) => {
       console.log('⚠️ [SOCKET] Ticket priority changed:', data);
       this.ticketPriorityCallbacks.forEach(callback => callback(data));
+    });
+
+    // Astrologer status change events
+    this.socket.on('astrologer:status_changed', (data: { astrologerId: string; isOnline: boolean; lastSeen: string; name?: string; profilePicture?: string }) => {
+      console.log('👤 [SOCKET] Astrologer status changed:', data);
+      this.astrologerStatusCallbacks.forEach(callback => callback(data));
     });
   }
 
@@ -522,6 +529,14 @@ class SocketService {
     this.ticketPriorityCallbacks.push(callback);
     return () => {
       this.ticketPriorityCallbacks = this.ticketPriorityCallbacks.filter(cb => cb !== callback);
+    };
+  }
+
+  // Astrologer status event listener
+  onAstrologerStatusChange(callback: (data: { astrologerId: string; isOnline: boolean; lastSeen: string }) => void) {
+    this.astrologerStatusCallbacks.push(callback);
+    return () => {
+      this.astrologerStatusCallbacks = this.astrologerStatusCallbacks.filter(cb => cb !== callback);
     };
   }
 }

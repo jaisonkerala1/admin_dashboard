@@ -43,11 +43,11 @@ export const AstrologersList = () => {
     };
 
     // Subscribe to status changes
-    socketService.on('astrologer:status_changed', handleStatusChange);
+    const unsubscribe = socketService.onAstrologerStatusChange(handleStatusChange);
 
     // Cleanup
     return () => {
-      socketService.off('astrologer:status_changed', handleStatusChange);
+      unsubscribe();
     };
   }, []);
 
