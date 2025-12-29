@@ -11,7 +11,6 @@ interface SortDropdownProps {
   options: SortOption[];
   value: string;
   onChange: (value: string) => void;
-  label?: string;
   className?: string;
 }
 
@@ -19,7 +18,6 @@ export const SortDropdown = ({
   options,
   value,
   onChange,
-  label = 'Sort by',
   className = '',
 }: SortDropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
