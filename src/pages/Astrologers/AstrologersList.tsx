@@ -65,6 +65,7 @@ export const AstrologersList = () => {
         totalReviews: a.totalReviews ?? 0,
         consultationCharge: a.consultationCharge || a.ratePerMinute || 0,
         isApproved: a.isApproved ?? false,
+        isVerified: a.isVerified ?? false,
         isSuspended: a.isSuspended ?? false,
         isOnline: a.isOnline ?? false,
       }));
@@ -327,7 +328,12 @@ export const AstrologersList = () => {
                             size="md"
                           />
                         <div>
-                            <p className="font-semibold text-gray-900 text-base">{astrologer.name}</p>
+                            <div className="flex items-center gap-1.5">
+                              <p className="font-semibold text-gray-900 text-base">{astrologer.name}</p>
+                              {astrologer.isVerified && (
+                                <PillBadge variant="blue" label="Verified" showDot={false} />
+                              )}
+                            </div>
                             <p className="text-sm text-gray-500">{astrologer.name.split(' ')[0]}</p>
                         </div>
                         </Link>
@@ -477,7 +483,12 @@ export const AstrologersList = () => {
                             size="sm"
                           />
                           <div>
-                            <p className="font-semibold text-gray-900">{astrologer.name}</p>
+                            <div className="flex items-center gap-1.5">
+                              <p className="font-semibold text-gray-900">{astrologer.name}</p>
+                              {astrologer.isVerified && (
+                                <PillBadge variant="blue" label="Verified" showDot={false} />
+                              )}
+                            </div>
                             <p className="text-xs text-gray-500">
                               {(astrologer.specialization || []).slice(0, 1).join(', ')} • {astrologer.experience} years
                             </p>
@@ -564,6 +575,9 @@ export const AstrologersList = () => {
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-1.5 mb-0.5">
                               <h3 className="font-semibold text-sm text-gray-900 truncate">{astrologer.name}</h3>
+                              {astrologer.isVerified && (
+                                <PillBadge variant="blue" label="Verified" showDot={false} className="text-xs" />
+                              )}
                               {getApprovalBadge(astrologer)}
                             </div>
                             <div className="flex items-center gap-1.5 flex-wrap mb-1">
