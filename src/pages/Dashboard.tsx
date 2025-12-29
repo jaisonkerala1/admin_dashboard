@@ -19,9 +19,11 @@ import {
   fetchLiveStreamsRequest,
   fetchOnlineAstrologersRequest,
   setPeriod,
+  updateAstrologerStatus,
   type DashboardPeriod,
 } from '@/store/slices/dashboardSlice';
 import { fetchStatsRequest } from '@/store/slices/communicationSlice';
+import { socketService } from '@/services/socketService';
 
 export const Dashboard = () => {
   const dispatch = useAppDispatch();
@@ -71,6 +73,22 @@ export const Dashboard = () => {
   useEffect(() => {
     dispatch(fetchDashboardRequest({ period }));
   }, [dispatch, period]);
+
+  // Listen for real-time astrologer status changes
+  useEffect(() => {
+    const handleStatusChange = (data: { astrologerId: string; isOnline: boolean; lastSeen: string }) => {
+      console.log('📡 [DASHBOARD] Astrologer status update:', data);
+      dispatch(updateAstrologerStatus(data));
+    };
+
+    // Subscribe to status changes
+    const unsubscribe = socketService.onAstrologerStatusChange(handleStatusChange);
+
+    // Cleanup
+    return () => {
+      unsubscribe();
+    };
+  }, [dispatch]);
 
   const periodLabel = useMemo(() => {
     const map: Record<DashboardPeriod, string> = {

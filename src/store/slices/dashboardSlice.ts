@@ -110,6 +110,26 @@ const dashboardSlice = createSlice({
     fetchOnlineAstrologersFailure: (state) => {
       state.onlineLoading = false;
     },
+
+    // Update single astrologer status (for real-time updates)
+    updateAstrologerStatus: (state, action: PayloadAction<{ astrologerId: string; isOnline: boolean; lastSeen: string }>) => {
+      const { astrologerId, isOnline, lastSeen } = action.payload;
+      
+      // Update astrologer in onlineAstrologers list
+      const index = state.onlineAstrologers.findIndex(a => a._id === astrologerId);
+      if (index !== -1) {
+        state.onlineAstrologers[index].isOnline = isOnline;
+        state.onlineAstrologers[index].lastSeen = lastSeen;
+        
+        // Remove from online list if they went offline
+        if (!isOnline) {
+          state.onlineAstrologers.splice(index, 1);
+        }
+      } else if (isOnline) {
+        // If astrologer went online and is not in the list, they'll be added on next refresh
+        // (We don't add them here because we don't have full astrologer data)
+      }
+    },
   },
 });
 
@@ -127,6 +147,7 @@ export const {
   fetchOnlineAstrologersRequest,
   fetchOnlineAstrologersSuccess,
   fetchOnlineAstrologersFailure,
+  updateAstrologerStatus,
 } = dashboardSlice.actions;
 
 export default dashboardSlice.reducer;
