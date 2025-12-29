@@ -37,7 +37,6 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
   const { error: showError, success: showSuccess } = useToastContext();
   
   const searchQuery = useAppSelector((state) => state.search.query);
-  const showDropdown = useAppSelector((state) => state.search.showDropdown);
   const selectedResult = useAppSelector(selectSelectedResult);
 
   // Close dropdown when clicking outside

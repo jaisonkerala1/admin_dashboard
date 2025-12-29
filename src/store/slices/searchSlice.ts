@@ -56,7 +56,7 @@ const searchSlice = createSlice({
       }
     },
     
-    performSearchRequest: (state, action: PayloadAction<{ query: string; limit?: number }>) => {
+    performSearchRequest: (state, _action: PayloadAction<{ query: string; limit?: number }>) => {
       state.isSearching = true;
       state.error = null;
     },

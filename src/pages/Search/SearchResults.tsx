@@ -9,7 +9,6 @@ import {
   performSearchRequest,
   setActiveCategory,
   setCurrentPage,
-  setEntriesPerPage,
 } from '@/store/slices/searchSlice';
 import {
   selectSearchQuery,
@@ -30,12 +29,9 @@ export const SearchResults = () => {
   const dispatch = useAppDispatch();
   
   const query = searchParams.get('q') || '';
-  const searchQuery = useAppSelector(selectSearchQuery);
   const results = useAppSelector(selectSearchResults);
   const isSearching = useAppSelector(selectIsSearching);
   const activeCategory = useAppSelector((state: RootState) => state.search.activeCategory);
-  const currentPage = useAppSelector((state: RootState) => state.search.currentPage);
-  const entriesPerPage = useAppSelector((state: RootState) => state.search.entriesPerPage);
 
   useEffect(() => {
     if (query) {

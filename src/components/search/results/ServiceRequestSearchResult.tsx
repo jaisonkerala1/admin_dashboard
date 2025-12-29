@@ -18,7 +18,6 @@ export const ServiceRequestSearchResult: React.FC<ServiceRequestSearchResultProp
   query 
 }) => {
   const requestId = request._id.slice(-8).toUpperCase();
-  const astrologerName = request.astrologerId?.name || 'Unknown';
 
   return (
     <button
