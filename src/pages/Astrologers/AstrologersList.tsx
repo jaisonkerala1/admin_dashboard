@@ -6,6 +6,7 @@ import { Card, Loader, EmptyState, RoundAvatar, PillBadge, ShowEntriesDropdown, 
 import { astrologersApi } from '@/api';
 import { Astrologer } from '@/types';
 import { formatRelativeTime } from '@/utils/formatters';
+import { socketService } from '@/services/socketService';
 
 type FilterTab = 'all' | 'active' | 'pending' | 'inactive';
 
@@ -26,6 +27,29 @@ export const AstrologersList = () => {
   useEffect(() => {
     setCurrentPage(1); // Reset to first page when filter changes
   }, [filter, entriesPerPage]);
+
+  // Listen for real-time astrologer status changes
+  useEffect(() => {
+    const handleStatusChange = (data: { astrologerId: string; isOnline: boolean; lastSeen: string }) => {
+      console.log('📡 [ASTROLOGER STATUS] Received status update:', data);
+      
+      setAstrologers(prev => 
+        prev.map(astrologer => 
+          astrologer._id === data.astrologerId
+            ? { ...astrologer, isOnline: data.isOnline, lastSeen: data.lastSeen }
+            : astrologer
+        )
+      );
+    };
+
+    // Subscribe to status changes
+    socketService.on('astrologer:status_changed', handleStatusChange);
+
+    // Cleanup
+    return () => {
+      socketService.off('astrologer:status_changed', handleStatusChange);
+    };
+  }, []);
 
   const loadAstrologers = async () => {
     try {
