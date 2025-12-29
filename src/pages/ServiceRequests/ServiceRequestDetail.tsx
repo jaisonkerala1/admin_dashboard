@@ -379,57 +379,102 @@ export const ServiceRequestDetail = () => {
 
             {/* Timeline */}
             <Card className="p-6">
-              <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">
+              <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-6">
                 Timeline
               </h3>
-              <div className="space-y-0 text-sm">
+              <div className="relative">
                 {(() => {
                   // Build timeline events array in chronological order
                   const timelineEvents = [
                     {
-                      label: 'Created',
+                      label: 'Service Request Created',
+                      description: 'The service request has been created',
                       timestamp: request.createdAt,
-                      color: 'bg-blue-500',
+                      iconColor: 'bg-blue-600',
+                      isActive: false,
                     },
                     request.confirmedAt && {
-                      label: 'Confirmed',
+                      label: 'Service Request Confirmed',
+                      description: 'The service request has been confirmed',
                       timestamp: request.confirmedAt,
-                      color: 'bg-yellow-500',
+                      iconColor: 'bg-blue-600',
+                      isActive: false,
                     },
                     request.startedAt && {
-                      label: 'Started',
+                      label: 'Service Started',
+                      description: 'The service has been started',
                       timestamp: request.startedAt,
-                      color: 'bg-purple-500',
+                      iconColor: 'bg-blue-600',
+                      isActive: false,
                     },
                     request.completedAt && {
-                      label: 'Completed',
+                      label: 'Service Completed',
+                      description: 'The service has been completed',
                       timestamp: request.completedAt,
-                      color: 'bg-green-500',
+                      iconColor: 'bg-green-500',
+                      isActive: true,
                     },
                     request.cancelledAt && {
-                      label: 'Cancelled',
+                      label: 'Service Request Cancelled',
+                      description: 'The service request has been cancelled',
                       timestamp: request.cancelledAt,
-                      color: 'bg-red-500',
+                      iconColor: 'bg-red-500',
+                      isActive: true,
                     },
                   ].filter(Boolean) as Array<{
                     label: string;
+                    description: string;
                     timestamp: string;
-                    color: string;
+                    iconColor: string;
+                    isActive: boolean;
                   }>;
 
                   return timelineEvents.map((event, index) => {
                     const isLast = index === timelineEvents.length - 1;
+                    const hasNext = !isLast;
+                    
                     return (
-                      <div
-                        key={event.label}
-                        className={`relative pl-6 ${isLast ? 'pb-0' : 'pb-4'} ${!isLast ? 'border-l border-gray-100' : ''}`}
-                      >
-                        <div className={`absolute left-[-5px] top-0 w-2.5 h-2.5 rounded-full ${event.color} border-2 border-white shadow-sm`} />
-                        <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">
-                          {event.label}
-                        </div>
-                        <div className="text-gray-900 font-medium">
-                          {format(new Date(event.timestamp), 'MMM d, yyyy h:mm a')}
+                      <div key={event.label} className="relative">
+                        {/* Vertical line connecting events */}
+                        {hasNext && (
+                          <div className="absolute left-[11px] top-[24px] w-0.5 h-full bg-gray-200" />
+                        )}
+                        
+                        {/* Event content */}
+                        <div className={`relative flex items-start gap-4 pb-6 ${isLast ? 'pb-0' : ''}`}>
+                          {/* Icon */}
+                          <div className="relative z-10 flex-shrink-0">
+                            <div className={`w-6 h-6 rounded-full ${event.iconColor} flex items-center justify-center shadow-md`}>
+                              <div className="w-2.5 h-2.5 rounded-full bg-white" />
+                            </div>
+                          </div>
+                          
+                          {/* Content */}
+                          <div className={`flex-1 pt-0.5 ${event.isActive ? 'pb-4' : ''}`}>
+                            {/* Active event highlight background */}
+                            {event.isActive && (
+                              <div className={`absolute left-0 right-0 -mx-6 -my-2 px-6 py-3 rounded-lg ${
+                                event.iconColor === 'bg-green-500' 
+                                  ? 'bg-green-50/50 border border-green-100/50' 
+                                  : 'bg-red-50/50 border border-red-100/50'
+                              }`} />
+                            )}
+                            
+                            <div className="relative">
+                              <p className={`font-semibold mb-1 ${
+                                event.isActive 
+                                  ? event.iconColor === 'bg-green-500' 
+                                    ? 'text-green-700' 
+                                    : 'text-red-700'
+                                  : 'text-gray-900'
+                              }`}>
+                                {event.description}
+                              </p>
+                              <p className="text-sm text-gray-500 font-medium">
+                                {format(new Date(event.timestamp), 'd MMM HH:mm')}
+                              </p>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     );
