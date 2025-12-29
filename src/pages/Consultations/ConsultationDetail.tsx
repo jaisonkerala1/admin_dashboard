@@ -428,41 +428,59 @@ export const ConsultationDetail = () => {
               <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">
                 Timeline
               </h3>
-              <div className="space-y-4 text-sm">
-                <div className="relative pl-6 pb-4 border-l border-gray-100">
-                  <div className="absolute left-[-5px] top-0 w-2.5 h-2.5 rounded-full bg-blue-500 border-2 border-white shadow-sm" />
-                  <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Created</div>
-                  <div className="text-gray-900 font-medium">
-                    {format(new Date(consultation.createdAt), 'MMM d, yyyy h:mm a')}
-                  </div>
-                </div>
-                {consultation.startedAt && (
-                  <div className="relative pl-6 pb-4 border-l border-gray-100">
-                    <div className="absolute left-[-5px] top-0 w-2.5 h-2.5 rounded-full bg-purple-500 border-2 border-white shadow-sm" />
-                    <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Started</div>
-                    <div className="text-gray-900 font-medium">
-                      {format(new Date(consultation.startedAt), 'MMM d, yyyy h:mm a')}
-                    </div>
-                  </div>
-                )}
-                {consultation.completedAt && (
-                  <div className="relative pl-6 pb-4 border-l border-gray-100">
-                    <div className="absolute left-[-5px] top-0 w-2.5 h-2.5 rounded-full bg-green-500 border-2 border-white shadow-sm" />
-                    <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Completed</div>
-                    <div className="text-gray-900 font-medium">
-                      {format(new Date(consultation.completedAt), 'MMM d, yyyy h:mm a')}
-                    </div>
-                  </div>
-                )}
-                {consultation.cancelledAt && (
-                  <div className="relative pl-6 last:pb-0">
-                    <div className="absolute left-[-5px] top-0 w-2.5 h-2.5 rounded-full bg-red-500 border-2 border-white shadow-sm" />
-                    <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Cancelled</div>
-                    <div className="text-gray-900 font-medium">
-                      {format(new Date(consultation.cancelledAt), 'MMM d, yyyy h:mm a')}
-                    </div>
-                  </div>
-                )}
+              <div className="space-y-0 text-sm">
+                {(() => {
+                  // Build timeline events array in chronological order
+                  const timelineEvents = [
+                    {
+                      label: 'Created',
+                      timestamp: consultation.createdAt,
+                      color: 'bg-blue-500',
+                      icon: null,
+                    },
+                    consultation.startedAt && {
+                      label: 'Started',
+                      timestamp: consultation.startedAt,
+                      color: 'bg-purple-500',
+                      icon: null,
+                    },
+                    consultation.completedAt && {
+                      label: 'Completed',
+                      timestamp: consultation.completedAt,
+                      color: 'bg-green-500',
+                      icon: null,
+                    },
+                    consultation.cancelledAt && {
+                      label: 'Cancelled',
+                      timestamp: consultation.cancelledAt,
+                      color: 'bg-red-500',
+                      icon: null,
+                    },
+                  ].filter(Boolean) as Array<{
+                    label: string;
+                    timestamp: string;
+                    color: string;
+                    icon: null;
+                  }>;
+
+                  return timelineEvents.map((event, index) => {
+                    const isLast = index === timelineEvents.length - 1;
+                    return (
+                      <div
+                        key={event.label}
+                        className={`relative pl-6 ${isLast ? 'pb-0' : 'pb-4'} ${!isLast ? 'border-l border-gray-100' : ''}`}
+                      >
+                        <div className={`absolute left-[-5px] top-0 w-2.5 h-2.5 rounded-full ${event.color} border-2 border-white shadow-sm`} />
+                        <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">
+                          {event.label}
+                        </div>
+                        <div className="text-gray-900 font-medium">
+                          {format(new Date(event.timestamp), 'MMM d, yyyy h:mm a')}
+                        </div>
+                      </div>
+                    );
+                  });
+                })()}
               </div>
             </Card>
           </div>
