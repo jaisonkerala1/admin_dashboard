@@ -101,11 +101,14 @@ export const OnlineAstrologerDetailCard = ({
             <h3 className="text-sm sm:text-base font-semibold text-gray-900 truncate">
               {astrologer.name}
             </h3>
-            {astrologer.isApproved && (
-              <CheckCircle 
-                className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-orange-500 flex-shrink-0" 
-                fill="currentColor"
-              />
+            {astrologer.isVerified && (
+              <div className="flex-shrink-0 w-3.5 h-3.5 sm:w-4 sm:h-4 bg-blue-500 rounded-full flex items-center justify-center">
+                <CheckCircle 
+                  className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white" 
+                  fill="currentColor"
+                  stroke="none"
+                />
+              </div>
             )}
           </div>
 
