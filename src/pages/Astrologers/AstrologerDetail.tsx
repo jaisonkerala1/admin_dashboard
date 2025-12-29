@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Mail, Phone, Star, Calendar, DollarSign, Clock, CheckCircle, Ban, Package, MessageSquare, FileText, ThumbsUp, MessageCircle, Edit2, ChevronDown, ChevronUp, Plus, Trash2, BadgeCheck } from 'lucide-react';
+import { Mail, Phone, Star, Calendar, DollarSign, Clock, CheckCircle, Ban, Package, MessageSquare, FileText, ThumbsUp, MessageCircle, Edit2, ChevronDown, ChevronUp, Plus, Trash2, BadgeCheck, XCircle, Shield } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Card, Loader, Avatar, StatusBadge, Modal, PillBadge } from '@/components/common';
@@ -29,6 +29,8 @@ export const AstrologerDetail = () => {
   const [serviceRequestsLoading, setServiceRequestsLoading] = useState(false);
   const [isApproving, setIsApproving] = useState(false);
   const [isSuspending, setIsSuspending] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [isUnverifying, setIsUnverifying] = useState(false);
   const [showSuspendModal, setShowSuspendModal] = useState(false);
   const [suspensionReason, setSuspensionReason] = useState('');
   const [activeTab, setActiveTab] = useState<'consultations' | 'serviceRequests'>('consultations');
@@ -272,6 +274,36 @@ export const AstrologerDetail = () => {
     }
   };
 
+  const handleVerify = async () => {
+    if (!id || !astrologer) return;
+    try {
+      setIsVerifying(true);
+      await astrologersApi.verify(id);
+      await loadAstrologer();
+      toast.success(`${astrologer.name} has been verified successfully!`);
+    } catch (err: any) {
+      console.error('Failed to verify:', err);
+      toast.error(err?.message || 'Failed to verify astrologer');
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
+  const handleUnverify = async () => {
+    if (!id || !astrologer) return;
+    try {
+      setIsUnverifying(true);
+      await astrologersApi.unverify(id);
+      await loadAstrologer();
+      toast.warning(`Verification removed from ${astrologer.name}`);
+    } catch (err: any) {
+      console.error('Failed to unverify:', err);
+      toast.error(err?.message || 'Failed to remove verification');
+    } finally {
+      setIsUnverifying(false);
+    }
+  };
+
   // Communication handlers
   const handleMessage = () => {
     if (!astrologer) return;
@@ -340,37 +372,6 @@ export const AstrologerDetail = () => {
         title={astrologer.name}
         subtitle="Astrologer Details"
         backButton
-        action={
-          <div className="flex gap-2">
-            {!astrologer.isApproved && !astrologer.isSuspended && (
-              <button
-                onClick={handleApprove}
-                disabled={isApproving}
-                className="btn btn-primary btn-md flex items-center gap-2"
-              >
-                <CheckCircle className="w-4 h-4" />
-                {isApproving ? 'Approving...' : 'Approve'}
-              </button>
-            )}
-            {astrologer.isSuspended ? (
-              <button
-                onClick={handleUnsuspend}
-                className="btn btn-secondary btn-md flex items-center gap-2"
-              >
-                <CheckCircle className="w-4 h-4" />
-                Unsuspend
-              </button>
-            ) : (
-              <button
-                onClick={() => setShowSuspendModal(true)}
-                className="btn btn-danger btn-md flex items-center gap-2"
-              >
-                <Ban className="w-4 h-4" />
-                Suspend
-              </button>
-            )}
-          </div>
-        }
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -421,6 +422,68 @@ export const AstrologerDetail = () => {
               <MessageCircle className="w-4 h-4" />
               <span>Send Message</span>
             </button>
+
+            {/* Admin Actions Section */}
+            <div className="border-t border-gray-200 pt-6 mb-6">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">Admin Actions</p>
+              <div className="space-y-2">
+                {/* Approve Button */}
+                {!astrologer.isApproved && !astrologer.isSuspended && (
+                  <button
+                    onClick={handleApprove}
+                    disabled={isApproving}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <CheckCircle className="w-4 h-4" />
+                    {isApproving ? 'Approving...' : 'Approve Astrologer'}
+                  </button>
+                )}
+
+                {/* Verify/Unverify Buttons */}
+                {astrologer.isApproved && !astrologer.isSuspended && (
+                  <>
+                    {!astrologer.isVerified ? (
+                      <button
+                        onClick={handleVerify}
+                        disabled={isVerifying}
+                        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-[#1877F2] text-white rounded-lg hover:bg-[#1565C0] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <BadgeCheck className="w-4 h-4" />
+                        {isVerifying ? 'Verifying...' : 'Verify Astrologer'}
+                      </button>
+                    ) : (
+                      <button
+                        onClick={handleUnverify}
+                        disabled={isUnverifying}
+                        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <XCircle className="w-4 h-4" />
+                        {isUnverifying ? 'Removing...' : 'Remove Verification'}
+                      </button>
+                    )}
+                  </>
+                )}
+
+                {/* Suspend/Unsuspend Buttons */}
+                {astrologer.isSuspended ? (
+                  <button
+                    onClick={handleUnsuspend}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium"
+                  >
+                    <CheckCircle className="w-4 h-4" />
+                    Unsuspend Astrologer
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => setShowSuspendModal(true)}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+                  >
+                    <Ban className="w-4 h-4" />
+                    Suspend Astrologer
+                  </button>
+                )}
+              </div>
+            </div>
 
             {/* Info Fields */}
             <div className="space-y-4 border-t border-gray-200 pt-6">

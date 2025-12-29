@@ -52,6 +52,16 @@ export const astrologersApi = {
     return response.data;
   },
 
+  verify: async (id: string): Promise<ApiResponse<Astrologer>> => {
+    const response = await apiClient.patch(`/admin/astrologers/${id}/verify`);
+    return response.data;
+  },
+
+  unverify: async (id: string): Promise<ApiResponse<Astrologer>> => {
+    const response = await apiClient.patch(`/admin/astrologers/${id}/unverify`);
+    return response.data;
+  },
+
   delete: async (id: string): Promise<ApiResponse<void>> => {
     const response = await apiClient.delete(`/admin/astrologers/${id}`);
     return response.data;
