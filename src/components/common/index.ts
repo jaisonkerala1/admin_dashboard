@@ -11,6 +11,8 @@ export { RoundAvatar } from './RoundAvatar';
 export { PillBadge } from './PillBadge';
 export type { BadgeVariant } from './PillBadge';
 export { ShowEntriesDropdown } from './ShowEntriesDropdown';
+export { SortDropdown } from './SortDropdown';
+export type { SortOption } from './SortDropdown';
 export { SearchBar } from './SearchBar';
 export type { SearchBarProps } from './SearchBar';
 export { AreaChartCard } from './AreaChartCard';

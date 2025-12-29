@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Edit2, Trash2, Eye, UserX, Users, UserCheck, Clock, XCircle, MessageCircle, Phone, Video, BadgeCheck } from 'lucide-react';
+import { Edit2, Trash2, Eye, UserX, Users, UserCheck, Clock, XCircle, MessageCircle, Phone, Video, BadgeCheck, TrendingUp, Star, DollarSign, MessageSquare, Calendar, User } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
-import { Card, Loader, EmptyState, RoundAvatar, PillBadge, ShowEntriesDropdown, StatCard, SearchBar } from '@/components/common';
+import { Card, Loader, EmptyState, RoundAvatar, PillBadge, ShowEntriesDropdown, StatCard, SearchBar, SortDropdown, SortOption } from '@/components/common';
 import { astrologersApi } from '@/api';
 import { Astrologer } from '@/types';
 import { formatRelativeTime } from '@/utils/formatters';
@@ -16,17 +16,19 @@ export const AstrologersList = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<FilterTab>('all');
+  const [sortBy, setSortBy] = useState<string>('createdAt');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [entriesPerPage, setEntriesPerPage] = useState(8);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     loadAstrologers();
-  }, [search]);
+  }, [search, sortBy, sortOrder]);
 
   useEffect(() => {
     setCurrentPage(1); // Reset to first page when filter changes
-  }, [filter, entriesPerPage]);
+  }, [filter, entriesPerPage, sortBy, sortOrder]);
 
   // Listen for real-time astrologer status changes
   useEffect(() => {
@@ -54,7 +56,7 @@ export const AstrologersList = () => {
   const loadAstrologers = async () => {
     try {
       setIsLoading(true);
-      const response = await astrologersApi.getAll({ search, sortBy: 'createdAt', sortOrder: 'desc' });
+      const response = await astrologersApi.getAll({ search, sortBy, sortOrder });
       let data: Astrologer[] = response.data || [];
       
       // Ensure defaults for any missing fields
@@ -121,6 +123,32 @@ export const AstrologersList = () => {
 
   const isAllSelected = paginatedAstrologers.length > 0 && paginatedAstrologers.every(a => selectedIds.has(a._id));
   const isSomeSelected = paginatedAstrologers.some(a => selectedIds.has(a._id)) && !isAllSelected;
+
+  // Sort options for performance metrics
+  const sortOptions: SortOption[] = [
+    { value: 'totalEarnings-desc', label: 'Highest Earnings', icon: <DollarSign className="w-4 h-4" /> },
+    { value: 'totalEarnings-asc', label: 'Lowest Earnings', icon: <DollarSign className="w-4 h-4" /> },
+    { value: 'rating-desc', label: 'Highest Rating', icon: <Star className="w-4 h-4" /> },
+    { value: 'rating-asc', label: 'Lowest Rating', icon: <Star className="w-4 h-4" /> },
+    { value: 'totalReviews-desc', label: 'Most Reviews', icon: <MessageSquare className="w-4 h-4" /> },
+    { value: 'totalReviews-asc', label: 'Least Reviews', icon: <MessageSquare className="w-4 h-4" /> },
+    { value: 'totalConsultations-desc', label: 'Most Consultations', icon: <TrendingUp className="w-4 h-4" /> },
+    { value: 'totalConsultations-asc', label: 'Least Consultations', icon: <TrendingUp className="w-4 h-4" /> },
+    { value: 'experience-desc', label: 'Most Experience', icon: <User className="w-4 h-4" /> },
+    { value: 'experience-asc', label: 'Least Experience', icon: <User className="w-4 h-4" /> },
+    { value: 'name-asc', label: 'Name (A-Z)', icon: <User className="w-4 h-4" /> },
+    { value: 'name-desc', label: 'Name (Z-A)', icon: <User className="w-4 h-4" /> },
+    { value: 'createdAt-desc', label: 'Newest First', icon: <Calendar className="w-4 h-4" /> },
+    { value: 'createdAt-asc', label: 'Oldest First', icon: <Calendar className="w-4 h-4" /> },
+  ];
+
+  const handleSortChange = (value: string) => {
+    const [field, order] = value.split('-');
+    setSortBy(field);
+    setSortOrder(order as 'asc' | 'desc');
+  };
+
+  const currentSortValue = `${sortBy}-${sortOrder}`;
 
   const getStatusVariant = (astrologer: Astrologer): 'online' | 'offline' | 'busy' | 'inactive' => {
     if (astrologer.isSuspended) return 'inactive';
@@ -247,7 +275,15 @@ export const AstrologersList = () => {
       <Card className="overflow-hidden">
         {/* Table Controls */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-          <ShowEntriesDropdown value={entriesPerPage} onChange={setEntriesPerPage} />
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <ShowEntriesDropdown value={entriesPerPage} onChange={setEntriesPerPage} />
+            <SortDropdown
+              options={sortOptions}
+              value={currentSortValue}
+              onChange={handleSortChange}
+              label="Sort by"
+            />
+          </div>
           
           {selectedIds.size > 0 && (
             <div className="flex items-center gap-3">
