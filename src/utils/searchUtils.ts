@@ -1,24 +1,12 @@
-import React from 'react';
 import { SearchResultType } from '@/types/search';
 
 /**
  * Highlight matching text in search results
+ * Returns the original text (highlighting handled by component)
  */
-export const highlightText = (text: string, query: string): React.ReactNode => {
+export const highlightText = (text: string, query: string): string => {
   if (!query.trim() || !text) return text;
-  
-  const regex = new RegExp(`(${escapeRegExp(query)})`, 'gi');
-  const parts = text.split(regex);
-  
-  return parts.map((part, index) =>
-    regex.test(part) ? (
-      <mark key={index} className="bg-yellow-200 text-gray-900 font-semibold">
-        {part}
-      </mark>
-    ) : (
-      part
-    )
-  );
+  return text;
 };
 
 /**
