@@ -434,87 +434,105 @@ export const Services = () => {
               ))}
             </div>
 
-            {/* Mobile View */}
-            <div className="md:hidden space-y-4">
+            {/* Mobile View - Optimized Mobile-First Design */}
+            <div className="md:hidden space-y-3">
               {paginatedServices.map((service) => (
                 <div
                   key={service._id}
-                  className="border border-gray-200 rounded-xl p-4 hover:border-blue-300 hover:shadow-sm transition-all"
+                  className="border border-gray-200 rounded-xl bg-white overflow-hidden hover:border-gray-300 active:bg-gray-50 transition-all"
                 >
-                  <div className="flex items-start gap-3 mb-3">
-                    <input
-                      type="checkbox"
-                      checked={selectedIds.has(service._id)}
-                      onChange={() => handleSelectOne(service._id)}
-                      className="w-4 h-4 mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between mb-2">
-                        <Link
-                          to={`${ROUTES.SERVICES}/${service._id}`}
-                          className="font-semibold text-gray-900 hover:text-blue-600"
-                        >
-                          {service.name}
-                        </Link>
-                        {getStatusBadge(service)}
-                      </div>
-                      
-                      <div className="flex items-center gap-2 mb-3">
-                        <span className="text-xs text-purple-700 bg-purple-50 px-2 py-1 rounded">
-                          {getCategoryLabel(service.category)}
-                        </span>
-                        <span className="text-xs text-gray-500">{service.duration}</span>
-                      </div>
-                      
-                      {service.astrologerId && (
-                        <Link 
-                          to={`${ROUTES.ASTROLOGERS}/${service.astrologerId._id}`}
-                          className="flex items-center gap-2 mb-3 hover:opacity-80"
-                        >
-                          <RoundAvatar
-                            src={service.astrologerId.profilePicture}
-                            name={service.astrologerId.name}
-                            size="sm"
-                          />
-                          <div>
-                            <p className="text-xs text-gray-500">Astrologer</p>
-                            <p className="text-sm font-medium text-gray-900 hover:text-blue-600">
-                              {service.astrologerId.name}
-                            </p>
+                  {/* Header */}
+                  <div className="p-3 border-b border-gray-100">
+                    <div className="flex items-start gap-3">
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.has(service._id)}
+                        onChange={() => handleSelectOne(service._id)}
+                        className="mt-1 w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-2 mb-2">
+                          <div className="flex-1 min-w-0">
+                            <Link
+                              to={`${ROUTES.SERVICES}/${service._id}`}
+                              className="font-semibold text-base text-gray-900 truncate block hover:text-blue-600"
+                            >
+                              {service.name}
+                            </Link>
+                            <p className="text-xs text-gray-500 mt-0.5">{service.duration}</p>
                           </div>
-                        </Link>
-                      )}
-                      
-                      <div className="grid grid-cols-3 gap-3 text-sm">
-                        <div>
-                          <p className="text-gray-500 text-xs mb-1">Price</p>
-                          <p className="font-semibold text-gray-900">{formatCurrency(service.price)}</p>
+                          {getStatusBadge(service)}
                         </div>
-                        <div>
-                          <p className="text-gray-500 text-xs mb-1">Bookings</p>
-                          <p className="font-medium text-gray-900">{service.totalBookings || 0}</p>
+                        
+                        {/* Service Info */}
+                        <div className="mb-3 p-2 -mx-2 rounded-lg hover:bg-gray-50 active:bg-gray-100 transition-colors">
+                          <p className="text-xs text-gray-500 mb-0.5">Category</p>
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-purple-50 text-purple-700">
+                            <Tag className="w-3 h-3" />
+                            {getCategoryLabel(service.category)}
+                          </span>
                         </div>
-                        <div>
-                          <p className="text-gray-500 text-xs mb-1">Rating</p>
-                          <div className="flex items-center gap-1">
-                            <Star className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" />
-                            <span className="font-medium text-gray-900">
-                              {service.averageRating?.toFixed(1) || '0.0'}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="mt-3 pt-3 border-t border-gray-200">
-                        <Link
-                          to={`${ROUTES.SERVICES}/${service._id}`}
-                          className="flex items-center justify-center gap-2 w-full px-3 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-lg"
-                        >
-                          <Eye className="w-4 h-4" />
-                          View Details
-                        </Link>
+                        
+                        {/* Astrologer Info */}
+                        {service.astrologerId && (
+                          <Link 
+                            to={`${ROUTES.ASTROLOGERS}/${service.astrologerId._id}`}
+                            className="flex items-center gap-2 p-2 -mx-2 rounded-lg hover:bg-gray-50 active:bg-gray-100 transition-colors"
+                          >
+                            <RoundAvatar
+                              src={service.astrologerId.profilePicture}
+                              size="sm"
+                              name={service.astrologerId.name}
+                              isOnline={false}
+                              className="flex-shrink-0"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs text-gray-500">Astrologer</p>
+                              <p className="text-sm font-medium text-gray-900 truncate">
+                                {service.astrologerId.name}
+                              </p>
+                            </div>
+                          </Link>
+                        )}
                       </div>
                     </div>
+                  </div>
+
+                  {/* Details Grid */}
+                  <div className="p-3 bg-gray-50/30">
+                    <div className="grid grid-cols-2 gap-3 mb-3">
+                      <div className="bg-white p-2.5 rounded-lg border border-gray-100">
+                        <p className="text-gray-500 text-xs mb-1">Price</p>
+                        <p className="font-semibold text-sm text-gray-900">{formatCurrency(service.price)}</p>
+                      </div>
+                      <div className="bg-white p-2.5 rounded-lg border border-gray-100">
+                        <p className="text-gray-500 text-xs mb-1">Bookings</p>
+                        <p className="font-semibold text-base text-gray-900">{service.totalBookings || 0}</p>
+                        <p className="text-xs text-gray-500 mt-0.5">({service.completedBookings || 0} completed)</p>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-white p-2.5 rounded-lg border border-gray-100 mb-3">
+                      <p className="text-gray-500 text-xs mb-1">Rating</p>
+                      <div className="flex items-center gap-1.5">
+                        <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                        <span className="font-semibold text-base text-gray-900">
+                          {service.averageRating?.toFixed(1) || '0.0'}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          ({service.totalRatings || 0} reviews)
+                        </span>
+                      </div>
+                    </div>
+                    
+                    {/* Footer Action */}
+                    <Link
+                      to={`${ROUTES.SERVICES}/${service._id}`}
+                      className="flex items-center justify-center gap-2 w-full px-4 py-2.5 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 active:bg-blue-200 rounded-lg transition-colors touch-manipulation"
+                    >
+                      <Eye className="w-4 h-4" />
+                      View Details
+                    </Link>
                   </div>
                 </div>
               ))}
