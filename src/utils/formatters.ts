@@ -77,11 +77,12 @@ export const formatTimeBetween = (startDate: string | Date, endDate: string | Da
       return `${diffHours} hour${diffHours > 1 ? 's' : ''}`;
     }
     
-    if (diffMinutes > 0) {
-      return `${diffMinutes} minute${diffMinutes > 1 ? 's' : ''}`;
+    // Always show at least 1 minute if there's any duration (even if less than 60 seconds)
+    if (diffMinutes > 0 || diffSeconds > 0) {
+      return `${Math.max(1, diffMinutes)} minute${Math.max(1, diffMinutes) > 1 ? 's' : ''}`;
     }
     
-    return `${diffSeconds} second${diffSeconds > 1 ? 's' : ''}`;
+    return '0 minutes';
   } catch {
     return 'Unknown';
   }

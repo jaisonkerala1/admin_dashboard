@@ -511,7 +511,7 @@ export const ConsultationDetail = () => {
                                   <>
                                     <span className="text-gray-300">•</span>
                                     <p className="text-xs text-gray-400 font-medium">
-                                      {timeSincePrevious} later
+                                      {timeSincePrevious} taken
                                     </p>
                                   </>
                                 )}
