@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Mail, Phone, Star, Calendar, DollarSign, Clock, CheckCircle, Ban, Package, MessageSquare, FileText, ThumbsUp, MessageCircle, Edit2 } from 'lucide-react';
+import { Mail, Phone, Star, Calendar, DollarSign, Clock, CheckCircle, Ban, Package, MessageSquare, FileText, ThumbsUp, MessageCircle, Edit2, ChevronDown, ChevronUp } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Card, Loader, Avatar, StatusBadge, Modal } from '@/components/common';
@@ -32,6 +32,9 @@ export const AstrologerDetail = () => {
   const [suspensionReason, setSuspensionReason] = useState('');
   const [activeTab, setActiveTab] = useState<'consultations' | 'serviceRequests'>('consultations');
   const [activeContentTab, setActiveContentTab] = useState<'services' | 'reviews' | 'posts'>('services');
+  const [isBioExpanded, setIsBioExpanded] = useState(false);
+  const bioRef = useRef<HTMLParagraphElement>(null);
+  const [showBioExpandButton, setShowBioExpandButton] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -48,6 +51,15 @@ export const AstrologerDetail = () => {
       loadDiscussions();
     }
   }, [astrologer]);
+
+  // Check if bio content exceeds max height and needs expand button
+  useEffect(() => {
+    if (bioRef.current && astrologer?.bio) {
+      const maxHeight = 120; // 3 lines approximately (40px per line)
+      const actualHeight = bioRef.current.scrollHeight;
+      setShowBioExpandButton(actualHeight > maxHeight);
+    }
+  }, [astrologer?.bio]);
 
   const loadAstrologer = async () => {
     if (!id) return;
@@ -395,7 +407,37 @@ export const AstrologerDetail = () => {
             {astrologer.bio && (
               <div className="border-t border-gray-200 pt-6 mt-6">
                 <p className="text-xs text-gray-500 mb-2 font-medium">About</p>
-                <p className="text-sm text-gray-700 leading-relaxed">{astrologer.bio}</p>
+                <div className="relative">
+                  <p 
+                    ref={bioRef}
+                    className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap break-words"
+                    style={{
+                      maxHeight: !isBioExpanded && showBioExpandButton ? '120px' : 'none',
+                      overflow: !isBioExpanded && showBioExpandButton ? 'hidden' : 'visible',
+                      transition: 'max-height 0.3s ease-in-out',
+                    }}
+                  >
+                    {astrologer.bio}
+                  </p>
+                  {showBioExpandButton && (
+                    <button
+                      onClick={() => setIsBioExpanded(!isBioExpanded)}
+                      className="mt-2 flex items-center gap-1 text-xs font-medium text-primary-600 hover:text-primary-700 transition-colors"
+                    >
+                      {isBioExpanded ? (
+                        <>
+                          <span>Show less</span>
+                          <ChevronUp className="w-4 h-4" />
+                        </>
+                      ) : (
+                        <>
+                          <span>Show more</span>
+                          <ChevronDown className="w-4 h-4" />
+                        </>
+                      )}
+                    </button>
+                  )}
+                </div>
               </div>
             )}
 
