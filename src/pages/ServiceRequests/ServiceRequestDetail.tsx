@@ -17,7 +17,7 @@ import { MainLayout } from '@/components/layout';
 import { Card, Loader, Avatar, Modal } from '@/components/common';
 import { poojaRequestsApi } from '@/api';
 import { PoojaRequest } from '@/types';
-import { formatCurrency, formatDateTime } from '@/utils/formatters';
+import { formatCurrency, formatDateTime, formatTimeBetween } from '@/utils/formatters';
 import { useToastContext } from '@/contexts/ToastContext';
 import { ROUTES, SERVICE_REQUEST_STATUS } from '@/utils/constants';
 
@@ -432,6 +432,10 @@ export const ServiceRequestDetail = () => {
                   return timelineEvents.map((event, index) => {
                     const isLast = index === timelineEvents.length - 1;
                     const hasNext = !isLast;
+                    const previousEvent = index > 0 ? timelineEvents[index - 1] : null;
+                    const timeSincePrevious = previousEvent 
+                      ? formatTimeBetween(previousEvent.timestamp, event.timestamp)
+                      : null;
                     
                     return (
                       <div key={event.label} className="relative">
@@ -470,9 +474,19 @@ export const ServiceRequestDetail = () => {
                               }`}>
                                 {event.description}
                               </p>
-                              <p className="text-sm text-gray-500 font-medium">
-                                {format(new Date(event.timestamp), 'd MMM HH:mm')}
-                              </p>
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <p className="text-sm text-gray-500 font-medium">
+                                  {format(new Date(event.timestamp), 'd MMM HH:mm')}
+                                </p>
+                                {timeSincePrevious && (
+                                  <>
+                                    <span className="text-gray-300">•</span>
+                                    <p className="text-xs text-gray-400 font-medium">
+                                      {timeSincePrevious} later
+                                    </p>
+                                  </>
+                                )}
+                              </div>
                             </div>
                           </div>
                         </div>

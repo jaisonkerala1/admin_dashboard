@@ -19,7 +19,7 @@ import { MainLayout } from '@/components/layout';
 import { Card, Loader, Avatar } from '@/components/common';
 import { consultationsApi } from '@/api';
 import { Consultation } from '@/types';
-import { formatCurrency, formatDuration } from '@/utils/formatters';
+import { formatCurrency, formatDuration, formatTimeBetween } from '@/utils/formatters';
 import { useToastContext } from '@/contexts/ToastContext';
 import { ROUTES } from '@/utils/constants';
 
@@ -471,6 +471,10 @@ export const ConsultationDetail = () => {
                   return timelineEvents.map((event, index) => {
                     const isLast = index === timelineEvents.length - 1;
                     const hasNext = !isLast;
+                    const previousEvent = index > 0 ? timelineEvents[index - 1] : null;
+                    const timeSincePrevious = previousEvent 
+                      ? formatTimeBetween(previousEvent.timestamp, event.timestamp)
+                      : null;
                     
                     return (
                       <div key={event.label} className="relative">
@@ -499,9 +503,19 @@ export const ConsultationDetail = () => {
                               <p className={`font-semibold mb-1 ${event.isActive ? 'text-green-700' : 'text-gray-900'}`}>
                                 {event.description}
                               </p>
-                              <p className="text-sm text-gray-500 font-medium">
-                                {format(new Date(event.timestamp), 'd MMM HH:mm')}
-                              </p>
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <p className="text-sm text-gray-500 font-medium">
+                                  {format(new Date(event.timestamp), 'd MMM HH:mm')}
+                                </p>
+                                {timeSincePrevious && (
+                                  <>
+                                    <span className="text-gray-300">•</span>
+                                    <p className="text-xs text-gray-400 font-medium">
+                                      {timeSincePrevious} later
+                                    </p>
+                                  </>
+                                )}
+                              </div>
                             </div>
                           </div>
                         </div>
