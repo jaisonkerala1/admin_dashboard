@@ -100,6 +100,37 @@ const liveStreamsSlice = createSlice({
       }
       state.selectedIds = newSet;
     },
+
+    // Real-time updates
+    updateStreamStats: (state, action: PayloadAction<{ streamId: string; viewerCount?: number; likes?: number }>) => {
+      const { streamId, viewerCount, likes } = action.payload;
+      const stream = state.streams.find(s => s._id === streamId);
+      if (stream) {
+        if (viewerCount !== undefined) {
+          stream.viewerCount = viewerCount;
+          stream.peakViewerCount = Math.max(stream.peakViewerCount || 0, viewerCount);
+        }
+        if (likes !== undefined) {
+          stream.likes = likes;
+        }
+      }
+    },
+    streamStarted: (state, action: PayloadAction<LiveStream>) => {
+      if (!state.streams.find(s => s._id === action.payload._id)) {
+        state.streams = [action.payload, ...state.streams];
+        state.stats.live += 1;
+        state.stats.total += 1;
+      }
+    },
+    streamEnded: (state, action: PayloadAction<string>) => {
+      const stream = state.streams.find(s => s._id === action.payload);
+      if (stream && stream.isLive) {
+        stream.isLive = false;
+        stream.endedAt = new Date().toISOString();
+        state.stats.live -= 1;
+        state.stats.ended += 1;
+      }
+    },
   },
 });
 
@@ -115,6 +146,9 @@ export const {
   selectAll,
   deselectAll,
   toggleSelection,
+  updateStreamStats,
+  streamStarted,
+  streamEnded,
 } = liveStreamsSlice.actions;
 
 export default liveStreamsSlice.reducer;

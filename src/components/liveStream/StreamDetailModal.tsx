@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { Modal, Card, Loader, EmptyState, RoundAvatar, StatCard, PillBadge } from '@/components/common';
 import { liveStreamsApi } from '@/api/liveStreams';
+import { socketService } from '@/services/socketService';
 import { LiveStream, LiveComment, StreamDetailedStats } from '@/types/liveStream';
 import { formatDateTime, formatNumber, formatCurrency } from '@/utils/formatters';
 
@@ -39,8 +40,106 @@ export const StreamDetailModal = ({ isOpen, onClose, stream }: StreamDetailModal
       loadStats();
       if (activeTab === 'comments') loadComments();
       if (activeTab === 'gifts') loadGifts();
+
+      // Socket.IO Real-time Connection
+      socketService.joinLiveStream(stream._id);
+
+      const unregisterComment = socketService.onLiveComment((comment) => {
+        if (comment.streamId === stream._id) {
+          setComments(prev => [comment, ...prev].slice(0, 100));
+          setStats(prev => prev ? {
+            ...prev,
+            engagementStats: {
+              ...prev.engagementStats,
+              comments: prev.engagementStats.comments + 1
+            }
+          } : null);
+        }
+      });
+
+      const unregisterGift = socketService.onLiveGift((gift) => {
+        if (gift.streamId === stream._id) {
+          setGifts(prev => [gift, ...prev].slice(0, 100));
+          setStats(prev => {
+            if (!prev) return null;
+            
+            // Update top gifters
+            const topGifters = [...prev.topGifters];
+            const gifterIndex = topGifters.findIndex(g => g._id === gift.senderId);
+            
+            if (gifterIndex !== -1) {
+              topGifters[gifterIndex] = {
+                ...topGifters[gifterIndex],
+                totalValue: topGifters[gifterIndex].totalValue + (gift.giftValue || 0),
+                count: topGifters[gifterIndex].count + 1
+              };
+            } else {
+              topGifters.push({
+                _id: gift.senderId,
+                userName: gift.senderName,
+                userAvatar: gift.senderAvatar,
+                totalValue: gift.giftValue || 0,
+                count: 1
+              });
+            }
+            
+            // Sort and limit
+            topGifters.sort((a, b) => b.totalValue - a.totalValue);
+            
+            return {
+              ...prev,
+              engagementStats: {
+                ...prev.engagementStats,
+                gifts: prev.engagementStats.gifts + 1,
+                giftValue: prev.engagementStats.giftValue + (gift.giftValue || 0)
+              },
+              topGifters: topGifters.slice(0, 10)
+            };
+          });
+        }
+      });
+
+      const unregisterLikes = socketService.onLiveLikeCount((data) => {
+        if (data.streamId === stream._id) {
+          setStats(prev => prev ? {
+            ...prev,
+            engagementStats: {
+              ...prev.engagementStats,
+              likes: data.count
+            }
+          } : null);
+        }
+      });
+
+      const unregisterViewers = socketService.onLiveViewerCount((data) => {
+        if (data.streamId === stream._id) {
+          setStats(prev => prev ? {
+            ...prev,
+            viewerStats: {
+              ...prev.viewerStats,
+              current: data.count,
+              peak: Math.max(prev.viewerStats.peak, data.count)
+            }
+          } : null);
+        }
+      });
+
+      return () => {
+        socketService.leaveLiveStream(stream._id);
+        unregisterComment();
+        unregisterGift();
+        unregisterLikes();
+        unregisterViewers();
+      };
     }
-  }, [isOpen, stream._id, activeTab]);
+  }, [isOpen, stream._id]);
+
+  useEffect(() => {
+    if (isOpen && stream._id) {
+      if (activeTab === 'comments' && comments.length === 0) loadComments();
+      if (activeTab === 'gifts' && gifts.length === 0) loadGifts();
+    }
+  }, [activeTab]);
 
   const loadStats = async () => {
     try {

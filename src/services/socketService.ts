@@ -19,6 +19,13 @@ class SocketService {
   private ticketAssignCallbacks: Array<(data: any) => void> = [];
   private ticketPriorityCallbacks: Array<(data: any) => void> = [];
   private astrologerStatusCallbacks: Array<(data: { astrologerId: string; isOnline: boolean; lastSeen: string }) => void> = [];
+  private liveCommentCallbacks: Array<(comment: any) => void> = [];
+  private liveGiftCallbacks: Array<(gift: any) => void> = [];
+  private liveLikeCallbacks: Array<(data: { streamId: string; count: number }) => void> = [];
+  private liveViewerCallbacks: Array<(data: { streamId: string; count: number }) => void> = [];
+  private liveEndCallbacks: Array<(data: { streamId: string; message: string }) => void> = [];
+  private liveStartCallbacks: Array<(stream: any) => void> = [];
+  private liveGlobalEndCallbacks: Array<(data: { streamId: string }) => void> = [];
 
   connect() {
     if (this.socket?.connected) {
@@ -226,6 +233,43 @@ class SocketService {
     this.socket.on('astrologer:status_changed', (data: { astrologerId: string; isOnline: boolean; lastSeen: string; name?: string; profilePicture?: string }) => {
       console.log('👤 [SOCKET] Astrologer status changed:', data);
       this.astrologerStatusCallbacks.forEach(callback => callback(data));
+    });
+
+    // Live stream events
+    this.socket.on('live:comment', (comment: any) => {
+      console.log('💬 [SOCKET] Live comment:', comment);
+      this.liveCommentCallbacks.forEach(callback => callback(comment));
+    });
+
+    this.socket.on('live:gift', (gift: any) => {
+      console.log('🎁 [SOCKET] Live gift:', gift);
+      this.liveGiftCallbacks.forEach(callback => callback(gift));
+    });
+
+    this.socket.on('live:like_count', (data: { streamId: string; count: number }) => {
+      console.log('👍 [SOCKET] Live like count:', data);
+      this.liveLikeCallbacks.forEach(callback => callback(data));
+    });
+
+    this.socket.on('live:viewer_count', (data: { streamId: string; count: number }) => {
+      console.log('👁️ [SOCKET] Live viewer count:', data);
+      this.liveViewerCallbacks.forEach(callback => callback(data));
+    });
+
+    this.socket.on('live:end', (data: { streamId: string; message: string }) => {
+      console.log('🛑 [SOCKET] Live stream ended:', data);
+      this.liveEndCallbacks.forEach(callback => callback(data));
+    });
+
+    // Global live stream events
+    this.socket.on('live:stream_started', (stream: any) => {
+      console.log('🔴 [SOCKET] Global: Stream started:', stream);
+      this.liveStartCallbacks.forEach(callback => callback(stream));
+    });
+
+    this.socket.on('live:stream_ended', (data: { streamId: string }) => {
+      console.log('⬛ [SOCKET] Global: Stream ended:', data);
+      this.liveGlobalEndCallbacks.forEach(callback => callback(data));
     });
   }
 
@@ -490,6 +534,27 @@ class SocketService {
     console.log(`🎫 [SOCKET] Left ticket: ${ticketId}`);
   }
 
+  // Live Stream methods
+  joinLiveStream(streamId: string) {
+    if (!this.socket?.connected) {
+      console.error('❌ Socket not connected');
+      return;
+    }
+
+    this.socket.emit('live:join', {
+      streamId,
+      isBroadcaster: false,
+    });
+    console.log(`📺 [SOCKET] Joined live stream: ${streamId}`);
+  }
+
+  leaveLiveStream(streamId: string) {
+    if (!this.socket?.connected) return;
+
+    this.socket.emit('live:leave', { streamId });
+    console.log(`📺 [SOCKET] Left live stream: ${streamId}`);
+  }
+
   sendTicketTyping(ticketId: string, isTyping: boolean) {
     if (!this.socket?.connected) return;
 
@@ -537,6 +602,56 @@ class SocketService {
     this.astrologerStatusCallbacks.push(callback);
     return () => {
       this.astrologerStatusCallbacks = this.astrologerStatusCallbacks.filter(cb => cb !== callback);
+    };
+  }
+
+  // Live Stream event listeners
+  onLiveComment(callback: (comment: any) => void) {
+    this.liveCommentCallbacks.push(callback);
+    return () => {
+      this.liveCommentCallbacks = this.liveCommentCallbacks.filter(cb => cb !== callback);
+    };
+  }
+
+  onLiveGift(callback: (gift: any) => void) {
+    this.liveGiftCallbacks.push(callback);
+    return () => {
+      this.liveGiftCallbacks = this.liveGiftCallbacks.filter(cb => cb !== callback);
+    };
+  }
+
+  onLiveLikeCount(callback: (data: { streamId: string; count: number }) => void) {
+    this.liveLikeCallbacks.push(callback);
+    return () => {
+      this.liveLikeCallbacks = this.liveLikeCallbacks.filter(cb => cb !== callback);
+    };
+  }
+
+  onLiveViewerCount(callback: (data: { streamId: string; count: number }) => void) {
+    this.liveViewerCallbacks.push(callback);
+    return () => {
+      this.liveViewerCallbacks = this.liveViewerCallbacks.filter(cb => cb !== callback);
+    };
+  }
+
+  onLiveEnd(callback: (data: { streamId: string; message: string }) => void) {
+    this.liveEndCallbacks.push(callback);
+    return () => {
+      this.liveEndCallbacks = this.liveEndCallbacks.filter(cb => cb !== callback);
+    };
+  }
+
+  onStreamStarted(callback: (stream: any) => void) {
+    this.liveStartCallbacks.push(callback);
+    return () => {
+      this.liveStartCallbacks = this.liveStartCallbacks.filter(cb => cb !== callback);
+    };
+  }
+
+  onStreamEnded(callback: (data: { streamId: string }) => void) {
+    this.liveGlobalEndCallbacks.push(callback);
+    return () => {
+      this.liveGlobalEndCallbacks = this.liveGlobalEndCallbacks.filter(cb => cb !== callback);
     };
   }
 }

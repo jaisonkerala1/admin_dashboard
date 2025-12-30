@@ -19,6 +19,7 @@ import { StreamDetailModal } from '@/components/liveStream/StreamDetailModal';
 import { LiveStreamStoryRounds } from '@/components/liveStream/LiveStreamStoryRounds';
 import { formatNumber } from '@/utils/formatters';
 import { RootState } from '@/store';
+import { socketService } from '@/services/socketService';
 import {
   fetchStreamsRequest,
   setFilter,
@@ -29,6 +30,9 @@ import {
   selectAll,
   deselectAll,
   LiveStreamFilter,
+  streamStarted,
+  streamEnded,
+  updateStreamStats,
 } from '@/store/slices/liveStreamsSlice';
 import { ROUTES } from '@/utils/constants';
 
@@ -51,6 +55,20 @@ export const LiveStreams = () => {
 
   useEffect(() => {
     dispatch(fetchStreamsRequest());
+
+    // Socket.io listeners for the list
+    const unregisterStart = socketService.onStreamStarted((stream) => {
+      dispatch(streamStarted(stream));
+    });
+
+    const unregisterEnd = socketService.onStreamEnded((data) => {
+      dispatch(streamEnded(data.streamId));
+    });
+
+    return () => {
+      unregisterStart();
+      unregisterEnd();
+    };
   }, [dispatch]);
 
   // Auto-refresh every 30 seconds
