@@ -6,10 +6,7 @@ import {
   ChevronLeft,
   Image as ImageIcon,
   User, 
-  Mail, 
-  Phone, 
   Star, 
-  Clock, 
   DollarSign,
   FileText,
   Languages,
@@ -180,7 +177,7 @@ export const EditAstrologer = () => {
     return (
       <MainLayout>
         <div className="flex justify-center py-20">
-          <Loader size="xl" />
+          <Loader size="lg" />
         </div>
       </MainLayout>
     );
@@ -298,7 +295,7 @@ export const EditAstrologer = () => {
                       </label>
                       <select
                         value={verificationStatus}
-                        onChange={(e) => setVerificationStatus(e.target.value)}
+                        onChange={(e) => setVerificationStatus(e.target.value as any)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm"
                       >
                         <option value="none">None</option>
@@ -525,7 +522,7 @@ export const EditAstrologer = () => {
                 >
                   {isSaving ? (
                     <>
-                      <Loader size="xs" />
+                      <Loader size="sm" />
                       Saving...
                     </>
                   ) : (

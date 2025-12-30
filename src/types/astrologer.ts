@@ -5,6 +5,8 @@ export interface Astrologer {
   phone: string;
   profilePicture?: string;
   bio?: string;
+  awards?: string;
+  certificates?: string;
   specialization: string[];
   languages: string[];
   experience: number;
