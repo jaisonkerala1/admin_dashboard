@@ -35,23 +35,27 @@ export const StreamDetailModal = ({ isOpen, onClose, stream }: StreamDetailModal
   const [commentsLoading, setCommentsLoading] = useState(false);
   const [giftsLoading, setGiftsLoading] = useState(false);
 
+  // Initialize data on open
   useEffect(() => {
-    if (isOpen && stream._id) {
+    if (isOpen && stream?._id) {
+      // Reset state on open
+      setStats(null);
+      setComments([]);
+      setGifts([]);
+      
       loadStats();
-      if (activeTab === 'comments') loadComments();
-      if (activeTab === 'gifts') loadGifts();
 
       // Socket.IO Real-time Connection
       socketService.joinLiveStream(stream._id);
 
       const unregisterComment = socketService.onLiveComment((comment) => {
         if (comment.streamId === stream._id) {
-          setComments(prev => [comment, ...prev].slice(0, 100));
+          setComments(prev => [comment, ...(prev || [])].slice(0, 100));
           setStats(prev => prev ? {
             ...prev,
             engagementStats: {
               ...prev.engagementStats,
-              comments: prev.engagementStats.comments + 1
+              comments: (prev.engagementStats?.comments || 0) + 1
             }
           } : null);
         }
@@ -59,7 +63,7 @@ export const StreamDetailModal = ({ isOpen, onClose, stream }: StreamDetailModal
 
       const unregisterGift = socketService.onLiveGift((gift) => {
         if (gift.streamId === stream._id) {
-          setGifts(prev => [gift, ...prev].slice(0, 100));
+          setGifts(prev => [gift, ...(prev || [])].slice(0, 100));
             setStats(prev => {
             if (!prev) return null;
             
@@ -118,7 +122,7 @@ export const StreamDetailModal = ({ isOpen, onClose, stream }: StreamDetailModal
             viewerStats: {
               ...prev.viewerStats,
               current: data.count,
-              peak: Math.max(prev.viewerStats.peak, data.count)
+              peak: Math.max(prev.viewerStats?.peak || 0, data.count)
             }
           } : null);
         }
@@ -132,14 +136,19 @@ export const StreamDetailModal = ({ isOpen, onClose, stream }: StreamDetailModal
         unregisterViewers();
       };
     }
-  }, [isOpen, stream._id]);
+  }, [isOpen, stream?._id]);
 
+  // Load tab-specific data
   useEffect(() => {
-    if (isOpen && stream._id) {
-      if (activeTab === 'comments' && comments.length === 0) loadComments();
-      if (activeTab === 'gifts' && gifts.length === 0) loadGifts();
+    if (isOpen && stream?._id && activeTab) {
+      if (activeTab === 'comments' && comments.length === 0) {
+        loadComments();
+      }
+      if (activeTab === 'gifts' && gifts.length === 0) {
+        loadGifts();
+      }
     }
-  }, [activeTab]);
+  }, [activeTab, isOpen, stream?._id]);
 
   const loadStats = async () => {
     try {
