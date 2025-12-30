@@ -52,3 +52,39 @@ export interface LiveStreamStats {
 export interface EndLiveStreamRequest {
   reason?: string;
 }
+
+export interface LiveComment {
+  _id: string;
+  streamId: string;
+  userId: string;
+  userType: 'Astrologer' | 'User';
+  userName: string;
+  userAvatar?: string;
+  message: string;
+  isGift: boolean;
+  giftType?: string;
+  giftValue?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface StreamDetailedStats {
+  viewerStats: {
+    peak: number;
+    total: number;
+    current: number;
+  };
+  engagementStats: {
+    likes: number;
+    comments: number;
+    gifts: number;
+    giftValue: number;
+  };
+  topGifters: Array<{
+    _id: string;
+    userName: string;
+    userAvatar?: string;
+    totalValue: number;
+    count: number;
+  }>;
+}

@@ -9,11 +9,13 @@ import {
   TrendingUp,
   Play,
   StopCircle,
-  Ban
+  Ban,
+  Info
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { Card, Loader, EmptyState, RoundAvatar, PillBadge, ShowEntriesDropdown, StatCard, SearchBar } from '@/components/common';
 import { LiveStreamViewer } from '@/components/liveStream/LiveStreamViewer';
+import { StreamDetailModal } from '@/components/liveStream/StreamDetailModal';
 import { LiveStreamStoryRounds } from '@/components/liveStream/LiveStreamStoryRounds';
 import { formatNumber } from '@/utils/formatters';
 import { RootState } from '@/store';
@@ -44,6 +46,8 @@ export const LiveStreams = () => {
   } = useSelector((state: RootState) => state.liveStreams);
   
   const [selectedStream, setSelectedStream] = useState<any | null>(null);
+  const [detailStream, setDetailStream] = useState<any | null>(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
 
   useEffect(() => {
     dispatch(fetchStreamsRequest());
@@ -369,6 +373,16 @@ export const LiveStreams = () => {
                       <td className="px-4 py-4">{getStatusBadge(stream)}</td>
                       <td className="px-4 py-4">
                         <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => {
+                              setDetailStream(stream);
+                              setShowDetailModal(true);
+                            }}
+                            className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            title="View Stream Details"
+                          >
+                            <Info className="w-4 h-4" />
+                          </button>
                           {stream.isLive && (
                             <>
                               <button
@@ -438,6 +452,16 @@ export const LiveStreams = () => {
                         <span>{formatNumber(stream.likes)}</span>
                       </div>
                       {getStatusBadge(stream)}
+                      <button
+                        onClick={() => {
+                          setDetailStream(stream);
+                          setShowDetailModal(true);
+                        }}
+                        className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        title="View Details"
+                      >
+                        <Info className="w-4 h-4" />
+                      </button>
                       {stream.isLive && (
                         <button
                           onClick={() => setSelectedStream(stream)}
@@ -522,8 +546,18 @@ export const LiveStreams = () => {
                       {stream.isLive && (
                         <div className="flex gap-2">
                           <button
+                            onClick={() => {
+                              setDetailStream(stream);
+                              setShowDetailModal(true);
+                            }}
+                            className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm border border-blue-200 text-blue-600 font-medium rounded-lg hover:bg-blue-50 transition-colors"
+                          >
+                            <Info className="w-4 h-4" />
+                            Details
+                          </button>
+                          <button
                             onClick={() => setSelectedStream(stream)}
-                            className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm bg-red-500 text-white font-medium rounded-lg hover:bg-red-600 transition-colors"
+                            className="flex-[2] flex items-center justify-center gap-2 px-3 py-2 text-sm bg-red-500 text-white font-medium rounded-lg hover:bg-red-600 transition-colors"
                           >
                             <Play className="w-4 h-4" />
                             Watch Live
@@ -532,6 +566,18 @@ export const LiveStreams = () => {
                             <Ban className="w-4 h-4" />
                           </button>
                         </div>
+                      )}
+                      {!stream.isLive && (
+                        <button
+                          onClick={() => {
+                            setDetailStream(stream);
+                            setShowDetailModal(true);
+                          }}
+                          className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm border border-blue-200 text-blue-600 font-medium rounded-lg hover:bg-blue-50 transition-colors"
+                        >
+                          <Info className="w-4 h-4" />
+                          View Stream Analytics
+                        </button>
                       )}
                   </div>
                 </div>
@@ -597,6 +643,18 @@ export const LiveStreams = () => {
             setSelectedStream(null);
             dispatch(fetchStreamsRequest());
           }}
+        />
+      )}
+
+      {/* Stream Detail & Analytics Modal */}
+      {detailStream && (
+        <StreamDetailModal
+          isOpen={showDetailModal}
+          onClose={() => {
+            setShowDetailModal(false);
+            setDetailStream(null);
+          }}
+          stream={detailStream}
         />
       )}
     </MainLayout>

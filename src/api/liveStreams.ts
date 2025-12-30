@@ -5,6 +5,8 @@ import {
   EndLiveStreamRequest,
   PaginationParams,
   ApiResponse,
+  LiveComment,
+  StreamDetailedStats,
 } from '@/types';
 
 // Custom response type that matches backend
@@ -19,9 +21,35 @@ interface LiveStreamsListResponse {
   };
 }
 
+interface LiveStreamCommentsResponse {
+  success: boolean;
+  data: LiveComment[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+}
+
 export const liveStreamsApi = {
   getAll: async (params?: PaginationParams): Promise<LiveStreamsListResponse> => {
     const response = await apiClient.get('/admin/live-streams', { params });
+    return response.data;
+  },
+
+  getComments: async (id: string, params?: PaginationParams): Promise<LiveStreamCommentsResponse> => {
+    const response = await apiClient.get(`/admin/live-streams/${id}/comments`, { params });
+    return response.data;
+  },
+
+  getGifts: async (id: string, params?: PaginationParams): Promise<LiveStreamCommentsResponse> => {
+    const response = await apiClient.get(`/admin/live-streams/${id}/gifts`, { params });
+    return response.data;
+  },
+
+  getStreamStats: async (id: string): Promise<ApiResponse<StreamDetailedStats>> => {
+    const response = await apiClient.get(`/admin/live-streams/${id}/stats`);
     return response.data;
   },
 
