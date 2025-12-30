@@ -239,7 +239,7 @@ export const StreamDetailModal = ({ isOpen, onClose, stream }: StreamDetailModal
                             <div key={gifter._id} className="flex items-center justify-between">
                               <div className="flex items-center gap-3">
                                 <span className="text-xs font-bold text-gray-400 w-4">#{index + 1}</span>
-                                <RoundAvatar src={gifter.userAvatar} name={gifter.userName} size="xs" />
+                                <RoundAvatar src={gifter.userAvatar} name={gifter.userName} size="sm" />
                                 <span className="text-sm font-medium text-gray-900 truncate max-w-[120px]">
                                   {gifter.userName}
                                 </span>
@@ -283,7 +283,7 @@ export const StreamDetailModal = ({ isOpen, onClose, stream }: StreamDetailModal
                         <tr key={comment._id} className="hover:bg-gray-50">
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-2">
-                              <RoundAvatar src={comment.userAvatar} name={comment.userName} size="xs" />
+                              <RoundAvatar src={comment.userAvatar} name={comment.userName} size="sm" />
                               <span className="font-medium text-gray-900">{comment.userName}</span>
                             </div>
                           </td>
@@ -322,7 +322,7 @@ export const StreamDetailModal = ({ isOpen, onClose, stream }: StreamDetailModal
                         <tr key={gift._id} className="hover:bg-gray-50">
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-2">
-                              <RoundAvatar src={gift.userAvatar} name={gift.userName} size="xs" />
+                              <RoundAvatar src={gift.userAvatar} name={gift.userName} size="sm" />
                               <span className="font-medium text-gray-900">{gift.userName}</span>
                             </div>
                           </td>
