@@ -67,7 +67,7 @@ const liveStreamsSlice = createSlice({
     setFilter: (state, action: PayloadAction<LiveStreamFilter>) => {
       state.filter = action.payload;
       state.currentPage = 1;
-      state.selectedIds = new Set();
+      state.selectedIds = [];
     },
     setSearch: (state, action: PayloadAction<string>) => {
       state.search = action.payload;
