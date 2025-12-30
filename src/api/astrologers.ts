@@ -37,6 +37,17 @@ export const astrologersApi = {
     return response.data;
   },
 
+  uploadProfilePicture: async (id: string, file: File): Promise<ApiResponse<{ profilePicture: string }>> => {
+    const formData = new FormData();
+    formData.append('profilePicture', file);
+    const response = await apiClient.post(`/admin/astrologers/${id}/profile-picture`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
+
   approve: async (id: string, data: ApproveAstrologerRequest): Promise<ApiResponse<Astrologer>> => {
     const response = await apiClient.patch(`/admin/astrologers/${id}/approve`, data);
     return response.data;

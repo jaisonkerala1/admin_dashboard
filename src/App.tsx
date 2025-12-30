@@ -43,6 +43,7 @@ function App() {
         {/* Main Routes */}
         <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
         <Route path={ROUTES.ASTROLOGERS} element={<AstrologersList />} />
+        <Route path="/astrologers/:id/edit" element={<EditAstrologer />} />
         <Route path="/astrologers/:id" element={<AstrologerDetail />} />
         <Route path={ROUTES.USERS} element={<Users />} />
         <Route path={ROUTES.CONSULTATIONS} element={<Consultations />} />

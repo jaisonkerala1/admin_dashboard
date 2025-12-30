@@ -60,6 +60,7 @@ export interface UpdateAstrologerRequest {
   name?: string;
   email?: string;
   phone?: string;
+  profilePicture?: string;
   bio?: string;
   specialization?: string[];
   languages?: string[];
@@ -68,5 +69,9 @@ export interface UpdateAstrologerRequest {
   callCharge?: number;
   chatCharge?: number;
   isActive?: boolean;
+  awards?: string;
+  certificates?: string;
+  isVerified?: boolean;
+  verificationStatus?: 'none' | 'pending' | 'approved' | 'rejected';
 }
 

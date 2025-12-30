@@ -15,6 +15,7 @@ import { walletSaga } from './walletSaga';
 import notificationSaga from './notificationSaga';
 import rankingsSaga from './rankingsSaga';
 import searchSaga from './searchSaga';
+import astrologerSaga from './astrologerSaga';
 
 // Root saga: combines all sagas
 export default function* rootSaga() {
@@ -35,6 +36,7 @@ export default function* rootSaga() {
     notificationSaga(),
     rankingsSaga(),
     fork(searchSaga),
+    fork(astrologerSaga),
     // Add more sagas here as needed
   ]);
 }

@@ -1,6 +1,6 @@
 export { Login } from './Login';
 export { Dashboard } from './Dashboard';
-export { AstrologersList, AstrologerDetail } from './Astrologers';
+export { AstrologersList, AstrologerDetail, EditAstrologer } from './Astrologers';
 export { Users } from './Users';
 export { Consultations } from './Consultations';
 export { ConsultationDetail } from './Consultations/ConsultationDetail';

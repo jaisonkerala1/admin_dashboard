@@ -389,7 +389,10 @@ export const AstrologerDetail = () => {
                   </div>
                 )}
                 {/* Edit Icon Overlay */}
-                <button className="absolute top-0 right-0 w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors shadow-lg">
+                <button 
+                  onClick={() => navigate(`/astrologers/${id}/edit`)}
+                  className="absolute top-0 right-0 w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors shadow-lg"
+                >
                   <Edit2 className="w-5 h-5" />
                 </button>
               </div>
