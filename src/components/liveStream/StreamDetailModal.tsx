@@ -64,8 +64,9 @@ export const StreamDetailModal = ({ isOpen, onClose, stream }: StreamDetailModal
       const unregisterGift = socketService.onLiveGift((gift) => {
         if (gift.streamId === stream._id) {
           setGifts(prev => [gift, ...(prev || [])].slice(0, 100));
-            setStats(prev => {
-            if (!prev) return null;
+          setStats(prev => {
+            // If stats haven't loaded yet, just ignore the update
+            if (!prev || !prev.engagementStats || !prev.topGifters) return prev;
             
             // Update top gifters (defensive check)
             const topGifters = Array.isArray(prev.topGifters) ? [...prev.topGifters] : [];
