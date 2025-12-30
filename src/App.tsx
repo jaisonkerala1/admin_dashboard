@@ -4,6 +4,7 @@ import {
   Dashboard,
   AstrologersList,
   AstrologerDetail,
+  EditAstrologer,
   Users,
   Consultations,
   ConsultationDetail,

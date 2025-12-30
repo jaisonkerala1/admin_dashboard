@@ -17,7 +17,7 @@ import {
 function* fetchAstrologerSaga(action: PayloadAction<string>) {
   try {
     const response: ApiResponse<Astrologer> = yield call(astrologersApi.getById, action.payload);
-    if (response.success) {
+    if (response.success && response.data) {
       yield put(fetchAstrologerSuccess(response.data));
     } else {
       yield put(fetchAstrologerFailure(response.message || 'Failed to fetch astrologer'));
@@ -30,7 +30,7 @@ function* fetchAstrologerSaga(action: PayloadAction<string>) {
 function* updateAstrologerSaga(action: PayloadAction<{ id: string; data: UpdateAstrologerRequest; callback?: () => void }>) {
   try {
     const response: ApiResponse<Astrologer> = yield call(astrologersApi.update, action.payload.id, action.payload.data);
-    if (response.success) {
+    if (response.success && response.data) {
       yield put(updateAstrologerSuccess(response.data));
       if (action.payload.callback) {
         yield call(action.payload.callback);
@@ -46,7 +46,7 @@ function* updateAstrologerSaga(action: PayloadAction<{ id: string; data: UpdateA
 function* uploadProfilePictureSaga(action: PayloadAction<{ id: string; file: File }>) {
   try {
     const response: ApiResponse<{ profilePicture: string }> = yield call(astrologersApi.uploadProfilePicture, action.payload.id, action.payload.file);
-    if (response.success) {
+    if (response.success && response.data) {
       yield put(uploadProfilePictureSuccess(response.data.profilePicture));
     } else {
       yield put(uploadProfilePictureFailure(response.message || 'Failed to upload profile picture'));
