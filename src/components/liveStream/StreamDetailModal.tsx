@@ -278,30 +278,30 @@ export const StreamDetailModal = ({ isOpen, onClose, stream }: StreamDetailModal
                 <div className="py-20 flex justify-center">
                   <Loader size="lg" text="Loading analytics..." />
                 </div>
-              ) : stats ? (
+              ) : stats && stats.viewerStats && stats.engagementStats ? (
                 <>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <StatCard 
                       title="Peak Viewers" 
-                      value={formatNumber(stats.viewerStats.peak)} 
+                      value={formatNumber(stats.viewerStats?.peak || 0)} 
                       icon={TrendingUp} 
                       className="bg-blue-50/50 border-blue-100"
                     />
                     <StatCard 
                       title="Total Views" 
-                      value={formatNumber(stats.viewerStats.total)} 
+                      value={formatNumber(stats.viewerStats?.total || 0)} 
                       icon={Eye} 
                       className="bg-purple-50/50 border-purple-100"
                     />
                     <StatCard 
                       title="Likes" 
-                      value={formatNumber(stats.engagementStats.likes)} 
+                      value={formatNumber(stats.engagementStats?.likes || 0)} 
                       icon={Heart} 
                       className="bg-pink-50/50 border-pink-100"
                     />
                     <StatCard 
                       title="Gift Value" 
-                      value={formatCurrency(stats.engagementStats.giftValue)} 
+                      value={formatCurrency(stats.engagementStats?.giftValue || 0)} 
                       icon={Gift} 
                       className="bg-amber-50/50 border-amber-100"
                     />
@@ -317,20 +317,20 @@ export const StreamDetailModal = ({ isOpen, onClose, stream }: StreamDetailModal
                       <div className="space-y-4">
                         <div className="flex justify-between items-center py-2 border-b border-gray-50">
                           <span className="text-sm text-gray-600">Total Comments</span>
-                          <span className="font-semibold text-gray-900">{formatNumber(stats.engagementStats.comments)}</span>
+                          <span className="font-semibold text-gray-900">{formatNumber(stats.engagementStats?.comments || 0)}</span>
                         </div>
                         <div className="flex justify-between items-center py-2 border-b border-gray-50">
                           <span className="text-sm text-gray-600">Gifts Received</span>
-                          <span className="font-semibold text-gray-900">{formatNumber(stats.engagementStats.gifts)}</span>
+                          <span className="font-semibold text-gray-900">{formatNumber(stats.engagementStats?.gifts || 0)}</span>
                         </div>
                         <div className="flex justify-between items-center py-2 border-b border-gray-50">
                           <span className="text-sm text-gray-600">Avg. Viewers</span>
-                          <span className="font-semibold text-gray-900">{formatNumber(Math.round(stats.viewerStats.total / 2))}</span>
+                          <span className="font-semibold text-gray-900">{formatNumber(Math.round((stats.viewerStats?.total || 0) / 2))}</span>
                         </div>
                         <div className="flex justify-between items-center py-2">
                           <span className="text-sm text-gray-600">Engagement Rate</span>
                           <span className="font-semibold text-green-600">
-                            {((stats.engagementStats.likes + stats.engagementStats.comments) / (stats.viewerStats.total || 1) * 100).toFixed(1)}%
+                            {(((stats.engagementStats?.likes || 0) + (stats.engagementStats?.comments || 0)) / (stats.viewerStats?.total || 1) * 100).toFixed(1)}%
                           </span>
                         </div>
                       </div>
@@ -342,7 +342,7 @@ export const StreamDetailModal = ({ isOpen, onClose, stream }: StreamDetailModal
                         <Users className="w-4 h-4 text-amber-600" />
                         Top Gifters
                       </h4>
-                      {stats.topGifters && stats.topGifters.length > 0 ? (
+                      {stats.topGifters && Array.isArray(stats.topGifters) && stats.topGifters.length > 0 ? (
                         <div className="space-y-3">
                           {stats.topGifters.map((gifter, index) => (
                             <div key={gifter._id} className="flex items-center justify-between">
@@ -353,7 +353,7 @@ export const StreamDetailModal = ({ isOpen, onClose, stream }: StreamDetailModal
                                   {gifter.userName}
                                 </span>
                               </div>
-                              <span className="text-sm font-bold text-amber-600">{formatCurrency(gifter.totalValue)}</span>
+                              <span className="text-sm font-bold text-amber-600">{formatCurrency(gifter.totalValue || 0)}</span>
                             </div>
                           ))}
                         </div>
