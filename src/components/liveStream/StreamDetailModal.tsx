@@ -60,18 +60,18 @@ export const StreamDetailModal = ({ isOpen, onClose, stream }: StreamDetailModal
       const unregisterGift = socketService.onLiveGift((gift) => {
         if (gift.streamId === stream._id) {
           setGifts(prev => [gift, ...prev].slice(0, 100));
-          setStats(prev => {
+            setStats(prev => {
             if (!prev) return null;
             
-            // Update top gifters
-            const topGifters = [...prev.topGifters];
+            // Update top gifters (defensive check)
+            const topGifters = Array.isArray(prev.topGifters) ? [...prev.topGifters] : [];
             const gifterIndex = topGifters.findIndex(g => g._id === gift.senderId);
             
             if (gifterIndex !== -1) {
               topGifters[gifterIndex] = {
                 ...topGifters[gifterIndex],
-                totalValue: topGifters[gifterIndex].totalValue + (gift.giftValue || 0),
-                count: topGifters[gifterIndex].count + 1
+                totalValue: (topGifters[gifterIndex].totalValue || 0) + (gift.giftValue || 0),
+                count: (topGifters[gifterIndex].count || 0) + 1
               };
             } else {
               topGifters.push({
@@ -84,14 +84,14 @@ export const StreamDetailModal = ({ isOpen, onClose, stream }: StreamDetailModal
             }
             
             // Sort and limit
-            topGifters.sort((a, b) => b.totalValue - a.totalValue);
+            topGifters.sort((a, b) => (b.totalValue || 0) - (a.totalValue || 0));
             
             return {
               ...prev,
               engagementStats: {
                 ...prev.engagementStats,
-                gifts: prev.engagementStats.gifts + 1,
-                giftValue: prev.engagementStats.giftValue + (gift.giftValue || 0)
+                gifts: (prev.engagementStats?.gifts || 0) + 1,
+                giftValue: (prev.engagementStats?.giftValue || 0) + (gift.giftValue || 0)
               },
               topGifters: topGifters.slice(0, 10)
             };
@@ -332,7 +332,7 @@ export const StreamDetailModal = ({ isOpen, onClose, stream }: StreamDetailModal
                         <Users className="w-4 h-4 text-amber-600" />
                         Top Gifters
                       </h4>
-                      {stats.topGifters.length > 0 ? (
+                      {stats.topGifters && stats.topGifters.length > 0 ? (
                         <div className="space-y-3">
                           {stats.topGifters.map((gifter, index) => (
                             <div key={gifter._id} className="flex items-center justify-between">
@@ -367,7 +367,7 @@ export const StreamDetailModal = ({ isOpen, onClose, stream }: StreamDetailModal
                 <div className="py-20 flex justify-center">
                   <Loader size="md" text="Fetching comments..." />
                 </div>
-              ) : comments.length > 0 ? (
+              ) : (comments || []).length > 0 ? (
                 <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
                   <table className="w-full text-left text-sm">
                     <thead className="bg-gray-50 border-b border-gray-200">
@@ -378,7 +378,7 @@ export const StreamDetailModal = ({ isOpen, onClose, stream }: StreamDetailModal
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
-                      {comments.map((comment) => (
+                      {(comments || []).map((comment) => (
                         <tr key={comment._id} className="hover:bg-gray-50">
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-2">
@@ -405,7 +405,7 @@ export const StreamDetailModal = ({ isOpen, onClose, stream }: StreamDetailModal
                 <div className="py-20 flex justify-center">
                   <Loader size="md" text="Fetching gift history..." />
                 </div>
-              ) : gifts.length > 0 ? (
+              ) : (gifts || []).length > 0 ? (
                 <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
                   <table className="w-full text-left text-sm">
                     <thead className="bg-gray-50 border-b border-gray-200">
@@ -417,7 +417,7 @@ export const StreamDetailModal = ({ isOpen, onClose, stream }: StreamDetailModal
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
-                      {gifts.map((gift) => (
+                      {(gifts || []).map((gift) => (
                         <tr key={gift._id} className="hover:bg-gray-50">
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-2">

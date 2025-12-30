@@ -128,8 +128,8 @@ export const LiveStreams = () => {
     dispatch(toggleSelection(id));
   };
 
-  const isAllSelected = paginatedStreams.length > 0 && paginatedStreams.every(s => selectedIds.has(s._id));
-  const isSomeSelected = paginatedStreams.some(s => selectedIds.has(s._id)) && !isAllSelected;
+  const isAllSelected = paginatedStreams.length > 0 && paginatedStreams.every(s => selectedIds.includes(s._id));
+  const isSomeSelected = paginatedStreams.some(s => selectedIds.includes(s._id)) && !isAllSelected;
 
   // Helper functions
   const getStatusBadge = (stream: any) => {
@@ -282,9 +282,9 @@ export const LiveStreams = () => {
               className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
             />
             <span className="text-sm text-gray-600">
-              {selectedIds.size > 0 ? `${selectedIds.size} selected` : 'Select all'}
+              {selectedIds.length > 0 ? `${selectedIds.length} selected` : 'Select all'}
             </span>
-            {selectedIds.size > 0 && (
+            {selectedIds.length > 0 && (
               <button className="text-sm text-red-600 hover:text-red-700 font-medium">
                 End Selected
               </button>
@@ -341,7 +341,7 @@ export const LiveStreams = () => {
                       <td className="px-4 py-4">
                         <input
                           type="checkbox"
-                          checked={selectedIds.has(stream._id)}
+                          checked={selectedIds.includes(stream._id)}
                           onChange={() => handleSelectOne(stream._id)}
                           className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                         />
@@ -446,7 +446,7 @@ export const LiveStreams = () => {
                 >
                   <input
                     type="checkbox"
-                    checked={selectedIds.has(stream._id)}
+                    checked={selectedIds.includes(stream._id)}
                     onChange={() => handleSelectOne(stream._id)}
                     className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
@@ -515,7 +515,7 @@ export const LiveStreams = () => {
                   <div className="flex items-start gap-3 mb-3">
                     <input
                       type="checkbox"
-                      checked={selectedIds.has(stream._id)}
+                      checked={selectedIds.includes(stream._id)}
                       onChange={() => handleSelectOne(stream._id)}
                       className="w-4 h-4 mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />

@@ -20,7 +20,7 @@ export interface LiveStreamsState {
   search: string;
   entriesPerPage: number;
   currentPage: number;
-  selectedIds: Set<string>;
+  selectedIds: string[]; // Changed from Set to string[] for serializability
   stats: LiveStreamsStats;
 }
 
@@ -32,7 +32,7 @@ const initialState: LiveStreamsState = {
   search: '',
   entriesPerPage: 8,
   currentPage: 1,
-  selectedIds: new Set(),
+  selectedIds: [],
   stats: {
     total: 0,
     live: 0,
@@ -82,23 +82,23 @@ const liveStreamsSlice = createSlice({
     },
 
     // Selection
-    setSelectedIds: (state, action: PayloadAction<Set<string>>) => {
+    setSelectedIds: (state, action: PayloadAction<string[]>) => {
       state.selectedIds = action.payload;
     },
     selectAll: (state, action: PayloadAction<string[]>) => {
-      state.selectedIds = new Set(action.payload);
+      state.selectedIds = action.payload;
     },
     deselectAll: (state) => {
-      state.selectedIds = new Set();
+      state.selectedIds = [];
     },
     toggleSelection: (state, action: PayloadAction<string>) => {
-      const newSet = new Set(state.selectedIds);
-      if (newSet.has(action.payload)) {
-        newSet.delete(action.payload);
+      const id = action.payload;
+      const index = state.selectedIds.indexOf(id);
+      if (index !== -1) {
+        state.selectedIds.splice(index, 1);
       } else {
-        newSet.add(action.payload);
+        state.selectedIds.push(id);
       }
-      state.selectedIds = newSet;
     },
 
     // Real-time updates
