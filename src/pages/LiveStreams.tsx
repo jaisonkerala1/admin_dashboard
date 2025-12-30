@@ -65,9 +65,19 @@ export const LiveStreams = () => {
       dispatch(streamEnded(data.streamId));
     });
 
+    const unregisterLikes = socketService.onLiveLikeCount((data) => {
+      dispatch(updateStreamStats({ streamId: data.streamId, likes: data.count }));
+    });
+
+    const unregisterViewers = socketService.onLiveViewerCount((data) => {
+      dispatch(updateStreamStats({ streamId: data.streamId, viewerCount: data.count }));
+    });
+
     return () => {
       unregisterStart();
       unregisterEnd();
+      unregisterLikes();
+      unregisterViewers();
     };
   }, [dispatch]);
 
