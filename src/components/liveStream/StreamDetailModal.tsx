@@ -50,7 +50,26 @@ export const StreamDetailModal = ({ isOpen, onClose, stream }: StreamDetailModal
 
       const unregisterComment = socketService.onLiveComment((comment) => {
         if (comment.streamId === stream._id) {
-          setComments(prev => [comment, ...(prev || [])].slice(0, 100));
+          const createdAt =
+            comment?.createdAt ??
+            (comment?.timestamp ? new Date(comment.timestamp).toISOString() : new Date().toISOString());
+
+          const normalizedComment: LiveComment = {
+            _id: (comment?._id ?? comment?.id ?? `comment_${Date.now()}`).toString(),
+            streamId: (comment?.streamId ?? stream._id).toString(),
+            userId: (comment?.userId ?? comment?.senderId ?? 'unknown').toString(),
+            userType: comment?.userType ?? 'User',
+            userName: comment?.userName ?? comment?.senderName ?? 'Unknown',
+            userAvatar: comment?.userAvatar ?? comment?.senderAvatar ?? null,
+            message: comment?.message ?? '',
+            isGift: !!comment?.isGift,
+            giftType: comment?.giftType ?? null,
+            giftValue: comment?.giftValue ?? 0,
+            createdAt,
+            updatedAt: comment?.updatedAt ?? createdAt,
+          };
+
+          setComments(prev => [normalizedComment, ...(prev || [])].slice(0, 100));
           setStats(prev => prev ? {
             ...prev,
             engagementStats: {
@@ -63,14 +82,37 @@ export const StreamDetailModal = ({ isOpen, onClose, stream }: StreamDetailModal
 
       const unregisterGift = socketService.onLiveGift((gift) => {
         if (gift.streamId === stream._id) {
-          setGifts(prev => [gift, ...(prev || [])].slice(0, 100));
+          const createdAt =
+            gift?.createdAt ??
+            (gift?.timestamp ? new Date(gift.timestamp).toISOString() : new Date().toISOString());
+
+          const normalizedGift: LiveComment = {
+            _id: (gift?._id ?? gift?.id ?? `gift_${Date.now()}`).toString(),
+            streamId: (gift?.streamId ?? stream._id).toString(),
+            userId: (gift?.senderId ?? gift?.userId ?? 'unknown').toString(),
+            userType: gift?.userType ?? 'User',
+            userName: gift?.senderName ?? gift?.userName ?? 'Unknown',
+            userAvatar: gift?.senderAvatar ?? gift?.userAvatar ?? null,
+            message: gift?.message ?? `sent a ${gift?.giftType ?? 'gift'}`,
+            isGift: true,
+            giftType: gift?.giftType ?? null,
+            giftValue: gift?.giftValue ?? 0,
+            createdAt,
+            updatedAt: gift?.updatedAt ?? createdAt,
+          };
+
+          setGifts(prev => [normalizedGift, ...(prev || [])].slice(0, 100));
           setStats(prev => {
             // If stats haven't loaded yet, just ignore the update
             if (!prev || !prev.engagementStats || !prev.topGifters) return prev;
             
+            const senderId = (gift?.senderId ?? gift?.userId ?? 'unknown').toString();
+            const senderName = gift?.senderName ?? gift?.userName ?? 'Unknown';
+            const senderAvatar = gift?.senderAvatar ?? gift?.userAvatar ?? null;
+
             // Update top gifters (defensive check)
             const topGifters = Array.isArray(prev.topGifters) ? [...prev.topGifters] : [];
-            const gifterIndex = topGifters.findIndex(g => g._id === gift.senderId);
+            const gifterIndex = topGifters.findIndex(g => g._id === senderId);
             
             if (gifterIndex !== -1) {
               topGifters[gifterIndex] = {
@@ -80,9 +122,9 @@ export const StreamDetailModal = ({ isOpen, onClose, stream }: StreamDetailModal
               };
             } else {
               topGifters.push({
-                _id: gift.senderId,
-                userName: gift.senderName,
-                userAvatar: gift.senderAvatar,
+                _id: senderId,
+                userName: senderName,
+                userAvatar: senderAvatar,
                 totalValue: gift.giftValue || 0,
                 count: 1
               });
