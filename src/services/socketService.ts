@@ -24,6 +24,7 @@ class SocketService {
   private liveLikeCallbacks: Array<(data: { streamId: string; count: number }) => void> = [];
   private liveViewerCallbacks: Array<(data: { streamId: string; count: number }) => void> = [];
   private liveEndCallbacks: Array<(data: { streamId: string; message: string }) => void> = [];
+  private liveReactionCallbacks: Array<(data: { streamId: string; reactionType: string; userId?: string }) => void> = [];
   private liveStartCallbacks: Array<(stream: any) => void> = [];
   private liveGlobalEndCallbacks: Array<(data: { streamId: string }) => void> = [];
 
@@ -259,6 +260,11 @@ class SocketService {
     this.socket.on('live:end', (data: { streamId: string; message: string }) => {
       console.log('🛑 [SOCKET] Live stream ended:', data);
       this.liveEndCallbacks.forEach(callback => callback(data));
+    });
+
+    this.socket.on('live:reaction', (data: { streamId: string; reactionType: string; userId?: string }) => {
+      console.log('✨ [SOCKET] Live reaction:', data);
+      this.liveReactionCallbacks.forEach(callback => callback(data));
     });
 
     // Global live stream events
@@ -638,6 +644,13 @@ class SocketService {
     this.liveEndCallbacks.push(callback);
     return () => {
       this.liveEndCallbacks = this.liveEndCallbacks.filter(cb => cb !== callback);
+    };
+  }
+
+  onLiveReaction(callback: (data: { streamId: string; reactionType: string; userId?: string }) => void) {
+    this.liveReactionCallbacks.push(callback);
+    return () => {
+      this.liveReactionCallbacks = this.liveReactionCallbacks.filter(cb => cb !== callback);
     };
   }
 

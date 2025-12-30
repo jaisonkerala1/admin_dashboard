@@ -21,12 +21,27 @@ import { LiveStream } from '@/types';
 import { formatNumber, formatRelativeTime } from '@/utils/formatters';
 import { Avatar } from '@/components/common';
 import { liveStreamsApi } from '@/api';
+import { socketService } from '@/services/socketService';
 
 interface LiveStreamViewerProps {
   stream: LiveStream;
   onClose: () => void;
   onEndStream?: () => void;
 }
+
+type OverlayMessage = {
+  id: string;
+  streamId: string;
+  userName: string;
+  userAvatar?: string | null;
+  message: string;
+  isGift?: boolean;
+  giftType?: string | null;
+  giftValue?: number;
+  createdAt: string;
+};
+
+type FloatingHeart = { id: string; leftPx: number; sizePx: number; durationMs: number; emoji: string };
 
 export const LiveStreamViewer = ({ stream, onClose, onEndStream }: LiveStreamViewerProps) => {
   const [client] = useState<IAgoraRTCClient>(AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' }));
@@ -40,6 +55,11 @@ export const LiveStreamViewer = ({ stream, onClose, onEndStream }: LiveStreamVie
   const [showWarnDialog, setShowWarnDialog] = useState(false);
   const [warningMessage, setWarningMessage] = useState('');
   const [showAdminMenu, setShowAdminMenu] = useState(false);
+  const [viewerCount, setViewerCount] = useState<number>(stream.viewerCount || 0);
+  const [likeCount, setLikeCount] = useState<number>(stream.likes || 0);
+  const [floatingComments, setFloatingComments] = useState<OverlayMessage[]>([]);
+  const [giftToasts, setGiftToasts] = useState<OverlayMessage[]>([]);
+  const [hearts, setHearts] = useState<FloatingHeart[]>([]);
   
   const videoRef = useRef<HTMLDivElement>(null);
 
@@ -50,6 +70,135 @@ export const LiveStreamViewer = ({ stream, onClose, onEndStream }: LiveStreamVie
       leaveChannel();
     };
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    let unregisterComment: (() => void) | null = null;
+    let unregisterGift: (() => void) | null = null;
+    let unregisterLikes: (() => void) | null = null;
+    let unregisterViewers: (() => void) | null = null;
+    let unregisterReaction: (() => void) | null = null;
+
+    const giftEmoji = (giftType?: string | null) => {
+      switch ((giftType || '').toLowerCase()) {
+        case 'rose': return '🌹';
+        case 'star': return '⭐';
+        case 'heart': return '❤️';
+        case 'diamond': return '💎';
+        case 'rainbow': return '🌈';
+        case 'crown': return '👑';
+        default: return '🎁';
+      }
+    };
+
+    const pushHeart = (emoji: string = '❤️') => {
+      const id = `heart_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+      const leftPx = Math.floor(Math.random() * 120);
+      const sizePx = 18 + Math.floor(Math.random() * 12);
+      const durationMs = 1800 + Math.floor(Math.random() * 700);
+      const heart: FloatingHeart = { id, leftPx, sizePx, durationMs, emoji };
+      setHearts(prev => [...prev, heart].slice(-25));
+      window.setTimeout(() => {
+        setHearts(prev => prev.filter(h => h.id !== id));
+      }, durationMs);
+    };
+
+    const normalizeComment = (raw: any): OverlayMessage => {
+      const createdAt =
+        raw?.createdAt ??
+        (raw?.timestamp ? new Date(raw.timestamp).toISOString() : new Date().toISOString());
+      return {
+        id: (raw?._id ?? raw?.id ?? `comment_${Date.now()}`).toString(),
+        streamId: (raw?.streamId ?? stream._id).toString(),
+        userName: raw?.userName ?? raw?.senderName ?? 'Unknown',
+        userAvatar: raw?.userAvatar ?? raw?.senderAvatar ?? null,
+        message: raw?.message ?? '',
+        isGift: !!raw?.isGift,
+        giftType: raw?.giftType ?? null,
+        giftValue: raw?.giftValue ?? 0,
+        createdAt,
+      };
+    };
+
+    const normalizeGift = (raw: any): OverlayMessage => {
+      const createdAt =
+        raw?.createdAt ??
+        (raw?.timestamp ? new Date(raw.timestamp).toISOString() : new Date().toISOString());
+      return {
+        id: (raw?._id ?? raw?.id ?? `gift_${Date.now()}`).toString(),
+        streamId: (raw?.streamId ?? stream._id).toString(),
+        userName: raw?.senderName ?? raw?.userName ?? 'Unknown',
+        userAvatar: raw?.senderAvatar ?? raw?.userAvatar ?? null,
+        message: raw?.message ?? `sent a ${raw?.giftType ?? 'gift'}`,
+        isGift: true,
+        giftType: raw?.giftType ?? null,
+        giftValue: raw?.giftValue ?? 0,
+        createdAt,
+      };
+    };
+
+    (async () => {
+      try {
+        await socketService.connectAndWait();
+        if (cancelled) return;
+        socketService.joinLiveStream(stream._id);
+
+        unregisterComment = socketService.onLiveComment((raw) => {
+          if (raw?.streamId !== stream._id) return;
+          const c = normalizeComment(raw);
+          setFloatingComments(prev => [c, ...prev].slice(0, 5));
+        });
+
+        unregisterGift = socketService.onLiveGift((raw) => {
+          if (raw?.streamId !== stream._id) return;
+          const g = normalizeGift(raw);
+          setGiftToasts(prev => [g, ...prev].slice(0, 3));
+          pushHeart(giftEmoji(g.giftType)); // little celebration
+          window.setTimeout(() => {
+            setGiftToasts(prev => prev.filter(x => x.id !== g.id));
+          }, 3500);
+        });
+
+        unregisterLikes = socketService.onLiveLikeCount((data) => {
+          if (data?.streamId !== stream._id) return;
+          setLikeCount(prev => {
+            const next = typeof data?.count === 'number' ? data.count : prev;
+            if (next > prev) {
+              // animate a few hearts per increment (capped)
+              const diff = Math.min(next - prev, 5);
+              for (let i = 0; i < diff; i++) pushHeart('❤️');
+            }
+            return next;
+          });
+        });
+
+        unregisterViewers = socketService.onLiveViewerCount((data) => {
+          if (data?.streamId !== stream._id) return;
+          if (typeof data?.count === 'number') setViewerCount(data.count);
+        });
+
+        unregisterReaction = socketService.onLiveReaction((data) => {
+          if (data?.streamId !== stream._id) return;
+          pushHeart(data?.reactionType || '❤️');
+        });
+      } catch (e) {
+        // non-fatal: viewer still works without socket overlays
+        console.warn('[LiveStreamViewer] Socket overlay unavailable:', e);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      try {
+        socketService.leaveLiveStream(stream._id);
+      } catch {}
+      unregisterComment?.();
+      unregisterGift?.();
+      unregisterLikes?.();
+      unregisterViewers?.();
+      unregisterReaction?.();
+    };
+  }, [stream._id]);
 
   const fetchTokenAndJoin = async () => {
     try {
@@ -282,6 +431,101 @@ export const LiveStreamViewer = ({ stream, onClose, onEndStream }: LiveStreamVie
 
           <div ref={videoRef} className="w-full h-full" />
 
+          {/* Floating Hearts (likes/reactions) */}
+          <div className="pointer-events-none absolute inset-0 z-20">
+            {hearts.map((h) => (
+              <div
+                key={h.id}
+                className="absolute bottom-24 right-6"
+                style={{
+                  transform: `translateX(-${h.leftPx}px)`,
+                  animation: `ls-heart-float ${h.durationMs}ms ease-out forwards`,
+                  fontSize: `${h.sizePx}px`,
+                  opacity: 0.95,
+                  filter: 'drop-shadow(0 6px 10px rgba(0,0,0,0.35))',
+                }}
+              >
+                {h.emoji}
+              </div>
+            ))}
+          </div>
+
+          {/* Floating Comments (bottom-left) */}
+          {isJoined && !error && (
+            <div className="absolute bottom-20 left-4 z-20 w-[320px] max-w-[75%] space-y-2 pointer-events-none">
+              {floatingComments.slice(0, 4).map((c) => (
+                <div
+                  key={c.id}
+                  className="flex items-start gap-2 rounded-xl bg-black/45 backdrop-blur px-3 py-2 border border-white/10"
+                >
+                  <div className="mt-0.5">
+                    <Avatar
+                      src={c.userAvatar || undefined}
+                      name={c.userName || 'U'}
+                      size="sm"
+                    />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-xs font-semibold text-white/90 truncate">
+                      {c.userName}
+                      {c.isGift ? <span className="ml-2 text-amber-300">Gift</span> : null}
+                    </div>
+                    <div className="text-xs text-white/80 leading-snug line-clamp-2">
+                      {c.message}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Gift Toasts (center) */}
+          {isJoined && !error && giftToasts.length > 0 && (
+            <div className="absolute top-24 left-1/2 -translate-x-1/2 z-30 w-[360px] max-w-[80%] space-y-2 pointer-events-none">
+              {giftToasts.map((g) => (
+                <div
+                  key={g.id}
+                  className="flex items-center gap-3 rounded-2xl bg-black/55 backdrop-blur px-4 py-3 border border-amber-300/25 shadow-lg"
+                  style={{ animation: 'ls-toast-in 240ms ease-out both' }}
+                >
+                  <div className="text-2xl">
+                    {(() => {
+                      const t = (g.giftType || '').toLowerCase();
+                      if (t === 'rose') return '🌹';
+                      if (t === 'star') return '⭐';
+                      if (t === 'heart') return '❤️';
+                      if (t === 'diamond') return '💎';
+                      if (t === 'rainbow') return '🌈';
+                      if (t === 'crown') return '👑';
+                      return '🎁';
+                    })()}
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-sm font-semibold text-white truncate">{g.userName}</div>
+                    <div className="text-xs text-white/80 truncate">
+                      sent <span className="text-amber-200 font-semibold">{g.giftType || 'a gift'}</span>
+                      {typeof g.giftValue === 'number' && g.giftValue > 0 ? (
+                        <span className="ml-2 text-amber-200">₹{g.giftValue}</span>
+                      ) : null}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <style>{`
+            @keyframes ls-heart-float {
+              0% { transform: translate3d(0, 0, 0) scale(0.85); opacity: 0.95; }
+              25% { transform: translate3d(0, -60px, 0) scale(1.05); opacity: 1; }
+              100% { transform: translate3d(0, -220px, 0) scale(1.15); opacity: 0; }
+            }
+            @keyframes ls-toast-in {
+              0% { transform: translateY(-8px); opacity: 0; }
+              100% { transform: translateY(0); opacity: 1; }
+            }
+          `}</style>
+
           {/* Stats Overlay */}
           {isJoined && !error && (
             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
@@ -289,11 +533,11 @@ export const LiveStreamViewer = ({ stream, onClose, onEndStream }: LiveStreamVie
                 <div className="flex items-center gap-4 text-white">
                   <div className="flex items-center gap-2">
                     <Eye className="w-5 h-5" />
-                    <span className="font-semibold">{formatNumber(stream.viewerCount || 0)}</span>
+                    <span className="font-semibold">{formatNumber(viewerCount || 0)}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Heart className="w-5 h-5" />
-                    <span className="font-semibold">{formatNumber(stream.likes || 0)}</span>
+                    <span className="font-semibold">{formatNumber(likeCount || 0)}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Clock className="w-5 h-5" />
