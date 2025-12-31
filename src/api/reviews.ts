@@ -25,7 +25,14 @@ export const reviewsApi = {
   getAll: async (params?: PaginationParams & {
     astrologerId?: string;
     isAdminCreated?: boolean;
+    isPublic?: boolean;
+    isModerated?: boolean;
+    needsReply?: boolean;
+    minRating?: number;
+    maxRating?: number;
     search?: string;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
   }): Promise<ReviewsListResponse> => {
     const response = await apiClient.get('/admin/reviews', { params });
     return response.data;

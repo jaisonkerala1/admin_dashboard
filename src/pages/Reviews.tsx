@@ -44,6 +44,7 @@ export const Reviews = () => {
     search, 
     entriesPerPage, 
     currentPage, 
+    totalPages,
     selectedIds, 
     stats 
   } = useSelector((state: RootState) => state.reviews);
@@ -57,7 +58,7 @@ export const Reviews = () => {
 
   useEffect(() => {
     dispatch(fetchReviewsRequest());
-  }, [dispatch]);
+  }, [dispatch, filter, search, currentPage, entriesPerPage]);
 
   const handleReviewModalSuccess = () => {
     dispatch(fetchReviewsRequest());
@@ -120,37 +121,10 @@ export const Reviews = () => {
     }
   };
 
-  // Client-side filtering
-  const filteredReviews = reviews.filter(r => {
-    // Apply status filter
-    if (filter === 'verified' && !r.isVerified) return false;
-    if (filter === 'unverified' && r.isVerified) return false;
-    if (filter === 'public' && !r.isPublic) return false;
-    if (filter === 'hidden' && r.isPublic) return false;
-    if (filter === '5stars' && r.rating !== 5) return false;
-    if (filter === '4stars' && r.rating !== 4) return false;
-    if (filter === '3stars' && r.rating !== 3) return false;
-    if (filter === '2stars' && r.rating !== 2) return false;
-    if (filter === '1star' && r.rating !== 1) return false;
-    
-    // Apply search filter
-    if (search) {
-      const searchLower = search.toLowerCase();
-      return (
-        r.clientName?.toLowerCase().includes(searchLower) ||
-        r.reviewText?.toLowerCase().includes(searchLower) ||
-        r.astrologerId?.name?.toLowerCase().includes(searchLower)
-      );
-    }
-    
-    return true;
-  });
-
   // Pagination
-  const totalPages = Math.ceil(filteredReviews.length / entriesPerPage);
   const startIndex = (currentPage - 1) * entriesPerPage;
   const endIndex = startIndex + entriesPerPage;
-  const paginatedReviews = filteredReviews.slice(startIndex, endIndex);
+  const paginatedReviews = reviews;
 
   // Selection handlers
   const handleSelectAll = (checked: boolean) => {
@@ -249,42 +223,43 @@ export const Reviews = () => {
             icon={Star}
           />
           <StatCard
-            title="Verified"
-            value={stats.verified}
-            icon={CheckCircle2}
+            title="Needs Reply"
+            value={stats.needsReply}
+            icon={MessageSquare}
+            color="amber"
+          />
+          <StatCard
+            title="Pending Moderation"
+            value={stats.pendingModeration}
+            icon={Shield}
+            color="orange"
           />
           <StatCard
             title="Public"
             value={stats.public}
             icon={Eye}
+            color="green"
           />
           <StatCard
-            title="Moderated"
-            value={stats.moderated}
-            icon={Shield}
-          />
-          <StatCard
-            title="5 Stars"
-            value={stats.rating5}
+            title="Negative"
+            value={stats.negative}
             icon={Star}
-            />
-          </div>
+            color="red"
+          />
+        </div>
         </div>
 
       {/* Filter Tabs */}
       <div className="mb-6 border-b border-gray-200">
         <div className="flex gap-8 overflow-x-auto">
           {[
-            { key: 'all', label: 'All', count: stats.total },
-            { key: 'verified', label: 'Verified', count: stats.verified },
-            { key: 'unverified', label: 'Unverified', count: stats.unverified },
+            { key: 'all', label: 'All Reviews', count: stats.total },
+            { key: 'needsReply', label: 'Needs Reply', count: stats.needsReply },
+            { key: 'pendingModeration', label: 'Pending Moderation', count: stats.pendingModeration },
             { key: 'public', label: 'Public', count: stats.public },
-            { key: 'hidden', label: 'Hidden', count: stats.hidden },
-            { key: '5stars', label: '5 Stars', count: stats.rating5 },
-            { key: '4stars', label: '4 Stars', count: stats.rating4 },
-            { key: '3stars', label: '3 Stars', count: stats.rating3 },
-            { key: '2stars', label: '2 Stars', count: stats.rating2 },
-            { key: '1star', label: '1 Star', count: stats.rating1 },
+            { key: 'hidden', label: 'Hidden / Flagged', count: stats.hidden },
+            { key: 'negative', label: 'Negative (1-2 Stars)', count: stats.negative },
+            { key: 'adminCreated', label: 'Admin Created', count: stats.adminCreated },
           ].map(({ key, label, count }) => (
             <button
               key={key}
@@ -345,7 +320,7 @@ export const Reviews = () => {
           <div className="py-12">
             <Loader size="lg" text="Loading reviews..." />
           </div>
-        ) : filteredReviews.length === 0 ? (
+        ) : reviews.length === 0 ? (
           <EmptyState
             icon={MessageSquare}
             title="No reviews found"
@@ -578,7 +553,7 @@ export const Reviews = () => {
             {totalPages > 1 && (
               <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-gray-200">
                 <p className="text-sm text-gray-600">
-                  Showing {startIndex + 1}-{Math.min(endIndex, filteredReviews.length)} of {filteredReviews.length} reviews
+                  Showing {startIndex + 1}-{startIndex + reviews.length} of {stats.total} reviews
                 </p>
                 <div className="flex items-center gap-2">
                   <button

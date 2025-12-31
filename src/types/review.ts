@@ -82,16 +82,12 @@ export interface UpdateReviewRequest {
 export interface ReviewStats {
   total: number;
   averageRating: number;
-  verified: number;
-  moderated: number;
+  needsReply: number;
+  pendingModeration: number;
   public: number;
-  byRating: {
-    5: number;
-    4: number;
-    3: number;
-    2: number;
-    1: number;
-  };
+  hidden: number;
+  negative: number;
+  adminCreated: number;
 }
 
 export interface ModerateReviewRequest {

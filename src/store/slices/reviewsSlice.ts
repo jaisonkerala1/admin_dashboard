@@ -1,21 +1,17 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Review } from '@/types';
 
-export type ReviewFilter = 'all' | 'verified' | 'unverified' | 'public' | 'hidden' | '5stars' | '4stars' | '3stars' | '2stars' | '1star';
+export type ReviewFilter = 'all' | 'needsReply' | 'pendingModeration' | 'public' | 'hidden' | 'negative' | 'adminCreated';
 
 export interface ReviewsStats {
   total: number;
   averageRating: number;
-  verified: number;
-  unverified: number;
+  needsReply: number;
+  pendingModeration: number;
   public: number;
   hidden: number;
-  moderated: number;
-  rating5: number;
-  rating4: number;
-  rating3: number;
-  rating2: number;
-  rating1: number;
+  negative: number;
+  adminCreated: number;
 }
 
 export interface ReviewsState {
@@ -26,6 +22,7 @@ export interface ReviewsState {
   search: string;
   entriesPerPage: number;
   currentPage: number;
+  totalPages: number;
   selectedIds: string[];
   stats: ReviewsStats;
 }
@@ -38,20 +35,17 @@ const initialState: ReviewsState = {
   search: '',
   entriesPerPage: 8,
   currentPage: 1,
+  totalPages: 1,
   selectedIds: [],
   stats: {
     total: 0,
     averageRating: 0,
-    verified: 0,
-    unverified: 0,
+    needsReply: 0,
+    pendingModeration: 0,
     public: 0,
     hidden: 0,
-    moderated: 0,
-    rating5: 0,
-    rating4: 0,
-    rating3: 0,
-    rating2: 0,
-    rating1: 0,
+    negative: 0,
+    adminCreated: 0,
   },
 };
 
@@ -64,10 +58,11 @@ const reviewsSlice = createSlice({
       state.isLoading = true;
       state.error = null;
     },
-    fetchReviewsSuccess: (state, action: PayloadAction<{ reviews: Review[]; stats: ReviewsStats }>) => {
+    fetchReviewsSuccess: (state, action: PayloadAction<{ reviews: Review[]; stats: ReviewsStats; totalPages: number }>) => {
       state.isLoading = false;
       state.reviews = action.payload.reviews;
       state.stats = action.payload.stats;
+      state.totalPages = action.payload.totalPages;
       state.error = null;
     },
     fetchReviewsFailure: (state, action: PayloadAction<string>) => {
