@@ -74,16 +74,6 @@ export const ReviewFormModal = ({
         setCustomDate('');
         setCustomTime('');
       }
-    } else {
-      // Reset form for new review
-      setSelectedAstrologerId(initialAstrologerId || '');
-      setSelectedAstrologer(null);
-      setReviewerName('');
-      setReviewerAvatar('');
-      setRating(0);
-      setReviewText('');
-      setCustomDate('');
-      setCustomTime('');
       setModerationReason('');
     } else {
       // Reset form for new review
