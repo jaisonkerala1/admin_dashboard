@@ -405,7 +405,7 @@ export const Reviews = () => {
                             <PillBadge variant="inactive" label="Hidden" showDot={false} />
                           )}
                           {review.isModerated && !review.isAdminCreated && (
-                            <PillBadge variant="warning" label="Moderated" showDot={false} />
+                            <PillBadge variant="pending" label="Moderated" showDot={false} />
                           )}
                           {review.isAdminCreated && (
                             <PillBadge variant="blue" label="Admin" showDot={false} />
