@@ -71,7 +71,7 @@ export const CommunicationTrendChart = () => {
   // Empty state when no data available
   if (!isLoading && trends.length === 0) {
     return (
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col h-full min-h-[400px]">
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         {/* Interactive Header with 0 values */}
         <div className="flex border-b border-gray-100">
           {metrics.map((metric) => {
@@ -113,7 +113,7 @@ export const CommunicationTrendChart = () => {
         </div>
 
         {/* Empty State Message */}
-        <div className="flex-1 flex items-center justify-center p-6">
+        <div className="flex items-center justify-center p-6 h-[350px]">
           <div className="text-center">
             <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
               <MessageSquare className="w-8 h-8 text-gray-400" />
@@ -129,7 +129,7 @@ export const CommunicationTrendChart = () => {
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col h-full">
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
       {/* Interactive Header */}
       <div className="flex border-b border-gray-100">
         {metrics.map((metric) => {
@@ -174,8 +174,8 @@ export const CommunicationTrendChart = () => {
       </div>
 
       {/* Chart Area */}
-      <div className="flex-1 p-6 pt-8 min-h-[300px]">
-        <ResponsiveContainer width="100%" height="100%">
+      <div className="p-6 pt-8">
+        <ResponsiveContainer width="100%" height={350}>
           <AreaChart data={trends}>
             <defs>
               <linearGradient id="fillColor" x1="0" y1="0" x2="0" y2="1">
