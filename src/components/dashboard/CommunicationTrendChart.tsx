@@ -68,6 +68,66 @@ export const CommunicationTrendChart = () => {
     );
   }
 
+  // Empty state when no data available
+  if (!isLoading && trends.length === 0) {
+    return (
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col h-full min-h-[400px]">
+        {/* Interactive Header with 0 values */}
+        <div className="flex border-b border-gray-100">
+          {metrics.map((metric) => {
+            const isActive = activeMetric === metric.id;
+            
+            return (
+              <button
+                key={metric.id}
+                onClick={() => dispatch(setActiveMetric(metric.id))}
+                className={cn(
+                  "flex-1 px-6 py-4 text-left transition-all duration-200 relative group",
+                  isActive ? "bg-gray-50/50" : "hover:bg-gray-50/30"
+                )}
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className={cn(
+                    "text-xs font-semibold uppercase tracking-wider",
+                    isActive ? metric.textColor : "text-gray-400 group-hover:text-gray-500"
+                  )}>
+                    {metric.label}
+                  </span>
+                  <metric.icon className={cn(
+                    "w-4 h-4",
+                    isActive ? metric.textColor : "text-gray-300 group-hover:text-gray-400"
+                  )} />
+                </div>
+                <div className="text-2xl font-bold text-gray-900">0</div>
+                
+                {/* Active Indicator Line */}
+                {isActive && (
+                  <div 
+                    className="absolute bottom-0 left-0 right-0 h-0.5" 
+                    style={{ backgroundColor: metric.color }} 
+                  />
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Empty State Message */}
+        <div className="flex-1 flex items-center justify-center p-6">
+          <div className="text-center">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+              <MessageSquare className="w-8 h-8 text-gray-400" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">No Communication Data Yet</h3>
+            <p className="text-sm text-gray-500 max-w-sm">
+              Communication trends will appear here once users start messaging or calling astrologers.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col h-full">
       {/* Interactive Header */}

@@ -12,12 +12,17 @@ function* fetchCommunicationTrendsSaga(action: any): any {
     const period = action.payload?.period || (yield select((state: RootState) => state.communicationAnalytics.period));
     const response = yield call(analyticsApi.getCommunicationTrends, period);
     
+    console.log('📊 [Communication Analytics] API Response:', response);
+    
     if (response.data.success) {
+      console.log('✅ [Communication Analytics] Trends data:', response.data.data);
       yield put(fetchCommunicationTrendsSuccess(response.data.data));
     } else {
+      console.error('❌ [Communication Analytics] API returned error:', response.data.message);
       yield put(fetchCommunicationTrendsFailure(response.data.message || 'Failed to fetch trends'));
     }
   } catch (error: any) {
+    console.error('💥 [Communication Analytics] Saga error:', error);
     yield put(fetchCommunicationTrendsFailure(error.message || 'An error occurred'));
   }
 }
