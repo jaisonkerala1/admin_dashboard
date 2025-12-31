@@ -1,4 +1,4 @@
-import { call, put, takeLatest, select } from 'redux-saga/effects';
+import { all, call, put, takeLatest, select } from 'redux-saga/effects';
 import { analyticsApi } from '@/api';
 import { 
   fetchCommunicationTrendsRequest, 
@@ -7,7 +7,7 @@ import {
 } from '../slices/communicationAnalyticsSlice';
 import { RootState } from '../index';
 
-function* fetchCommunicationTrendsSaga(action: any): yield any {
+function* fetchCommunicationTrendsSaga(action: any): any {
   try {
     const period = action.payload?.period || (yield select((state: RootState) => state.communicationAnalytics.period));
     const response = yield call(analyticsApi.getCommunicationTrends, period);
