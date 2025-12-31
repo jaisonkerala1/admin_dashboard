@@ -29,6 +29,19 @@ export interface Review {
   isModerated: boolean;
   moderatedBy?: string | null;
   moderatedAt?: string | null;
+  moderationReason?: string | null;
+  lastModifiedBy?: string | null;
+  lastModifiedAt?: string | null;
+  moderationHistory?: Array<{
+    action: 'edited' | 'deleted' | 'hidden' | 'shown' | 'verified';
+    modifiedBy: string;
+    modifiedAt: string;
+    reason?: string;
+    changes?: {
+      rating?: { from: number; to: number };
+      reviewText?: { from: string; to: string };
+    };
+  }>;
   
   // Engagement
   helpfulCount: number;
@@ -63,6 +76,7 @@ export interface UpdateReviewRequest {
   customReviewerName?: string;
   customReviewerAvatar?: string;
   customCreatedAt?: string;
+  moderationReason?: string; // Required for user-created reviews
 }
 
 export interface ReviewStats {

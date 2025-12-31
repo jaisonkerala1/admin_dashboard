@@ -43,6 +43,7 @@ export const ReviewFormModal = ({
   const [reviewText, setReviewText] = useState('');
   const [customDate, setCustomDate] = useState('');
   const [customTime, setCustomTime] = useState('');
+  const [moderationReason, setModerationReason] = useState('');
 
   // Load astrologers for dropdown
   useEffect(() => {
@@ -83,6 +84,18 @@ export const ReviewFormModal = ({
       setReviewText('');
       setCustomDate('');
       setCustomTime('');
+      setModerationReason('');
+    } else {
+      // Reset form for new review
+      setSelectedAstrologerId(initialAstrologerId || '');
+      setSelectedAstrologer(null);
+      setReviewerName('');
+      setReviewerAvatar('');
+      setRating(0);
+      setReviewText('');
+      setCustomDate('');
+      setCustomTime('');
+      setModerationReason('');
     }
   }, [review, initialAstrologerId, isOpen]);
 
@@ -198,6 +211,12 @@ export const ReviewFormModal = ({
       customCreatedAt = dateTime.toISOString();
     }
 
+    // For user-created reviews, moderation reason is required
+    if (review && !review.isAdminCreated && !moderationReason.trim()) {
+      toast.error('Moderation reason is required when editing user-created reviews');
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -206,9 +225,10 @@ export const ReviewFormModal = ({
         const updateData: UpdateReviewRequest = {
           rating,
           reviewText: reviewText.trim(),
-          customReviewerName: reviewerName.trim(),
-          customReviewerAvatar: reviewerAvatar.trim() || undefined,
-          customCreatedAt
+          customReviewerName: review.isAdminCreated ? reviewerName.trim() : undefined,
+          customReviewerAvatar: review.isAdminCreated ? (reviewerAvatar.trim() || undefined) : undefined,
+          customCreatedAt: review.isAdminCreated ? customCreatedAt : undefined,
+          moderationReason: !review.isAdminCreated ? moderationReason.trim() : undefined
         };
         await reviewsApi.update(review._id, updateData);
         toast.success('Review updated successfully');
@@ -331,48 +351,52 @@ export const ReviewFormModal = ({
           </div>
         </div>
 
-        {/* Reviewer Name */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Reviewer Name <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            value={reviewerName}
-            onChange={(e) => setReviewerName(e.target.value)}
-            placeholder="Enter reviewer name"
-            maxLength={100}
-            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-            required
-          />
-          <p className="mt-1 text-xs text-gray-500">{reviewerName.length}/100 characters</p>
-        </div>
-
-        {/* Reviewer Avatar */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Reviewer Avatar URL
-          </label>
-          <div className="flex gap-3">
-            <input
-              type="url"
-              value={reviewerAvatar}
-              onChange={(e) => setReviewerAvatar(e.target.value)}
-              placeholder="https://example.com/avatar.jpg"
-              className="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-            />
-            <div className="flex-shrink-0">
-              <Avatar
-                src={reviewerAvatar || undefined}
-                name={reviewerName || 'R'}
-                size="md"
+        {/* Reviewer Name - Only for admin-created reviews */}
+        {(!review || review.isAdminCreated) && (
+          <>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Reviewer Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                value={reviewerName}
+                onChange={(e) => setReviewerName(e.target.value)}
+                placeholder="Enter reviewer name"
+                maxLength={100}
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                required
               />
+              <p className="mt-1 text-xs text-gray-500">{reviewerName.length}/100 characters</p>
             </div>
-          </div>
-          {reviewerAvatar && !isValidUrl(reviewerAvatar) && (
-            <p className="mt-1 text-xs text-red-500">Invalid URL format</p>
-          )}
-        </div>
+
+            {/* Reviewer Avatar */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Reviewer Avatar URL
+              </label>
+              <div className="flex gap-3">
+                <input
+                  type="url"
+                  value={reviewerAvatar}
+                  onChange={(e) => setReviewerAvatar(e.target.value)}
+                  placeholder="https://example.com/avatar.jpg"
+                  className="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                />
+                <div className="flex-shrink-0">
+                  <Avatar
+                    src={reviewerAvatar || undefined}
+                    name={reviewerName || 'R'}
+                    size="md"
+                  />
+                </div>
+              </div>
+              {reviewerAvatar && !isValidUrl(reviewerAvatar) && (
+                <p className="mt-1 text-xs text-red-500">Invalid URL format</p>
+              )}
+            </div>
+          </>
+        )}
 
         {/* Rating */}
         <div>
@@ -423,7 +447,29 @@ export const ReviewFormModal = ({
           </p>
         </div>
 
-        {/* Custom Date/Time */}
+        {/* Moderation Reason - Only for user-created reviews */}
+        {review && !review.isAdminCreated && (
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Moderation Reason <span className="text-red-500">*</span>
+            </label>
+            <textarea
+              value={moderationReason}
+              onChange={(e) => setModerationReason(e.target.value)}
+              placeholder="Please provide a reason for editing this user-created review..."
+              rows={3}
+              maxLength={500}
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 resize-none"
+              required
+            />
+            <p className="mt-1 text-xs text-gray-500">
+              {moderationReason.length}/500 characters
+            </p>
+          </div>
+        )}
+
+        {/* Custom Date/Time - Only for admin-created reviews */}
+        {(!review || review.isAdminCreated) && (
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Custom Date & Time (Optional)
@@ -452,6 +498,7 @@ export const ReviewFormModal = ({
             Leave empty to use current date/time
           </p>
         </div>
+        )}
 
         {/* Actions */}
         <div className="flex gap-3 justify-end pt-4 border-t border-gray-200">

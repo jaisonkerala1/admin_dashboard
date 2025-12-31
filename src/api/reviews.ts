@@ -46,8 +46,10 @@ export const reviewsApi = {
     return response.data;
   },
 
-  delete: async (id: string): Promise<ApiResponse<void>> => {
-    const response = await apiClient.delete(`/admin/reviews/${id}`);
+  delete: async (id: string, data?: { moderationReason?: string }): Promise<ApiResponse<void>> => {
+    const response = await apiClient.delete(`/admin/reviews/${id}`, { 
+      data // Send in request body
+    });
     return response.data;
   },
 
