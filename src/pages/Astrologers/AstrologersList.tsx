@@ -8,7 +8,7 @@ import { Astrologer } from '@/types';
 import { formatRelativeTime } from '@/utils/formatters';
 import { socketService } from '@/services/socketService';
 
-type FilterTab = 'all' | 'active' | 'pending' | 'inactive';
+type FilterTab = 'all' | 'active' | 'pending' | 'inactive' | 'verified';
 
 export const AstrologersList = () => {
   const navigate = useNavigate();
@@ -27,6 +27,7 @@ export const AstrologersList = () => {
     active: 0,
     pending: 0,
     inactive: 0,
+    verified: 0,
   });
 
   // Fetch dashboard stats for counts
@@ -45,6 +46,7 @@ export const AstrologersList = () => {
             active: result.data.astrologers.active,
             pending: result.data.astrologers.pendingApprovals,
             inactive: result.data.astrologers.suspended,
+            verified: result.data.astrologers.verified,
           });
         }
       } catch (err) {
@@ -125,6 +127,7 @@ export const AstrologersList = () => {
     active: tabCounts.active,
     pending: tabCounts.pending,
     inactive: tabCounts.inactive,
+    verified: tabCounts.verified,
   };
 
   // Pagination calculation from server data
@@ -254,7 +257,7 @@ export const AstrologersList = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           <StatCard
             title="Total"
             value={stats.total}
@@ -264,6 +267,13 @@ export const AstrologersList = () => {
             title="Active"
             value={stats.active}
             icon={UserCheck}
+          />
+          <StatCard
+            title="Verified"
+            value={stats.verified}
+            icon={BadgeCheck}
+            iconColor="text-blue-600"
+            iconBgColor="bg-blue-50"
           />
           <StatCard
             title="Pending Approvals"
@@ -280,17 +290,18 @@ export const AstrologersList = () => {
 
       {/* Filter Tabs */}
       <div className="mb-6 border-b border-gray-200">
-        <div className="flex gap-8">
+        <div className="flex gap-8 overflow-x-auto">
           {[
             { key: 'all', label: 'All', count: stats.total },
             { key: 'active', label: 'Active', count: stats.active },
+            { key: 'verified', label: 'Verified', count: stats.verified },
             { key: 'pending', label: 'Pending', count: stats.pending },
             { key: 'inactive', label: 'Inactive', count: stats.inactive },
           ].map(tab => (
             <button
               key={tab.key}
               onClick={() => setFilter(tab.key as FilterTab)}
-              className={`pb-4 px-2 border-b-2 transition-colors ${
+              className={`pb-4 px-2 border-b-2 transition-colors whitespace-nowrap ${
                 filter === tab.key
                   ? 'border-blue-500 text-blue-600 font-semibold'
                   : 'border-transparent text-gray-500 hover:text-gray-700'
