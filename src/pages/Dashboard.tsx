@@ -263,23 +263,6 @@ export const Dashboard = () => {
             </div>
           )}
 
-          {/* Communication Analytics Section */}
-          <div className="mb-6">
-            <CommunicationTrendChart />
-          </div>
-
-          {/* Communication Analytics Link */}
-          {communicationStats && (
-            <div className="mb-6">
-              <Link
-                to={ROUTES.COMMUNICATION_ANALYTICS}
-                className="inline-flex items-center gap-2 text-sm text-primary-600 hover:text-primary-700 font-medium"
-              >
-                View Full Communication Analytics <TrendingUp className="w-4 h-4" />
-              </Link>
-            </div>
-          )}
-
           {/* Weekly Activity Charts */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Consultations Chart */}
@@ -337,6 +320,22 @@ export const Dashboard = () => {
             />
           </div>
 
+          {/* Communication Analytics Section */}
+          <div className="mb-6">
+            <CommunicationTrendChart />
+          </div>
+
+          {/* Communication Analytics Link */}
+          {communicationStats && (
+            <div className="mb-6">
+              <Link
+                to={ROUTES.COMMUNICATION_ANALYTICS}
+                className="inline-flex items-center gap-2 text-sm text-primary-600 hover:text-primary-700 font-medium"
+              >
+                View Full Communication Analytics <TrendingUp className="w-4 h-4" />
+              </Link>
+            </div>
+          )}
 
           {/* Currently Online Astrologers - Flutter App Style (Circular Cards) */}
           {onlineAstrologers.length > 0 && (
