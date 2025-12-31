@@ -6,7 +6,6 @@ import {
   MessageSquare,
   Eye,
   EyeOff,
-  CheckCircle2,
   Shield,
   Trash2,
   ThumbsUp,
@@ -123,7 +122,6 @@ export const Reviews = () => {
 
   // Pagination
   const startIndex = (currentPage - 1) * entriesPerPage;
-  const endIndex = startIndex + entriesPerPage;
   const paginatedReviews = reviews;
 
   // Selection handlers
@@ -226,25 +224,29 @@ export const Reviews = () => {
             title="Needs Reply"
             value={stats.needsReply}
             icon={MessageSquare}
-            color="amber"
+            iconColor="text-amber-600"
+            iconBgColor="bg-amber-50"
           />
           <StatCard
             title="Pending Moderation"
             value={stats.pendingModeration}
             icon={Shield}
-            color="orange"
+            iconColor="text-orange-600"
+            iconBgColor="bg-orange-50"
           />
           <StatCard
             title="Public"
             value={stats.public}
             icon={Eye}
-            color="green"
+            iconColor="text-green-600"
+            iconBgColor="bg-green-50"
           />
           <StatCard
             title="Negative"
             value={stats.negative}
             icon={Star}
-            color="red"
+            iconColor="text-red-600"
+            iconBgColor="bg-red-50"
           />
         </div>
         </div>
