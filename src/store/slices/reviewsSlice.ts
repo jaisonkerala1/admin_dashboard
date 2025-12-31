@@ -26,7 +26,7 @@ export interface ReviewsState {
   search: string;
   entriesPerPage: number;
   currentPage: number;
-  selectedIds: Set<string>;
+  selectedIds: string[];
   stats: ReviewsStats;
 }
 
@@ -38,7 +38,7 @@ const initialState: ReviewsState = {
   search: '',
   entriesPerPage: 8,
   currentPage: 1,
-  selectedIds: new Set(),
+  selectedIds: [],
   stats: {
     total: 0,
     averageRating: 0,
@@ -79,7 +79,7 @@ const reviewsSlice = createSlice({
     setFilter: (state, action: PayloadAction<ReviewFilter>) => {
       state.filter = action.payload;
       state.currentPage = 1;
-      state.selectedIds = new Set();
+      state.selectedIds = [];
     },
     setSearch: (state, action: PayloadAction<string>) => {
       state.search = action.payload;
@@ -94,23 +94,22 @@ const reviewsSlice = createSlice({
     },
 
     // Selection
-    setSelectedIds: (state, action: PayloadAction<Set<string>>) => {
+    setSelectedIds: (state, action: PayloadAction<string[]>) => {
       state.selectedIds = action.payload;
     },
     selectAll: (state, action: PayloadAction<string[]>) => {
-      state.selectedIds = new Set(action.payload);
+      state.selectedIds = action.payload;
     },
     deselectAll: (state) => {
-      state.selectedIds = new Set();
+      state.selectedIds = [];
     },
     toggleSelection: (state, action: PayloadAction<string>) => {
-      const newSet = new Set(state.selectedIds);
-      if (newSet.has(action.payload)) {
-        newSet.delete(action.payload);
+      const index = state.selectedIds.indexOf(action.payload);
+      if (index !== -1) {
+        state.selectedIds.splice(index, 1);
       } else {
-        newSet.add(action.payload);
+        state.selectedIds.push(action.payload);
       }
-      state.selectedIds = newSet;
     },
   },
 });

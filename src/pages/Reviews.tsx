@@ -136,8 +136,8 @@ export const Reviews = () => {
     dispatch(toggleSelection(id));
   };
 
-  const isAllSelected = paginatedReviews.length > 0 && paginatedReviews.every(r => selectedIds.has(r._id));
-  const isSomeSelected = paginatedReviews.some(r => selectedIds.has(r._id)) && !isAllSelected;
+  const isAllSelected = paginatedReviews.length > 0 && paginatedReviews.every(r => selectedIds.includes(r._id));
+  const isSomeSelected = paginatedReviews.some(r => selectedIds.includes(r._id)) && !isAllSelected;
 
   // Helper functions
   const getRatingStars = (rating: number) => {
@@ -291,9 +291,9 @@ export const Reviews = () => {
               className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
             />
             <span className="text-sm text-gray-600">
-              {selectedIds.size > 0 ? `${selectedIds.size} selected` : 'Select all'}
+              {selectedIds.length > 0 ? `${selectedIds.length} selected` : 'Select all'}
             </span>
-            {selectedIds.size > 0 && (
+            {selectedIds.length > 0 && (
               <button className="text-sm text-red-600 hover:text-red-700 font-medium">
                 Delete Selected
               </button>
@@ -349,7 +349,7 @@ export const Reviews = () => {
                       <td className="px-4 py-4">
                         <input
                           type="checkbox"
-                          checked={selectedIds.has(review._id)}
+                          checked={selectedIds.includes(review._id)}
                           onChange={() => handleSelectOne(review._id)}
                           className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                         />
@@ -452,7 +452,7 @@ export const Reviews = () => {
                   <div className="flex items-start gap-3">
                     <input
                       type="checkbox"
-                      checked={selectedIds.has(review._id)}
+                      checked={selectedIds.includes(review._id)}
                       onChange={() => handleSelectOne(review._id)}
                       className="w-4 h-4 mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
