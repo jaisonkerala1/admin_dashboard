@@ -179,8 +179,8 @@ export const CommunicationTrendChart = () => {
           <AreaChart data={trends}>
             <defs>
               <linearGradient id="fillColor" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor={activeConfig.color} stopOpacity={0.15}/>
-                <stop offset="95%" stopColor={activeConfig.color} stopOpacity={0.01}/>
+                <stop offset="5%" stopColor={activeConfig.color} stopOpacity={0.8}/>
+                <stop offset="95%" stopColor={activeConfig.color} stopOpacity={0.1}/>
               </linearGradient>
             </defs>
             <CartesianGrid 
@@ -229,9 +229,10 @@ export const CommunicationTrendChart = () => {
               type="monotone"
               dataKey={activeMetric}
               stroke={activeConfig.color}
-              strokeWidth={3}
-              fillOpacity={1}
+              strokeWidth={2}
+              fillOpacity={0.4}
               fill="url(#fillColor)"
+              baseValue={0}
               animationDuration={1000}
             />
           </AreaChart>
