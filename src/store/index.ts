@@ -17,6 +17,7 @@ import notificationReducer from './slices/notificationSlice';
 import rankingsReducer from './slices/rankingsSlice';
 import searchReducer from './slices/searchSlice';
 import astrologerReducer from './slices/astrologerSlice';
+import communicationAnalyticsReducer from './slices/communicationAnalyticsSlice';
 import rootSaga from './sagas';
 
 // Create saga middleware
@@ -42,6 +43,7 @@ export const store = configureStore({
     rankings: rankingsReducer,
     search: searchReducer,
     astrologer: astrologerReducer,
+    communicationAnalytics: communicationAnalyticsReducer,
     // Add more reducers here as needed
   },
   middleware: (getDefaultMiddleware) =>

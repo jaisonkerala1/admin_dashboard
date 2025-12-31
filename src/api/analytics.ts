@@ -21,5 +21,12 @@ export const analyticsApi = {
    */
   getGrowthAnalytics: (period: 'daily' | 'weekly' | 'monthly' = 'monthly') => {
     return apiClient.get(`/admin/analytics/growth?period=${period}`);
+  },
+
+  /**
+   * Get communication trends
+   */
+  getCommunicationTrends: (period: '7d' | '30d' | '90d' = '30d') => {
+    return apiClient.get(`/admin/analytics/communication-trends?period=${period}`);
   }
 };

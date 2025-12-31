@@ -23,7 +23,9 @@ import {
   type DashboardPeriod,
 } from '@/store/slices/dashboardSlice';
 import { fetchStatsRequest } from '@/store/slices/communicationSlice';
+import { fetchCommunicationTrendsRequest } from '@/store/slices/communicationAnalyticsSlice';
 import { socketService } from '@/services/socketService';
+import { CommunicationTrendChart } from '@/components/dashboard/CommunicationTrendChart';
 
 export const Dashboard = () => {
   const dispatch = useAppDispatch();
@@ -61,6 +63,7 @@ export const Dashboard = () => {
     dispatch(fetchLiveStreamsRequest());
     dispatch(fetchOnlineAstrologersRequest());
     dispatch(fetchStatsRequest({ period: '7d' }));
+    dispatch(fetchCommunicationTrendsRequest({ period: '30d' }));
 
     // Auto-refresh every 10 seconds
     const interval = setInterval(() => {
@@ -259,6 +262,11 @@ export const Dashboard = () => {
               />
             </div>
           )}
+
+          {/* Communication Analytics Section */}
+          <div className="mb-6">
+            <CommunicationTrendChart />
+          </div>
 
           {/* Communication Analytics Link */}
           {communicationStats && (
