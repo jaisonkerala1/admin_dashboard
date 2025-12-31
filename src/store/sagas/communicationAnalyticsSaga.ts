@@ -1,4 +1,4 @@
-import { all, call, put, takeLatest, select } from 'redux-saga/effects';
+import { call, put, takeLatest, select } from 'redux-saga/effects';
 import { analyticsApi } from '@/api';
 import { 
   fetchCommunicationTrendsRequest, 

@@ -72,14 +72,14 @@ export const Analytics = () => {
   const { overview, trends, topPerformers, distributions } = data;
 
   // Format revenue trend data for charts
-  const revenueTrendData = (trends.revenue || []).map(item => ({
+  const revenueTrendData = (trends.revenue || []).map((item: any) => ({
     date: item._id,
     revenue: item.revenue || 0,
     count: item.count || 0
   }));
 
   // Format growth trend data
-  const growthTrendData = (trends.consultations || []).map((item, index) => ({
+  const growthTrendData = (trends.consultations || []).map((item: any, index: number) => ({
     date: item._id,
     consultations: item.count || 0,
     users: (trends.users || [])[index]?.count || 0,
@@ -87,13 +87,13 @@ export const Analytics = () => {
   }));
 
   // Format consultation status distribution for pie chart
-  const consultationStatusData = (distributions.consultationStatus || []).map(item => ({
+  const consultationStatusData = (distributions.consultationStatus || []).map((item: any) => ({
     name: item._id.charAt(0).toUpperCase() + item._id.slice(1),
     value: item.count
   }));
 
   // Format review ratings distribution for bar chart
-  const reviewRatingsData = (distributions.reviewRatings || []).map(item => ({
+  const reviewRatingsData = (distributions.reviewRatings || []).map((item: any) => ({
     rating: `${item._id} ⭐`,
     count: item.count
   }));
@@ -306,7 +306,7 @@ export const Analytics = () => {
                 <p className="text-center text-gray-500 py-8">No data available</p>
               ) : (
                 <div className="space-y-3">
-                  {topPerformers.astrologers.slice(0, 5).map((astrologer, index) => (
+                  {topPerformers.astrologers.slice(0, 5).map((astrologer: any, index: number) => (
                     <div key={astrologer._id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                       <div className="flex items-center gap-3">
                         <span className="text-lg font-bold text-gray-400 w-6">#{index + 1}</span>
@@ -345,12 +345,12 @@ export const Analytics = () => {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                    label={({ name, percent }: any) => `${name} (${(percent * 100).toFixed(0)}%)`}
                     outerRadius={100}
                     fill="#8884d8"
                     dataKey="value"
                   >
-                    {consultationStatusData.map((_entry, index) => (
+                    {consultationStatusData.map((_entry: any, index: number) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
@@ -376,7 +376,7 @@ export const Analytics = () => {
                 <p className="text-center text-gray-500 py-8">No service bookings yet</p>
               ) : (
                 <div className="space-y-3">
-                  {topPerformers.services.slice(0, 10).map((service, index) => (
+                  {topPerformers.services.slice(0, 10).map((service: any, index: number) => (
                     <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                       <div className="flex items-center gap-3">
                         <span className="text-lg font-bold text-gray-400 w-6">#{index + 1}</span>
