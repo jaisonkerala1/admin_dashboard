@@ -53,6 +53,13 @@ export const reviewsApi = {
     return response.data;
   },
 
+  bulkDelete: async (ids: string[], moderationReason?: string): Promise<ApiResponse<{ message: string }>> => {
+    const response = await apiClient.delete('/admin/reviews/bulk', {
+      data: { ids, moderationReason }
+    });
+    return response.data;
+  },
+
   getStats: async (): Promise<ApiResponse<ReviewStats>> => {
     const response = await apiClient.get('/admin/reviews/stats');
     return response.data;

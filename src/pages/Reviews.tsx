@@ -51,6 +51,7 @@ export const Reviews = () => {
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [editingReview, setEditingReview] = useState<Review | null>(null);
   const [deletingReviewId, setDeletingReviewId] = useState<string | null>(null);
+  const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
   const [moderationReason, setModerationReason] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -86,6 +87,34 @@ export const Reviews = () => {
     } catch (error: any) {
       console.error('Failed to delete review:', error);
       toast.error(error?.response?.data?.message || 'Failed to delete review');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedIds.length === 0) return;
+
+    const selectedReviews = reviews.filter(r => selectedIds.includes(r._id));
+    const hasUserReviews = selectedReviews.some(r => !r.isAdminCreated);
+
+    // If user-created review exists in selection, require moderation reason
+    if (hasUserReviews && !moderationReason.trim()) {
+      toast.error('Moderation reason is required when deleting user-created reviews');
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      const response = await reviewsApi.bulkDelete(selectedIds, hasUserReviews ? moderationReason.trim() : undefined);
+      toast.success(response.data?.message || `${selectedIds.length} reviews deleted successfully`);
+      setShowBulkDeleteModal(false);
+      setModerationReason('');
+      dispatch(deselectAll());
+      dispatch(fetchReviewsRequest());
+    } catch (error: any) {
+      console.error('Failed to bulk delete reviews:', error);
+      toast.error(error?.response?.data?.message || 'Failed to delete reviews');
     } finally {
       setIsDeleting(false);
     }
@@ -294,7 +323,13 @@ export const Reviews = () => {
               {selectedIds.length > 0 ? `${selectedIds.length} selected` : 'Select all'}
             </span>
             {selectedIds.length > 0 && (
-              <button className="text-sm text-red-600 hover:text-red-700 font-medium">
+              <button 
+                onClick={() => {
+                  setModerationReason('');
+                  setShowBulkDeleteModal(true);
+                }}
+                className="text-sm text-red-600 hover:text-red-700 font-medium"
+              >
                 Delete Selected
               </button>
             )}
@@ -658,6 +693,73 @@ export const Reviews = () => {
                     className="px-6 py-2.5 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isDeleting ? 'Deleting...' : 'Delete'}
+                  </button>
+                </div>
+              </>
+            );
+          })()}
+        </div>
+      </Modal>
+
+      {/* Bulk Delete Confirmation Modal */}
+      <Modal
+        isOpen={showBulkDeleteModal}
+        onClose={() => {
+          if (!isDeleting) {
+            setShowBulkDeleteModal(false);
+            setModerationReason('');
+          }
+        }}
+        title="Bulk Delete Reviews"
+      >
+        <div className="space-y-4">
+          {(() => {
+            const selectedReviews = reviews.filter(r => selectedIds.includes(r._id));
+            const hasUserReviews = selectedReviews.some(r => !r.isAdminCreated);
+            
+            return (
+              <>
+                <p className="text-gray-600">
+                  Are you sure you want to delete <span className="font-bold text-gray-900">{selectedIds.length}</span> selected reviews? This action cannot be undone.
+                </p>
+                
+                {hasUserReviews && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Moderation Reason <span className="text-red-500">*</span>
+                    </label>
+                    <textarea
+                      value={moderationReason}
+                      onChange={(e) => setModerationReason(e.target.value)}
+                      placeholder="Please provide a reason for deleting these user-created reviews..."
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 resize-none"
+                      rows={3}
+                      maxLength={500}
+                      required
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      {moderationReason.length}/500 characters
+                    </p>
+                  </div>
+                )}
+                
+                <div className="flex gap-3 justify-end">
+                  <button
+                    onClick={() => {
+                      setShowBulkDeleteModal(false);
+                      setModerationReason('');
+                    }}
+                    disabled={isDeleting}
+                    className="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleBulkDelete}
+                    disabled={isDeleting || (hasUserReviews && !moderationReason.trim())}
+                    className="px-6 py-2.5 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isDeleting ? 'Deleting...' : `Delete ${selectedIds.length} Reviews`}
                   </button>
                 </div>
               </>
