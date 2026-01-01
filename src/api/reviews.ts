@@ -71,5 +71,16 @@ export const reviewsApi = {
     const response = await apiClient.get('/admin/reviews/stats');
     return response.data;
   },
+
+  // Reply management
+  replyToReview: async (id: string, replyText: string): Promise<ApiResponse<Review>> => {
+    const response = await apiClient.post(`/admin/reviews/${id}/reply`, { replyText });
+    return response.data;
+  },
+
+  deleteReply: async (id: string): Promise<ApiResponse<Review>> => {
+    const response = await apiClient.delete(`/admin/reviews/${id}/reply`);
+    return response.data;
+  },
 };
 

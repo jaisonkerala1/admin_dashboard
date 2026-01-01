@@ -10,11 +10,13 @@ import {
   Trash2,
   ThumbsUp,
   Plus,
-  Edit2
+  Edit2,
+  Reply
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { Card, Loader, EmptyState, RoundAvatar, PillBadge, ShowEntriesDropdown, StatCard, SearchBar, Modal } from '@/components/common';
 import { ReviewFormModal } from '@/components/reviews/ReviewFormModal';
+import { ReplyModal } from '@/components/reviews/ReplyModal';
 import { reviewsApi } from '@/api';
 import { Review } from '@/types';
 import { formatDateTime } from '@/utils/formatters';
@@ -50,6 +52,7 @@ export const Reviews = () => {
 
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [editingReview, setEditingReview] = useState<Review | null>(null);
+  const [replyingToReview, setReplyingToReview] = useState<Review | null>(null);
   const [deletingReviewId, setDeletingReviewId] = useState<string | null>(null);
   const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
   const [moderationReason, setModerationReason] = useState('');
@@ -427,6 +430,17 @@ export const Reviews = () => {
                       <td className="px-4 py-4">
                         <div className="flex items-center gap-2">
                           <button
+                            onClick={() => setReplyingToReview(review)}
+                            className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            title={review.astrologerReply ? 'Edit Reply' : 'Reply'}
+                          >
+                            {review.astrologerReply ? (
+                              <MessageSquare className="w-4 h-4 fill-current" />
+                            ) : (
+                              <Reply className="w-4 h-4" />
+                            )}
+                          </button>
+                          <button
                             onClick={() => {
                               setEditingReview(review);
                               setShowReviewModal(true);
@@ -492,6 +506,17 @@ export const Reviews = () => {
                           ) : (
                             <EyeOff className="w-4 h-4 text-gray-400" />
                           )}
+                          <button
+                            onClick={() => setReplyingToReview(review)}
+                            className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            title={review.astrologerReply ? 'Edit Reply' : 'Reply'}
+                          >
+                            {review.astrologerReply ? (
+                              <MessageSquare className="w-4 h-4 fill-current" />
+                            ) : (
+                              <Reply className="w-4 h-4" />
+                            )}
+                          </button>
                           <button
                             onClick={() => {
                               setEditingReview(review);
@@ -610,6 +635,16 @@ export const Reviews = () => {
         onSuccess={handleReviewModalSuccess}
         review={editingReview || undefined}
       />
+
+      {/* Reply Modal */}
+      {replyingToReview && (
+        <ReplyModal
+          isOpen={!!replyingToReview}
+          onClose={() => setReplyingToReview(null)}
+          onSuccess={handleReviewModalSuccess}
+          review={replyingToReview}
+        />
+      )}
 
       {/* Delete Review Confirmation Modal */}
       <Modal
