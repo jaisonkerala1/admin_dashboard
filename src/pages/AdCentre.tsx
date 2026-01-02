@@ -1,26 +1,23 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   fetchBoostsRequest,
-  fetchBoostDetailsRequest,
-  approveBoostRequest,
-  rejectBoostRequest,
   createBoostRequest,
-  cancelBoostRequest,
   triggerExpiryRequest,
   fetchStatisticsRequest,
   setFilters,
   setPage,
-  clearCurrentBoost,
 } from '@/store/slices/adCentreSlice';
-import { CountdownTimer, BoostProgressBar, StatCard, Card, StatCardSkeleton, SkeletonBox } from '@/components/common';
+import { CountdownTimer, StatCard, Card, StatCardSkeleton, SkeletonBox } from '@/components/common';
 import { CreateBoostModal } from '@/components/adCentre/CreateBoostModal';
 import { BoostCardSkeleton } from '@/components/adCentre/BoostCardSkeleton';
 import { useToastContext } from '@/contexts/ToastContext';
 import { TrendingUp, XCircle, Clock, Plus, RefreshCw, Zap, Users, Search, X } from 'lucide-react';
 import type { Boost, BoostFilters } from '@/store/slices/adCentreSlice';
+import { ROUTES } from '@/utils/constants';
 
 const statusOptions: Array<{ value: BoostFilters['status']; label: string; color: string }> = [
   { value: 'all', label: 'All', color: 'gray' },
@@ -41,19 +38,12 @@ export const AdCentre = () => {
     pagination,
     isLoading,
     isLoadingStats,
-    isLoadingDetails,
-    currentBoost,
     isProcessing,
     error,
   } = useAppSelector((state) => state.adCentre);
 
-  const [selectedBoostId, setSelectedBoostId] = useState<string | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [rejectionReason, setRejectionReason] = useState('');
-  const [showRejectModal, setShowRejectModal] = useState(false);
+  const navigate = useNavigate();
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showCancelModal, setShowCancelModal] = useState(false);
-  const [cancellationReason, setCancellationReason] = useState('');
   const [lastSyncAction, setLastSyncAction] = useState<'sync' | 'create' | 'cancel' | null>(null);
   const [selectedDateRange, setSelectedDateRange] = useState<string>('all');
   const { success: toastSuccess, error: toastError } = useToastContext();
@@ -83,14 +73,6 @@ export const AdCentre = () => {
     );
   }, [dispatch, filters.status, filters.search, filters.startDateFrom, pagination.page]);
 
-  // Fetch boost details when selected
-  useEffect(() => {
-    if (selectedBoostId) {
-      dispatch(fetchBoostDetailsRequest(selectedBoostId));
-      setIsModalOpen(true);
-    }
-  }, [selectedBoostId, dispatch]);
-
   // Initialize date range on mount
   useEffect(() => {
     if (filters.startDateFrom) {
@@ -111,36 +93,7 @@ export const AdCentre = () => {
   }, [filters.startDateFrom]);
 
   const handleBoostClick = (boostId: string) => {
-    setSelectedBoostId(boostId);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedBoostId(null);
-    dispatch(clearCurrentBoost());
-  };
-
-  const handleApprove = (boostId: string) => {
-    dispatch(approveBoostRequest(boostId));
-    setTimeout(() => {
-      handleCloseModal();
-    }, 1000);
-  };
-
-  const handleReject = (boostId: string) => {
-    setSelectedBoostId(boostId);
-    setShowRejectModal(true);
-  };
-
-  const confirmReject = () => {
-    if (selectedBoostId) {
-      dispatch(rejectBoostRequest({ boostId: selectedBoostId, reason: rejectionReason }));
-      setShowRejectModal(false);
-      setRejectionReason('');
-      setTimeout(() => {
-        handleCloseModal();
-      }, 1000);
-    }
+    navigate(`${ROUTES.AD_CENTRE}/${boostId}`);
   };
 
   const handleFilterChange = (status: BoostFilters['status']) => {
@@ -234,21 +187,6 @@ export const AdCentre = () => {
     setShowCreateModal(false);
   };
 
-  const handleCancelBoost = (boostId: string) => {
-    setSelectedBoostId(boostId);
-    setShowCancelModal(true);
-  };
-
-  const confirmCancel = () => {
-    if (selectedBoostId && cancellationReason.trim()) {
-      dispatch(cancelBoostRequest({ boostId: selectedBoostId, reason: cancellationReason }));
-      setShowCancelModal(false);
-      setCancellationReason('');
-      setTimeout(() => {
-        handleCloseModal();
-      }, 1000);
-    }
-  };
 
   const handleSyncExpiry = () => {
     setLastSyncAction('sync');
@@ -526,37 +464,6 @@ export const AdCentre = () => {
                   </div>
                 </div>
 
-                {(boost.status === 'pending' || boost.status === 'active') && (
-                  <div className="flex gap-2 mt-4 pt-4 border-t border-gray-100" onClick={(e) => e.stopPropagation()}>
-                    {boost.status === 'pending' && (
-                      <>
-                        <button
-                          onClick={() => handleApprove(boost.boostId)}
-                          disabled={isProcessing}
-                          className="flex-1 bg-gray-900 text-white px-3 py-1.5 rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-xs font-medium"
-                        >
-                          Approve
-                        </button>
-                        <button
-                          onClick={() => handleReject(boost.boostId)}
-                          disabled={isProcessing}
-                          className="flex-1 bg-white border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-xs font-medium"
-                        >
-                          Reject
-                        </button>
-                      </>
-                    )}
-                    {boost.status === 'active' && (
-                      <button
-                        onClick={() => handleCancelBoost(boost.boostId)}
-                        disabled={isProcessing}
-                        className="flex-1 bg-white border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-xs font-medium"
-                      >
-                        Cancel Boost
-                      </button>
-                    )}
-                  </div>
-                )}
                 </Card>
               </div>
             ))}
@@ -590,290 +497,6 @@ export const AdCentre = () => {
               </div>
             </div>
           </Card>
-        )}
-
-        {/* Boost Detail Modal */}
-        {isModalOpen && currentBoost && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-                <h2 className="text-xl font-bold text-gray-900">Boost Details</h2>
-                <button
-                  onClick={handleCloseModal}
-                  className="text-gray-400 hover:text-gray-600 transition-colors"
-                >
-                  <XCircle className="w-6 h-6" />
-                </button>
-              </div>
-
-              {isLoadingDetails ? (
-                <div className="p-6 space-y-6">
-                  {/* Astrologer Info Skeleton */}
-                  <div className="bg-gray-50 rounded-lg p-6">
-                    <SkeletonBox width={200} height={20} radius={6} className="mb-4" />
-                    <div className="grid grid-cols-2 gap-4">
-                      {[1, 2, 3, 4, 5, 6].map((i) => (
-                        <div key={i} className="space-y-2">
-                          <SkeletonBox width={80} height={14} radius={4} />
-                          <SkeletonBox width={120} height={16} radius={4} />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Boost Details Skeleton */}
-                  <div>
-                    <SkeletonBox width={180} height={20} radius={6} className="mb-4" />
-                    <div className="grid grid-cols-2 gap-4">
-                      {[1, 2, 3, 4, 5, 6].map((i) => (
-                        <div key={i} className="space-y-2">
-                          <SkeletonBox width={90} height={14} radius={4} />
-                          <SkeletonBox width={140} height={16} radius={4} />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="p-6 space-y-6">
-                  {/* Astrologer Info */}
-                  {currentBoost.astrologer && (
-                    <div className="bg-gray-50 rounded-lg p-6">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                        Astrologer Information
-                      </h3>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <p className="text-sm text-gray-600">Name</p>
-                          <p className="font-medium text-gray-900">{currentBoost.astrologer.name}</p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-gray-600">Email</p>
-                          <p className="font-medium text-gray-900">
-                            {currentBoost.astrologer.email}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-gray-600">Phone</p>
-                          <p className="font-medium text-gray-900">
-                            {currentBoost.astrologer.phone}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-gray-600">Experience</p>
-                          <p className="font-medium text-gray-900">
-                            {currentBoost.astrologer.experience} years
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-gray-600">Rate per Minute</p>
-                          <p className="font-medium text-gray-900">
-                            ₹{currentBoost.astrologer.ratePerMinute}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-gray-600">Total Earnings</p>
-                          <p className="font-medium text-gray-900">
-                            ₹{currentBoost.astrologer.totalEarnings.toFixed(0)}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Boost Details */}
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Boost Information</h3>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <p className="text-sm text-gray-600">Status</p>
-                        <div className="mt-1">{getStatusBadge(currentBoost.status)}</div>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600">Duration</p>
-                        <p className="font-medium text-gray-900">{currentBoost.durationDays} days</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600">Daily Cost</p>
-                        <p className="font-medium text-gray-900">₹{currentBoost.dailyCost}/day</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600">Total Cost</p>
-                        <p className="font-medium text-gray-900">₹{currentBoost.totalCost.toFixed(0)}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600">Start Date</p>
-                        <p className="font-medium text-gray-900">{formatDateTime(currentBoost.startDate)}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600">End Date</p>
-                        <p className="font-medium text-gray-900">{formatDateTime(currentBoost.endDate)}</p>
-                      </div>
-                      {currentBoost.status === 'active' && (
-                        <div className="col-span-2">
-                          <p className="text-sm text-gray-600 mb-2">Time Remaining</p>
-                          <CountdownTimer endDate={currentBoost.endDate} className="text-lg" />
-                        </div>
-                      )}
-                      {currentBoost.status === 'active' && (
-                        <div className="col-span-2">
-                          <p className="text-sm text-gray-600 mb-2">Progress</p>
-                          <BoostProgressBar
-                            startDate={currentBoost.startDate}
-                            endDate={currentBoost.endDate}
-                          />
-                        </div>
-                      )}
-                      {currentBoost.approvedAt && (
-                        <div className="col-span-2">
-                          <p className="text-sm text-gray-600">Approved By</p>
-                          <p className="font-medium text-gray-900">
-                            Admin on {formatDateTime(currentBoost.approvedAt)}
-                          </p>
-                        </div>
-                      )}
-                      {currentBoost.rejectedAt && (
-                        <div className="col-span-2">
-                          <p className="text-sm text-gray-600">Rejected By</p>
-                          <p className="font-medium text-gray-900">
-                            Admin on {formatDateTime(currentBoost.rejectedAt)}
-                          </p>
-                          {currentBoost.rejectionReason && (
-                            <p className="text-sm text-gray-600 mt-1">Reason: {currentBoost.rejectionReason}</p>
-                          )}
-                        </div>
-                      )}
-                      {currentBoost.cancelledAt && (
-                        <div className="col-span-2">
-                          <p className="text-sm text-gray-600">Cancelled By</p>
-                          <p className="font-medium text-gray-900">
-                            {currentBoost.status === 'cancelled_by_user' ? 'User' : 'Admin'} on {formatDateTime(currentBoost.cancelledAt)}
-                          </p>
-                          {currentBoost.cancellationReason && (
-                            <p className="text-sm text-gray-600 mt-1">Reason: {currentBoost.cancellationReason}</p>
-                          )}
-                        </div>
-                      )}
-                      {currentBoost.createdByAdmin && (
-                        <div className="col-span-2">
-                          <p className="text-sm text-gray-600">Created By</p>
-                          <p className="font-medium text-gray-900">Admin</p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Actions */}
-                  {(currentBoost.status === 'pending' || currentBoost.status === 'active') && (
-                    <div className="flex gap-4 pt-4 border-t border-gray-200">
-                      {currentBoost.status === 'pending' && (
-                        <>
-                          <button
-                            onClick={() => handleApprove(currentBoost.boostId)}
-                            disabled={isProcessing}
-                            className="flex-1 bg-gray-900 text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
-                          >
-                            Approve Boost
-                          </button>
-                          <button
-                            onClick={() => handleReject(currentBoost.boostId)}
-                            disabled={isProcessing}
-                            className="flex-1 bg-white border border-gray-300 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
-                          >
-                            Reject Boost
-                          </button>
-                        </>
-                      )}
-                      {currentBoost.status === 'active' && (
-                        <button
-                          onClick={() => handleCancelBoost(currentBoost.boostId)}
-                          disabled={isProcessing}
-                          className="flex-1 bg-white border border-gray-300 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
-                        >
-                          Cancel Boost
-                        </button>
-                      )}
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Reject Modal */}
-        {showRejectModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Reject Boost</h3>
-              <p className="text-sm text-gray-600 mb-4">
-                Please provide a reason for rejecting this boost request (optional):
-              </p>
-              <textarea
-                value={rejectionReason}
-                onChange={(e) => setRejectionReason(e.target.value)}
-                placeholder="Enter rejection reason..."
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent mb-4"
-                rows={4}
-              />
-              <div className="flex gap-4">
-                <button
-                  onClick={() => {
-                    setShowRejectModal(false);
-                    setRejectionReason('');
-                  }}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-medium"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={confirmReject}
-                  disabled={isProcessing}
-                  className="flex-1 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
-                >
-                  Reject
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Cancel Modal */}
-        {showCancelModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Cancel Active Boost</h3>
-              <p className="text-sm text-gray-600 mb-4">
-                Please provide a reason for cancelling this boost (required):
-              </p>
-              <textarea
-                value={cancellationReason}
-                onChange={(e) => setCancellationReason(e.target.value)}
-                placeholder="Enter cancellation reason..."
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent mb-4"
-                rows={4}
-                required
-              />
-              <div className="flex gap-4">
-                <button
-                  onClick={() => {
-                    setShowCancelModal(false);
-                    setCancellationReason('');
-                  }}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-medium"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={confirmCancel}
-                  disabled={isProcessing || !cancellationReason.trim()}
-                  className="flex-1 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
-                >
-                  Cancel Boost
-                </button>
-              </div>
-            </div>
-          </div>
         )}
 
         {/* Create Boost Modal */}

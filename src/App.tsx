@@ -28,6 +28,7 @@ import {
   AstrologerRankings,
   SearchResults,
   AdCentre,
+  BoostDetail,
 } from './pages';
 import { ROUTES } from './utils/constants';
 import { ToastProvider } from './contexts/ToastContext';
@@ -70,6 +71,7 @@ function App() {
         <Route path={ROUTES.RANKINGS} element={<AstrologerRankings />} />
         <Route path={ROUTES.SEARCH} element={<SearchResults />} />
         <Route path={ROUTES.AD_CENTRE} element={<AdCentre />} />
+        <Route path={`${ROUTES.AD_CENTRE}/:id`} element={<BoostDetail />} />
 
         {/* Catch-all redirect */}
         <Route path="*" element={<Navigate to={ROUTES.DASHBOARD} replace />} />
