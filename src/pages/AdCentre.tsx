@@ -15,6 +15,7 @@ import { CountdownTimer, StatCard, Card, StatCardSkeleton, SkeletonBox } from '@
 import { CreateBoostModal } from '@/components/adCentre/CreateBoostModal';
 import { BoostCardSkeleton } from '@/components/adCentre/BoostCardSkeleton';
 import { useToastContext } from '@/contexts/ToastContext';
+import { getImageUrl } from '@/utils/helpers';
 import { TrendingUp, XCircle, Clock, Plus, RefreshCw, Zap, Users, Search, X } from 'lucide-react';
 import type { Boost, BoostFilters } from '@/store/slices/adCentreSlice';
 import { ROUTES } from '@/utils/constants';
@@ -418,17 +419,26 @@ export const AdCentre = () => {
                   <div className="flex items-center gap-3">
                     {boost.astrologerAvatar ? (
                       <img
-                        src={boost.astrologerAvatar}
+                        src={getImageUrl(boost.astrologerAvatar) || ''}
                         alt={boost.astrologerName}
                         className="w-10 h-10 rounded-full object-cover border border-gray-200"
+                        onError={(e) => {
+                          // Hide broken image and show fallback
+                          e.currentTarget.style.display = 'none';
+                          const fallback = e.currentTarget.nextElementSibling;
+                          if (fallback) {
+                            (fallback as HTMLElement).style.display = 'flex';
+                          }
+                        }}
                       />
-                    ) : (
-                      <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200">
-                        <span className="text-gray-600 font-semibold text-sm">
-                          {boost.astrologerName.charAt(0).toUpperCase()}
-                        </span>
-                      </div>
-                    )}
+                    ) : null}
+                    <div 
+                      className={`w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200 ${boost.astrologerAvatar ? 'hidden' : ''}`}
+                    >
+                      <span className="text-gray-600 font-semibold text-sm">
+                        {boost.astrologerName.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
                     <div>
                       <h3 className="font-semibold text-gray-900 text-sm">{boost.astrologerName}</h3>
                       <p className="text-xs text-gray-500">{boost.astrologerPhone}</p>
