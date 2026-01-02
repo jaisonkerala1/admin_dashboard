@@ -1303,6 +1303,7 @@ export const AstrologerDetail = () => {
               </div>
             </div>
           </Card>
+        </div>
 
         {/* Suspension Info */}
         {astrologer.isSuspended && astrologer.suspensionReason && (
