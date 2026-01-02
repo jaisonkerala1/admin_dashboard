@@ -17,7 +17,7 @@ import {
 } from '@/store/slices/adCentreSlice';
 import { Loader, CountdownTimer, BoostProgressBar } from '@/components/common';
 import { CreateBoostModal } from '@/components/adCentre/CreateBoostModal';
-import { useToastContext } from '@/hooks/useToast';
+import { useToastContext } from '@/contexts/ToastContext';
 import { TrendingUp, CheckCircle, XCircle, Clock, Search, Plus, RefreshCw } from 'lucide-react';
 import type { Boost, BoostFilters } from '@/store/slices/adCentreSlice';
 
