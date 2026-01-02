@@ -731,20 +731,21 @@ export const AstrologerDetail = () => {
           />
           {/* Unified Tabbed Section */}
           <Card>
-            {/* Unified Tabs */}
+            {/* Unified Tabs - Two Rows */}
             <div className="border-b border-gray-200 mb-6">
-              <div className="flex gap-4 sm:gap-6 -mb-px overflow-x-auto scrollbar-hide">
+              {/* First Row - Main Tabs */}
+              <div className="flex gap-3 sm:gap-4 md:gap-6 -mb-px overflow-x-auto pb-3 border-b border-gray-100">
                 <button
                   onClick={() => setActiveTab('consultations')}
-                  className={`pb-4 px-2 sm:px-3 md:px-4 text-sm font-medium transition-colors relative whitespace-nowrap flex-shrink-0 ${
+                  className={`pb-3 px-2 sm:px-3 md:px-4 text-xs sm:text-sm font-medium transition-colors relative whitespace-nowrap flex-shrink-0 ${
                     activeTab === 'consultations'
                       ? 'text-gray-900'
                       : 'text-gray-500 hover:text-gray-700'
                   }`}
                 >
-                  <span className="flex items-center gap-1.5 sm:gap-2">
+                  <span className="flex items-center gap-1.5">
                     Consultations
-                    <span className={`px-1.5 sm:px-2 py-0.5 text-xs font-semibold rounded-full ${
+                    <span className={`px-1.5 py-0.5 text-xs font-semibold rounded-full ${
                       activeTab === 'consultations'
                         ? 'bg-gray-900 text-white'
                         : 'bg-gray-100 text-gray-600'
@@ -758,15 +759,16 @@ export const AstrologerDetail = () => {
                 </button>
                 <button
                   onClick={() => setActiveTab('serviceRequests')}
-                  className={`pb-4 px-2 sm:px-3 md:px-4 text-sm font-medium transition-colors relative whitespace-nowrap flex-shrink-0 ${
+                  className={`pb-3 px-2 sm:px-3 md:px-4 text-xs sm:text-sm font-medium transition-colors relative whitespace-nowrap flex-shrink-0 ${
                     activeTab === 'serviceRequests'
                       ? 'text-gray-900'
                       : 'text-gray-500 hover:text-gray-700'
                   }`}
                 >
-                  <span className="flex items-center gap-1.5 sm:gap-2">
-                    Service Requests
-                    <span className={`px-1.5 sm:px-2 py-0.5 text-xs font-semibold rounded-full ${
+                  <span className="flex items-center gap-1.5">
+                    <span className="hidden sm:inline">Service Requests</span>
+                    <span className="sm:hidden">Requests</span>
+                    <span className={`px-1.5 py-0.5 text-xs font-semibold rounded-full ${
                       activeTab === 'serviceRequests'
                         ? 'bg-gray-900 text-white'
                         : 'bg-gray-100 text-gray-600'
@@ -779,38 +781,16 @@ export const AstrologerDetail = () => {
                   )}
                 </button>
                 <button
-                  onClick={() => setActiveTab('services')}
-                  className={`pb-4 px-2 sm:px-3 md:px-4 text-sm font-medium transition-colors relative whitespace-nowrap flex-shrink-0 ${
-                    activeTab === 'services'
-                      ? 'text-gray-900'
-                      : 'text-gray-500 hover:text-gray-700'
-                  }`}
-                >
-                  <span className="flex items-center gap-1.5 sm:gap-2">
-                    Services
-                    <span className={`px-1.5 sm:px-2 py-0.5 text-xs font-semibold rounded-full ${
-                      activeTab === 'services'
-                        ? 'bg-gray-900 text-white'
-                        : 'bg-gray-100 text-gray-600'
-                    }`}>
-                      {services.length}
-                    </span>
-                  </span>
-                  {activeTab === 'services' && (
-                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900" />
-                  )}
-                </button>
-                <button
                   onClick={() => setActiveTab('reviews')}
-                  className={`pb-4 px-2 sm:px-3 md:px-4 text-sm font-medium transition-colors relative whitespace-nowrap flex-shrink-0 ${
+                  className={`pb-3 px-2 sm:px-3 md:px-4 text-xs sm:text-sm font-medium transition-colors relative whitespace-nowrap flex-shrink-0 ${
                     activeTab === 'reviews'
                       ? 'text-gray-900'
                       : 'text-gray-500 hover:text-gray-700'
                   }`}
                 >
-                  <span className="flex items-center gap-1.5 sm:gap-2">
+                  <span className="flex items-center gap-1.5">
                     Reviews
-                    <span className={`px-1.5 sm:px-2 py-0.5 text-xs font-semibold rounded-full ${
+                    <span className={`px-1.5 py-0.5 text-xs font-semibold rounded-full ${
                       activeTab === 'reviews'
                         ? 'bg-gray-900 text-white'
                         : 'bg-gray-100 text-gray-600'
@@ -824,16 +804,16 @@ export const AstrologerDetail = () => {
                 </button>
                 <button
                   onClick={() => setActiveTab('posts')}
-                  className={`pb-4 px-2 sm:px-3 md:px-4 text-sm font-medium transition-colors relative whitespace-nowrap flex-shrink-0 ${
+                  className={`pb-3 px-2 sm:px-3 md:px-4 text-xs sm:text-sm font-medium transition-colors relative whitespace-nowrap flex-shrink-0 ${
                     activeTab === 'posts'
                       ? 'text-gray-900'
                       : 'text-gray-500 hover:text-gray-700'
                   }`}
                 >
-                  <span className="flex items-center gap-1.5 sm:gap-2">
+                  <span className="flex items-center gap-1.5">
                     <span className="hidden sm:inline">Posts & Discussions</span>
                     <span className="sm:hidden">Posts</span>
-                    <span className={`px-1.5 sm:px-2 py-0.5 text-xs font-semibold rounded-full ${
+                    <span className={`px-1.5 py-0.5 text-xs font-semibold rounded-full ${
                       activeTab === 'posts'
                         ? 'bg-gray-900 text-white'
                         : 'bg-gray-100 text-gray-600'
@@ -845,17 +825,43 @@ export const AstrologerDetail = () => {
                     <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900" />
                   )}
                 </button>
+              </div>
+
+              {/* Second Row - Secondary Tabs */}
+              <div className="flex gap-3 sm:gap-4 md:gap-6 -mb-px overflow-x-auto pt-3">
+                <button
+                  onClick={() => setActiveTab('services')}
+                  className={`pb-3 px-2 sm:px-3 md:px-4 text-xs sm:text-sm font-medium transition-colors relative whitespace-nowrap flex-shrink-0 ${
+                    activeTab === 'services'
+                      ? 'text-gray-900'
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  <span className="flex items-center gap-1.5">
+                    Services
+                    <span className={`px-1.5 py-0.5 text-xs font-semibold rounded-full ${
+                      activeTab === 'services'
+                        ? 'bg-gray-900 text-white'
+                        : 'bg-gray-100 text-gray-600'
+                    }`}>
+                      {services.length}
+                    </span>
+                  </span>
+                  {activeTab === 'services' && (
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900" />
+                  )}
+                </button>
                 <button
                   onClick={() => setActiveTab('ads')}
-                  className={`pb-4 px-2 sm:px-3 md:px-4 text-sm font-medium transition-colors relative whitespace-nowrap flex-shrink-0 ${
+                  className={`pb-3 px-2 sm:px-3 md:px-4 text-xs sm:text-sm font-medium transition-colors relative whitespace-nowrap flex-shrink-0 ${
                     activeTab === 'ads'
                       ? 'text-gray-900'
                       : 'text-gray-500 hover:text-gray-700'
                   }`}
                 >
-                  <span className="flex items-center gap-1.5 sm:gap-2">
+                  <span className="flex items-center gap-1.5">
                     Ads
-                    <span className={`px-1.5 sm:px-2 py-0.5 text-xs font-semibold rounded-full ${
+                    <span className={`px-1.5 py-0.5 text-xs font-semibold rounded-full ${
                       activeTab === 'ads'
                         ? 'bg-gray-900 text-white'
                         : 'bg-gray-100 text-gray-600'
@@ -1225,14 +1231,14 @@ export const AstrologerDetail = () => {
                     <Loader size="sm" text="Loading ads..." />
                   </div>
                 ) : boosts.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
                     {boosts.map((boost) => (
                       <div
                         key={boost.boostId}
                         onClick={() => navigate(`${ROUTES.AD_CENTRE}/${boost.boostId}`)}
                         className="cursor-pointer"
                       >
-                        <Card className="hover:shadow-md transition-all">
+                        <Card className="hover:shadow-md transition-all h-full">
                           <div className="flex items-start justify-between mb-4">
                             <div className="flex items-center gap-3">
                               {boost.astrologerAvatar ? (
@@ -1256,22 +1262,22 @@ export const AstrologerDetail = () => {
                                   {boost.astrologerName?.charAt(0).toUpperCase() || 'A'}
                                 </span>
                               </div>
-                              <div>
-                                <h3 className="font-semibold text-gray-900 text-sm">{boost.astrologerName || 'Unknown'}</h3>
-                                <p className="text-xs text-gray-500">Boost ID: {boost.boostId}</p>
+                              <div className="min-w-0 flex-1">
+                                <h3 className="font-semibold text-gray-900 text-sm truncate">{boost.astrologerName || 'Unknown'}</h3>
+                                <p className="text-xs text-gray-500 truncate">ID: {boost.boostId}</p>
                               </div>
                             </div>
                             {getStatusBadge(boost.status)}
                           </div>
 
-                          <div className="space-y-2 mb-4">
+                          <div className="space-y-2.5 mb-4">
                             <div className="flex justify-between text-sm">
                               <span className="text-gray-500">Duration:</span>
                               <span className="font-medium text-gray-900">{boost.durationDays} days</span>
                             </div>
                             {boost.status === 'active' && (
                               <div className="flex justify-between text-sm items-center">
-                                <span className="text-gray-500">Time Remaining:</span>
+                                <span className="text-gray-500">Remaining:</span>
                                 <CountdownTimer endDate={boost.endDate} className="text-xs font-medium" />
                               </div>
                             )}
@@ -1281,13 +1287,13 @@ export const AstrologerDetail = () => {
                                 ₹{boost.totalCost?.toFixed(0) || '0'}
                               </span>
                             </div>
-                            <div className="flex justify-between text-xs">
-                              <span className="text-gray-500">Start:</span>
-                              <span className="font-medium text-gray-700">{formatDateTime(boost.startDate)}</span>
+                            <div className="flex justify-between text-xs pt-2 border-t border-gray-100">
+                              <span className="text-gray-400">Start:</span>
+                              <span className="font-medium text-gray-600">{formatDateTime(boost.startDate)}</span>
                             </div>
                             <div className="flex justify-between text-xs">
-                              <span className="text-gray-500">End:</span>
-                              <span className="font-medium text-gray-700">{formatDateTime(boost.endDate)}</span>
+                              <span className="text-gray-400">End:</span>
+                              <span className="font-medium text-gray-600">{formatDateTime(boost.endDate)}</span>
                             </div>
                           </div>
                         </Card>
