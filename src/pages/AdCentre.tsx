@@ -15,8 +15,9 @@ import {
   setPage,
   clearCurrentBoost,
 } from '@/store/slices/adCentreSlice';
-import { Loader, CountdownTimer, BoostProgressBar, StatCard, Card } from '@/components/common';
+import { CountdownTimer, BoostProgressBar, StatCard, Card, StatCardSkeleton, SkeletonBox } from '@/components/common';
 import { CreateBoostModal } from '@/components/adCentre/CreateBoostModal';
+import { BoostCardSkeleton } from '@/components/adCentre/BoostCardSkeleton';
 import { useToastContext } from '@/contexts/ToastContext';
 import { TrendingUp, XCircle, Clock, Plus, RefreshCw, Zap, Users, Search, X } from 'lucide-react';
 import type { Boost, BoostFilters } from '@/store/slices/adCentreSlice';
@@ -225,8 +226,11 @@ export const AdCentre = () => {
 
         {/* Statistics Cards - Dashboard Style */}
         {isLoadingStats ? (
-          <div className="flex justify-center py-8">
-            <Loader />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+            <StatCardSkeleton />
           </div>
         ) : statistics ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -262,70 +266,94 @@ export const AdCentre = () => {
         ) : null}
 
         {/* Filters - Dashboard Style */}
-        <Card>
-          <div className="space-y-4">
-            {/* Status Filter Tabs - Dashboard Style */}
-            <div className="border-b border-gray-200">
-              <div className="flex gap-6 overflow-x-auto">
-                {statusOptions.map((option) => (
-                  <button
-                    key={option.value}
-                    onClick={() => handleFilterChange(option.value)}
-                    className={`pb-3 px-1 border-b-2 whitespace-nowrap transition-colors ${
-                      filters.status === option.value
-                        ? 'border-gray-900 text-gray-900 font-semibold'
-                        : 'border-transparent text-gray-500 hover:text-gray-700'
-                    }`}
-                  >
-                    {option.label}
-                  </button>
-                ))}
+        {isLoading ? (
+          <Card>
+            <div className="space-y-4">
+              {/* Status Filter Tabs Skeleton */}
+              <div className="border-b border-gray-200">
+                <div className="flex gap-6 overflow-x-auto pb-3">
+                  {[1, 2, 3, 4, 5, 6, 7].map((i) => (
+                    <SkeletonBox key={i} width={100} height={24} radius={4} className="shimmer" />
+                  ))}
+                </div>
+              </div>
+              {/* Search Bar Skeleton */}
+              <div className="max-w-md">
+                <SkeletonBox width="100%" height={44} radius={22} className="shimmer" />
               </div>
             </div>
-
-            {/* Search Bar - Universal Search Style (Small) */}
-            <div className="max-w-md">
-              <div className="relative">
-                <div className="relative h-[44px] bg-white rounded-full border border-gray-200/50 shadow-sm transition-all duration-200 hover:shadow-md focus-within:shadow-md focus-within:border-gray-300">
-                  {/* Search Icon */}
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2">
-                    <Search
-                      className={`w-4 h-4 transition-colors ${
-                        filters.search ? 'text-gray-700' : 'text-gray-400'
-                      }`}
-                    />
-                  </div>
-
-                  {/* Input */}
-                  <input
-                    type="text"
-                    value={filters.search}
-                    onChange={(e) => handleSearchChange(e.target.value)}
-                    placeholder="Search by astrologer name..."
-                    className="w-full h-full pl-10 pr-10 bg-transparent rounded-full text-gray-900 placeholder:text-gray-400 text-sm font-medium focus:outline-none focus:ring-0"
-                  />
-
-                  {/* Clear Button */}
-                  {filters.search && (
+          </Card>
+        ) : (
+          <Card>
+            <div className="space-y-4">
+              {/* Status Filter Tabs - Dashboard Style */}
+              <div className="border-b border-gray-200">
+                <div className="flex gap-6 overflow-x-auto">
+                  {statusOptions.map((option) => (
                     <button
-                      type="button"
-                      onClick={() => handleSearchChange('')}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full hover:bg-gray-100 transition-colors"
-                      aria-label="Clear search"
+                      key={option.value}
+                      onClick={() => handleFilterChange(option.value)}
+                      className={`pb-3 px-1 border-b-2 whitespace-nowrap transition-colors ${
+                        filters.status === option.value
+                          ? 'border-gray-900 text-gray-900 font-semibold'
+                          : 'border-transparent text-gray-500 hover:text-gray-700'
+                      }`}
                     >
-                      <X className="w-3.5 h-3.5 text-gray-500" />
+                      {option.label}
                     </button>
-                  )}
+                  ))}
+                </div>
+              </div>
+
+              {/* Search Bar - Universal Search Style (Small) */}
+              <div className="max-w-md">
+                <div className="relative">
+                  <div className="relative h-[44px] bg-white rounded-full border border-gray-200/50 shadow-sm transition-all duration-200 hover:shadow-md focus-within:shadow-md focus-within:border-gray-300">
+                    {/* Search Icon */}
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2">
+                      <Search
+                        className={`w-4 h-4 transition-colors ${
+                          filters.search ? 'text-gray-700' : 'text-gray-400'
+                        }`}
+                      />
+                    </div>
+
+                    {/* Input */}
+                    <input
+                      type="text"
+                      value={filters.search}
+                      onChange={(e) => handleSearchChange(e.target.value)}
+                      placeholder="Search by astrologer name..."
+                      className="w-full h-full pl-10 pr-10 bg-transparent rounded-full text-gray-900 placeholder:text-gray-400 text-sm font-medium focus:outline-none focus:ring-0"
+                    />
+
+                    {/* Clear Button */}
+                    {filters.search && (
+                      <button
+                        type="button"
+                        onClick={() => handleSearchChange('')}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full hover:bg-gray-100 transition-colors"
+                        aria-label="Clear search"
+                      >
+                        <X className="w-3.5 h-3.5 text-gray-500" />
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </Card>
+          </Card>
+        )}
 
         {/* Boosts List */}
         {isLoading ? (
-          <div className="flex justify-center py-12">
-            <Loader />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <BoostCardSkeleton />
+            <BoostCardSkeleton />
+            <BoostCardSkeleton />
+            <BoostCardSkeleton />
+            <BoostCardSkeleton />
+            <BoostCardSkeleton />
           </div>
         ) : error ? (
           <Card>
@@ -486,8 +514,32 @@ export const AdCentre = () => {
               </div>
 
               {isLoadingDetails ? (
-                <div className="flex justify-center py-12">
-                  <Loader />
+                <div className="p-6 space-y-6">
+                  {/* Astrologer Info Skeleton */}
+                  <div className="bg-gray-50 rounded-lg p-6">
+                    <SkeletonBox width={200} height={20} radius={6} className="mb-4" />
+                    <div className="grid grid-cols-2 gap-4">
+                      {[1, 2, 3, 4, 5, 6].map((i) => (
+                        <div key={i} className="space-y-2">
+                          <SkeletonBox width={80} height={14} radius={4} />
+                          <SkeletonBox width={120} height={16} radius={4} />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Boost Details Skeleton */}
+                  <div>
+                    <SkeletonBox width={180} height={20} radius={6} className="mb-4" />
+                    <div className="grid grid-cols-2 gap-4">
+                      {[1, 2, 3, 4, 5, 6].map((i) => (
+                        <div key={i} className="space-y-2">
+                          <SkeletonBox width={90} height={14} radius={4} />
+                          <SkeletonBox width={140} height={16} radius={4} />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               ) : (
                 <div className="p-6 space-y-6">
