@@ -17,6 +17,7 @@ import rankingsSaga from './rankingsSaga';
 import searchSaga from './searchSaga';
 import astrologerSaga from './astrologerSaga';
 import communicationAnalyticsSaga from './communicationAnalyticsSaga';
+import { adCentreSaga } from './adCentreSaga';
 
 // Root saga: combines all sagas
 export default function* rootSaga() {
@@ -39,6 +40,7 @@ export default function* rootSaga() {
     fork(searchSaga),
     fork(astrologerSaga),
     fork(communicationAnalyticsSaga),
+    adCentreSaga(),
     // Add more sagas here as needed
   ]);
 }

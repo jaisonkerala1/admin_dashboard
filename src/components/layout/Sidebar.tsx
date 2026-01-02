@@ -48,6 +48,7 @@ const navigation = [
   { name: 'Support & Tickets', href: ROUTES.SUPPORT, icon: LifeBuoy },
   { name: 'Approval Requests', href: ROUTES.APPROVALS, icon: CheckCircle },
   { name: 'Astrologer Rankings', href: ROUTES.RANKINGS, icon: Trophy },
+  { name: 'Ad Centre', href: ROUTES.AD_CENTRE, icon: TrendingUp },
 ];
 
 interface SidebarProps {

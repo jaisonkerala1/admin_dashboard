@@ -27,6 +27,7 @@ import {
   Approvals,
   AstrologerRankings,
   SearchResults,
+  AdCentre,
 } from './pages';
 import { ROUTES } from './utils/constants';
 import { ToastProvider } from './contexts/ToastContext';
@@ -68,6 +69,7 @@ function App() {
         <Route path={ROUTES.APPROVALS} element={<Approvals />} />
         <Route path={ROUTES.RANKINGS} element={<AstrologerRankings />} />
         <Route path={ROUTES.SEARCH} element={<SearchResults />} />
+        <Route path={ROUTES.AD_CENTRE} element={<AdCentre />} />
 
         {/* Catch-all redirect */}
         <Route path="*" element={<Navigate to={ROUTES.DASHBOARD} replace />} />

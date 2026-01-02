@@ -17,4 +17,5 @@ export { communicationApi } from './communication';
 export { approvalApi } from './approval';
 export { rankingsApi } from './rankings';
 export { searchApi } from './search';
+export { adCentreApi } from './adCentre';
 

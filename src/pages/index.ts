@@ -23,4 +23,5 @@ export { Support } from './Support';
 export { Approvals } from './Approvals';
 export { AstrologerRankings } from './Rankings';
 export { SearchResults } from './Search/SearchResults';
+export { AdCentre } from './AdCentre';
 
