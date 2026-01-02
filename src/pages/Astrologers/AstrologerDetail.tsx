@@ -849,18 +849,18 @@ export const AstrologerDetail = () => {
         <Card>
           {/* Tab Navigation - LinkedIn Style */}
           <div className="border-b border-gray-200 mb-6">
-            <div className="flex gap-8 -mb-px">
+            <div className="flex gap-4 sm:gap-6 md:gap-8 -mb-px overflow-x-auto scrollbar-hide">
               <button
                 onClick={() => setActiveContentTab('services')}
-                className={`pb-4 px-1 text-sm font-medium transition-colors relative ${
+                className={`pb-4 px-2 sm:px-3 md:px-4 text-sm font-medium transition-colors relative whitespace-nowrap flex-shrink-0 ${
                   activeContentTab === 'services'
                     ? 'text-gray-900'
                     : 'text-gray-500 hover:text-gray-700'
                 }`}
               >
-                <span className="flex items-center gap-2">
+                <span className="flex items-center gap-1.5 sm:gap-2">
                   Services
-                  <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${
+                  <span className={`px-1.5 sm:px-2 py-0.5 text-xs font-semibold rounded-full ${
                     activeContentTab === 'services'
                       ? 'bg-gray-900 text-white'
                       : 'bg-gray-100 text-gray-600'
@@ -874,15 +874,15 @@ export const AstrologerDetail = () => {
               </button>
               <button
                 onClick={() => setActiveContentTab('reviews')}
-                className={`pb-4 px-1 text-sm font-medium transition-colors relative ${
+                className={`pb-4 px-2 sm:px-3 md:px-4 text-sm font-medium transition-colors relative whitespace-nowrap flex-shrink-0 ${
                   activeContentTab === 'reviews'
                     ? 'text-gray-900'
                     : 'text-gray-500 hover:text-gray-700'
                 }`}
               >
-                <span className="flex items-center gap-2">
+                <span className="flex items-center gap-1.5 sm:gap-2">
                   Reviews
-                  <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${
+                  <span className={`px-1.5 sm:px-2 py-0.5 text-xs font-semibold rounded-full ${
                     activeContentTab === 'reviews'
                       ? 'bg-gray-900 text-white'
                       : 'bg-gray-100 text-gray-600'
@@ -896,15 +896,16 @@ export const AstrologerDetail = () => {
               </button>
               <button
                 onClick={() => setActiveContentTab('posts')}
-                className={`pb-4 px-1 text-sm font-medium transition-colors relative ${
+                className={`pb-4 px-2 sm:px-3 md:px-4 text-sm font-medium transition-colors relative whitespace-nowrap flex-shrink-0 ${
                   activeContentTab === 'posts'
                     ? 'text-gray-900'
                     : 'text-gray-500 hover:text-gray-700'
                 }`}
               >
-                <span className="flex items-center gap-2">
-                  Posts & Discussions
-                  <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${
+                <span className="flex items-center gap-1.5 sm:gap-2">
+                  <span className="hidden sm:inline">Posts & Discussions</span>
+                  <span className="sm:hidden">Posts</span>
+                  <span className={`px-1.5 sm:px-2 py-0.5 text-xs font-semibold rounded-full ${
                     activeContentTab === 'posts'
                       ? 'bg-gray-900 text-white'
                       : 'bg-gray-100 text-gray-600'
@@ -918,15 +919,15 @@ export const AstrologerDetail = () => {
               </button>
               <button
                 onClick={() => setActiveContentTab('ads')}
-                className={`pb-4 px-1 text-sm font-medium transition-colors relative ${
+                className={`pb-4 px-2 sm:px-3 md:px-4 text-sm font-medium transition-colors relative whitespace-nowrap flex-shrink-0 ${
                   activeContentTab === 'ads'
                     ? 'text-gray-900'
                     : 'text-gray-500 hover:text-gray-700'
                 }`}
               >
-                <span className="flex items-center gap-2">
+                <span className="flex items-center gap-1.5 sm:gap-2">
                   Ads
-                  <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${
+                  <span className={`px-1.5 sm:px-2 py-0.5 text-xs font-semibold rounded-full ${
                     activeContentTab === 'ads'
                       ? 'bg-gray-900 text-white'
                       : 'bg-gray-100 text-gray-600'
