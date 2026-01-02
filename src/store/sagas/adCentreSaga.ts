@@ -40,11 +40,20 @@ function* fetchBoostsSaga(
   }>
 ): SagaIterator {
   try {
+    const filters = action.payload.filters || {};
     const response = yield call(adCentreApi.getAllBoosts, {
-      status: action.payload.filters?.status !== 'all' ? action.payload.filters?.status : undefined,
+      status: filters.status !== 'all' ? filters.status : undefined,
       page: action.payload.page,
       limit: action.payload.limit,
       sort: action.payload.sort,
+      minCost: filters.minCost,
+      maxCost: filters.maxCost,
+      minDuration: filters.minDuration,
+      maxDuration: filters.maxDuration,
+      startDateFrom: filters.startDateFrom,
+      startDateTo: filters.startDateTo,
+      endDateFrom: filters.endDateFrom,
+      endDateTo: filters.endDateTo,
     });
 
     if (response.success && response.data) {

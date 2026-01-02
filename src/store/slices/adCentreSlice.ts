@@ -62,6 +62,14 @@ export interface BoostStatistics {
 export interface BoostFilters {
   status: 'all' | 'active' | 'pending' | 'expired' | 'rejected' | 'cancelled_by_user' | 'cancelled_by_admin';
   search: string;
+  minCost?: number;
+  maxCost?: number;
+  minDuration?: number;
+  maxDuration?: number;
+  startDateFrom?: string;
+  startDateTo?: string;
+  endDateFrom?: string;
+  endDateTo?: string;
 }
 
 export interface BoostPagination {

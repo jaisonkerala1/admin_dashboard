@@ -19,7 +19,7 @@ import { CountdownTimer, BoostProgressBar, StatCard, Card, StatCardSkeleton, Ske
 import { CreateBoostModal } from '@/components/adCentre/CreateBoostModal';
 import { BoostCardSkeleton } from '@/components/adCentre/BoostCardSkeleton';
 import { useToastContext } from '@/contexts/ToastContext';
-import { TrendingUp, XCircle, Clock, Plus, RefreshCw, Zap, Users, Search, X } from 'lucide-react';
+import { TrendingUp, XCircle, Clock, Plus, RefreshCw, Zap, Users, Search, X, Filter, ChevronDown, ChevronUp } from 'lucide-react';
 import type { Boost, BoostFilters } from '@/store/slices/adCentreSlice';
 
 const statusOptions: Array<{ value: BoostFilters['status']; label: string; color: string }> = [
@@ -55,6 +55,7 @@ export const AdCentre = () => {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancellationReason, setCancellationReason] = useState('');
   const [lastSyncAction, setLastSyncAction] = useState<'sync' | 'create' | 'cancel' | null>(null);
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const { success: toastSuccess, error: toastError } = useToastContext();
 
   // Fetch statistics on mount
@@ -80,7 +81,20 @@ export const AdCentre = () => {
         sort: 'createdAt',
       })
     );
-  }, [dispatch, filters.status, filters.search, pagination.page]);
+  }, [
+    dispatch,
+    filters.status,
+    filters.search,
+    filters.minCost,
+    filters.maxCost,
+    filters.minDuration,
+    filters.maxDuration,
+    filters.startDateFrom,
+    filters.startDateTo,
+    filters.endDateFrom,
+    filters.endDateTo,
+    pagination.page,
+  ]);
 
   // Fetch boost details when selected
   useEffect(() => {
@@ -130,6 +144,47 @@ export const AdCentre = () => {
   const handleSearchChange = (search: string) => {
     dispatch(setFilters({ search }));
   };
+
+  const handleCostFilterChange = (minCost?: number, maxCost?: number) => {
+    dispatch(setFilters({ minCost, maxCost }));
+  };
+
+  const handleDurationFilterChange = (minDuration?: number, maxDuration?: number) => {
+    dispatch(setFilters({ minDuration, maxDuration }));
+  };
+
+  const handleDateFilterChange = (
+    startDateFrom?: string,
+    startDateTo?: string,
+    endDateFrom?: string,
+    endDateTo?: string
+  ) => {
+    dispatch(setFilters({ startDateFrom, startDateTo, endDateFrom, endDateTo }));
+  };
+
+  const clearAdvancedFilters = () => {
+    dispatch(setFilters({
+      minCost: undefined,
+      maxCost: undefined,
+      minDuration: undefined,
+      maxDuration: undefined,
+      startDateFrom: undefined,
+      startDateTo: undefined,
+      endDateFrom: undefined,
+      endDateTo: undefined,
+    }));
+  };
+
+  const hasAdvancedFilters = !!(
+    filters.minCost ||
+    filters.maxCost ||
+    filters.minDuration ||
+    filters.maxDuration ||
+    filters.startDateFrom ||
+    filters.startDateTo ||
+    filters.endDateFrom ||
+    filters.endDateTo
+  );
 
   const getStatusBadge = (status: Boost['status']) => {
     const statusConfig = statusOptions.find((opt) => opt.value === status) || statusOptions[0];
@@ -341,6 +396,198 @@ export const AdCentre = () => {
                   </div>
                 </div>
               </div>
+
+              {/* Advanced Filters Toggle */}
+              <div className="flex items-center justify-between pt-2 border-t border-gray-200">
+                <button
+                  onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+                  className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
+                >
+                  <Filter className="w-4 h-4" />
+                  Advanced Filters
+                  {showAdvancedFilters ? (
+                    <ChevronUp className="w-4 h-4" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4" />
+                  )}
+                  {hasAdvancedFilters && (
+                    <span className="ml-1 px-2 py-0.5 bg-gray-900 text-white text-xs rounded-full">
+                      Active
+                    </span>
+                  )}
+                </button>
+                {hasAdvancedFilters && (
+                  <button
+                    onClick={clearAdvancedFilters}
+                    className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
+                  >
+                    Clear All
+                  </button>
+                )}
+              </div>
+
+              {/* Advanced Filters Panel */}
+              {showAdvancedFilters && (
+                <div className="pt-4 space-y-4 border-t border-gray-200">
+                  {/* Cost Range Filter */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Cost Range (₹)
+                    </label>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <input
+                          type="number"
+                          placeholder="Min cost"
+                          value={filters.minCost || ''}
+                          onChange={(e) =>
+                            handleCostFilterChange(
+                              e.target.value ? parseFloat(e.target.value) : undefined,
+                              filters.maxCost
+                            )
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+                          min="0"
+                        />
+                      </div>
+                      <div>
+                        <input
+                          type="number"
+                          placeholder="Max cost"
+                          value={filters.maxCost || ''}
+                          onChange={(e) =>
+                            handleCostFilterChange(
+                              filters.minCost,
+                              e.target.value ? parseFloat(e.target.value) : undefined
+                            )
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+                          min="0"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Duration Range Filter */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Duration Range (Days)
+                    </label>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <input
+                          type="number"
+                          placeholder="Min duration"
+                          value={filters.minDuration || ''}
+                          onChange={(e) =>
+                            handleDurationFilterChange(
+                              e.target.value ? parseInt(e.target.value) : undefined,
+                              filters.maxDuration
+                            )
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+                          min="1"
+                          max="30"
+                        />
+                      </div>
+                      <div>
+                        <input
+                          type="number"
+                          placeholder="Max duration"
+                          value={filters.maxDuration || ''}
+                          onChange={(e) =>
+                            handleDurationFilterChange(
+                              filters.minDuration,
+                              e.target.value ? parseInt(e.target.value) : undefined
+                            )
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+                          min="1"
+                          max="30"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Start Date Range Filter */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Start Date Range
+                    </label>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <input
+                          type="date"
+                          value={filters.startDateFrom || ''}
+                          onChange={(e) =>
+                            handleDateFilterChange(
+                              e.target.value || undefined,
+                              filters.startDateTo,
+                              filters.endDateFrom,
+                              filters.endDateTo
+                            )
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+                        />
+                      </div>
+                      <div>
+                        <input
+                          type="date"
+                          value={filters.startDateTo || ''}
+                          onChange={(e) =>
+                            handleDateFilterChange(
+                              filters.startDateFrom,
+                              e.target.value || undefined,
+                              filters.endDateFrom,
+                              filters.endDateTo
+                            )
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* End Date Range Filter */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      End Date Range
+                    </label>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <input
+                          type="date"
+                          value={filters.endDateFrom || ''}
+                          onChange={(e) =>
+                            handleDateFilterChange(
+                              filters.startDateFrom,
+                              filters.startDateTo,
+                              e.target.value || undefined,
+                              filters.endDateTo
+                            )
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+                        />
+                      </div>
+                      <div>
+                        <input
+                          type="date"
+                          value={filters.endDateTo || ''}
+                          onChange={(e) =>
+                            handleDateFilterChange(
+                              filters.startDateFrom,
+                              filters.startDateTo,
+                              filters.endDateFrom,
+                              e.target.value || undefined
+                            )
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </Card>
         )}

@@ -29,6 +29,14 @@ export const adCentreApi = {
     page?: number;
     limit?: number;
     sort?: string;
+    minCost?: number;
+    maxCost?: number;
+    minDuration?: number;
+    maxDuration?: number;
+    startDateFrom?: string;
+    startDateTo?: string;
+    endDateFrom?: string;
+    endDateTo?: string;
   }): Promise<BoostsListResponse> => {
     const response = await apiClient.get('/admin/ad-centre/boosts', { params });
     return response.data;
