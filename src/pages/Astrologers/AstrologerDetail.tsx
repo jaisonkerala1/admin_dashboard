@@ -827,55 +827,6 @@ export const AstrologerDetail = () => {
               </div>
             </div>
 
-            {/* Secondary Tabs Section - Services & Ads */}
-            <div className="border-b border-gray-200 mb-6">
-              <div className="flex gap-3 sm:gap-4 md:gap-6 -mb-px overflow-x-auto">
-                <button
-                  onClick={() => setActiveTab('services')}
-                  className={`pb-3 px-2 sm:px-3 md:px-4 text-xs sm:text-sm font-medium transition-colors relative whitespace-nowrap flex-shrink-0 ${
-                    activeTab === 'services'
-                      ? 'text-gray-900'
-                      : 'text-gray-500 hover:text-gray-700'
-                  }`}
-                >
-                  <span className="flex items-center gap-1.5">
-                    Services
-                    <span className={`px-1.5 py-0.5 text-xs font-semibold rounded-full ${
-                      activeTab === 'services'
-                        ? 'bg-gray-900 text-white'
-                        : 'bg-gray-100 text-gray-600'
-                    }`}>
-                      {services.length}
-                    </span>
-                  </span>
-                  {activeTab === 'services' && (
-                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900" />
-                  )}
-                </button>
-                <button
-                  onClick={() => setActiveTab('ads')}
-                  className={`pb-3 px-2 sm:px-3 md:px-4 text-xs sm:text-sm font-medium transition-colors relative whitespace-nowrap flex-shrink-0 ${
-                    activeTab === 'ads'
-                      ? 'text-gray-900'
-                      : 'text-gray-500 hover:text-gray-700'
-                  }`}
-                >
-                  <span className="flex items-center gap-1.5">
-                    Ads
-                    <span className={`px-1.5 py-0.5 text-xs font-semibold rounded-full ${
-                      activeTab === 'ads'
-                        ? 'bg-gray-900 text-white'
-                        : 'bg-gray-100 text-gray-600'
-                    }`}>
-                      {boosts.length}
-                    </span>
-                  </span>
-                  {activeTab === 'ads' && (
-                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900" />
-                  )}
-                </button>
-              </div>
-            </div>
 
             {/* Tab Content */}
             <div>
@@ -1003,55 +954,6 @@ export const AstrologerDetail = () => {
                 </div>
               )}
 
-              {/* Services Tab */}
-              {activeTab === 'services' && (
-                <div>
-                  {servicesLoading ? (
-                    <div className="flex justify-center py-12">
-                      <Loader size="sm" text="Loading services..." />
-                    </div>
-                  ) : services.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {services.map((service) => (
-                        <div
-                          key={service._id}
-                          className="p-5 bg-white border border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-md transition-all duration-200"
-                        >
-                          <div className="flex items-start justify-between mb-3">
-                            <h4 className="font-semibold text-gray-900 text-base">{service.name}</h4>
-                            <StatusBadge status={getServiceStatus(service)} />
-                          </div>
-                          {service.description && (
-                            <p className="text-sm text-gray-600 mb-4 line-clamp-2 leading-relaxed">
-                              {service.description}
-                            </p>
-                          )}
-                          <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                            <div className="flex flex-col gap-1">
-                              <span className="text-base font-bold text-gray-900">
-                                {formatCurrency(service.price)}
-                              </span>
-                              {service.duration && (
-                                <span className="text-xs text-gray-500">
-                                  {service.duration} mins
-                                </span>
-                              )}
-                            </div>
-                            <span className="px-2.5 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-lg">
-                              {service.category}
-                            </span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-12">
-                      <Package className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                      <p className="text-gray-500 text-sm">No services offered yet</p>
-                    </div>
-                  )}
-                </div>
-              )}
 
               {/* Reviews Tab */}
               {activeTab === 'reviews' && (
@@ -1224,91 +1126,6 @@ export const AstrologerDetail = () => {
               </div>
             )}
 
-              {/* Ads Tab */}
-              {activeTab === 'ads' && (
-              <div>
-                {boostsLoading ? (
-                  <div className="flex justify-center py-12">
-                    <Loader size="sm" text="Loading ads..." />
-                  </div>
-                ) : boosts.length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-                    {boosts.map((boost) => (
-                      <div
-                        key={boost.boostId}
-                        onClick={() => navigate(`${ROUTES.AD_CENTRE}/${boost.boostId}`)}
-                        className="cursor-pointer"
-                      >
-                        <Card className="hover:shadow-md transition-all h-full">
-                          <div className="flex items-start justify-between mb-4">
-                            <div className="flex items-center gap-3">
-                              {boost.astrologerAvatar ? (
-                                <img
-                                  src={getImageUrl(boost.astrologerAvatar) || ''}
-                                  alt={boost.astrologerName}
-                                  className="w-10 h-10 rounded-full object-cover border border-gray-200"
-                                  onError={(e) => {
-                                    e.currentTarget.style.display = 'none';
-                                    const fallback = e.currentTarget.nextElementSibling;
-                                    if (fallback) {
-                                      (fallback as HTMLElement).style.display = 'flex';
-                                    }
-                                  }}
-                                />
-                              ) : null}
-                              <div 
-                                className={`w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200 ${boost.astrologerAvatar ? 'hidden' : ''}`}
-                              >
-                                <span className="text-gray-600 font-semibold text-sm">
-                                  {boost.astrologerName?.charAt(0).toUpperCase() || 'A'}
-                                </span>
-                              </div>
-                              <div className="min-w-0 flex-1">
-                                <h3 className="font-semibold text-gray-900 text-sm truncate">{boost.astrologerName || 'Unknown'}</h3>
-                                <p className="text-xs text-gray-500 truncate">ID: {boost.boostId}</p>
-                              </div>
-                            </div>
-                            {getStatusBadge(boost.status)}
-                          </div>
-
-                          <div className="space-y-2.5 mb-4">
-                            <div className="flex justify-between text-sm">
-                              <span className="text-gray-500">Duration:</span>
-                              <span className="font-medium text-gray-900">{boost.durationDays} days</span>
-                            </div>
-                            {boost.status === 'active' && (
-                              <div className="flex justify-between text-sm items-center">
-                                <span className="text-gray-500">Remaining:</span>
-                                <CountdownTimer endDate={boost.endDate} className="text-xs font-medium" />
-                              </div>
-                            )}
-                            <div className="flex justify-between text-sm">
-                              <span className="text-gray-500">Cost:</span>
-                              <span className="font-medium text-gray-900">
-                                ₹{boost.totalCost?.toFixed(0) || '0'}
-                              </span>
-                            </div>
-                            <div className="flex justify-between text-xs pt-2 border-t border-gray-100">
-                              <span className="text-gray-400">Start:</span>
-                              <span className="font-medium text-gray-600">{formatDateTime(boost.startDate)}</span>
-                            </div>
-                            <div className="flex justify-between text-xs">
-                              <span className="text-gray-400">End:</span>
-                              <span className="font-medium text-gray-600">{formatDateTime(boost.endDate)}</span>
-                            </div>
-                          </div>
-                        </Card>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-12">
-                    <Zap className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                    <p className="text-gray-500 text-sm">No active ads for this astrologer</p>
-                  </div>
-                )}
-              </div>
-            )}
             </div>
           </Card>
         </div>
@@ -1322,6 +1139,157 @@ export const AstrologerDetail = () => {
             </p>
           </Card>
         )}
+
+        {/* Services & Ads Section */}
+        <Card className="w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Services Section */}
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <Package className="w-5 h-5 text-gray-700" />
+                <h3 className="text-lg font-semibold text-gray-900">Services</h3>
+                <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs font-semibold rounded-full">
+                  {services.length}
+                </span>
+              </div>
+              {servicesLoading ? (
+                <div className="flex justify-center py-12">
+                  <Loader size="sm" text="Loading services..." />
+                </div>
+              ) : services.length > 0 ? (
+                <div className="grid grid-cols-1 gap-4">
+                  {services.map((service) => (
+                    <div
+                      key={service._id}
+                      className="p-4 bg-white border border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-md transition-all duration-200"
+                    >
+                      <div className="flex items-start justify-between mb-3">
+                        <h4 className="font-semibold text-gray-900 text-base">{service.name}</h4>
+                        <StatusBadge status={getServiceStatus(service)} />
+                      </div>
+                      {service.description && (
+                        <p className="text-sm text-gray-600 mb-3 line-clamp-2 leading-relaxed">
+                          {service.description}
+                        </p>
+                      )}
+                      <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                        <div className="flex flex-col gap-1">
+                          <span className="text-base font-bold text-gray-900">
+                            {formatCurrency(service.price)}
+                          </span>
+                          {service.duration && (
+                            <span className="text-xs text-gray-500">
+                              {service.duration} mins
+                            </span>
+                          )}
+                        </div>
+                        <span className="px-2.5 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-lg">
+                          {service.category}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <Package className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                  <p className="text-gray-500 text-sm">No services offered yet</p>
+                </div>
+              )}
+            </div>
+
+            {/* Ads Section */}
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <Zap className="w-5 h-5 text-gray-700" />
+                <h3 className="text-lg font-semibold text-gray-900">Active Ads</h3>
+                <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs font-semibold rounded-full">
+                  {boosts.length}
+                </span>
+              </div>
+              {boostsLoading ? (
+                <div className="flex justify-center py-12">
+                  <Loader size="sm" text="Loading ads..." />
+                </div>
+              ) : boosts.length > 0 ? (
+                <div className="grid grid-cols-1 gap-4">
+                  {boosts.map((boost) => (
+                    <div
+                      key={boost.boostId}
+                      onClick={() => navigate(`${ROUTES.AD_CENTRE}/${boost.boostId}`)}
+                      className="cursor-pointer"
+                    >
+                      <Card className="hover:shadow-md transition-all h-full">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex items-center gap-3">
+                            {boost.astrologerAvatar ? (
+                              <img
+                                src={getImageUrl(boost.astrologerAvatar) || ''}
+                                alt={boost.astrologerName}
+                                className="w-10 h-10 rounded-full object-cover border border-gray-200"
+                                onError={(e) => {
+                                  e.currentTarget.style.display = 'none';
+                                  const fallback = e.currentTarget.nextElementSibling;
+                                  if (fallback) {
+                                    (fallback as HTMLElement).style.display = 'flex';
+                                  }
+                                }}
+                              />
+                            ) : null}
+                            <div 
+                              className={`w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200 ${boost.astrologerAvatar ? 'hidden' : ''}`}
+                            >
+                              <span className="text-gray-600 font-semibold text-sm">
+                                {boost.astrologerName?.charAt(0).toUpperCase() || 'A'}
+                              </span>
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <h3 className="font-semibold text-gray-900 text-sm truncate">{boost.astrologerName || 'Unknown'}</h3>
+                              <p className="text-xs text-gray-500 truncate">ID: {boost.boostId}</p>
+                            </div>
+                          </div>
+                          {getStatusBadge(boost.status)}
+                        </div>
+
+                        <div className="space-y-2.5 mb-4">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-500">Duration:</span>
+                            <span className="font-medium text-gray-900">{boost.durationDays} days</span>
+                          </div>
+                          {boost.status === 'active' && (
+                            <div className="flex justify-between text-sm items-center">
+                              <span className="text-gray-500">Remaining:</span>
+                              <CountdownTimer endDate={boost.endDate} className="text-xs font-medium" />
+                            </div>
+                          )}
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-500">Cost:</span>
+                            <span className="font-medium text-gray-900">
+                              ₹{boost.totalCost?.toFixed(0) || '0'}
+                            </span>
+                          </div>
+                          <div className="flex justify-between text-xs pt-2 border-t border-gray-100">
+                            <span className="text-gray-400">Start:</span>
+                            <span className="font-medium text-gray-600">{formatDateTime(boost.startDate)}</span>
+                          </div>
+                          <div className="flex justify-between text-xs">
+                            <span className="text-gray-400">End:</span>
+                            <span className="font-medium text-gray-600">{formatDateTime(boost.endDate)}</span>
+                          </div>
+                        </div>
+                      </Card>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <Zap className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                  <p className="text-gray-500 text-sm">No active ads for this astrologer</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </Card>
       </div>
 
       {/* Suspend Modal */}
