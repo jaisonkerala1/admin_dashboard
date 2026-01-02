@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { 
   ArrowLeft,
   Zap,
@@ -499,7 +499,10 @@ export const BoostDetail = () => {
                   Astrologer Information
                 </h3>
                 <div className="space-y-4">
-                  <div className="flex items-center gap-3">
+                  <Link 
+                    to={`${ROUTES.ASTROLOGERS}/${astrologer.id}`}
+                    className="flex items-center gap-3 group hover:opacity-80 transition-opacity"
+                  >
                     {astrologer.profilePicture ? (
                       <Avatar src={astrologer.profilePicture} alt={astrologer.name} size="md" />
                     ) : (
@@ -508,10 +511,10 @@ export const BoostDetail = () => {
                       </div>
                     )}
                     <div className="flex-1">
-                      <h4 className="font-semibold text-gray-900">{astrologer.name}</h4>
+                      <h4 className="font-semibold text-gray-900 group-hover:text-gray-700">{astrologer.name}</h4>
                       <p className="text-sm text-gray-600">{astrologer.email}</p>
                     </div>
-                  </div>
+                  </Link>
                   <div className="space-y-3 pt-4 border-t border-gray-100">
                     {astrologer.phone && (
                       <div className="flex items-center gap-2 text-sm text-gray-700">
@@ -532,6 +535,12 @@ export const BoostDetail = () => {
                       </div>
                     )}
                   </div>
+                  <button
+                    onClick={() => navigate(`${ROUTES.ASTROLOGERS}/${astrologer.id}`)}
+                    className="w-full mt-4 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 text-sm font-medium transition-all"
+                  >
+                    View Profile
+                  </button>
                 </div>
               </Card>
             )}
