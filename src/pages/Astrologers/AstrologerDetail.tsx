@@ -1301,6 +1301,7 @@ export const AstrologerDetail = () => {
                   </div>
                 )}
               </div>
+            )}
             </div>
           </Card>
         </div>
