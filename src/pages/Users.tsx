@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Search, Filter, Ban, CheckCircle } from 'lucide-react';
+import { FixedSizeList as List } from 'react-window';
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Card, Loader, EmptyState, Avatar, StatusBadge, Modal, SearchBar } from '@/components/common';
@@ -105,7 +106,90 @@ export const Users = () => {
             title="No users found"
             description="No users match your current filters"
           />
+        ) : users.length > 50 ? (
+          // Use virtual scrolling for large lists (>50 items)
+          <div className="overflow-x-auto">
+            <div className="min-w-full">
+              {/* Table header */}
+              <div className="grid grid-cols-7 gap-4 bg-gray-50 border-y border-gray-200 px-4 py-3">
+                <div className="text-left text-xs font-medium text-gray-500 uppercase">User</div>
+                <div className="text-left text-xs font-medium text-gray-500 uppercase">Contact</div>
+                <div className="text-left text-xs font-medium text-gray-500 uppercase">Consultations</div>
+                <div className="text-left text-xs font-medium text-gray-500 uppercase">Total Spent</div>
+                <div className="text-left text-xs font-medium text-gray-500 uppercase">Status</div>
+                <div className="text-left text-xs font-medium text-gray-500 uppercase">Last Active</div>
+                <div className="text-right text-xs font-medium text-gray-500 uppercase">Actions</div>
+              </div>
+              {/* Virtualized table body */}
+              <List
+                height={Math.min(600, users.length * 72)}
+                itemCount={users.length}
+                itemSize={72}
+                width="100%"
+                overscanCount={5}
+              >
+                {({ index, style }) => {
+                  const user = users[index];
+                  return (
+                    <div style={style} className="border-b border-gray-200 hover:bg-gray-50">
+                      <div className="grid grid-cols-7 gap-4 px-4 py-4 items-center">
+                        <div className="flex items-center gap-3">
+                          <Avatar src={user.profilePicture} name={user.name} />
+                          <div>
+                            <p className="font-medium text-gray-900">{user.name}</p>
+                          </div>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-900">{user.email}</p>
+                          <p className="text-sm text-gray-500">{user.phone}</p>
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900">{user.totalConsultations}</p>
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900">{formatCurrency(user.totalSpent)}</p>
+                        </div>
+                        <div>
+                          {user.isBanned ? (
+                            <StatusBadge status="banned" />
+                          ) : (
+                            <StatusBadge status="active" />
+                          )}
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-500">{formatRelativeTime(user.lastActiveAt)}</p>
+                        </div>
+                        <div className="text-right">
+                          {user.isBanned ? (
+                            <button
+                              onClick={() => handleUnban(user._id)}
+                              className="inline-flex items-center gap-1 text-sm text-green-600 hover:text-green-700 font-medium"
+                            >
+                              <CheckCircle className="w-4 h-4" />
+                              Unban
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => {
+                                setSelectedUser(user);
+                                setShowBanModal(true);
+                              }}
+                              className="inline-flex items-center gap-1 text-sm text-red-600 hover:text-red-700 font-medium"
+                            >
+                              <Ban className="w-4 h-4" />
+                              Ban
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }}
+              </List>
+            </div>
+          </div>
         ) : (
+          // Regular table for smaller lists (≤50 items)
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-50 border-y border-gray-200">

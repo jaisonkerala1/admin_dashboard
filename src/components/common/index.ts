@@ -24,4 +24,6 @@ export { SkeletonBox, SkeletonCircle, SkeletonText, SkeletonCard } from './Skele
 export { StatCardSkeleton } from './StatCardSkeleton';
 export { ChartSkeleton } from './ChartSkeleton';
 export { TableSkeleton } from './TableSkeleton';
+export { VirtualizedList } from './VirtualizedList';
+export { VirtualizedTable } from './VirtualizedTable';
 

@@ -1,12 +1,33 @@
+import React from 'react';
 import { SearchResultType } from '@/types/search';
 
 /**
  * Highlight matching text in search results
- * Returns the original text (highlighting handled by component)
+ * Returns JSX with highlighted matches wrapped in <mark> tags
  */
-export const highlightText = (text: string, query: string): string => {
+export const highlightText = (text: string, query: string): React.ReactNode => {
   if (!query.trim() || !text) return text;
-  return text;
+  
+  const escapedQuery = escapeRegExp(query.trim());
+  const regex = new RegExp(`(${escapedQuery})`, 'gi');
+  const parts = text.split(regex);
+  
+  // When splitting with a capturing group, captured parts are included in the array
+  // Check each part to see if it matches the query (case-insensitive)
+  return parts.map((part, index) => {
+    // Create a new regex for testing (to avoid state issues)
+    const testRegex = new RegExp(`^${escapedQuery}$`, 'i');
+    const isMatch = testRegex.test(part);
+    
+    if (isMatch) {
+      return (
+        <mark key={index} className="bg-yellow-200 text-gray-900 font-medium px-0.5 rounded">
+          {part}
+        </mark>
+      );
+    }
+    return <span key={index}>{part}</span>;
+  });
 };
 
 /**
