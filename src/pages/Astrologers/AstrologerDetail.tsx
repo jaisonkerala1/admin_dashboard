@@ -655,96 +655,67 @@ export const AstrologerDetail = () => {
 
         {/* Right Side - Stats and Tabs */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Performance Metrics */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {/* Rating Card */}
-            <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md hover:border-gray-200 hover:-translate-y-0.5 transition-all duration-200 ease-out relative">
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-500 mb-1">Rating</p>
-                  <p className="text-2xl font-bold text-gray-900">{(astrologer.rating || 0).toFixed(1)}</p>
-                </div>
-                <div className="absolute top-4 right-4">
+          {/* Performance Metrics - Consolidated Card */}
+          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md hover:border-gray-200 transition-all duration-200 ease-out">
+            <h3 className="text-sm font-semibold text-gray-700 mb-4 uppercase tracking-wider">Performance Metrics</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {/* Rating */}
+              <div className="text-center p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                <div className="flex items-center justify-center mb-2">
                   <Star className="w-5 h-5 text-yellow-500" />
                 </div>
-              </div>
-              <div className="mt-3 pt-3 border-t border-gray-100">
-                <div className="flex items-center gap-2">
-                  <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-yellow-500 rounded-full" 
-                      style={{ width: `${Math.min(100, ((astrologer.rating || 0) / 5) * 100)}%` }}
-                    />
-                  </div>
+                <p className="text-2xl font-bold text-gray-900 mb-1">{(astrologer.rating || 0).toFixed(1)}</p>
+                <p className="text-xs font-medium text-gray-500">Rating</p>
+                <div className="mt-2 h-1 bg-gray-200 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-yellow-500 rounded-full" 
+                    style={{ width: `${Math.min(100, ((astrologer.rating || 0) / 5) * 100)}%` }}
+                  />
                 </div>
               </div>
-            </div>
 
-            {/* Earnings Card */}
-            <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md hover:border-gray-200 hover:-translate-y-0.5 transition-all duration-200 ease-out relative">
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-500 mb-1">Total Earnings</p>
-                  <p className="text-2xl font-bold text-gray-900">{formatCurrency(astrologer.totalEarnings || 0)}</p>
-                </div>
-                <div className="absolute top-4 right-4">
+              {/* Earnings */}
+              <div className="text-center p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                <div className="flex items-center justify-center mb-2">
                   <DollarSign className="w-5 h-5 text-green-500" />
                 </div>
-              </div>
-              <div className="mt-3 pt-3 border-t border-gray-100">
-                <div className="flex items-center gap-2">
-                  <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-green-500 rounded-full" 
-                      style={{ width: `${Math.min(100, ((astrologer.totalEarnings || 0) / Math.max(1, (astrologer.totalEarnings || 0) + 10000)) * 100)}%` }}
-                    />
-                  </div>
+                <p className="text-xl font-bold text-gray-900 mb-1 truncate">{formatCurrency(astrologer.totalEarnings || 0)}</p>
+                <p className="text-xs font-medium text-gray-500">Earnings</p>
+                <div className="mt-2 h-1 bg-gray-200 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-green-500 rounded-full" 
+                    style={{ width: `${Math.min(100, ((astrologer.totalEarnings || 0) / Math.max(1, (astrologer.totalEarnings || 0) + 10000)) * 100)}%` }}
+                  />
                 </div>
               </div>
-            </div>
 
-            {/* Experience Card */}
-            <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md hover:border-gray-200 hover:-translate-y-0.5 transition-all duration-200 ease-out relative">
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-500 mb-1">Experience</p>
-                  <p className="text-2xl font-bold text-gray-900">{astrologer.experience || 0} <span className="text-base font-normal text-gray-500">years</span></p>
-                </div>
-                <div className="absolute top-4 right-4">
+              {/* Experience */}
+              <div className="text-center p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                <div className="flex items-center justify-center mb-2">
                   <Clock className="w-5 h-5 text-purple-500" />
                 </div>
-              </div>
-              <div className="mt-3 pt-3 border-t border-gray-100">
-                <div className="flex items-center gap-2">
-                  <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-purple-500 rounded-full" 
-                      style={{ width: `${Math.min(100, ((astrologer.experience || 0) / 50) * 100)}%` }}
-                    />
-                  </div>
+                <p className="text-2xl font-bold text-gray-900 mb-1">{astrologer.experience || 0}</p>
+                <p className="text-xs font-medium text-gray-500">Years</p>
+                <div className="mt-2 h-1 bg-gray-200 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-purple-500 rounded-full" 
+                    style={{ width: `${Math.min(100, ((astrologer.experience || 0) / 50) * 100)}%` }}
+                  />
                 </div>
               </div>
-            </div>
 
-            {/* Reviews Card */}
-            <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md hover:border-gray-200 hover:-translate-y-0.5 transition-all duration-200 ease-out relative">
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-500 mb-1">Reviews</p>
-                  <p className="text-2xl font-bold text-gray-900">{formatNumber(astrologer.totalReviews || 0)}</p>
-                </div>
-                <div className="absolute top-4 right-4">
+              {/* Reviews */}
+              <div className="text-center p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                <div className="flex items-center justify-center mb-2">
                   <MessageSquare className="w-5 h-5 text-blue-500" />
                 </div>
-              </div>
-              <div className="mt-3 pt-3 border-t border-gray-100">
-                <div className="flex items-center gap-2">
-                  <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-blue-500 rounded-full" 
-                      style={{ width: `${Math.min(100, ((astrologer.totalReviews || 0) / Math.max(1, (astrologer.totalReviews || 0) + 100)) * 100)}%` }}
-                    />
-                  </div>
+                <p className="text-2xl font-bold text-gray-900 mb-1">{formatNumber(astrologer.totalReviews || 0)}</p>
+                <p className="text-xs font-medium text-gray-500">Reviews</p>
+                <div className="mt-2 h-1 bg-gray-200 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-blue-500 rounded-full" 
+                    style={{ width: `${Math.min(100, ((astrologer.totalReviews || 0) / Math.max(1, (astrologer.totalReviews || 0) + 100)) * 100)}%` }}
+                  />
                 </div>
               </div>
             </div>
