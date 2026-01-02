@@ -13,7 +13,7 @@ import {
   TrendingUp
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
-import { Card, Loader, Avatar, SkeletonBox } from '@/components/common';
+import { Card, Avatar, SkeletonBox } from '@/components/common';
 import { adCentreApi } from '@/api/adCentre';
 import { CountdownTimer, BoostProgressBar } from '@/components/common';
 import { formatDateTime } from '@/utils/formatters';
@@ -61,10 +61,11 @@ export const BoostDetail = () => {
     }
   };
 
-  const handleApprove = async (boostId: string) => {
+  const handleApprove = async () => {
+    if (!id) return;
     try {
       setIsProcessing(true);
-      dispatch(approveBoostRequest(boostId));
+      dispatch(approveBoostRequest(id));
       setTimeout(() => {
         loadBoostDetails();
         dispatch(fetchBoostsRequest({}));
@@ -78,7 +79,7 @@ export const BoostDetail = () => {
     }
   };
 
-  const handleReject = (boostId: string) => {
+  const handleReject = () => {
     setShowRejectModal(true);
   };
 
@@ -102,7 +103,7 @@ export const BoostDetail = () => {
     }
   };
 
-  const handleCancel = (boostId: string) => {
+  const handleCancel = () => {
     setShowCancelModal(true);
   };
 
@@ -222,7 +223,8 @@ export const BoostDetail = () => {
     );
   }
 
-  const { boost, astrologer } = boostDetails;
+  const boost = boostDetails;
+  const astrologer = boostDetails.astrologer;
 
   return (
     <MainLayout>
@@ -331,7 +333,7 @@ export const BoostDetail = () => {
                   {boost.status === 'pending' && (
                     <>
                       <button
-                        onClick={() => handleApprove(boost.boostId)}
+                        onClick={handleApprove}
                         disabled={isProcessing}
                         className="w-full px-5 py-2.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium transition-all shadow-sm flex items-center justify-center gap-2"
                       >
@@ -339,7 +341,7 @@ export const BoostDetail = () => {
                         {isProcessing ? 'Approving...' : 'Approve Boost'}
                       </button>
                       <button
-                        onClick={() => handleReject(boost.boostId)}
+                        onClick={handleReject}
                         className="w-full px-5 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 text-sm font-medium transition-all"
                       >
                         Reject Boost
@@ -348,7 +350,7 @@ export const BoostDetail = () => {
                   )}
                   {boost.status === 'active' && (
                     <button
-                      onClick={() => handleCancel(boost.boostId)}
+                      onClick={handleCancel}
                       className="w-full px-5 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 text-sm font-medium transition-all"
                     >
                       Cancel Boost
