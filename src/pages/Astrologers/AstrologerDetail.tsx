@@ -729,30 +729,143 @@ export const AstrologerDetail = () => {
             completedPercentage={completedPercentage}
             serviceRequestsPercentage={serviceRequestsPercentage}
           />
-          {/* Tabbed Section: Consultations & Service Requests */}
+          {/* Unified Tabbed Section */}
           <Card>
-            {/* Tabs */}
-            <div className="border-b border-gray-200 mb-4">
-              <div className="flex gap-6">
+            {/* Unified Tabs */}
+            <div className="border-b border-gray-200 mb-6">
+              <div className="flex gap-4 sm:gap-6 -mb-px overflow-x-auto scrollbar-hide">
                 <button
                   onClick={() => setActiveTab('consultations')}
-                  className={`pb-3 px-1 text-sm font-medium transition-colors ${
+                  className={`pb-4 px-2 sm:px-3 md:px-4 text-sm font-medium transition-colors relative whitespace-nowrap flex-shrink-0 ${
                     activeTab === 'consultations'
-                      ? 'text-blue-600 border-b-2 border-blue-600'
+                      ? 'text-gray-900'
                       : 'text-gray-500 hover:text-gray-700'
                   }`}
                 >
-                  Consultations ({consultations.length})
+                  <span className="flex items-center gap-1.5 sm:gap-2">
+                    Consultations
+                    <span className={`px-1.5 sm:px-2 py-0.5 text-xs font-semibold rounded-full ${
+                      activeTab === 'consultations'
+                        ? 'bg-gray-900 text-white'
+                        : 'bg-gray-100 text-gray-600'
+                    }`}>
+                      {consultations.length}
+                    </span>
+                  </span>
+                  {activeTab === 'consultations' && (
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900" />
+                  )}
                 </button>
                 <button
                   onClick={() => setActiveTab('serviceRequests')}
-                  className={`pb-3 px-1 text-sm font-medium transition-colors ${
+                  className={`pb-4 px-2 sm:px-3 md:px-4 text-sm font-medium transition-colors relative whitespace-nowrap flex-shrink-0 ${
                     activeTab === 'serviceRequests'
-                      ? 'text-blue-600 border-b-2 border-blue-600'
+                      ? 'text-gray-900'
                       : 'text-gray-500 hover:text-gray-700'
                   }`}
                 >
-                  Service Requests ({serviceRequests.length})
+                  <span className="flex items-center gap-1.5 sm:gap-2">
+                    Service Requests
+                    <span className={`px-1.5 sm:px-2 py-0.5 text-xs font-semibold rounded-full ${
+                      activeTab === 'serviceRequests'
+                        ? 'bg-gray-900 text-white'
+                        : 'bg-gray-100 text-gray-600'
+                    }`}>
+                      {serviceRequests.length}
+                    </span>
+                  </span>
+                  {activeTab === 'serviceRequests' && (
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900" />
+                  )}
+                </button>
+                <button
+                  onClick={() => setActiveTab('services')}
+                  className={`pb-4 px-2 sm:px-3 md:px-4 text-sm font-medium transition-colors relative whitespace-nowrap flex-shrink-0 ${
+                    activeTab === 'services'
+                      ? 'text-gray-900'
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  <span className="flex items-center gap-1.5 sm:gap-2">
+                    Services
+                    <span className={`px-1.5 sm:px-2 py-0.5 text-xs font-semibold rounded-full ${
+                      activeTab === 'services'
+                        ? 'bg-gray-900 text-white'
+                        : 'bg-gray-100 text-gray-600'
+                    }`}>
+                      {services.length}
+                    </span>
+                  </span>
+                  {activeTab === 'services' && (
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900" />
+                  )}
+                </button>
+                <button
+                  onClick={() => setActiveTab('reviews')}
+                  className={`pb-4 px-2 sm:px-3 md:px-4 text-sm font-medium transition-colors relative whitespace-nowrap flex-shrink-0 ${
+                    activeTab === 'reviews'
+                      ? 'text-gray-900'
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  <span className="flex items-center gap-1.5 sm:gap-2">
+                    Reviews
+                    <span className={`px-1.5 sm:px-2 py-0.5 text-xs font-semibold rounded-full ${
+                      activeTab === 'reviews'
+                        ? 'bg-gray-900 text-white'
+                        : 'bg-gray-100 text-gray-600'
+                    }`}>
+                      {reviews.length}
+                    </span>
+                  </span>
+                  {activeTab === 'reviews' && (
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900" />
+                  )}
+                </button>
+                <button
+                  onClick={() => setActiveTab('posts')}
+                  className={`pb-4 px-2 sm:px-3 md:px-4 text-sm font-medium transition-colors relative whitespace-nowrap flex-shrink-0 ${
+                    activeTab === 'posts'
+                      ? 'text-gray-900'
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  <span className="flex items-center gap-1.5 sm:gap-2">
+                    <span className="hidden sm:inline">Posts & Discussions</span>
+                    <span className="sm:hidden">Posts</span>
+                    <span className={`px-1.5 sm:px-2 py-0.5 text-xs font-semibold rounded-full ${
+                      activeTab === 'posts'
+                        ? 'bg-gray-900 text-white'
+                        : 'bg-gray-100 text-gray-600'
+                    }`}>
+                      {discussions.length}
+                    </span>
+                  </span>
+                  {activeTab === 'posts' && (
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900" />
+                  )}
+                </button>
+                <button
+                  onClick={() => setActiveTab('ads')}
+                  className={`pb-4 px-2 sm:px-3 md:px-4 text-sm font-medium transition-colors relative whitespace-nowrap flex-shrink-0 ${
+                    activeTab === 'ads'
+                      ? 'text-gray-900'
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  <span className="flex items-center gap-1.5 sm:gap-2">
+                    Ads
+                    <span className={`px-1.5 sm:px-2 py-0.5 text-xs font-semibold rounded-full ${
+                      activeTab === 'ads'
+                        ? 'bg-gray-900 text-white'
+                        : 'bg-gray-100 text-gray-600'
+                    }`}>
+                      {boosts.length}
+                    </span>
+                  </span>
+                  {activeTab === 'ads' && (
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900" />
+                  )}
                 </button>
               </div>
             </div>
@@ -1188,7 +1301,6 @@ export const AstrologerDetail = () => {
                   </div>
                 )}
               </div>
-              )}
             </div>
           </Card>
 
