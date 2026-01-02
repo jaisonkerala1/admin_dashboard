@@ -36,8 +36,7 @@ export const AstrologerDetail = () => {
   const [isUnverifying, setIsUnverifying] = useState(false);
   const [showSuspendModal, setShowSuspendModal] = useState(false);
   const [suspensionReason, setSuspensionReason] = useState('');
-  const [activeTab, setActiveTab] = useState<'consultations' | 'serviceRequests'>('consultations');
-  const [activeContentTab, setActiveContentTab] = useState<'services' | 'reviews' | 'posts' | 'ads'>('services');
+  const [activeTab, setActiveTab] = useState<'consultations' | 'serviceRequests' | 'services' | 'reviews' | 'posts' | 'ads'>('consultations');
   const [boosts, setBoosts] = useState<any[]>([]);
   const [boostsLoading, setBoostsLoading] = useState(false);
   const [isBioExpanded, setIsBioExpanded] = useState(false);
@@ -759,282 +758,183 @@ export const AstrologerDetail = () => {
             </div>
 
             {/* Tab Content */}
-            {activeTab === 'consultations' ? (
-              <div>
-                {consultationsLoading ? (
-                  <div className="flex justify-center py-8">
-                    <Loader size="sm" text="Loading consultations..." />
-                  </div>
-                ) : consultations.length > 0 ? (
-                  <div className="space-y-3">
-                    {consultations.map((consultation) => {
-                      const consultationDate = new Date(consultation.scheduledTime || consultation.createdAt);
-                      const timeRange = consultationDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                      const endTime = new Date(consultationDate.getTime() + (consultation.duration || 0) * 60000);
-                      const endTimeStr = endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                      
-                      return (
-                        <div
-                          key={consultation._id}
-                          className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-                        >
-                          <div className="flex items-center gap-4 flex-1">
-                            <div className="text-sm font-medium text-gray-900 min-w-[60px]">
-                              {consultationDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}
-                            </div>
-                            <div className="flex-1">
-                              <div className="text-sm font-medium text-gray-900 capitalize">
-                                {consultation.type || 'Consultation'}
+            <div>
+              {/* Consultations Tab */}
+              {activeTab === 'consultations' && (
+                <div>
+                  {consultationsLoading ? (
+                    <div className="flex justify-center py-8">
+                      <Loader size="sm" text="Loading consultations..." />
+                    </div>
+                  ) : consultations.length > 0 ? (
+                    <div className="space-y-3">
+                      {consultations.map((consultation) => {
+                        const consultationDate = new Date(consultation.scheduledTime || consultation.createdAt);
+                        const timeRange = consultationDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                        const endTime = new Date(consultationDate.getTime() + (consultation.duration || 0) * 60000);
+                        const endTimeStr = endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                        
+                        return (
+                          <div
+                            key={consultation._id}
+                            className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                          >
+                            <div className="flex items-center gap-4 flex-1">
+                              <div className="text-sm font-medium text-gray-900 min-w-[60px]">
+                                {consultationDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}
                               </div>
-                              <div className="text-xs text-gray-500 mt-0.5">
-                                {timeRange} - {endTimeStr}
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-4">
-                              <div className="text-right">
-                                <div className="text-sm font-semibold text-gray-900">
-                                  {formatCurrency(consultation.amount || 0)}
+                              <div className="flex-1">
+                                <div className="text-sm font-medium text-gray-900 capitalize">
+                                  {consultation.type || 'Consultation'}
                                 </div>
-                                <div className="text-xs text-gray-500">
-                                  {formatCurrency(astrologer.consultationCharge || 0)}/hr
+                                <div className="text-xs text-gray-500 mt-0.5">
+                                  {timeRange} - {endTimeStr}
                                 </div>
                               </div>
-                              <div>
-                                {consultation.status === 'cancelled' ? (
-                                  <span className="px-2.5 py-1 bg-orange-100 text-orange-700 text-xs font-medium rounded-lg">
-                                    Cancelled
-                                  </span>
-                                ) : consultation.status === 'completed' ? (
-                                  <span className="px-2.5 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-lg flex items-center gap-1">
-                                    <CheckCircle className="w-3 h-3" />
-                                    Done
-                                  </span>
-                                ) : (
-                                  <span className="px-2.5 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-lg">
-                                    Booked
-                                  </span>
-                                )}
+                              <div className="flex items-center gap-4">
+                                <div className="text-right">
+                                  <div className="text-sm font-semibold text-gray-900">
+                                    {formatCurrency(consultation.amount || 0)}
+                                  </div>
+                                  <div className="text-xs text-gray-500">
+                                    {formatCurrency(astrologer.consultationCharge || 0)}/hr
+                                  </div>
+                                </div>
+                                <div>
+                                  {consultation.status === 'cancelled' ? (
+                                    <span className="px-2.5 py-1 bg-orange-100 text-orange-700 text-xs font-medium rounded-lg">
+                                      Cancelled
+                                    </span>
+                                  ) : consultation.status === 'completed' ? (
+                                    <span className="px-2.5 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-lg flex items-center gap-1">
+                                      <CheckCircle className="w-3 h-3" />
+                                      Done
+                                    </span>
+                                  ) : (
+                                    <span className="px-2.5 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-lg">
+                                      Booked
+                                    </span>
+                                  )}
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                    <p className="text-gray-500">No consultations yet</p>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div>
-                {serviceRequestsLoading ? (
-                  <div className="flex justify-center py-8">
-                    <Loader size="sm" text="Loading service requests..." />
-                  </div>
-                ) : serviceRequests.length > 0 ? (
-                  <div className="space-y-3">
-                    {serviceRequests.map((req) => {
-                      const requestDate = req.requestedDate ? new Date(req.requestedDate) : new Date(req.createdAt || '');
-                      return (
-                        <div
-                          key={req._id}
-                          className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-                        >
-                          <div className="flex items-center gap-4 flex-1">
-                            <div className="text-sm font-medium text-gray-900 min-w-[80px]">
-                              {requestDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}
-                            </div>
-                            <div className="flex-1">
-                              <div className="text-sm font-medium text-gray-900">
-                                {req.serviceName}
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                      <p className="text-gray-500">No consultations yet</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Service Requests Tab */}
+              {activeTab === 'serviceRequests' && (
+                <div>
+                  {serviceRequestsLoading ? (
+                    <div className="flex justify-center py-8">
+                      <Loader size="sm" text="Loading service requests..." />
+                    </div>
+                  ) : serviceRequests.length > 0 ? (
+                    <div className="space-y-3">
+                      {serviceRequests.map((req) => {
+                        const requestDate = req.requestedDate ? new Date(req.requestedDate) : new Date(req.createdAt || '');
+                        return (
+                          <div
+                            key={req._id}
+                            className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                          >
+                            <div className="flex items-center gap-4 flex-1">
+                              <div className="text-sm font-medium text-gray-900 min-w-[80px]">
+                                {requestDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}
                               </div>
-                              <div className="text-xs text-gray-500 mt-0.5">
-                                {req.customerName}
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-4">
-                              <div className="text-right">
-                                <div className="text-sm font-semibold text-gray-900">
-                                  {formatCurrency(req.price || 0)}
+                              <div className="flex-1">
+                                <div className="text-sm font-medium text-gray-900">
+                                  {req.serviceName}
+                                </div>
+                                <div className="text-xs text-gray-500 mt-0.5">
+                                  {req.customerName}
                                 </div>
                               </div>
-                              <div>
-                                <StatusBadge status={req.status} />
+                              <div className="flex items-center gap-4">
+                                <div className="text-right">
+                                  <div className="text-sm font-semibold text-gray-900">
+                                    {formatCurrency(req.price || 0)}
+                                  </div>
+                                </div>
+                                <div>
+                                  <StatusBadge status={req.status} />
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <Package className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                    <p className="text-gray-500">No service requests yet</p>
-                  </div>
-                )}
-              </div>
-            )}
-          </Card>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <Package className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                      <p className="text-gray-500">No service requests yet</p>
+                    </div>
+                  )}
+                </div>
+              )}
 
-        </div>
-      </div>
-
-      {/* Services, Reviews, Discussions - Tabbed Section */}
-      <div className="mt-6">
-        <Card>
-          {/* Tab Navigation - LinkedIn Style */}
-          <div className="border-b border-gray-200 mb-6">
-            <div className="flex gap-4 sm:gap-6 md:gap-8 -mb-px overflow-x-auto scrollbar-hide">
-              <button
-                onClick={() => setActiveContentTab('services')}
-                className={`pb-4 px-2 sm:px-3 md:px-4 text-sm font-medium transition-colors relative whitespace-nowrap flex-shrink-0 ${
-                  activeContentTab === 'services'
-                    ? 'text-gray-900'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                <span className="flex items-center gap-1.5 sm:gap-2">
-                  Services
-                  <span className={`px-1.5 sm:px-2 py-0.5 text-xs font-semibold rounded-full ${
-                    activeContentTab === 'services'
-                      ? 'bg-gray-900 text-white'
-                      : 'bg-gray-100 text-gray-600'
-                  }`}>
-                    {services.length}
-                  </span>
-                </span>
-                {activeContentTab === 'services' && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900" />
-                )}
-              </button>
-              <button
-                onClick={() => setActiveContentTab('reviews')}
-                className={`pb-4 px-2 sm:px-3 md:px-4 text-sm font-medium transition-colors relative whitespace-nowrap flex-shrink-0 ${
-                  activeContentTab === 'reviews'
-                    ? 'text-gray-900'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                <span className="flex items-center gap-1.5 sm:gap-2">
-                  Reviews
-                  <span className={`px-1.5 sm:px-2 py-0.5 text-xs font-semibold rounded-full ${
-                    activeContentTab === 'reviews'
-                      ? 'bg-gray-900 text-white'
-                      : 'bg-gray-100 text-gray-600'
-                  }`}>
-                    {reviews.length}
-                  </span>
-                </span>
-                {activeContentTab === 'reviews' && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900" />
-                )}
-              </button>
-              <button
-                onClick={() => setActiveContentTab('posts')}
-                className={`pb-4 px-2 sm:px-3 md:px-4 text-sm font-medium transition-colors relative whitespace-nowrap flex-shrink-0 ${
-                  activeContentTab === 'posts'
-                    ? 'text-gray-900'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                <span className="flex items-center gap-1.5 sm:gap-2">
-                  <span className="hidden sm:inline">Posts & Discussions</span>
-                  <span className="sm:hidden">Posts</span>
-                  <span className={`px-1.5 sm:px-2 py-0.5 text-xs font-semibold rounded-full ${
-                    activeContentTab === 'posts'
-                      ? 'bg-gray-900 text-white'
-                      : 'bg-gray-100 text-gray-600'
-                  }`}>
-                    {discussions.length}
-                  </span>
-                </span>
-                {activeContentTab === 'posts' && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900" />
-                )}
-              </button>
-              <button
-                onClick={() => setActiveContentTab('ads')}
-                className={`pb-4 px-2 sm:px-3 md:px-4 text-sm font-medium transition-colors relative whitespace-nowrap flex-shrink-0 ${
-                  activeContentTab === 'ads'
-                    ? 'text-gray-900'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                <span className="flex items-center gap-1.5 sm:gap-2">
-                  Ads
-                  <span className={`px-1.5 sm:px-2 py-0.5 text-xs font-semibold rounded-full ${
-                    activeContentTab === 'ads'
-                      ? 'bg-gray-900 text-white'
-                      : 'bg-gray-100 text-gray-600'
-                  }`}>
-                    {boosts.length}
-                  </span>
-                </span>
-                {activeContentTab === 'ads' && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900" />
-                )}
-              </button>
-            </div>
-          </div>
-
-          {/* Tab Content */}
-          <div>
-            {/* Services Tab */}
-            {activeContentTab === 'services' && (
-              <div>
-                {servicesLoading ? (
-                  <div className="flex justify-center py-12">
-                    <Loader size="sm" text="Loading services..." />
-                  </div>
-                ) : services.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {services.map((service) => (
-                      <div
-                        key={service._id}
-                        className="p-5 bg-white border border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-md transition-all duration-200"
-                      >
-                        <div className="flex items-start justify-between mb-3">
-                          <h4 className="font-semibold text-gray-900 text-base">{service.name}</h4>
-                          <StatusBadge status={getServiceStatus(service)} />
-                        </div>
-                        {service.description && (
-                          <p className="text-sm text-gray-600 mb-4 line-clamp-2 leading-relaxed">
-                            {service.description}
-                          </p>
-                        )}
-                        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                          <div className="flex flex-col gap-1">
-                            <span className="text-base font-bold text-gray-900">
-                              {formatCurrency(service.price)}
-                            </span>
-                            {service.duration && (
-                              <span className="text-xs text-gray-500">
-                                {service.duration} mins
+              {/* Services Tab */}
+              {activeTab === 'services' && (
+                <div>
+                  {servicesLoading ? (
+                    <div className="flex justify-center py-12">
+                      <Loader size="sm" text="Loading services..." />
+                    </div>
+                  ) : services.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {services.map((service) => (
+                        <div
+                          key={service._id}
+                          className="p-5 bg-white border border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-md transition-all duration-200"
+                        >
+                          <div className="flex items-start justify-between mb-3">
+                            <h4 className="font-semibold text-gray-900 text-base">{service.name}</h4>
+                            <StatusBadge status={getServiceStatus(service)} />
+                          </div>
+                          {service.description && (
+                            <p className="text-sm text-gray-600 mb-4 line-clamp-2 leading-relaxed">
+                              {service.description}
+                            </p>
+                          )}
+                          <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                            <div className="flex flex-col gap-1">
+                              <span className="text-base font-bold text-gray-900">
+                                {formatCurrency(service.price)}
                               </span>
-                            )}
+                              {service.duration && (
+                                <span className="text-xs text-gray-500">
+                                  {service.duration} mins
+                                </span>
+                              )}
+                            </div>
+                            <span className="px-2.5 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-lg">
+                              {service.category}
+                            </span>
                           </div>
-                          <span className="px-2.5 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-lg">
-                            {service.category}
-                          </span>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-12">
-                    <Package className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                    <p className="text-gray-500 text-sm">No services offered yet</p>
-                  </div>
-                )}
-              </div>
-            )}
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12">
+                      <Package className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                      <p className="text-gray-500 text-sm">No services offered yet</p>
+                    </div>
+                  )}
+                </div>
+              )}
 
-            {/* Reviews Tab */}
-            {activeContentTab === 'reviews' && (
+              {/* Reviews Tab */}
+              {activeTab === 'reviews' && (
               <div>
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-lg font-semibold text-gray-900">Reviews</h3>
@@ -1149,8 +1049,8 @@ export const AstrologerDetail = () => {
               </div>
             )}
 
-            {/* Posts & Discussions Tab */}
-            {activeContentTab === 'posts' && (
+              {/* Posts & Discussions Tab */}
+              {activeTab === 'posts' && (
               <div>
                 {discussionsLoading ? (
                   <div className="flex justify-center py-12">
@@ -1204,8 +1104,8 @@ export const AstrologerDetail = () => {
               </div>
             )}
 
-            {/* Ads Tab */}
-            {activeContentTab === 'ads' && (
+              {/* Ads Tab */}
+              {activeTab === 'ads' && (
               <div>
                 {boostsLoading ? (
                   <div className="flex justify-center py-12">
@@ -1288,9 +1188,9 @@ export const AstrologerDetail = () => {
                   </div>
                 )}
               </div>
-            )}
-          </div>
-        </Card>
+              )}
+            </div>
+          </Card>
 
         {/* Suspension Info */}
         {astrologer.isSuspended && astrologer.suspensionReason && (
