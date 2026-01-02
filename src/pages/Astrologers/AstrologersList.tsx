@@ -3,12 +3,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Edit2, Trash2, Eye, UserX, Users, UserCheck, Clock, XCircle, MessageCircle, Phone, Video, BadgeCheck, TrendingUp, Star, DollarSign, MessageSquare, Calendar, User } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { Card, Loader, EmptyState, RoundAvatar, PillBadge, ShowEntriesDropdown, StatCard, SearchBar, SortDropdown, SortOption } from '@/components/common';
-import { astrologersApi } from '@/api';
+import { astrologersApi, adCentreApi } from '@/api';
 import { Astrologer } from '@/types';
 import { formatRelativeTime } from '@/utils/formatters';
 import { socketService } from '@/services/socketService';
 
-type FilterTab = 'all' | 'active' | 'pending' | 'inactive' | 'verified';
+type FilterTab = 'all' | 'active' | 'pending' | 'inactive' | 'verified' | 'runningAds';
 
 export const AstrologersList = () => {
   const navigate = useNavigate();
@@ -28,7 +28,9 @@ export const AstrologersList = () => {
     pending: 0,
     inactive: 0,
     verified: 0,
+    runningAds: 0,
   });
+  const [astrologersWithAds, setAstrologersWithAds] = useState<Set<string>>(new Set());
 
   // Fetch dashboard stats for counts
   useEffect(() => {
@@ -47,6 +49,7 @@ export const AstrologersList = () => {
             pending: result.data.astrologers.pendingApprovals,
             inactive: result.data.astrologers.suspended,
             verified: result.data.astrologers.verified,
+            runningAds: 0, // Will be updated by fetchActiveBoosts
           });
         }
       } catch (err) {
@@ -56,9 +59,31 @@ export const AstrologersList = () => {
     fetchStats();
   }, []);
 
+  // Fetch active boosts to get astrologers with running ads
+  useEffect(() => {
+    const fetchActiveBoosts = async () => {
+      try {
+        const response = await adCentreApi.getAllBoosts({ status: 'active' });
+        if (response.success && response.data) {
+          const activeBoostAstrologerIds = new Set(
+            response.data.boosts.map((boost: any) => boost.astrologerId)
+          );
+          setAstrologersWithAds(activeBoostAstrologerIds);
+          setTabCounts(prev => ({
+            ...prev,
+            runningAds: activeBoostAstrologerIds.size,
+          }));
+        }
+      } catch (err) {
+        console.error('Failed to fetch active boosts:', err);
+      }
+    };
+    fetchActiveBoosts();
+  }, []);
+
   useEffect(() => {
     loadAstrologers();
-  }, [search, sortBy, sortOrder, filter, currentPage, entriesPerPage]);
+  }, [search, sortBy, sortOrder, filter, currentPage, entriesPerPage, astrologersWithAds]);
 
   useEffect(() => {
     setCurrentPage(1); // Reset to first page when search or filter changes
@@ -87,7 +112,7 @@ export const AstrologersList = () => {
         search, 
         sortBy, 
         sortOrder,
-        status: filter !== 'all' ? filter : undefined,
+        status: filter !== 'all' && filter !== 'runningAds' ? filter : undefined,
         page: currentPage,
         limit: entriesPerPage
       } as any);
@@ -107,10 +132,15 @@ export const AstrologersList = () => {
         isSuspended: a.isSuspended ?? false,
         isOnline: a.isOnline ?? false,
       }));
+
+      // Filter by running ads if that filter is selected
+      if (filter === 'runningAds') {
+        data = data.filter(astrologer => astrologersWithAds.has(astrologer._id));
+      }
       
       setAstrologers(data);
       if (response.pagination) {
-        setTotalEntries(response.pagination.total);
+        setTotalEntries(filter === 'runningAds' ? data.length : response.pagination.total);
       } else {
         setTotalEntries(data.length);
       }
@@ -128,6 +158,7 @@ export const AstrologersList = () => {
     pending: tabCounts.pending,
     inactive: tabCounts.inactive,
     verified: tabCounts.verified,
+    runningAds: tabCounts.runningAds,
   };
 
   // Pagination calculation from server data
@@ -297,6 +328,7 @@ export const AstrologersList = () => {
             { key: 'verified', label: 'Verified', count: stats.verified },
             { key: 'pending', label: 'Pending', count: stats.pending },
             { key: 'inactive', label: 'Inactive', count: stats.inactive },
+            { key: 'runningAds', label: 'Running Ads', count: stats.runningAds },
           ].map(tab => (
             <button
               key={tab.key}
