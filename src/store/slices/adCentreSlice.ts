@@ -21,6 +21,10 @@ export interface Boost {
   rejectedBy: string | null;
   rejectedAt: string | null;
   rejectionReason: string | null;
+  cancelledBy: string | null;
+  cancelledAt: string | null;
+  cancellationReason: string | null;
+  createdByAdmin: boolean;
 }
 
 export interface BoostDetails extends Boost {
@@ -225,6 +229,66 @@ const adCentreSlice = createSlice({
     clearCurrentBoost: (state) => {
       state.currentBoost = null;
     },
+
+    // Create Boost
+    createBoostRequest: (
+      state,
+      _action: PayloadAction<{
+        astrologerId: string;
+        durationDays: number;
+        startDate?: string;
+      }>
+    ) => {
+      state.isProcessing = true;
+      state.error = null;
+    },
+    createBoostSuccess: (state, action: PayloadAction<Boost>) => {
+      state.isProcessing = false;
+      state.boosts.unshift(action.payload);
+      state.error = null;
+    },
+    createBoostFailure: (state, action: PayloadAction<string>) => {
+      state.isProcessing = false;
+      state.error = action.payload;
+    },
+
+    // Cancel Boost
+    cancelBoostRequest: (
+      state,
+      _action: PayloadAction<{ boostId: string; reason: string }>
+    ) => {
+      state.isProcessing = true;
+      state.error = null;
+    },
+    cancelBoostSuccess: (state, action: PayloadAction<Boost>) => {
+      state.isProcessing = false;
+      const index = state.boosts.findIndex((b) => b.boostId === action.payload.boostId);
+      if (index !== -1) {
+        state.boosts[index] = action.payload;
+      }
+      if (state.currentBoost?.boostId === action.payload.boostId) {
+        state.currentBoost = { ...state.currentBoost, ...action.payload };
+      }
+      state.error = null;
+    },
+    cancelBoostFailure: (state, action: PayloadAction<string>) => {
+      state.isProcessing = false;
+      state.error = action.payload;
+    },
+
+    // Trigger Expiry
+    triggerExpiryRequest: (state) => {
+      state.isProcessing = true;
+      state.error = null;
+    },
+    triggerExpirySuccess: (state) => {
+      state.isProcessing = false;
+      state.error = null;
+    },
+    triggerExpiryFailure: (state, action: PayloadAction<string>) => {
+      state.isProcessing = false;
+      state.error = action.payload;
+    },
   },
 });
 
@@ -244,6 +308,15 @@ export const {
   fetchStatisticsRequest,
   fetchStatisticsSuccess,
   fetchStatisticsFailure,
+  createBoostRequest,
+  createBoostSuccess,
+  createBoostFailure,
+  cancelBoostRequest,
+  cancelBoostSuccess,
+  cancelBoostFailure,
+  triggerExpiryRequest,
+  triggerExpirySuccess,
+  triggerExpiryFailure,
   setFilters,
   setPage,
   clearCurrentBoost,

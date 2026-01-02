@@ -53,5 +53,33 @@ export const adCentreApi = {
     const response = await apiClient.get('/admin/ad-centre/statistics');
     return response.data;
   },
+
+  createBoost: async (data: {
+    astrologerId: string;
+    durationDays: number;
+    startDate?: string;
+  }): Promise<ApiResponse<Boost>> => {
+    const response = await apiClient.post('/admin/ad-centre/boosts/create', data);
+    return response.data;
+  },
+
+  cancelBoost: async (boostId: string, reason: string): Promise<ApiResponse<Boost>> => {
+    const response = await apiClient.post(`/admin/ad-centre/boosts/${boostId}/cancel`, { reason });
+    return response.data;
+  },
+
+  triggerExpiry: async (): Promise<ApiResponse<{
+    checkedAt: string;
+    totalActiveFound: number;
+    expiredCount: number;
+    expiredDetails: Array<{
+      boostId: string;
+      astrologerId: string;
+      endDate: string;
+    }>;
+  }>> => {
+    const response = await apiClient.post('/admin/ad-centre/debug/trigger-expiry');
+    return response.data;
+  },
 };
 
