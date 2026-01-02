@@ -19,7 +19,7 @@ import { CountdownTimer, BoostProgressBar, StatCard, Card, StatCardSkeleton, Ske
 import { CreateBoostModal } from '@/components/adCentre/CreateBoostModal';
 import { BoostCardSkeleton } from '@/components/adCentre/BoostCardSkeleton';
 import { useToastContext } from '@/contexts/ToastContext';
-import { TrendingUp, XCircle, Clock, Plus, RefreshCw, Zap, Users, Search, X, Filter, ChevronDown, ChevronUp } from 'lucide-react';
+import { TrendingUp, XCircle, Clock, Plus, RefreshCw, Zap, Users, Search, X } from 'lucide-react';
 import type { Boost, BoostFilters } from '@/store/slices/adCentreSlice';
 
 const statusOptions: Array<{ value: BoostFilters['status']; label: string; color: string }> = [
@@ -55,7 +55,7 @@ export const AdCentre = () => {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancellationReason, setCancellationReason] = useState('');
   const [lastSyncAction, setLastSyncAction] = useState<'sync' | 'create' | 'cancel' | null>(null);
-  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [selectedDateRange, setSelectedDateRange] = useState<string>('all');
   const { success: toastSuccess, error: toastError } = useToastContext();
 
   // Fetch statistics on mount
@@ -81,20 +81,7 @@ export const AdCentre = () => {
         sort: 'createdAt',
       })
     );
-  }, [
-    dispatch,
-    filters.status,
-    filters.search,
-    filters.minCost,
-    filters.maxCost,
-    filters.minDuration,
-    filters.maxDuration,
-    filters.startDateFrom,
-    filters.startDateTo,
-    filters.endDateFrom,
-    filters.endDateTo,
-    pagination.page,
-  ]);
+  }, [dispatch, filters.status, filters.search, filters.startDateFrom, pagination.page]);
 
   // Fetch boost details when selected
   useEffect(() => {
@@ -103,6 +90,25 @@ export const AdCentre = () => {
       setIsModalOpen(true);
     }
   }, [selectedBoostId, dispatch]);
+
+  // Initialize date range on mount
+  useEffect(() => {
+    if (filters.startDateFrom) {
+      // Determine which chip should be selected based on startDateFrom
+      const startDate = new Date(filters.startDateFrom);
+      const now = new Date();
+      const diffDays = Math.floor((now.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+      
+      if (diffDays <= 7) setSelectedDateRange('7d');
+      else if (diffDays <= 30) setSelectedDateRange('1m');
+      else if (diffDays <= 90) setSelectedDateRange('3m');
+      else if (diffDays <= 180) setSelectedDateRange('6m');
+      else if (diffDays <= 365) setSelectedDateRange('1y');
+      else setSelectedDateRange('all');
+    } else {
+      setSelectedDateRange('all');
+    }
+  }, [filters.startDateFrom]);
 
   const handleBoostClick = (boostId: string) => {
     setSelectedBoostId(boostId);
@@ -145,46 +151,51 @@ export const AdCentre = () => {
     dispatch(setFilters({ search }));
   };
 
-  const handleCostFilterChange = (minCost?: number, maxCost?: number) => {
-    dispatch(setFilters({ minCost, maxCost }));
-  };
+  const handleDateRangeChange = (range: string) => {
+    setSelectedDateRange(range);
+    let startDateFrom: string | undefined;
 
-  const handleDurationFilterChange = (minDuration?: number, maxDuration?: number) => {
-    dispatch(setFilters({ minDuration, maxDuration }));
-  };
+    if (range !== 'all') {
+      const now = new Date();
+      const startDate = new Date();
 
-  const handleDateFilterChange = (
-    startDateFrom?: string,
-    startDateTo?: string,
-    endDateFrom?: string,
-    endDateTo?: string
-  ) => {
-    dispatch(setFilters({ startDateFrom, startDateTo, endDateFrom, endDateTo }));
-  };
+      switch (range) {
+        case '7d':
+          startDate.setDate(now.getDate() - 7);
+          startDateFrom = startDate.toISOString().split('T')[0];
+          break;
+        case '1m':
+          startDate.setMonth(now.getMonth() - 1);
+          startDateFrom = startDate.toISOString().split('T')[0];
+          break;
+        case '3m':
+          startDate.setMonth(now.getMonth() - 3);
+          startDateFrom = startDate.toISOString().split('T')[0];
+          break;
+        case '6m':
+          startDate.setMonth(now.getMonth() - 6);
+          startDateFrom = startDate.toISOString().split('T')[0];
+          break;
+        case '1y':
+          startDate.setFullYear(now.getFullYear() - 1);
+          startDateFrom = startDate.toISOString().split('T')[0];
+          break;
+        default:
+          startDateFrom = undefined;
+      }
+    }
 
-  const clearAdvancedFilters = () => {
     dispatch(setFilters({
+      startDateFrom,
       minCost: undefined,
       maxCost: undefined,
       minDuration: undefined,
       maxDuration: undefined,
-      startDateFrom: undefined,
       startDateTo: undefined,
       endDateFrom: undefined,
       endDateTo: undefined,
     }));
   };
-
-  const hasAdvancedFilters = !!(
-    filters.minCost ||
-    filters.maxCost ||
-    filters.minDuration ||
-    filters.maxDuration ||
-    filters.startDateFrom ||
-    filters.startDateTo ||
-    filters.endDateFrom ||
-    filters.endDateTo
-  );
 
   const getStatusBadge = (status: Boost['status']) => {
     const statusConfig = statusOptions.find((opt) => opt.value === status) || statusOptions[0];
@@ -360,234 +371,69 @@ export const AdCentre = () => {
                 </div>
               </div>
 
-              {/* Search Bar - Universal Search Style (Small) */}
-              <div className="max-w-md">
-                <div className="relative">
-                  <div className="relative h-[44px] bg-white rounded-full border border-gray-200/50 shadow-sm transition-all duration-200 hover:shadow-md focus-within:shadow-md focus-within:border-gray-300">
-                    {/* Search Icon */}
-                    <div className="absolute left-4 top-1/2 -translate-y-1/2">
-                      <Search
-                        className={`w-4 h-4 transition-colors ${
-                          filters.search ? 'text-gray-700' : 'text-gray-400'
-                        }`}
+              {/* Search Bar with Date Range Filters */}
+              <div className="flex items-center gap-3">
+                {/* Search Bar - Universal Search Style (Small) */}
+                <div className="flex-1 max-w-md">
+                  <div className="relative">
+                    <div className="relative h-[44px] bg-white rounded-full border border-gray-200/50 shadow-sm transition-all duration-200 hover:shadow-md focus-within:shadow-md focus-within:border-gray-300">
+                      {/* Search Icon */}
+                      <div className="absolute left-4 top-1/2 -translate-y-1/2">
+                        <Search
+                          className={`w-4 h-4 transition-colors ${
+                            filters.search ? 'text-gray-700' : 'text-gray-400'
+                          }`}
+                        />
+                      </div>
+
+                      {/* Input */}
+                      <input
+                        type="text"
+                        value={filters.search}
+                        onChange={(e) => handleSearchChange(e.target.value)}
+                        placeholder="Search by astrologer name..."
+                        className="w-full h-full pl-10 pr-10 bg-transparent rounded-full text-gray-900 placeholder:text-gray-400 text-sm font-medium focus:outline-none focus:ring-0"
                       />
-                    </div>
 
-                    {/* Input */}
-                    <input
-                      type="text"
-                      value={filters.search}
-                      onChange={(e) => handleSearchChange(e.target.value)}
-                      placeholder="Search by astrologer name..."
-                      className="w-full h-full pl-10 pr-10 bg-transparent rounded-full text-gray-900 placeholder:text-gray-400 text-sm font-medium focus:outline-none focus:ring-0"
-                    />
-
-                    {/* Clear Button */}
-                    {filters.search && (
-                      <button
-                        type="button"
-                        onClick={() => handleSearchChange('')}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full hover:bg-gray-100 transition-colors"
-                        aria-label="Clear search"
-                      >
-                        <X className="w-3.5 h-3.5 text-gray-500" />
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Advanced Filters Toggle */}
-              <div className="flex items-center justify-between pt-2 border-t border-gray-200">
-                <button
-                  onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-                  className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
-                >
-                  <Filter className="w-4 h-4" />
-                  Advanced Filters
-                  {showAdvancedFilters ? (
-                    <ChevronUp className="w-4 h-4" />
-                  ) : (
-                    <ChevronDown className="w-4 h-4" />
-                  )}
-                  {hasAdvancedFilters && (
-                    <span className="ml-1 px-2 py-0.5 bg-gray-900 text-white text-xs rounded-full">
-                      Active
-                    </span>
-                  )}
-                </button>
-                {hasAdvancedFilters && (
-                  <button
-                    onClick={clearAdvancedFilters}
-                    className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
-                  >
-                    Clear All
-                  </button>
-                )}
-              </div>
-
-              {/* Advanced Filters Panel */}
-              {showAdvancedFilters && (
-                <div className="pt-4 space-y-4 border-t border-gray-200">
-                  {/* Cost Range Filter */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Cost Range (₹)
-                    </label>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <input
-                          type="number"
-                          placeholder="Min cost"
-                          value={filters.minCost || ''}
-                          onChange={(e) =>
-                            handleCostFilterChange(
-                              e.target.value ? parseFloat(e.target.value) : undefined,
-                              filters.maxCost
-                            )
-                          }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-                          min="0"
-                        />
-                      </div>
-                      <div>
-                        <input
-                          type="number"
-                          placeholder="Max cost"
-                          value={filters.maxCost || ''}
-                          onChange={(e) =>
-                            handleCostFilterChange(
-                              filters.minCost,
-                              e.target.value ? parseFloat(e.target.value) : undefined
-                            )
-                          }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-                          min="0"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Duration Range Filter */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Duration Range (Days)
-                    </label>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <input
-                          type="number"
-                          placeholder="Min duration"
-                          value={filters.minDuration || ''}
-                          onChange={(e) =>
-                            handleDurationFilterChange(
-                              e.target.value ? parseInt(e.target.value) : undefined,
-                              filters.maxDuration
-                            )
-                          }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-                          min="1"
-                          max="30"
-                        />
-                      </div>
-                      <div>
-                        <input
-                          type="number"
-                          placeholder="Max duration"
-                          value={filters.maxDuration || ''}
-                          onChange={(e) =>
-                            handleDurationFilterChange(
-                              filters.minDuration,
-                              e.target.value ? parseInt(e.target.value) : undefined
-                            )
-                          }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-                          min="1"
-                          max="30"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Start Date Range Filter */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Start Date Range
-                    </label>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <input
-                          type="date"
-                          value={filters.startDateFrom || ''}
-                          onChange={(e) =>
-                            handleDateFilterChange(
-                              e.target.value || undefined,
-                              filters.startDateTo,
-                              filters.endDateFrom,
-                              filters.endDateTo
-                            )
-                          }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-                        />
-                      </div>
-                      <div>
-                        <input
-                          type="date"
-                          value={filters.startDateTo || ''}
-                          onChange={(e) =>
-                            handleDateFilterChange(
-                              filters.startDateFrom,
-                              e.target.value || undefined,
-                              filters.endDateFrom,
-                              filters.endDateTo
-                            )
-                          }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* End Date Range Filter */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      End Date Range
-                    </label>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <input
-                          type="date"
-                          value={filters.endDateFrom || ''}
-                          onChange={(e) =>
-                            handleDateFilterChange(
-                              filters.startDateFrom,
-                              filters.startDateTo,
-                              e.target.value || undefined,
-                              filters.endDateTo
-                            )
-                          }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-                        />
-                      </div>
-                      <div>
-                        <input
-                          type="date"
-                          value={filters.endDateTo || ''}
-                          onChange={(e) =>
-                            handleDateFilterChange(
-                              filters.startDateFrom,
-                              filters.startDateTo,
-                              filters.endDateFrom,
-                              e.target.value || undefined
-                            )
-                          }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-                        />
-                      </div>
+                      {/* Clear Button */}
+                      {filters.search && (
+                        <button
+                          type="button"
+                          onClick={() => handleSearchChange('')}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full hover:bg-gray-100 transition-colors"
+                          aria-label="Clear search"
+                        >
+                          <X className="w-3.5 h-3.5 text-gray-500" />
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
-              )}
+
+                {/* Date Range Filter Chips */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  {[
+                    { value: 'all', label: 'All' },
+                    { value: '7d', label: '7 Days' },
+                    { value: '1m', label: '1 Month' },
+                    { value: '3m', label: '3 Months' },
+                    { value: '6m', label: '6 Months' },
+                    { value: '1y', label: '1 Year' },
+                  ].map((option) => (
+                    <button
+                      key={option.value}
+                      onClick={() => handleDateRangeChange(option.value)}
+                      className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all whitespace-nowrap ${
+                        selectedDateRange === option.value
+                          ? 'bg-gray-900 text-white shadow-sm'
+                          : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 hover:border-gray-300'
+                      }`}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
           </Card>
         )}
