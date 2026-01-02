@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { Search, Filter, Ban, CheckCircle } from 'lucide-react';
 import { FixedSizeList as List } from 'react-window';
 import { MainLayout } from '@/components/layout';
