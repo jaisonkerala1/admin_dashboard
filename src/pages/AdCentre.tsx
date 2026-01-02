@@ -27,6 +27,8 @@ const statusOptions: Array<{ value: BoostFilters['status']; label: string; color
   { value: 'pending', label: 'Pending', color: 'orange' },
   { value: 'expired', label: 'Expired', color: 'gray' },
   { value: 'rejected', label: 'Rejected', color: 'red' },
+  { value: 'cancelled_by_user', label: 'Cancelled by User', color: 'blue' },
+  { value: 'cancelled_by_admin', label: 'Cancelled by Admin', color: 'purple' },
 ];
 
 export const AdCentre = () => {
@@ -139,6 +141,10 @@ export const AdCentre = () => {
             ? 'bg-orange-100 text-orange-800'
             : statusConfig.value === 'rejected'
             ? 'bg-red-100 text-red-800'
+            : statusConfig.value === 'cancelled_by_user'
+            ? 'bg-blue-100 text-blue-800'
+            : statusConfig.value === 'cancelled_by_admin'
+            ? 'bg-purple-100 text-purple-800'
             : 'bg-gray-100 text-gray-800'
         }`}
       >
@@ -594,7 +600,7 @@ export const AdCentre = () => {
                         <div className="col-span-2">
                           <p className="text-sm text-gray-600">Cancelled By</p>
                           <p className="font-medium text-gray-900">
-                            Admin on {formatDateTime(currentBoost.cancelledAt)}
+                            {currentBoost.status === 'cancelled_by_user' ? 'User' : 'Admin'} on {formatDateTime(currentBoost.cancelledAt)}
                           </p>
                           {currentBoost.cancellationReason && (
                             <p className="text-sm text-orange-600 mt-1">Reason: {currentBoost.cancellationReason}</p>

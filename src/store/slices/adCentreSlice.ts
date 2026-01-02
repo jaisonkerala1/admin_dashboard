@@ -13,7 +13,7 @@ export interface Boost {
   durationDays: number;
   dailyCost: number;
   totalCost: number;
-  status: 'pending' | 'active' | 'expired' | 'rejected' | 'cancelled';
+  status: 'pending' | 'active' | 'expired' | 'rejected' | 'cancelled' | 'cancelled_by_user' | 'cancelled_by_admin';
   isActive: boolean;
   createdAt: string;
   approvedBy: string | null;
@@ -60,7 +60,7 @@ export interface BoostStatistics {
 }
 
 export interface BoostFilters {
-  status: 'all' | 'active' | 'pending' | 'expired' | 'rejected';
+  status: 'all' | 'active' | 'pending' | 'expired' | 'rejected' | 'cancelled_by_user' | 'cancelled_by_admin';
   search: string;
 }
 
