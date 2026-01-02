@@ -1,15 +1,18 @@
 import { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Mail, Phone, Star, Calendar, DollarSign, Clock, CheckCircle, Ban, Package, MessageSquare, FileText, ThumbsUp, MessageCircle, Edit2, ChevronDown, ChevronUp, Plus, Trash2, BadgeCheck, XCircle } from 'lucide-react';
+import { Mail, Phone, Star, Calendar, DollarSign, Clock, CheckCircle, Ban, Package, MessageSquare, FileText, ThumbsUp, MessageCircle, Edit2, ChevronDown, ChevronUp, Plus, Trash2, BadgeCheck, XCircle, Zap } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Card, Loader, Avatar, StatusBadge, Modal, PillBadge } from '@/components/common';
 import { AstrologerStatsCards } from '@/components/astrologers/AstrologerStatsCards';
 import { ReviewFormModal } from '@/components/reviews/ReviewFormModal';
-import { astrologersApi, servicesApi, reviewsApi, discussionsApi, consultationsApi, poojaRequestsApi } from '@/api';
+import { astrologersApi, servicesApi, reviewsApi, discussionsApi, consultationsApi, poojaRequestsApi, adCentreApi } from '@/api';
 import { Astrologer, Service, Review, Discussion, Consultation, PoojaRequest } from '@/types';
 import { formatCurrency, formatNumber, formatDateTime } from '@/utils/formatters';
 import { useToastContext } from '@/contexts/ToastContext';
+import { ROUTES } from '@/utils/constants';
+import { CountdownTimer } from '@/components/common';
+import { getImageUrl } from '@/utils/helpers';
 
 export const AstrologerDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -34,7 +37,9 @@ export const AstrologerDetail = () => {
   const [showSuspendModal, setShowSuspendModal] = useState(false);
   const [suspensionReason, setSuspensionReason] = useState('');
   const [activeTab, setActiveTab] = useState<'consultations' | 'serviceRequests'>('consultations');
-  const [activeContentTab, setActiveContentTab] = useState<'services' | 'reviews' | 'posts'>('services');
+  const [activeContentTab, setActiveContentTab] = useState<'services' | 'reviews' | 'posts' | 'ads'>('services');
+  const [boosts, setBoosts] = useState<any[]>([]);
+  const [boostsLoading, setBoostsLoading] = useState(false);
   const [isBioExpanded, setIsBioExpanded] = useState(false);
   const bioRef = useRef<HTMLParagraphElement>(null);
   const [showBioExpandButton, setShowBioExpandButton] = useState(false);
@@ -49,6 +54,7 @@ export const AstrologerDetail = () => {
       loadReviews();
       loadConsultations();
       loadServiceRequests();
+      loadBoosts();
     }
   }, [id]);
 
@@ -185,6 +191,53 @@ export const AstrologerDetail = () => {
     } finally {
       setDiscussionsLoading(false);
     }
+  };
+
+  const loadBoosts = async () => {
+    if (!id) return;
+    try {
+      setBoostsLoading(true);
+      // Fetch all boosts and filter by astrologer ID
+      const response = await adCentreApi.getAllBoosts({});
+      if (response.success && response.data) {
+        const astrologerBoosts = response.data.boosts.filter(
+          (boost: any) => boost.astrologerId === id
+        );
+        setBoosts(astrologerBoosts);
+      }
+    } catch (err) {
+      console.error('Failed to load boosts:', err);
+    } finally {
+      setBoostsLoading(false);
+    }
+  };
+
+  const getStatusBadge = (status: string) => {
+    const statusStyles: Record<string, string> = {
+      active: 'bg-gray-900 text-white',
+      pending: 'bg-gray-200 text-gray-700',
+      expired: 'bg-gray-100 text-gray-600',
+      rejected: 'bg-gray-200 text-gray-700',
+      cancelled_by_user: 'bg-gray-100 text-gray-600',
+      cancelled_by_admin: 'bg-gray-200 text-gray-700',
+    };
+    const labelMap: Record<string, string> = {
+      active: 'Active',
+      pending: 'Pending',
+      expired: 'Expired',
+      rejected: 'Rejected',
+      cancelled_by_user: 'Cancelled',
+      cancelled_by_admin: 'Cancelled',
+    };
+    return (
+      <span
+        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+          statusStyles[status] || 'bg-gray-100 text-gray-600'
+        }`}
+      >
+        {labelMap[status] || status}
+      </span>
+    );
   };
 
   const loadConsultations = async () => {
@@ -863,6 +916,28 @@ export const AstrologerDetail = () => {
                   <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900" />
                 )}
               </button>
+              <button
+                onClick={() => setActiveContentTab('ads')}
+                className={`pb-4 px-1 text-sm font-medium transition-colors relative ${
+                  activeContentTab === 'ads'
+                    ? 'text-gray-900'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                <span className="flex items-center gap-2">
+                  Ads
+                  <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${
+                    activeContentTab === 'ads'
+                      ? 'bg-gray-900 text-white'
+                      : 'bg-gray-100 text-gray-600'
+                  }`}>
+                    {boosts.length}
+                  </span>
+                </span>
+                {activeContentTab === 'ads' && (
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900" />
+                )}
+              </button>
             </div>
           </div>
 
@@ -1084,6 +1159,92 @@ export const AstrologerDetail = () => {
                   <div className="text-center py-12">
                     <FileText className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                     <p className="text-gray-500 text-sm">No discussions posted yet</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Ads Tab */}
+            {activeContentTab === 'ads' && (
+              <div>
+                {boostsLoading ? (
+                  <div className="flex justify-center py-12">
+                    <Loader size="sm" text="Loading ads..." />
+                  </div>
+                ) : boosts.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {boosts.map((boost) => (
+                      <div
+                        key={boost.boostId}
+                        onClick={() => navigate(`${ROUTES.AD_CENTRE}/${boost.boostId}`)}
+                        className="cursor-pointer"
+                      >
+                        <Card className="hover:shadow-md transition-all">
+                          <div className="flex items-start justify-between mb-4">
+                            <div className="flex items-center gap-3">
+                              {boost.astrologerAvatar ? (
+                                <img
+                                  src={getImageUrl(boost.astrologerAvatar) || ''}
+                                  alt={boost.astrologerName}
+                                  className="w-10 h-10 rounded-full object-cover border border-gray-200"
+                                  onError={(e) => {
+                                    e.currentTarget.style.display = 'none';
+                                    const fallback = e.currentTarget.nextElementSibling;
+                                    if (fallback) {
+                                      (fallback as HTMLElement).style.display = 'flex';
+                                    }
+                                  }}
+                                />
+                              ) : null}
+                              <div 
+                                className={`w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200 ${boost.astrologerAvatar ? 'hidden' : ''}`}
+                              >
+                                <span className="text-gray-600 font-semibold text-sm">
+                                  {boost.astrologerName?.charAt(0).toUpperCase() || 'A'}
+                                </span>
+                              </div>
+                              <div>
+                                <h3 className="font-semibold text-gray-900 text-sm">{boost.astrologerName || 'Unknown'}</h3>
+                                <p className="text-xs text-gray-500">Boost ID: {boost.boostId}</p>
+                              </div>
+                            </div>
+                            {getStatusBadge(boost.status)}
+                          </div>
+
+                          <div className="space-y-2 mb-4">
+                            <div className="flex justify-between text-sm">
+                              <span className="text-gray-500">Duration:</span>
+                              <span className="font-medium text-gray-900">{boost.durationDays} days</span>
+                            </div>
+                            {boost.status === 'active' && (
+                              <div className="flex justify-between text-sm items-center">
+                                <span className="text-gray-500">Time Remaining:</span>
+                                <CountdownTimer endDate={boost.endDate} className="text-xs font-medium" />
+                              </div>
+                            )}
+                            <div className="flex justify-between text-sm">
+                              <span className="text-gray-500">Cost:</span>
+                              <span className="font-medium text-gray-900">
+                                ₹{boost.totalCost?.toFixed(0) || '0'}
+                              </span>
+                            </div>
+                            <div className="flex justify-between text-xs">
+                              <span className="text-gray-500">Start:</span>
+                              <span className="font-medium text-gray-700">{formatDateTime(boost.startDate)}</span>
+                            </div>
+                            <div className="flex justify-between text-xs">
+                              <span className="text-gray-500">End:</span>
+                              <span className="font-medium text-gray-700">{formatDateTime(boost.endDate)}</span>
+                            </div>
+                          </div>
+                        </Card>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <Zap className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                    <p className="text-gray-500 text-sm">No active ads for this astrologer</p>
                   </div>
                 )}
               </div>
