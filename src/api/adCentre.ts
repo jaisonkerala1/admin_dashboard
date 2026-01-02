@@ -1,6 +1,6 @@
 import apiClient from './client';
 import type { ApiResponse } from '@/types';
-import type { Boost, BoostDetails, BoostStatistics, BoostFilters, BoostPagination } from '@/store/slices/adCentreSlice';
+import type { Boost, BoostDetails, BoostStatistics, BoostPagination } from '@/store/slices/adCentreSlice';
 
 export interface BoostsListResponse {
   success: boolean;

@@ -13,7 +13,7 @@ import {
   clearCurrentBoost,
 } from '@/store/slices/adCentreSlice';
 import { Loader } from '@/components/common';
-import { TrendingUp, CheckCircle, XCircle, Clock, Search, Filter, Eye } from 'lucide-react';
+import { TrendingUp, CheckCircle, XCircle, Clock, Search } from 'lucide-react';
 import type { Boost, BoostFilters } from '@/store/slices/adCentreSlice';
 
 const statusOptions: Array<{ value: BoostFilters['status']; label: string; color: string }> = [
@@ -143,7 +143,6 @@ export const AdCentre = () => {
         <PageHeader
           title="Ad Centre"
           subtitle="Manage profile boosts and advertising campaigns"
-          icon={TrendingUp}
         />
 
         {/* Statistics Cards */}
