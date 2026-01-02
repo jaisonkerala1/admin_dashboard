@@ -1130,8 +1130,9 @@ export const AstrologerDetail = () => {
             </div>
           </Card>
         </div>
+      </div>
 
-        {/* Suspension Info */}
+      {/* Suspension Info */}
         {astrologer.isSuspended && astrologer.suspensionReason && (
           <Card title="Suspension Details" className="border-red-200 bg-red-50">
             <p className="text-red-800">{astrologer.suspensionReason}</p>
@@ -1142,7 +1143,7 @@ export const AstrologerDetail = () => {
         )}
 
         {/* Services & Ads Section */}
-        <Card className="w-full">
+        <Card className="w-full mt-6">
           {/* Tab Navigation */}
           <div className="border-b border-gray-200 mb-6">
             <div className="flex gap-3 sm:gap-4 md:gap-6 -mb-px overflow-x-auto">
@@ -1332,7 +1333,6 @@ export const AstrologerDetail = () => {
             )}
           </div>
         </Card>
-      </div>
 
       {/* Suspend Modal */}
       <Modal
