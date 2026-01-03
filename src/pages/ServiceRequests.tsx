@@ -53,7 +53,7 @@ export const ServiceRequests = () => {
     stats 
   } = useSelector((state: RootState) => state.poojaRequests);
 
-  const handleServiceClick = (serviceId: string | undefined, e: React.MouseEvent) => {
+  const handleServiceClick = (serviceId: string | null | undefined, e: React.MouseEvent) => {
     // Prevent navigation if clicking on checkbox, action buttons, or links
     const target = e.target as HTMLElement;
     if (
