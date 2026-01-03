@@ -7,13 +7,12 @@ import {
   Users,
   CheckCircle2,
   XCircle,
-  Trash2,
   Activity,
   AlertCircle,
   Plus
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
-import { Card, Loader, EmptyState, RoundAvatar, PillBadge, ShowEntriesDropdown, StatCard, SearchBar } from '@/components/common';
+import { Card, Loader, EmptyState, PillBadge, ShowEntriesDropdown, StatCard, SearchBar } from '@/components/common';
 import { formatCurrency, formatDate } from '@/utils/formatters';
 import { getImageUrl } from '@/utils/helpers';
 import { RootState } from '@/store';
@@ -23,7 +22,6 @@ import {
   setSearch,
   setEntriesPerPage,
   setCurrentPage,
-  toggleSelection,
   selectAll,
   deselectAll,
   ServiceRequestFilter,
@@ -109,10 +107,6 @@ export const ServiceRequests = () => {
     } else {
       dispatch(deselectAll());
     }
-  };
-
-  const handleSelectOne = (id: string) => {
-    dispatch(toggleSelection(id));
   };
 
   const isAllSelected = paginatedRequests.length > 0 && paginatedRequests.every(r => selectedIds.has(r._id));
@@ -293,95 +287,49 @@ export const ServiceRequests = () => {
                   onClick={(e) => handleServiceClick(request._id, request.serviceId, e)}
                   className="cursor-pointer"
                 >
-                  <Card className="hover:shadow-md transition-all h-full">
-                    {/* Header with Checkbox and Status */}
+                  <Card className="hover:shadow-md transition-all">
                     <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center gap-3 flex-1 min-w-0">
-                        <input
-                          type="checkbox"
-                          checked={selectedIds.has(request._id)}
-                          onChange={(e) => {
-                            e.stopPropagation();
-                            handleSelectOne(request._id);
-                          }}
-                          onClick={(e) => e.stopPropagation()}
-                          className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 flex-shrink-0 mt-0.5"
-                        />
-                        <div className="flex items-center gap-3 flex-1 min-w-0">
-                          {request.astrologerId?.profilePicture ? (
-                            <img
-                              src={getImageUrl(request.astrologerId.profilePicture) || ''}
-                              alt={request.astrologerId.name}
-                              className="w-10 h-10 rounded-full object-cover border border-gray-200 flex-shrink-0"
-                              onError={(e) => {
-                                e.currentTarget.style.display = 'none';
-                                const fallback = e.currentTarget.nextElementSibling;
-                                if (fallback) {
-                                  (fallback as HTMLElement).style.display = 'flex';
-                                }
-                              }}
-                            />
-                          ) : null}
-                          <div
-                            className={`w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200 flex-shrink-0 ${request.astrologerId?.profilePicture ? 'hidden' : ''}`}
-                          >
-                            <span className="text-gray-600 font-semibold text-sm">
-                              {request.astrologerId?.name?.charAt(0).toUpperCase() || request.customerName?.charAt(0).toUpperCase() || 'U'}
-                            </span>
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <h3 className="font-semibold text-gray-900 text-sm truncate">
-                              {request.customerName || 'Unknown Customer'}
-                            </h3>
-                            <p className="text-xs text-gray-500 truncate">{request.customerPhone || 'No phone'}</p>
-                          </div>
+                      <div className="flex items-center gap-3">
+                        {request.astrologerId?.profilePicture ? (
+                          <img
+                            src={getImageUrl(request.astrologerId.profilePicture) || ''}
+                            alt={request.astrologerId.name}
+                            className="w-10 h-10 rounded-full object-cover border border-gray-200"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                              const fallback = e.currentTarget.nextElementSibling;
+                              if (fallback) {
+                                (fallback as HTMLElement).style.display = 'flex';
+                              }
+                            }}
+                          />
+                        ) : null}
+                        <div 
+                          className={`w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200 ${request.astrologerId?.profilePicture ? 'hidden' : ''}`}
+                        >
+                          <span className="text-gray-600 font-semibold text-sm">
+                            {request.astrologerId?.name?.charAt(0).toUpperCase() || request.customerName?.charAt(0).toUpperCase() || 'U'}
+                          </span>
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-gray-900 text-sm">{request.customerName || 'Unknown Customer'}</h3>
+                          <p className="text-xs text-gray-500">{request.customerPhone || 'No phone'}</p>
                         </div>
                       </div>
                       {getStatusBadge(request.status)}
                     </div>
 
-                    {/* Service Info */}
-                    <div className="mb-4 pb-4 border-b border-gray-100">
-                      <Link
-                        to={request.serviceId ? `${ROUTES.SERVICES}/${request.serviceId}` : '#'}
-                        onClick={(e) => e.stopPropagation()}
-                        className="block"
-                      >
-                        <p className="text-xs text-gray-500 mb-1">Service</p>
-                        <p className="font-medium text-sm text-gray-900 truncate">{request.serviceName || 'N/A'}</p>
-                        {request.serviceCategory && (
-                          <p className="text-xs text-gray-500 mt-0.5 truncate">{request.serviceCategory}</p>
-                        )}
-                      </Link>
-                    </div>
-
-                    {/* Astrologer Info */}
-                    {request.astrologerId && (
-                      <div className="mb-4 pb-4 border-b border-gray-100">
-                        <Link
-                          to={`${ROUTES.ASTROLOGERS}/${request.astrologerId._id}`}
-                          onClick={(e) => e.stopPropagation()}
-                          className="flex items-center gap-2"
-                        >
-                          <RoundAvatar
-                            src={getImageUrl(request.astrologerId.profilePicture)}
-                            size="sm"
-                            name={request.astrologerId.name}
-                            isOnline={false}
-                            className="flex-shrink-0"
-                          />
-                          <div className="flex-1 min-w-0">
-                            <p className="text-xs text-gray-500">Astrologer</p>
-                            <p className="text-sm font-medium text-gray-900 truncate">
-                              {request.astrologerId.name}
-                            </p>
-                          </div>
-                        </Link>
+                    <div className="space-y-2 mb-4">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-500">Service:</span>
+                        <span className="font-medium text-gray-900 truncate ml-2">{request.serviceName || 'N/A'}</span>
                       </div>
-                    )}
-
-                    {/* Details */}
-                    <div className="space-y-2">
+                      {request.astrologerId && (
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-500">Astrologer:</span>
+                          <span className="font-medium text-gray-900 truncate ml-2">{request.astrologerId.name}</span>
+                        </div>
+                      )}
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-500">Price:</span>
                         <span className="font-medium text-gray-900">{formatCurrency(request.price)}</span>
@@ -396,27 +344,6 @@ export const ServiceRequests = () => {
                           <span className="font-medium text-gray-700">{request.requestedTime}</span>
                         </div>
                       )}
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex gap-2 mt-4 pt-4 border-t border-gray-100">
-                      <Link
-                        to={`${ROUTES.SERVICE_REQUESTS}/${request._id}`}
-                        onClick={(e) => e.stopPropagation()}
-                        className="flex-1 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium transition-colors text-center"
-                      >
-                        View Details
-                      </Link>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          // Delete handler can be added here
-                        }}
-                        className="px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium transition-colors"
-                        title="Delete"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
                     </div>
                   </Card>
                 </div>
