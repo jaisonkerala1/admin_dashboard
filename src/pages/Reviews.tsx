@@ -14,7 +14,8 @@ import {
   Reply
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
-import { Card, Loader, EmptyState, RoundAvatar, PillBadge, ShowEntriesDropdown, StatCard, SearchBar, Modal } from '@/components/common';
+import { Card, Loader, EmptyState, RoundAvatar, PillBadge, ShowEntriesDropdown, StatCard, SearchBar, Modal, StatCardSkeleton } from '@/components/common';
+import { SkeletonBox, SkeletonCard, SkeletonCircle } from '@/components/common/Skeleton';
 import { ReviewFormModal } from '@/components/reviews/ReviewFormModal';
 import { ReplyModal } from '@/components/reviews/ReplyModal';
 import { reviewsApi } from '@/api';
@@ -212,79 +213,100 @@ export const Reviews = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-          <StatCard
-            title="Total"
-            value={stats.total}
-            icon={MessageSquare}
-          />
-          <StatCard
-            title="Avg Rating"
-            value={stats.averageRating.toFixed(1)}
-            icon={Star}
-          />
-          <StatCard
-            title="Needs Reply"
-            value={stats.needsReply}
-            icon={MessageSquare}
-            iconColor="text-amber-600"
-            iconBgColor="bg-amber-50"
-          />
-          <StatCard
-            title="Pending Moderation"
-            value={stats.pendingModeration}
-            icon={Shield}
-            iconColor="text-orange-600"
-            iconBgColor="bg-orange-50"
-          />
-          <StatCard
-            title="Public"
-            value={stats.public}
-            icon={Eye}
-            iconColor="text-green-600"
-            iconBgColor="bg-green-50"
-          />
-          <StatCard
-            title="Negative"
-            value={stats.negative}
-            icon={Star}
-            iconColor="text-red-600"
-            iconBgColor="bg-red-50"
-          />
-        </div>
-        </div>
+        {isLoading ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            <StatCard
+              title="Total"
+              value={stats.total}
+              icon={MessageSquare}
+            />
+            <StatCard
+              title="Avg Rating"
+              value={stats.averageRating.toFixed(1)}
+              icon={Star}
+            />
+            <StatCard
+              title="Needs Reply"
+              value={stats.needsReply}
+              icon={MessageSquare}
+              iconColor="text-amber-600"
+              iconBgColor="bg-amber-50"
+            />
+            <StatCard
+              title="Pending Moderation"
+              value={stats.pendingModeration}
+              icon={Shield}
+              iconColor="text-orange-600"
+              iconBgColor="bg-orange-50"
+            />
+            <StatCard
+              title="Public"
+              value={stats.public}
+              icon={Eye}
+              iconColor="text-green-600"
+              iconBgColor="bg-green-50"
+            />
+            <StatCard
+              title="Negative"
+              value={stats.negative}
+              icon={Star}
+              iconColor="text-red-600"
+              iconBgColor="bg-red-50"
+            />
+          </div>
+        )}
+      </div>
 
       {/* Filter Tabs */}
-      <div className="mb-6 border-b border-gray-200">
-        <div className="flex gap-8 overflow-x-auto">
-          {[
-            { key: 'all', label: 'All Reviews', count: stats.total },
-            { key: 'needsReply', label: 'Needs Reply', count: stats.needsReply },
-            { key: 'pendingModeration', label: 'Pending Moderation', count: stats.pendingModeration },
-            { key: 'public', label: 'Public', count: stats.public },
-            { key: 'hidden', label: 'Hidden / Flagged', count: stats.hidden },
-            { key: 'negative', label: 'Negative (1-2 Stars)', count: stats.negative },
-            { key: 'adminCreated', label: 'Admin Created', count: stats.adminCreated },
-          ].map(({ key, label, count }) => (
-            <button
-              key={key}
-              onClick={() => dispatch(setFilter(key as ReviewFilter))}
-              className={`whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                filter === key
-                  ? 'border-blue-600 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              {label}
-              <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${
-                filter === key ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
-              }`}>
-                {count}
-              </span>
-            </button>
-          ))}
+      {isLoading ? (
+        <div className="mb-6 border-b border-gray-200">
+          <div className="flex gap-8 overflow-x-auto pb-3">
+            {[1, 2, 3, 4, 5, 6, 7].map((i) => (
+              <SkeletonBox key={i} width={140} height={20} radius={4} className="shimmer" />
+            ))}
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="mb-6 border-b border-gray-200">
+          <div className="flex gap-8 overflow-x-auto">
+            {[
+              { key: 'all', label: 'All Reviews', count: stats.total },
+              { key: 'needsReply', label: 'Needs Reply', count: stats.needsReply },
+              { key: 'pendingModeration', label: 'Pending Moderation', count: stats.pendingModeration },
+              { key: 'public', label: 'Public', count: stats.public },
+              { key: 'hidden', label: 'Hidden / Flagged', count: stats.hidden },
+              { key: 'negative', label: 'Negative (1-2 Stars)', count: stats.negative },
+              { key: 'adminCreated', label: 'Admin Created', count: stats.adminCreated },
+            ].map(({ key, label, count }) => (
+              <button
+                key={key}
+                onClick={() => dispatch(setFilter(key as ReviewFilter))}
+                className={`whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                  filter === key
+                    ? 'border-blue-600 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                {label}
+                <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${
+                  filter === key ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
+                }`}>
+                  {count}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       <Card>
         {/* Table Controls */}
@@ -322,8 +344,30 @@ export const Reviews = () => {
 
         {/* Loading State */}
         {isLoading ? (
-          <div className="py-12">
-            <Loader size="lg" text="Loading reviews..." />
+          <div className="space-y-3">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <SkeletonCard key={i}>
+                <div className="flex items-center gap-4">
+                  <SkeletonBox width={16} height={16} radius={4} />
+                  <div className="flex-1 space-y-2">
+                    <div className="flex items-center gap-2">
+                      <SkeletonBox width={120} height={16} radius={4} />
+                      <SkeletonBox width={60} height={20} radius={4} />
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <SkeletonCircle size={40} />
+                      <SkeletonBox width={150} height={14} radius={4} />
+                    </div>
+                    <SkeletonBox width={200} height={14} radius={4} />
+                  </div>
+                  <div className="flex gap-2">
+                    <SkeletonBox width={60} height={24} radius={4} />
+                    <SkeletonBox width={32} height={32} radius={8} />
+                    <SkeletonBox width={32} height={32} radius={8} />
+                  </div>
+                </div>
+              </SkeletonCard>
+            ))}
           </div>
         ) : reviews.length === 0 ? (
           <EmptyState

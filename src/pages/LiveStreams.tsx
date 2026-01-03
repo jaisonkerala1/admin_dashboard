@@ -13,7 +13,8 @@ import {
   Info
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
-import { Card, Loader, EmptyState, RoundAvatar, PillBadge, ShowEntriesDropdown, StatCard, SearchBar } from '@/components/common';
+import { Card, Loader, EmptyState, RoundAvatar, PillBadge, ShowEntriesDropdown, StatCard, SearchBar, StatCardSkeleton } from '@/components/common';
+import { SkeletonBox, SkeletonCard, SkeletonCircle } from '@/components/common/Skeleton';
 import { LiveStreamViewer } from '@/components/liveStream/LiveStreamViewer';
 import { StreamDetailModal } from '@/components/liveStream/StreamDetailModal';
 import { LiveStreamStoryRounds } from '@/components/liveStream/LiveStreamStoryRounds';
@@ -196,67 +197,88 @@ export const LiveStreams = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-          <StatCard
-            title="Total"
-            value={stats.total}
-            icon={Radio}
-          />
-          <StatCard
-            title="Live Now"
-            value={stats.live}
-            icon={Play}
-          />
-          <StatCard
-            title="Ended"
-            value={stats.ended}
-            icon={StopCircle}
-          />
-          <StatCard
-            title="Total Views"
-            value={formatNumber(stats.totalViews)}
-            icon={Eye}
-          />
-          <StatCard
-            title="Total Likes"
-            value={formatNumber(stats.totalLikes)}
-            icon={Heart}
-          />
-          <StatCard
-            title="Peak Viewers"
-            value={stats.peakViewers}
-            icon={TrendingUp}
+        {isLoading ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            <StatCard
+              title="Total"
+              value={stats.total}
+              icon={Radio}
+            />
+            <StatCard
+              title="Live Now"
+              value={stats.live}
+              icon={Play}
+            />
+            <StatCard
+              title="Ended"
+              value={stats.ended}
+              icon={StopCircle}
+            />
+            <StatCard
+              title="Total Views"
+              value={formatNumber(stats.totalViews)}
+              icon={Eye}
+            />
+            <StatCard
+              title="Total Likes"
+              value={formatNumber(stats.totalLikes)}
+              icon={Heart}
+            />
+            <StatCard
+              title="Peak Viewers"
+              value={stats.peakViewers}
+              icon={TrendingUp}
             />
           </div>
-        </div>
+        )}
+      </div>
 
       {/* Filter Tabs */}
-      <div className="mb-6 border-b border-gray-200">
-        <div className="flex gap-8 overflow-x-auto">
-          {[
-            { key: 'all', label: 'All', count: stats.total },
-            { key: 'live', label: 'Live Now', count: stats.live },
-            { key: 'ended', label: 'Ended', count: stats.ended },
-          ].map(({ key, label, count }) => (
-            <button
-              key={key}
-              onClick={() => dispatch(setFilter(key as LiveStreamFilter))}
-              className={`whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                filter === key
-                  ? 'border-blue-600 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              {label}
-              <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${
-                filter === key ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
-              }`}>
-                {count}
-              </span>
-            </button>
-          ))}
+      {isLoading ? (
+        <div className="mb-6 border-b border-gray-200">
+          <div className="flex gap-8 overflow-x-auto pb-3">
+            {[1, 2, 3].map((i) => (
+              <SkeletonBox key={i} width={100} height={20} radius={4} className="shimmer" />
+            ))}
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="mb-6 border-b border-gray-200">
+          <div className="flex gap-8 overflow-x-auto">
+            {[
+              { key: 'all', label: 'All', count: stats.total },
+              { key: 'live', label: 'Live Now', count: stats.live },
+              { key: 'ended', label: 'Ended', count: stats.ended },
+            ].map(({ key, label, count }) => (
+              <button
+                key={key}
+                onClick={() => dispatch(setFilter(key as LiveStreamFilter))}
+                className={`whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                  filter === key
+                    ? 'border-blue-600 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                {label}
+                <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${
+                  filter === key ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
+                }`}>
+                  {count}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Instagram-Style Story Rounds for Currently Live Streams */}
       {!isLoading && streams.filter(s => s.isLive).length > 0 && (
@@ -298,8 +320,23 @@ export const LiveStreams = () => {
 
         {/* Loading State */}
         {isLoading ? (
-          <div className="py-12">
-            <Loader size="lg" text="Loading live streams..." />
+          <div className="space-y-3">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <SkeletonCard key={i}>
+                <div className="flex items-center gap-4">
+                  <SkeletonBox width={16} height={16} radius={4} />
+                  <SkeletonCircle size={40} />
+                  <div className="flex-1 space-y-2">
+                    <SkeletonBox width={200} height={16} radius={4} />
+                    <SkeletonBox width={150} height={14} radius={4} />
+                  </div>
+                  <SkeletonBox width={80} height={16} radius={4} />
+                  <SkeletonBox width={60} height={16} radius={4} />
+                  <SkeletonBox width={100} height={16} radius={4} />
+                  <SkeletonBox width={80} height={32} radius={8} />
+                </div>
+              </SkeletonCard>
+            ))}
           </div>
         ) : filteredStreams.length === 0 ? (
           <EmptyState

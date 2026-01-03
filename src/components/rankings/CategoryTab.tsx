@@ -4,7 +4,7 @@ import { RankingCard } from './RankingCard';
 import { RankingStats } from './RankingStats';
 import { BulkActions } from './BulkActions';
 import { AddAstrologerModal } from './AddAstrologerModal';
-import { Card, Loader, EmptyState } from '@/components/common';
+import { Card, EmptyState } from '@/components/common';
 import { AstrologerRanking, RankingCategoryId, CategoryStats } from '@/types';
 import { Trophy } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
@@ -141,13 +141,7 @@ export const CategoryTab = ({ category, rankings, stats, isLoading }: CategoryTa
   const hiddenRankings = rankings.filter((r) => r.isHidden);
   const existingAstrologerIds = new Set(rankings.map((r) => r.astrologerId));
 
-  if (isLoading) {
-    return (
-      <div className="py-12">
-        <Loader size="lg" text="Loading rankings..." />
-      </div>
-    );
-  }
+  // Loading state is now handled in parent component
 
   return (
     <div className="space-y-6">

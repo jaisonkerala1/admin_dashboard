@@ -170,70 +170,91 @@ export const ServiceRequests = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-          <StatCard
-            title="Total"
-            value={stats.total}
-            icon={Users}
-          />
-          <StatCard
-            title="Pending"
-            value={stats.pending}
-            icon={Clock}
-          />
-          <StatCard
-            title="Confirmed"
-            value={stats.confirmed}
-            icon={CheckCircle2}
-          />
-          <StatCard
-            title="In Progress"
-            value={stats.inProgress}
-            icon={Activity}
-          />
-          <StatCard
-            title="Completed"
-            value={stats.completed}
-            icon={CheckCircle2}
-          />
-          <StatCard
-            title="Revenue"
-            value={formatCurrency(stats.totalRevenue)}
-            icon={DollarSign}
-          />
-        </div>
+        {isLoading ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            <StatCard
+              title="Total"
+              value={stats.total}
+              icon={Users}
+            />
+            <StatCard
+              title="Pending"
+              value={stats.pending}
+              icon={Clock}
+            />
+            <StatCard
+              title="Confirmed"
+              value={stats.confirmed}
+              icon={CheckCircle2}
+            />
+            <StatCard
+              title="In Progress"
+              value={stats.inProgress}
+              icon={Activity}
+            />
+            <StatCard
+              title="Completed"
+              value={stats.completed}
+              icon={CheckCircle2}
+            />
+            <StatCard
+              title="Revenue"
+              value={formatCurrency(stats.totalRevenue)}
+              icon={DollarSign}
+            />
+          </div>
+        )}
       </div>
 
       {/* Filter Tabs */}
-      <div className="mb-6 border-b border-gray-200">
-        <div className="flex gap-8 overflow-x-auto">
-          {[
-            { key: 'all', label: 'All', count: stats.total },
-            { key: 'pending', label: 'Pending', count: stats.pending },
-            { key: 'confirmed', label: 'Confirmed', count: stats.confirmed },
-            { key: 'inProgress', label: 'In Progress', count: stats.inProgress },
-            { key: 'completed', label: 'Completed', count: stats.completed },
-            { key: 'cancelled', label: 'Cancelled', count: stats.cancelled },
-          ].map(({ key, label, count }) => (
-            <button
-              key={key}
-              onClick={() => dispatch(setFilter(key as ServiceRequestFilter))}
-              className={`whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                filter === key
-                  ? 'border-blue-600 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              {label}
-              <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${
-                filter === key ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
-              }`}>
-                {count}
-              </span>
-            </button>
-          ))}
+      {isLoading ? (
+        <div className="mb-6 border-b border-gray-200">
+          <div className="flex gap-8 overflow-x-auto pb-3">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <SkeletonBox key={i} width={100} height={20} radius={4} className="shimmer" />
+            ))}
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="mb-6 border-b border-gray-200">
+          <div className="flex gap-8 overflow-x-auto">
+            {[
+              { key: 'all', label: 'All', count: stats.total },
+              { key: 'pending', label: 'Pending', count: stats.pending },
+              { key: 'confirmed', label: 'Confirmed', count: stats.confirmed },
+              { key: 'inProgress', label: 'In Progress', count: stats.inProgress },
+              { key: 'completed', label: 'Completed', count: stats.completed },
+              { key: 'cancelled', label: 'Cancelled', count: stats.cancelled },
+            ].map(({ key, label, count }) => (
+              <button
+                key={key}
+                onClick={() => dispatch(setFilter(key as ServiceRequestFilter))}
+                className={`whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                  filter === key
+                    ? 'border-blue-600 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                {label}
+                <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${
+                  filter === key ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
+                }`}>
+                  {count}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Selection Controls */}
       <Card>
@@ -266,8 +287,35 @@ export const ServiceRequests = () => {
 
       {/* Loading State */}
       {isLoading ? (
-        <div className="py-12">
-          <Loader size="lg" text="Loading service requests..." />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <SkeletonCard key={i}>
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <SkeletonCircle size={40} />
+                  <div>
+                    <SkeletonBox width={120} height={14} radius={4} className="mb-1" />
+                    <SkeletonBox width={80} height={12} radius={4} />
+                  </div>
+                </div>
+                <SkeletonBox width={70} height={20} radius={12} />
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <SkeletonBox width={60} height={12} radius={4} />
+                  <SkeletonBox width={80} height={12} radius={4} />
+                </div>
+                <div className="flex justify-between">
+                  <SkeletonBox width={80} height={12} radius={4} />
+                  <SkeletonBox width={100} height={12} radius={4} />
+                </div>
+                <div className="flex justify-between">
+                  <SkeletonBox width={70} height={12} radius={4} />
+                  <SkeletonBox width={90} height={12} radius={4} />
+                </div>
+              </div>
+            </SkeletonCard>
+          ))}
         </div>
       ) : filteredRequests.length === 0 ? (
         <Card>
