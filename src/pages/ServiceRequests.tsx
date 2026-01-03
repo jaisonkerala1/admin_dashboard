@@ -53,7 +53,7 @@ export const ServiceRequests = () => {
     stats 
   } = useSelector((state: RootState) => state.poojaRequests);
 
-  const handleServiceClick = (serviceId: string | null | undefined, e: React.MouseEvent) => {
+  const handleServiceClick = (requestId: string, serviceId: string | null | undefined, e: React.MouseEvent) => {
     // Prevent navigation if clicking on checkbox, action buttons, or links
     const target = e.target as HTMLElement;
     if (
@@ -65,8 +65,11 @@ export const ServiceRequests = () => {
       return;
     }
     
+    // Navigate to service detail if serviceId exists, otherwise navigate to service request detail
     if (serviceId) {
       navigate(`${ROUTES.SERVICES}/${serviceId}`);
+    } else {
+      navigate(`${ROUTES.SERVICE_REQUESTS}/${requestId}`);
     }
   };
 
@@ -309,7 +312,7 @@ export const ServiceRequests = () => {
                     <tr 
                       key={request._id} 
                       className="hover:bg-gray-50 transition-colors cursor-pointer"
-                      onClick={(e) => handleServiceClick(request.serviceId, e)}
+                      onClick={(e) => handleServiceClick(request._id, request.serviceId, e)}
                     >
                       <td className="px-4 py-4">
                         <input
@@ -397,7 +400,7 @@ export const ServiceRequests = () => {
                 <div
                   key={request._id}
                   className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50/30 transition-all cursor-pointer"
-                  onClick={(e) => handleServiceClick(request.serviceId, e)}
+                  onClick={(e) => handleServiceClick(request._id, request.serviceId, e)}
                 >
                   <input
                     type="checkbox"
@@ -455,7 +458,7 @@ export const ServiceRequests = () => {
                 <div
                   key={request._id}
                   className="border border-gray-200 rounded-xl bg-white overflow-hidden hover:border-gray-300 active:bg-gray-50 transition-all cursor-pointer"
-                  onClick={(e) => handleServiceClick(request.serviceId, e)}
+                  onClick={(e) => handleServiceClick(request._id, request.serviceId, e)}
                 >
                   {/* Header */}
                   <div className="p-3 border-b border-gray-100">
