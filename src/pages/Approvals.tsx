@@ -20,7 +20,6 @@ import {
 import { Loader, Card } from '@/components/common';
 import { Bell, CheckCircle, UserPlus, Package, Edit, Zap } from 'lucide-react';
 import type { ApprovalRequestType } from '@/types/approval';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { fetchBoostsRequest, approveBoostRequest, rejectBoostRequest } from '@/store/slices/adCentreSlice';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/utils/constants';
