@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   Clock,
   DollarSign,
@@ -41,6 +41,7 @@ const statusConfig = {
 
 export const ServiceRequests = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { 
     requests, 
     isLoading, 
@@ -51,6 +52,23 @@ export const ServiceRequests = () => {
     selectedIds, 
     stats 
   } = useSelector((state: RootState) => state.poojaRequests);
+
+  const handleServiceClick = (serviceId: string | undefined, e: React.MouseEvent) => {
+    // Prevent navigation if clicking on checkbox, action buttons, or links
+    const target = e.target as HTMLElement;
+    if (
+      target.closest('input[type="checkbox"]') ||
+      target.closest('button') ||
+      target.closest('a') ||
+      target.closest('[role="button"]')
+    ) {
+      return;
+    }
+    
+    if (serviceId) {
+      navigate(`${ROUTES.SERVICES}/${serviceId}`);
+    }
+  };
 
   useEffect(() => {
     dispatch(fetchRequestsRequest());
@@ -288,7 +306,11 @@ export const ServiceRequests = () => {
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {paginatedRequests.map((request) => (
-                    <tr key={request._id} className="hover:bg-gray-50 transition-colors">
+                    <tr 
+                      key={request._id} 
+                      className="hover:bg-gray-50 transition-colors cursor-pointer"
+                      onClick={(e) => handleServiceClick(request.serviceId, e)}
+                    >
                       <td className="px-4 py-4">
                         <input
                           type="checkbox"
@@ -374,7 +396,8 @@ export const ServiceRequests = () => {
               {paginatedRequests.map((request) => (
                 <div
                   key={request._id}
-                  className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50/30 transition-all"
+                  className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50/30 transition-all cursor-pointer"
+                  onClick={(e) => handleServiceClick(request.serviceId, e)}
                 >
                   <input
                     type="checkbox"
@@ -431,7 +454,8 @@ export const ServiceRequests = () => {
               {paginatedRequests.map((request) => (
                 <div
                   key={request._id}
-                  className="border border-gray-200 rounded-xl bg-white overflow-hidden hover:border-gray-300 active:bg-gray-50 transition-all"
+                  className="border border-gray-200 rounded-xl bg-white overflow-hidden hover:border-gray-300 active:bg-gray-50 transition-all cursor-pointer"
+                  onClick={(e) => handleServiceClick(request.serviceId, e)}
                 >
                   {/* Header */}
                   <div className="p-3 border-b border-gray-100">
