@@ -13,7 +13,7 @@ import {
   Info
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
-import { Card, Loader, EmptyState, RoundAvatar, PillBadge, ShowEntriesDropdown, StatCard, SearchBar, StatCardSkeleton } from '@/components/common';
+import { Card, EmptyState, RoundAvatar, PillBadge, ShowEntriesDropdown, StatCard, SearchBar, StatCardSkeleton } from '@/components/common';
 import { SkeletonBox, SkeletonCard, SkeletonCircle } from '@/components/common/Skeleton';
 import { LiveStreamViewer } from '@/components/liveStream/LiveStreamViewer';
 import { StreamDetailModal } from '@/components/liveStream/StreamDetailModal';

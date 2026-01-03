@@ -14,7 +14,7 @@ import {
   Reply
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
-import { Card, Loader, EmptyState, RoundAvatar, PillBadge, ShowEntriesDropdown, StatCard, SearchBar, Modal, StatCardSkeleton } from '@/components/common';
+import { Card, EmptyState, RoundAvatar, PillBadge, ShowEntriesDropdown, StatCard, SearchBar, Modal, StatCardSkeleton } from '@/components/common';
 import { SkeletonBox, SkeletonCard, SkeletonCircle } from '@/components/common/Skeleton';
 import { ReviewFormModal } from '@/components/reviews/ReviewFormModal';
 import { ReplyModal } from '@/components/reviews/ReplyModal';
