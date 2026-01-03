@@ -16,6 +16,7 @@ import {
 import { MainLayout } from '@/components/layout';
 import { Card, Loader, EmptyState, RoundAvatar, PillBadge, ShowEntriesDropdown, StatCard, SearchBar } from '@/components/common';
 import { formatCurrency, formatDate } from '@/utils/formatters';
+import { getImageUrl } from '@/utils/helpers';
 import { RootState } from '@/store';
 import {
   fetchRequestsRequest,
@@ -241,9 +242,9 @@ export const ServiceRequests = () => {
         </div>
       </div>
 
+      {/* Selection Controls */}
       <Card>
-        {/* Table Controls */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-3">
             <input
               type="checkbox"
@@ -268,281 +269,165 @@ export const ServiceRequests = () => {
             onChange={(value) => dispatch(setEntriesPerPage(value))}
           />
         </div>
+      </Card>
 
-        {/* Loading State */}
-        {isLoading ? (
-          <div className="py-12">
-            <Loader size="lg" text="Loading service requests..." />
-          </div>
-        ) : filteredRequests.length === 0 ? (
+      {/* Loading State */}
+      {isLoading ? (
+        <div className="py-12">
+          <Loader size="lg" text="Loading service requests..." />
+        </div>
+      ) : filteredRequests.length === 0 ? (
+        <Card>
           <EmptyState
             icon={AlertCircle}
             title="No service requests found"
             description="No service requests match your current filters"
           />
-        ) : (
-          <>
-            {/* Desktop Table */}
-            <div className="hidden lg:block overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50 border-y border-gray-200">
-                  <tr>
-                    <th className="w-12 px-4 py-3">
-                      <input
-                        type="checkbox"
-                        checked={isAllSelected}
-                        ref={input => {
-                          if (input) input.indeterminate = isSomeSelected;
-                        }}
-                        onChange={(e) => handleSelectAll(e.target.checked)}
-                        className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                      />
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Customer</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Service</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Astrologer</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Requested</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Price</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {paginatedRequests.map((request) => (
-                    <tr 
-                      key={request._id} 
-                      className="hover:bg-gray-50 transition-colors cursor-pointer"
-                      onClick={(e) => handleServiceClick(request._id, request.serviceId, e)}
-                    >
-                      <td className="px-4 py-4">
+        </Card>
+      ) : (
+        <>
+          {/* Service Request Cards - Ad Centre Style */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {paginatedRequests.map((request) => (
+                <div
+                  key={request._id}
+                  onClick={(e) => handleServiceClick(request._id, request.serviceId, e)}
+                  className="cursor-pointer"
+                >
+                  <Card className="hover:shadow-md transition-all h-full">
+                    {/* Header with Checkbox and Status */}
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
                         <input
                           type="checkbox"
                           checked={selectedIds.has(request._id)}
-                          onChange={() => handleSelectOne(request._id)}
-                          className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          onChange={(e) => {
+                            e.stopPropagation();
+                            handleSelectOne(request._id);
+                          }}
+                          onClick={(e) => e.stopPropagation()}
+                          className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 flex-shrink-0 mt-0.5"
                         />
-                      </td>
-                      <td className="px-4 py-4">
-                        <div>
-                          <p className="font-medium text-gray-900">{request.customerName}</p>
-                          <p className="text-sm text-gray-500">{request.customerPhone}</p>
-                        </div>
-                      </td>
-                      <td className="px-4 py-4">
-                        <div>
-                          <Link
-                            to={request.serviceId ? `${ROUTES.SERVICES}/${request.serviceId}` : '#'}
-                            className="font-medium text-gray-900 hover:text-blue-600 transition-colors"
-                          >
-                            {request.serviceName}
-                          </Link>
-                          <p className="text-xs text-gray-500">{request.serviceCategory}</p>
-                        </div>
-                      </td>
-                      <td className="px-4 py-4">
-                        {request.astrologerId ? (
-                          <Link 
-                            to={`${ROUTES.ASTROLOGERS}/${request.astrologerId._id}`}
-                            className="flex items-center gap-3 hover:opacity-80 transition-opacity"
-                          >
-                            <RoundAvatar
-                              src={request.astrologerId.profilePicture}
-                              size="sm"
-                              name={request.astrologerId.name}
-                              isOnline={false}
+                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                          {request.astrologerId?.profilePicture ? (
+                            <img
+                              src={getImageUrl(request.astrologerId.profilePicture) || ''}
+                              alt={request.astrologerId.name}
+                              className="w-10 h-10 rounded-full object-cover border border-gray-200 flex-shrink-0"
+                              onError={(e) => {
+                                e.currentTarget.style.display = 'none';
+                                const fallback = e.currentTarget.nextElementSibling;
+                                if (fallback) {
+                                  (fallback as HTMLElement).style.display = 'flex';
+                                }
+                              }}
                             />
-                            <span className="font-medium text-gray-900 hover:text-blue-600">
-                              {request.astrologerId.name}
+                          ) : null}
+                          <div
+                            className={`w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200 flex-shrink-0 ${request.astrologerId?.profilePicture ? 'hidden' : ''}`}
+                          >
+                            <span className="text-gray-600 font-semibold text-sm">
+                              {request.astrologerId?.name?.charAt(0).toUpperCase() || request.customerName?.charAt(0).toUpperCase() || 'U'}
                             </span>
-                          </Link>
-                        ) : (
-                          <span className="text-gray-400 text-sm">Unassigned</span>
-                        )}
-                      </td>
-                      <td className="px-4 py-4">
-                        <div>
-                          <p className="text-sm font-medium text-gray-900">
-                            {formatDate(request.requestedDate)}
-                          </p>
-                          <p className="text-xs text-gray-500">{request.requestedTime}</p>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-gray-900 text-sm truncate">
+                              {request.customerName || 'Unknown Customer'}
+                            </h3>
+                            <p className="text-xs text-gray-500 truncate">{request.customerPhone || 'No phone'}</p>
+                          </div>
                         </div>
-                      </td>
-                      <td className="px-4 py-4 text-sm font-medium text-gray-900">
-                        {formatCurrency(request.price)}
-                      </td>
-                      <td className="px-4 py-4">{getStatusBadge(request.status)}</td>
-                      <td className="px-4 py-4">
-                        <div className="flex items-center gap-2">
-                          <Link
-                            to={`${ROUTES.SERVICE_REQUESTS}/${request._id}`}
-                            className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                            title="View Details"
-                          >
-                            <Eye className="w-4 h-4" />
-                          </Link>
-                          <button
-                            className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                            title="Delete"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Tablet View */}
-            <div className="hidden md:block lg:hidden space-y-3">
-              {paginatedRequests.map((request) => (
-                <div
-                  key={request._id}
-                  className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50/30 transition-all cursor-pointer"
-                  onClick={(e) => handleServiceClick(request._id, request.serviceId, e)}
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedIds.has(request._id)}
-                    onChange={() => handleSelectOne(request._id)}
-                    className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-3 mb-2">
-                      <p className="font-semibold text-gray-900">{request.customerName}</p>
-                      {request.astrologerId && (
-                        <Link 
-                          to={`${ROUTES.ASTROLOGERS}/${request.astrologerId._id}`}
-                          className="flex items-center gap-2 hover:opacity-80"
-                        >
-                          <RoundAvatar
-                            src={request.astrologerId.profilePicture}
-                            name={request.astrologerId.name}
-                            size="sm"
-                            isOnline={false}
-                          />
-                          <span className="text-sm text-gray-600 hover:text-blue-600">
-                            {request.astrologerId.name}
-                          </span>
-                        </Link>
-                      )}
-                    </div>
-                    <div className="flex flex-wrap items-center gap-3 text-sm">
-                      <Link
-                        to={request.serviceId ? `${ROUTES.SERVICES}/${request.serviceId}` : '#'}
-                        className="text-gray-900 hover:text-blue-600 font-medium"
-                      >
-                        {request.serviceName}
-                      </Link>
-                      <span className="text-gray-600">{formatDate(request.requestedDate)}</span>
-                      <span className="font-semibold text-gray-900">
-                        {formatCurrency(request.price)}
-                      </span>
+                      </div>
                       {getStatusBadge(request.status)}
                     </div>
-                  </div>
-                  <Link
-                    to={`${ROUTES.SERVICE_REQUESTS}/${request._id}`}
-                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
-                  >
-                    <Eye className="w-4 h-4" />
-                  </Link>
-                </div>
-              ))}
-            </div>
 
-            {/* Mobile View - Optimized Mobile-First Design */}
-            <div className="md:hidden space-y-3">
-              {paginatedRequests.map((request) => (
-                <div
-                  key={request._id}
-                  className="border border-gray-200 rounded-xl bg-white overflow-hidden hover:border-gray-300 active:bg-gray-50 transition-all cursor-pointer"
-                  onClick={(e) => handleServiceClick(request._id, request.serviceId, e)}
-                >
-                  {/* Header */}
-                  <div className="p-3 border-b border-gray-100">
-                    <div className="flex items-start gap-3">
-                      <input
-                        type="checkbox"
-                        checked={selectedIds.has(request._id)}
-                        onChange={() => handleSelectOne(request._id)}
-                        className="mt-1 w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-2 mb-2">
-                          <div className="flex-1 min-w-0">
-                            <p className="font-semibold text-base text-gray-900 truncate">{request.customerName}</p>
-                            <p className="text-xs text-gray-500 mt-0.5">{request.customerPhone}</p>
-                          </div>
-                          {getStatusBadge(request.status)}
-                        </div>
-                        
-                        {/* Service Info */}
-                        <Link
-                          to={request.serviceId ? `${ROUTES.SERVICES}/${request.serviceId}` : '#'}
-                          className="block mb-3 p-2 -mx-2 rounded-lg hover:bg-gray-50 active:bg-gray-100 transition-colors"
-                        >
-                          <p className="text-xs text-gray-500 mb-0.5">Service</p>
-                          <p className="font-medium text-sm text-gray-900 truncate">{request.serviceName}</p>
-                          <p className="text-xs text-gray-500 mt-0.5">{request.serviceCategory}</p>
-                        </Link>
-                        
-                        {/* Astrologer Info */}
-                        {request.astrologerId && (
-                          <Link 
-                            to={`${ROUTES.ASTROLOGERS}/${request.astrologerId._id}`}
-                            className="flex items-center gap-2 p-2 -mx-2 rounded-lg hover:bg-gray-50 active:bg-gray-100 transition-colors"
-                          >
-                            <RoundAvatar
-                              src={request.astrologerId.profilePicture}
-                              size="sm"
-                              name={request.astrologerId.name}
-                              isOnline={false}
-                              className="flex-shrink-0"
-                            />
-                            <div className="flex-1 min-w-0">
-                              <p className="text-xs text-gray-500">Astrologer</p>
-                              <p className="text-sm font-medium text-gray-900 truncate">
-                                {request.astrologerId.name}
-                              </p>
-                            </div>
-                          </Link>
+                    {/* Service Info */}
+                    <div className="mb-4 pb-4 border-b border-gray-100">
+                      <Link
+                        to={request.serviceId ? `${ROUTES.SERVICES}/${request.serviceId}` : '#'}
+                        onClick={(e) => e.stopPropagation()}
+                        className="block"
+                      >
+                        <p className="text-xs text-gray-500 mb-1">Service</p>
+                        <p className="font-medium text-sm text-gray-900 truncate">{request.serviceName || 'N/A'}</p>
+                        {request.serviceCategory && (
+                          <p className="text-xs text-gray-500 mt-0.5 truncate">{request.serviceCategory}</p>
                         )}
-                      </div>
+                      </Link>
                     </div>
-                  </div>
 
-                  {/* Details Grid */}
-                  <div className="p-3 bg-gray-50/30">
-                    <div className="grid grid-cols-2 gap-3 mb-3">
-                      <div className="bg-white p-2.5 rounded-lg border border-gray-100">
-                        <p className="text-gray-500 text-xs mb-1">Requested</p>
-                        <p className="font-semibold text-sm text-gray-900">{formatDate(request.requestedDate)}</p>
-                        <p className="text-xs text-gray-500 mt-0.5">{request.requestedTime}</p>
+                    {/* Astrologer Info */}
+                    {request.astrologerId && (
+                      <div className="mb-4 pb-4 border-b border-gray-100">
+                        <Link
+                          to={`${ROUTES.ASTROLOGERS}/${request.astrologerId._id}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="flex items-center gap-2"
+                        >
+                          <RoundAvatar
+                            src={getImageUrl(request.astrologerId.profilePicture)}
+                            size="sm"
+                            name={request.astrologerId.name}
+                            isOnline={false}
+                            className="flex-shrink-0"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs text-gray-500">Astrologer</p>
+                            <p className="text-sm font-medium text-gray-900 truncate">
+                              {request.astrologerId.name}
+                            </p>
+                          </div>
+                        </Link>
                       </div>
-                      <div className="bg-white p-2.5 rounded-lg border border-gray-100">
-                        <p className="text-gray-500 text-xs mb-1">Price</p>
-                        <p className="font-semibold text-base text-gray-900">{formatCurrency(request.price)}</p>
+                    )}
+
+                    {/* Details */}
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-500">Price:</span>
+                        <span className="font-medium text-gray-900">{formatCurrency(request.price)}</span>
                       </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-500">Requested:</span>
+                        <span className="font-medium text-gray-900">{formatDate(request.requestedDate)}</span>
+                      </div>
+                      {request.requestedTime && (
+                        <div className="flex justify-between text-xs">
+                          <span className="text-gray-500">Time:</span>
+                          <span className="font-medium text-gray-700">{request.requestedTime}</span>
+                        </div>
+                      )}
                     </div>
-                    
-                    {/* Footer Action */}
-                    <Link
-                      to={`${ROUTES.SERVICE_REQUESTS}/${request._id}`}
-                      className="flex items-center justify-center gap-2 w-full px-4 py-2.5 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 active:bg-blue-200 rounded-lg transition-colors touch-manipulation"
-                    >
-                      <Eye className="w-4 h-4" />
-                      View Details
-                    </Link>
-                  </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex gap-2 mt-4 pt-4 border-t border-gray-100">
+                      <Link
+                        to={`${ROUTES.SERVICE_REQUESTS}/${request._id}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="flex-1 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium transition-colors text-center"
+                      >
+                        View Details
+                      </Link>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // Delete handler can be added here
+                        }}
+                        className="px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium transition-colors"
+                        title="Delete"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </Card>
                 </div>
               ))}
             </div>
 
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-gray-200">
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <Card>
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                 <p className="text-sm text-gray-600">
                   Showing {startIndex + 1}-{Math.min(endIndex, filteredRequests.length)} of {filteredRequests.length} requests
                 </p>
@@ -584,10 +469,10 @@ export const ServiceRequests = () => {
                   </button>
                 </div>
               </div>
-            )}
-          </>
-        )}
-      </Card>
+            </Card>
+          )}
+        </>
+      )}
     </MainLayout>
   );
 };
