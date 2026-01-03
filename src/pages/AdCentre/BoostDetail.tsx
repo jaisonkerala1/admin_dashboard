@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { format } from 'date-fns';
 import { 
   ArrowLeft,
   Zap,
@@ -16,7 +17,7 @@ import { MainLayout } from '@/components/layout';
 import { Card, Avatar, SkeletonBox } from '@/components/common';
 import { adCentreApi } from '@/api/adCentre';
 import { CountdownTimer, BoostProgressBar } from '@/components/common';
-import { formatDateTime } from '@/utils/formatters';
+import { formatDateTime, formatTimeBetween } from '@/utils/formatters';
 import { useToastContext } from '@/contexts/ToastContext';
 import { ROUTES } from '@/utils/constants';
 import { useAppDispatch } from '@/store/hooks';
@@ -320,6 +321,146 @@ export const BoostDetail = () => {
                     />
                   </div>
                 )}
+              </div>
+            </Card>
+
+            {/* Timeline */}
+            <Card className="p-6">
+              <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-6">
+                Timeline
+              </h3>
+              <div className="relative">
+                {(() => {
+                  // Build timeline events array in chronological order
+                  const timelineEvents = [
+                    {
+                      label: 'Boost Created',
+                      description: 'The boost request has been created',
+                      timestamp: boost.createdAt,
+                      iconColor: 'bg-blue-600',
+                      isActive: false,
+                    },
+                    boost.approvedAt && {
+                      label: 'Boost Approved',
+                      description: 'The boost has been approved and activated',
+                      timestamp: boost.approvedAt,
+                      iconColor: 'bg-green-500',
+                      isActive: boost.status === 'active',
+                    },
+                    boost.status === 'active' && !boost.approvedAt && {
+                      label: 'Boost Active',
+                      description: 'The boost is currently active',
+                      timestamp: boost.startDate,
+                      iconColor: 'bg-green-500',
+                      isActive: true,
+                    },
+                    boost.rejectedAt && {
+                      label: 'Boost Rejected',
+                      description: boost.rejectionReason 
+                        ? `The boost has been rejected: ${boost.rejectionReason}`
+                        : 'The boost has been rejected',
+                      timestamp: boost.rejectedAt,
+                      iconColor: 'bg-red-500',
+                      isActive: boost.status === 'rejected',
+                    },
+                    boost.cancelledAt && {
+                      label: 'Boost Cancelled',
+                      description: boost.cancellationReason
+                        ? `The boost has been cancelled: ${boost.cancellationReason}`
+                        : 'The boost has been cancelled',
+                      timestamp: boost.cancelledAt,
+                      iconColor: 'bg-red-500',
+                      isActive: ['cancelled', 'cancelled_by_user', 'cancelled_by_admin'].includes(boost.status),
+                    },
+                    boost.status === 'expired' && {
+                      label: 'Boost Expired',
+                      description: 'The boost has expired',
+                      timestamp: boost.endDate,
+                      iconColor: 'bg-gray-500',
+                      isActive: true,
+                    },
+                  ].filter(Boolean) as Array<{
+                    label: string;
+                    description: string;
+                    timestamp: string;
+                    iconColor: string;
+                    isActive: boolean;
+                  }>;
+
+                  // Sort events by timestamp to ensure chronological order
+                  timelineEvents.sort((a, b) => 
+                    new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+                  );
+
+                  return timelineEvents.map((event, index) => {
+                    const isLast = index === timelineEvents.length - 1;
+                    const hasNext = !isLast;
+                    const previousEvent = index > 0 ? timelineEvents[index - 1] : null;
+                    const timeSincePrevious = previousEvent 
+                      ? formatTimeBetween(previousEvent.timestamp, event.timestamp)
+                      : null;
+                    
+                    return (
+                      <div key={event.label} className="relative">
+                        {/* Vertical line connecting events */}
+                        {hasNext && (
+                          <div className="absolute left-[11px] top-[24px] w-0.5 h-full bg-gray-200" />
+                        )}
+                        
+                        {/* Event content */}
+                        <div className={`relative flex items-start gap-4 pb-6 ${isLast ? 'pb-0' : ''}`}>
+                          {/* Icon */}
+                          <div className="relative z-10 flex-shrink-0">
+                            <div className={`w-6 h-6 rounded-full ${event.iconColor} flex items-center justify-center shadow-md`}>
+                              <div className="w-2.5 h-2.5 rounded-full bg-white" />
+                            </div>
+                          </div>
+                          
+                          {/* Content */}
+                          <div className={`flex-1 pt-0.5 ${event.isActive ? 'pb-4' : ''}`}>
+                            {/* Active event highlight background */}
+                            {event.isActive && (
+                              <div className={`absolute left-0 right-0 -mx-6 -my-2 px-6 py-3 rounded-lg ${
+                                event.iconColor === 'bg-green-500' 
+                                  ? 'bg-green-50/50 border border-green-100/50' 
+                                  : event.iconColor === 'bg-red-500'
+                                  ? 'bg-red-50/50 border border-red-100/50'
+                                  : 'bg-gray-50/50 border border-gray-100/50'
+                              }`} />
+                            )}
+                            
+                            <div className="relative">
+                              <p className={`font-semibold mb-1 ${
+                                event.isActive 
+                                  ? event.iconColor === 'bg-green-500' 
+                                    ? 'text-green-700' 
+                                    : event.iconColor === 'bg-red-500'
+                                    ? 'text-red-700'
+                                    : 'text-gray-700'
+                                  : 'text-gray-900'
+                              }`}>
+                                {event.description}
+                              </p>
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <p className="text-sm text-gray-500 font-medium">
+                                  {format(new Date(event.timestamp), 'd MMM HH:mm')}
+                                </p>
+                                {timeSincePrevious && (
+                                  <>
+                                    <span className="text-gray-300">•</span>
+                                    <p className="text-xs text-gray-400 font-medium">
+                                      {timeSincePrevious} later
+                                    </p>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  });
+                })()}
               </div>
             </Card>
 
