@@ -21,14 +21,14 @@ export const PageHeader = ({ title, subtitle, backButton, action, className }: P
           {backButton && (
             <button
               onClick={() => navigate(-1)}
-              className="p-2 rounded-lg hover:bg-white transition-colors border border-gray-200"
+              className="p-2 rounded-lg hover:bg-white dark:hover:bg-muted transition-colors border border-gray-200 dark:border-border"
             >
-              <ArrowLeft className="w-5 h-5 text-gray-600" />
+              <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-foreground" />
             </button>
           )}
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
-            {subtitle && <p className="text-gray-500 mt-1">{subtitle}</p>}
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-foreground">{title}</h1>
+            {subtitle && <p className="text-gray-500 dark:text-muted-foreground mt-1">{subtitle}</p>}
           </div>
         </div>
         {action && <div>{action}</div>}

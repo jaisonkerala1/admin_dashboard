@@ -18,7 +18,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-background">
       {/* Desktop: always open via CSS (lg:translate-x-0), Mobile: controlled by state */}
       <Sidebar 
         isOpen={isSidebarOpen} 

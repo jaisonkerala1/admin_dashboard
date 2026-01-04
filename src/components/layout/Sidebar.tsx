@@ -80,22 +80,22 @@ export const Sidebar = ({ isOpen = true, onClose }: SidebarProps) => {
       {/* Sidebar */}
       <aside
         className={cn(
-          'flex flex-col w-64 bg-white border-r border-gray-200 h-screen fixed left-0 top-0 z-50 transition-transform duration-300 ease-in-out',
+          'flex flex-col w-64 bg-white dark:bg-card border-r border-gray-200 dark:border-border h-screen fixed left-0 top-0 z-50 transition-transform duration-300 ease-in-out',
           'lg:translate-x-0',
           isOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >
         {/* Logo */}
-        <div className="flex items-center gap-2 h-16 px-6 border-b border-gray-200">
-          <span className="font-bold text-gray-900 text-lg">{APP_NAME}</span>
+        <div className="flex items-center gap-2 h-16 px-6 border-b border-gray-200 dark:border-border">
+          <span className="font-bold text-gray-900 dark:text-foreground text-lg">{APP_NAME}</span>
           <span className="w-1.5 h-1.5 bg-purple-600 rounded-full" />
           {/* Mobile Close Button */}
           {onClose && (
             <button
               onClick={onClose}
-              className="ml-auto lg:hidden p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+              className="ml-auto lg:hidden p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-muted transition-colors"
             >
-              <X className="w-5 h-5 text-gray-600" />
+              <X className="w-5 h-5 text-gray-600 dark:text-foreground" />
             </button>
           )}
         </div>
@@ -112,15 +112,15 @@ export const Sidebar = ({ isOpen = true, onClose }: SidebarProps) => {
                   cn(
                     'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all relative',
                     isActive
-                      ? 'bg-purple-50 text-gray-900'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                      ? 'bg-purple-50 dark:bg-primary-500/10 text-gray-900 dark:text-foreground'
+                      : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-gray-50 dark:hover:bg-muted'
                   )
                 }
               >
                 <item.icon
                   className={cn(
                     'w-5 h-5 flex-shrink-0',
-                    'text-gray-600'
+                    'text-gray-600 dark:text-muted-foreground'
                   )}
                 />
                 <span className="flex-1">{item.name}</span>
@@ -142,7 +142,7 @@ export const Sidebar = ({ isOpen = true, onClose }: SidebarProps) => {
         </nav>
 
         {/* Logout */}
-        <div className="p-4 border-t border-gray-200">
+        <div className="p-4 border-t border-gray-200 dark:border-border">
           <button
             onClick={async () => {
               if (isLoggingOut) return; // Prevent multiple clicks
@@ -165,8 +165,8 @@ export const Sidebar = ({ isOpen = true, onClose }: SidebarProps) => {
             className={cn(
               "flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium transition-all",
               isLoggingOut
-                ? "text-gray-400 cursor-not-allowed bg-gray-50"
-                : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                ? "text-gray-400 dark:text-muted-foreground cursor-not-allowed bg-gray-50 dark:bg-muted"
+                : "text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-gray-50 dark:hover:bg-muted"
             )}
           >
             {isLoggingOut ? (

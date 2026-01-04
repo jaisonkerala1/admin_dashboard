@@ -96,12 +96,12 @@ export const SearchBar: React.FC<SearchBarProps> = ({
 
   return (
     <div className={`relative ${className}`}>
-      <div className="relative h-[54px] bg-white rounded-full border border-gray-200/50 shadow-sm transition-all duration-200 hover:shadow-md focus-within:shadow-md focus-within:border-gray-300">
+      <div className="relative h-[54px] bg-white dark:bg-card rounded-full border border-gray-200/50 dark:border-border shadow-sm transition-all duration-200 hover:shadow-md focus-within:shadow-md focus-within:border-gray-300 dark:focus-within:border-border/80">
         {/* Search Icon */}
         <div className="absolute left-4 top-1/2 -translate-y-1/2">
           <Search
             className={`w-5 h-5 transition-colors ${
-              hasValue ? 'text-gray-700' : 'text-gray-400'
+              hasValue ? 'text-gray-700 dark:text-foreground' : 'text-gray-400 dark:text-muted-foreground'
             }`}
           />
         </div>
@@ -113,7 +113,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           onChange={handleChange}
           onKeyDown={onKeyDown}
           placeholder={placeholder}
-          className="w-full h-full pl-12 pr-12 bg-transparent rounded-full text-gray-900 placeholder:text-gray-400 text-[15px] font-medium focus:outline-none focus:ring-0"
+          className="w-full h-full pl-12 pr-12 bg-transparent rounded-full text-gray-900 dark:text-foreground placeholder:text-gray-400 dark:placeholder:text-muted-foreground text-[15px] font-medium focus:outline-none focus:ring-0"
         />
 
         {/* Clear Button */}
@@ -121,10 +121,10 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           <button
             type="button"
             onClick={handleClear}
-            className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full hover:bg-gray-100 transition-colors"
+            className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-muted transition-colors"
             aria-label="Clear search"
           >
-            <X className="w-4 h-4 text-gray-500" />
+            <X className="w-4 h-4 text-gray-500 dark:text-muted-foreground" />
           </button>
         )}
       </div>

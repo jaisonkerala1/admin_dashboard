@@ -31,30 +31,30 @@ export const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-primary-100 dark:from-background dark:to-muted flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Card */}
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+        <div className="bg-white dark:bg-card rounded-2xl shadow-xl p-8 border border-gray-200 dark:border-border">
           {/* Logo */}
           <div className="flex flex-col items-center mb-8">
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center mb-4">
               <Lock className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900">{APP_NAME}</h1>
-            <p className="text-gray-500 mt-1">Sign in to continue</p>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-foreground">{APP_NAME}</h1>
+            <p className="text-gray-500 dark:text-muted-foreground mt-1">Sign in to continue</p>
           </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
-              <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+              <div className="flex items-center gap-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400 text-sm">
                 <AlertCircle className="w-4 h-4 flex-shrink-0" />
                 <span>{error}</span>
               </div>
             )}
 
             <div>
-              <label htmlFor="adminKey" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="adminKey" className="block text-sm font-medium text-gray-700 dark:text-foreground mb-2">
                 Admin Secret Key
               </label>
               <input
@@ -67,7 +67,7 @@ export const Login = () => {
                 required
                 disabled={isLoading}
               />
-              <p className="text-xs text-gray-500 mt-2">
+              <p className="text-xs text-gray-500 dark:text-muted-foreground mt-2">
                 Contact the system administrator if you don't have access
               </p>
             </div>
@@ -82,7 +82,7 @@ export const Login = () => {
           </form>
 
           {/* Footer */}
-          <p className="text-center text-xs text-gray-500 mt-6">
+          <p className="text-center text-xs text-gray-500 dark:text-muted-foreground mt-6">
             Protected admin area. Unauthorized access is prohibited.
           </p>
         </div>

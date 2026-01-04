@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, KeyboardEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Bell, Menu, LogOut, User, Settings, ChevronDown, Loader2 } from 'lucide-react';
-import { Avatar, SearchBar } from '@/components/common';
+import { Avatar, SearchBar, ThemeToggle } from '@/components/common';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { useToastContext } from '@/contexts/ToastContext';
 import { cn } from '@/utils/helpers';
@@ -96,15 +96,15 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
   };
 
   return (
-    <header className="h-16 bg-gray-50 border-b border-gray-200 fixed top-0 right-0 left-0 lg:left-64 z-30">
+    <header className="h-16 bg-gray-50 dark:bg-background border-b border-gray-200 dark:border-border fixed top-0 right-0 left-0 lg:left-64 z-30">
       <div className="flex items-center justify-between h-full px-4 lg:px-6">
         {/* Mobile Menu Button */}
         <button
           onClick={onMenuClick}
-          className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors mr-2"
+          className="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-muted transition-colors mr-2"
           aria-label="Toggle menu"
         >
-          <Menu className="w-5 h-5 text-gray-600" />
+          <Menu className="w-5 h-5 text-gray-600 dark:text-foreground" />
         </button>
 
         {/* Search */}
@@ -168,15 +168,18 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
 
         {/* Right section */}
         <div className="flex items-center gap-2 lg:gap-4 ml-2 lg:ml-0">
+          {/* Theme Toggle */}
+          <ThemeToggle />
+
           {/* Notifications */}
           <Link 
             to={ROUTES.NOTIFICATIONS}
-            className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            className="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-muted transition-colors"
             aria-label={`Notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ''}`}
           >
-            <Bell className="w-5 h-5 text-gray-600" />
+            <Bell className="w-5 h-5 text-gray-600 dark:text-foreground" />
             {unreadCount > 0 && (
-              <span className="absolute top-1 right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white ring-2 ring-gray-50" aria-label={`${unreadCount} unread notifications`}>
+              <span className="absolute top-1 right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white ring-2 ring-gray-50 dark:ring-background" aria-label={`${unreadCount} unread notifications`}>
                 {unreadCount > 9 ? '9+' : unreadCount}
               </span>
             )}
@@ -189,57 +192,57 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
               onClick={() => setIsProfileOpen(!isProfileOpen)}
               onKeyDown={handleKeyDown}
               className={cn(
-                "flex items-center gap-2 sm:gap-3 pl-2 lg:pl-4 border-l border-gray-200 hover:bg-gray-100/50 py-1.5 px-2 rounded-lg transition-colors focus:outline-none",
-                isProfileOpen ? "" : "focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+                "flex items-center gap-2 sm:gap-3 pl-2 lg:pl-4 border-l border-gray-200 dark:border-border hover:bg-gray-100/50 dark:hover:bg-muted/50 py-1.5 px-2 rounded-lg transition-colors focus:outline-none",
+                isProfileOpen ? "" : "focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background"
               )}
               aria-label="Admin profile menu"
               aria-expanded={isProfileOpen}
               aria-haspopup="true"
             >
               <div className="text-right hidden lg:block">
-                <p className="text-sm font-semibold text-gray-900 leading-tight">Admin</p>
-                <p className="text-[11px] text-gray-500 font-medium">Platform Manager</p>
+                <p className="text-sm font-semibold text-gray-900 dark:text-foreground leading-tight">Admin</p>
+                <p className="text-[11px] text-gray-500 dark:text-muted-foreground font-medium">Platform Manager</p>
               </div>
               <Avatar name="Admin" size="sm" />
-              <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${isProfileOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
+              <ChevronDown className={`w-4 h-4 text-gray-400 dark:text-muted-foreground transition-transform duration-200 ${isProfileOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
             </button>
 
             {/* Dropdown Menu */}
             {isProfileOpen && (
               <div 
-                className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200"
+                className="absolute right-0 mt-2 w-56 bg-white dark:bg-card rounded-xl shadow-xl border border-gray-100 dark:border-border py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200"
                 role="menu"
                 aria-orientation="vertical"
                 aria-labelledby="profile-menu-button"
               >
-                <div className="px-4 py-3 border-b border-gray-50 mb-1 lg:hidden">
-                  <p className="text-sm font-semibold text-gray-900">Admin</p>
-                  <p className="text-xs text-gray-500">Platform Manager</p>
+                <div className="px-4 py-3 border-b border-gray-50 dark:border-border mb-1 lg:hidden">
+                  <p className="text-sm font-semibold text-gray-900 dark:text-foreground">Admin</p>
+                  <p className="text-xs text-gray-500 dark:text-muted-foreground">Platform Manager</p>
                 </div>
 
                 <Link
                   to="/profile"
-                  className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors focus:outline-none focus:bg-gray-50"
+                  className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-foreground hover:bg-gray-50 dark:hover:bg-muted transition-colors focus:outline-none focus:bg-gray-50 dark:focus:bg-muted"
                   onClick={() => setIsProfileOpen(false)}
                   role="menuitem"
                   tabIndex={0}
                 >
-                  <User className="w-4 h-4 text-gray-400" aria-hidden="true" />
+                  <User className="w-4 h-4 text-gray-400 dark:text-muted-foreground" aria-hidden="true" />
                   Profile Settings
                 </Link>
                 
                 <Link
                   to="/settings"
-                  className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors focus:outline-none focus:bg-gray-50"
+                  className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-foreground hover:bg-gray-50 dark:hover:bg-muted transition-colors focus:outline-none focus:bg-gray-50 dark:focus:bg-muted"
                   onClick={() => setIsProfileOpen(false)}
                   role="menuitem"
                   tabIndex={0}
                 >
-                  <Settings className="w-4 h-4 text-gray-400" aria-hidden="true" />
+                  <Settings className="w-4 h-4 text-gray-400 dark:text-muted-foreground" aria-hidden="true" />
                   System Settings
                 </Link>
 
-                <div className="h-px bg-gray-100 my-1" role="separator" />
+                <div className="h-px bg-gray-100 dark:bg-border my-1" role="separator" />
 
                 <button
                   onClick={handleLogout}

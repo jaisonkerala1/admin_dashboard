@@ -28,4 +28,5 @@ export { VirtualizedList } from './VirtualizedList';
 export { VirtualizedTable } from './VirtualizedTable';
 export { CountdownTimer } from './CountdownTimer';
 export { BoostProgressBar } from './BoostProgressBar';
+export { ThemeToggle } from './ThemeToggle';
 
