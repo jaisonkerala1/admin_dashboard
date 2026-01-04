@@ -77,7 +77,7 @@ export const AstrologerRankings = () => {
       {isLoading ? (
         <div className="space-y-6">
           {/* Category Tabs Skeleton */}
-          <div className="border-b border-gray-200">
+          <div className="border-b border-gray-200 dark:border-border">
             <div className="flex gap-1 overflow-x-auto pb-3">
               {[1, 2, 3, 4].map((i) => (
                 <SkeletonBox key={i} width={120} height={20} radius={4} className="shimmer" />
@@ -86,7 +86,7 @@ export const AstrologerRankings = () => {
           </div>
 
           {/* Category Description Skeleton */}
-          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
             <SkeletonBox width={300} height={16} radius={4} className="shimmer" />
           </div>
 
@@ -102,7 +102,7 @@ export const AstrologerRankings = () => {
           <SkeletonCard>
             <div className="space-y-3">
               {[1, 2, 3, 4, 5].map((i) => (
-                <div key={i} className="flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-lg">
+                <div key={i} className="flex items-center gap-4 p-4 bg-white dark:bg-card border border-gray-200 dark:border-border rounded-lg">
                   <SkeletonCircle size={40} />
                   <SkeletonCircle size={48} />
                   <div className="flex-1 space-y-2">
@@ -122,7 +122,7 @@ export const AstrologerRankings = () => {
       ) : (
         <>
           {/* Category Tabs */}
-          <div className="mb-6 border-b border-gray-200">
+          <div className="mb-6 border-b border-gray-200 dark:border-border">
             <div className="flex gap-1 overflow-x-auto">
               {categories.map((category) => {
                 const Icon = category.icon;
@@ -134,8 +134,8 @@ export const AstrologerRankings = () => {
                     className={cn(
                       'flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-all whitespace-nowrap',
                       isActive
-                        ? 'border-blue-500 text-blue-600'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                        ? 'border-blue-500 dark:border-blue-400 text-blue-600 dark:text-blue-400'
+                        : 'border-transparent text-gray-500 dark:text-muted-foreground hover:text-gray-700 dark:hover:text-foreground hover:border-gray-300 dark:hover:border-border'
                     )}
                   >
                     <Icon className="w-4 h-4" />
@@ -148,8 +148,8 @@ export const AstrologerRankings = () => {
 
           {/* Category Description */}
           {activeCategoryData && (
-            <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-sm text-blue-900">
+            <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+              <p className="text-sm text-blue-900 dark:text-blue-300">
                 <span className="font-semibold">{activeCategoryData.label}:</span>{' '}
                 {activeCategoryData.description}
               </p>

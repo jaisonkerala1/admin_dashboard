@@ -48,14 +48,14 @@ export const RankingCard = ({
   return (
     <div
       className={cn(
-        'flex items-center gap-4 p-4 bg-white border rounded-lg transition-all',
-        isSelected ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300',
+        'flex items-center gap-4 p-4 bg-white dark:bg-card border rounded-lg transition-all',
+        isSelected ? 'border-blue-500 dark:border-primary-500 bg-blue-50 dark:bg-primary-900/20' : 'border-gray-200 dark:border-border hover:border-gray-300 dark:hover:border-border/80',
         astrologer.isHidden && 'opacity-50'
       )}
     >
       {/* Drag Handle */}
       {isDraggable && (
-        <div className="cursor-move text-gray-400 hover:text-gray-600">
+        <div className="cursor-move text-gray-400 dark:text-muted-foreground hover:text-gray-600 dark:hover:text-foreground">
           <GripVertical className="w-5 h-5" />
         </div>
       )}
@@ -66,12 +66,12 @@ export const RankingCard = ({
           type="checkbox"
           checked={isSelected}
           onChange={() => onSelect(astrologer.astrologerId)}
-          className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+          className="w-4 h-4 text-blue-600 border-gray-300 dark:border-border rounded focus:ring-blue-500"
         />
       )}
 
       {/* Rank Badge */}
-      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center font-bold text-gray-700">
+      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 dark:bg-muted flex items-center justify-center font-bold text-gray-700 dark:text-foreground">
         {rank}
       </div>
 
@@ -85,17 +85,17 @@ export const RankingCard = ({
       {/* Info */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
-          <h3 className="font-semibold text-gray-900 truncate">{astrologer.name}</h3>
+          <h3 className="font-semibold text-gray-900 dark:text-foreground truncate">{astrologer.name}</h3>
           {astrologer.isPinned && (
-            <Pin className="w-4 h-4 text-amber-600 fill-amber-600" />
+            <Pin className="w-4 h-4 text-amber-600 dark:text-amber-400 fill-amber-600 dark:fill-amber-400" />
           )}
           {astrologer.isHidden && (
-            <EyeOff className="w-4 h-4 text-gray-400" />
+            <EyeOff className="w-4 h-4 text-gray-400 dark:text-muted-foreground" />
           )}
         </div>
-        <p className="text-sm text-gray-600">{getScoreDisplay()}</p>
+        <p className="text-sm text-gray-600 dark:text-muted-foreground">{getScoreDisplay()}</p>
         {astrologer.specialization && astrologer.specialization.length > 0 && (
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-gray-500 dark:text-muted-foreground mt-1">
             {astrologer.specialization.slice(0, 2).join(', ')}
           </p>
         )}
@@ -106,7 +106,7 @@ export const RankingCard = ({
         {astrologer.isPinned ? (
           <button
             onClick={() => onUnpin(astrologer.astrologerId)}
-            className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
+            className="p-2 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-lg transition-colors"
             title="Unpin"
           >
             <Pin className="w-4 h-4 fill-current" />
@@ -114,7 +114,7 @@ export const RankingCard = ({
         ) : (
           <button
             onClick={() => onPin(astrologer.astrologerId)}
-            className="p-2 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
+            className="p-2 text-gray-400 dark:text-muted-foreground hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-lg transition-colors"
             title="Pin to top"
           >
             <Pin className="w-4 h-4" />
@@ -123,7 +123,7 @@ export const RankingCard = ({
         {astrologer.isHidden ? (
           <button
             onClick={() => onUnhide(astrologer.astrologerId)}
-            className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+            className="p-2 text-gray-400 dark:text-muted-foreground hover:text-green-600 dark:hover:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-colors"
             title="Show"
           >
             <Eye className="w-4 h-4" />
@@ -131,7 +131,7 @@ export const RankingCard = ({
         ) : (
           <button
             onClick={() => onHide(astrologer.astrologerId)}
-            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+            className="p-2 text-gray-400 dark:text-muted-foreground hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
             title="Hide from users"
           >
             <EyeOff className="w-4 h-4" />

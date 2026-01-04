@@ -229,7 +229,7 @@ export const AdCentre = () => {
               <button
                 onClick={handleSyncExpiry}
                 disabled={isProcessing}
-                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-card border border-gray-300 dark:border-border text-gray-700 dark:text-foreground rounded-lg hover:bg-gray-50 dark:hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
               >
                 <RefreshCw className={`w-4 h-4 ${isProcessing ? 'animate-spin' : ''}`} />
                 Sync Expiry
@@ -237,7 +237,7 @@ export const AdCentre = () => {
               <button
                 onClick={() => setShowCreateModal(true)}
                 disabled={isProcessing}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+                className="flex items-center gap-2 px-4 py-2 bg-gray-900 dark:bg-primary-600 text-white rounded-lg hover:bg-gray-800 dark:hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
               >
                 <Plus className="w-4 h-4" />
                 Create Boost
@@ -309,7 +309,7 @@ export const AdCentre = () => {
           <Card>
             <div className="space-y-4">
               {/* Status Filter Tabs - Dashboard Style */}
-              <div className="border-b border-gray-200">
+              <div className="border-b border-gray-200 dark:border-border">
                 <div className="flex gap-6 overflow-x-auto">
                   {statusOptions.map((option) => (
                     <button
@@ -317,8 +317,8 @@ export const AdCentre = () => {
                       onClick={() => handleFilterChange(option.value)}
                       className={`pb-3 px-1 border-b-2 whitespace-nowrap transition-colors ${
                         filters.status === option.value
-                          ? 'border-gray-900 text-gray-900 font-semibold'
-                          : 'border-transparent text-gray-500 hover:text-gray-700'
+                          ? 'border-gray-900 dark:border-primary-500 text-gray-900 dark:text-primary-400 font-semibold'
+                          : 'border-transparent text-gray-500 dark:text-muted-foreground hover:text-gray-700 dark:hover:text-foreground'
                       }`}
                     >
                       {option.label}
@@ -332,12 +332,12 @@ export const AdCentre = () => {
                 {/* Search Bar - Universal Search Style (Small) */}
                 <div className="flex-1 max-w-md">
                   <div className="relative">
-                    <div className="relative h-[44px] bg-white rounded-full border border-gray-200/50 shadow-sm transition-all duration-200 hover:shadow-md focus-within:shadow-md focus-within:border-gray-300">
+                    <div className="relative h-[44px] bg-white dark:bg-card rounded-full border border-gray-200/50 dark:border-border shadow-sm transition-all duration-200 hover:shadow-md focus-within:shadow-md focus-within:border-gray-300 dark:focus-within:border-primary-500">
                       {/* Search Icon */}
                       <div className="absolute left-4 top-1/2 -translate-y-1/2">
                         <Search
                           className={`w-4 h-4 transition-colors ${
-                            filters.search ? 'text-gray-700' : 'text-gray-400'
+                            filters.search ? 'text-gray-700 dark:text-foreground' : 'text-gray-400 dark:text-muted-foreground'
                           }`}
                         />
                       </div>
@@ -348,7 +348,7 @@ export const AdCentre = () => {
                         value={filters.search}
                         onChange={(e) => handleSearchChange(e.target.value)}
                         placeholder="Search by astrologer name..."
-                        className="w-full h-full pl-10 pr-10 bg-transparent rounded-full text-gray-900 placeholder:text-gray-400 text-sm font-medium focus:outline-none focus:ring-0"
+                        className="w-full h-full pl-10 pr-10 bg-transparent rounded-full text-gray-900 dark:text-foreground placeholder:text-gray-400 dark:placeholder:text-muted-foreground text-sm font-medium focus:outline-none focus:ring-0"
                       />
 
                       {/* Clear Button */}
@@ -356,10 +356,10 @@ export const AdCentre = () => {
                         <button
                           type="button"
                           onClick={() => handleSearchChange('')}
-                          className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full hover:bg-gray-100 transition-colors"
+                          className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-muted transition-colors"
                           aria-label="Clear search"
                         >
-                          <X className="w-3.5 h-3.5 text-gray-500" />
+                          <X className="w-3.5 h-3.5 text-gray-500 dark:text-muted-foreground" />
                         </button>
                       )}
                     </div>
@@ -381,8 +381,8 @@ export const AdCentre = () => {
                       onClick={() => handleDateRangeChange(option.value)}
                       className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all whitespace-nowrap ${
                         selectedDateRange === option.value
-                          ? 'bg-gray-900 text-white shadow-sm'
-                          : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 hover:border-gray-300'
+                          ? 'bg-gray-900 dark:bg-primary-600 text-white shadow-sm'
+                          : 'bg-white dark:bg-card text-gray-700 dark:text-foreground border border-gray-200 dark:border-border hover:bg-gray-50 dark:hover:bg-muted hover:border-gray-300 dark:hover:border-border/80'
                       }`}
                     >
                       {option.label}
@@ -392,11 +392,11 @@ export const AdCentre = () => {
 
                 {/* Category Filter */}
                 <div className="flex items-center gap-2">
-                  <label className="text-sm font-medium text-gray-700 whitespace-nowrap">Category:</label>
+                  <label className="text-sm font-medium text-gray-700 dark:text-foreground whitespace-nowrap">Category:</label>
                   <select
                     value={selectedCategoryFilter}
                     onChange={(e) => setSelectedCategoryFilter(e.target.value)}
-                    className="px-3 py-1.5 rounded-lg text-sm font-medium border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                    className="px-3 py-1.5 rounded-lg text-sm font-medium border border-gray-200 dark:border-border bg-white dark:bg-card text-gray-700 dark:text-foreground hover:bg-gray-50 dark:hover:bg-muted focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-primary-500 focus:border-transparent"
                   >
                     {categoryOptions.map((option: { value: string; label: string }) => (
                       <option key={option.value} value={option.value}>
@@ -422,17 +422,17 @@ export const AdCentre = () => {
           </div>
         ) : error ? (
           <Card>
-            <div className="flex items-center gap-2 text-gray-700">
-              <XCircle className="w-5 h-5 text-gray-500" />
+            <div className="flex items-center gap-2 text-gray-700 dark:text-foreground">
+              <XCircle className="w-5 h-5 text-gray-500 dark:text-muted-foreground" />
               <span>{error}</span>
             </div>
           </Card>
         ) : boosts.length === 0 ? (
           <Card>
             <div className="text-center py-12">
-              <TrendingUp className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No Boosts Found</h3>
-              <p className="text-gray-500 text-sm">
+              <TrendingUp className="w-12 h-12 text-gray-300 dark:text-muted-foreground/50 mx-auto mb-3" />
+              <h3 className="text-lg font-medium text-gray-900 dark:text-foreground mb-2">No Boosts Found</h3>
+              <p className="text-gray-500 dark:text-muted-foreground text-sm">
                 {filters.status !== 'all'
                   ? `No ${filters.status} boosts found.`
                   : 'No boosts have been requested yet.'}
@@ -454,7 +454,7 @@ export const AdCentre = () => {
                       <img
                         src={getImageUrl(boost.astrologerAvatar) || ''}
                         alt={boost.astrologerName}
-                        className="w-10 h-10 rounded-full object-cover border border-gray-200"
+                        className="w-10 h-10 rounded-full object-cover border border-gray-200 dark:border-border"
                         onError={(e) => {
                           // Hide broken image and show fallback
                           e.currentTarget.style.display = 'none';
@@ -466,15 +466,15 @@ export const AdCentre = () => {
                       />
                     ) : null}
                     <div 
-                      className={`w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200 ${boost.astrologerAvatar ? 'hidden' : ''}`}
+                      className={`w-10 h-10 rounded-full bg-gray-100 dark:bg-muted flex items-center justify-center border border-gray-200 dark:border-border ${boost.astrologerAvatar ? 'hidden' : ''}`}
                     >
-                      <span className="text-gray-600 font-semibold text-sm">
+                      <span className="text-gray-600 dark:text-muted-foreground font-semibold text-sm">
                         {boost.astrologerName.charAt(0).toUpperCase()}
                       </span>
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900 text-sm">{boost.astrologerName}</h3>
-                      <p className="text-xs text-gray-500">{boost.astrologerPhone}</p>
+                      <h3 className="font-semibold text-gray-900 dark:text-foreground text-sm">{boost.astrologerName}</h3>
+                      <p className="text-xs text-gray-500 dark:text-muted-foreground">{boost.astrologerPhone}</p>
                     </div>
                   </div>
                   {getStatusBadge(boost.status)}
@@ -482,28 +482,28 @@ export const AdCentre = () => {
 
                 <div className="space-y-2 mb-4">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-500">Duration:</span>
-                    <span className="font-medium text-gray-900">{boost.durationDays} days</span>
+                    <span className="text-gray-500 dark:text-muted-foreground">Duration:</span>
+                    <span className="font-medium text-gray-900 dark:text-foreground">{boost.durationDays} days</span>
                   </div>
                   {boost.status === 'active' && (
                     <div className="flex justify-between text-sm items-center">
-                      <span className="text-gray-500">Time Remaining:</span>
+                      <span className="text-gray-500 dark:text-muted-foreground">Time Remaining:</span>
                       <CountdownTimer endDate={boost.endDate} className="text-xs font-medium" />
                     </div>
                   )}
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-500">Cost:</span>
-                    <span className="font-medium text-gray-900">
+                    <span className="text-gray-500 dark:text-muted-foreground">Cost:</span>
+                    <span className="font-medium text-gray-900 dark:text-foreground">
                       ₹{boost.totalCost.toFixed(0)}
                     </span>
                   </div>
                   <div className="flex justify-between text-xs">
-                    <span className="text-gray-500">Start:</span>
-                    <span className="font-medium text-gray-700">{formatDateTime(boost.startDate)}</span>
+                    <span className="text-gray-500 dark:text-muted-foreground">Start:</span>
+                    <span className="font-medium text-gray-700 dark:text-foreground">{formatDateTime(boost.startDate)}</span>
                   </div>
                   <div className="flex justify-between text-xs">
-                    <span className="text-gray-500">End:</span>
-                    <span className="font-medium text-gray-700">{formatDateTime(boost.endDate)}</span>
+                    <span className="text-gray-500 dark:text-muted-foreground">End:</span>
+                    <span className="font-medium text-gray-700 dark:text-foreground">{formatDateTime(boost.endDate)}</span>
                   </div>
                   {boost.category && (
                     <div className="pt-2">
@@ -521,7 +521,7 @@ export const AdCentre = () => {
                           };
                           return (
                             <span
-                              className="px-2 py-0.5 bg-purple-50 text-purple-700 rounded-full text-xs font-medium border border-purple-200"
+                              className="px-2 py-0.5 bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full text-xs font-medium border border-purple-200 dark:border-purple-800"
                             >
                               {categoryLabels[boost.category] || ''} {boost.category.charAt(0).toUpperCase() + boost.category.slice(1)}
                             </span>
@@ -542,7 +542,7 @@ export const AdCentre = () => {
         {pagination.pages > 1 && (
           <Card>
             <div className="flex items-center justify-between">
-              <div className="text-sm text-gray-600">
+              <div className="text-sm text-gray-600 dark:text-muted-foreground">
                 Showing {((pagination.page - 1) * pagination.limit) + 1} to{' '}
                 {Math.min(pagination.page * pagination.limit, pagination.total)} of{' '}
                 {pagination.total} results
@@ -551,14 +551,14 @@ export const AdCentre = () => {
                 <button
                   onClick={() => dispatch(setPage(pagination.page - 1))}
                   disabled={pagination.page === 1}
-                  className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-2 border border-gray-300 dark:border-border rounded-lg text-sm font-medium text-gray-700 dark:text-foreground hover:bg-gray-50 dark:hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   Previous
                 </button>
                 <button
                   onClick={() => dispatch(setPage(pagination.page + 1))}
                   disabled={pagination.page >= pagination.pages}
-                  className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-2 border border-gray-300 dark:border-border rounded-lg text-sm font-medium text-gray-700 dark:text-foreground hover:bg-gray-50 dark:hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   Next
                 </button>

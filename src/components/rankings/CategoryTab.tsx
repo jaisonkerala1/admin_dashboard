@@ -152,7 +152,7 @@ export const CategoryTab = ({ category, rankings, stats, isLoading }: CategoryTa
       <div className="flex justify-end">
         <button
           onClick={() => setIsAddModalOpen(true)}
-          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 dark:bg-primary-600 rounded-lg hover:bg-blue-700 dark:hover:bg-primary-700 transition-colors"
         >
           <UserPlus className="w-4 h-4" />
           Add Astrologers
@@ -202,7 +202,7 @@ export const CategoryTab = ({ category, rankings, stats, isLoading }: CategoryTa
         <div className="space-y-3">
           <button
             onClick={() => setShowHidden((v) => !v)}
-            className="text-sm font-medium text-gray-700 hover:text-gray-900"
+            className="text-sm font-medium text-gray-700 dark:text-foreground hover:text-gray-900 dark:hover:text-foreground transition-colors"
           >
             {showHidden ? 'Hide' : 'Show'} hidden astrologers ({hiddenRankings.length})
           </button>

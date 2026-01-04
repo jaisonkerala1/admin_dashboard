@@ -208,9 +208,9 @@ export const BoostDetail = () => {
       <MainLayout>
         <Card>
           <div className="text-center py-12">
-            <Zap className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Boost Not Found</h3>
-            <p className="text-gray-600 mb-6">The boost you're looking for doesn't exist.</p>
+            <Zap className="w-16 h-16 text-gray-300 dark:text-muted-foreground/50 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-foreground mb-2">Boost Not Found</h3>
+            <p className="text-gray-600 dark:text-muted-foreground mb-6">The boost you're looking for doesn't exist.</p>
             <button
               onClick={() => navigate(ROUTES.AD_CENTRE)}
               className="btn btn-primary"
@@ -234,18 +234,18 @@ export const BoostDetail = () => {
         <div className="flex items-center gap-4">
           <button
             onClick={() => navigate(ROUTES.AD_CENTRE)}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-100 dark:hover:bg-muted rounded-lg transition-colors"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-muted-foreground" />
           </button>
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-gray-500 dark:text-muted-foreground">
                 Boost ID: <span className="font-mono">{boost.boostId}</span>
               </span>
               {getStatusBadge(boost.status)}
             </div>
-            <h1 className="text-2xl font-bold text-gray-900">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-foreground">
               Profile Boost - {astrologer?.name || 'Unknown Astrologer'}
             </h1>
           </div>
@@ -258,16 +258,16 @@ export const BoostDetail = () => {
             <Card className="p-6">
               <div className="flex items-start justify-between mb-4">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-foreground mb-2">
                     Boost Information
                   </h3>
-                  <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
-                    <Zap className="w-10 h-10 text-gray-400" />
+                  <div className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-muted rounded-xl">
+                    <Zap className="w-10 h-10 text-gray-400 dark:text-muted-foreground" />
                     <div className="flex-1">
-                      <h4 className="font-semibold text-gray-900">
+                      <h4 className="font-semibold text-gray-900 dark:text-foreground">
                         Profile Boost
                       </h4>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-gray-600 dark:text-muted-foreground">
                         {boost.durationDays} day{boost.durationDays !== 1 ? 's' : ''}
                       </p>
                     </div>
@@ -278,43 +278,43 @@ export const BoostDetail = () => {
 
             {/* Boost Details */}
             <Card className="p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-foreground mb-4">
                 Boost Details
               </h3>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm text-gray-600 mb-1">Status</p>
+                  <p className="text-sm text-gray-600 dark:text-muted-foreground mb-1">Status</p>
                   <div className="mt-1">{getStatusBadge(boost.status)}</div>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600 mb-1">Duration</p>
-                  <p className="font-medium text-gray-900">{boost.durationDays} days</p>
+                  <p className="text-sm text-gray-600 dark:text-muted-foreground mb-1">Duration</p>
+                  <p className="font-medium text-gray-900 dark:text-foreground">{boost.durationDays} days</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600 mb-1">Daily Cost</p>
-                  <p className="font-medium text-gray-900">₹{boost.dailyCost}/day</p>
+                  <p className="text-sm text-gray-600 dark:text-muted-foreground mb-1">Daily Cost</p>
+                  <p className="font-medium text-gray-900 dark:text-foreground">₹{boost.dailyCost}/day</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600 mb-1">Total Cost</p>
-                  <p className="font-medium text-gray-900">₹{boost.totalCost.toFixed(0)}</p>
+                  <p className="text-sm text-gray-600 dark:text-muted-foreground mb-1">Total Cost</p>
+                  <p className="font-medium text-gray-900 dark:text-foreground">₹{boost.totalCost.toFixed(0)}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600 mb-1">Start Date</p>
-                  <p className="font-medium text-gray-900">{formatDateTime(boost.startDate)}</p>
+                  <p className="text-sm text-gray-600 dark:text-muted-foreground mb-1">Start Date</p>
+                  <p className="font-medium text-gray-900 dark:text-foreground">{formatDateTime(boost.startDate)}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600 mb-1">End Date</p>
-                  <p className="font-medium text-gray-900">{formatDateTime(boost.endDate)}</p>
+                  <p className="text-sm text-gray-600 dark:text-muted-foreground mb-1">End Date</p>
+                  <p className="font-medium text-gray-900 dark:text-foreground">{formatDateTime(boost.endDate)}</p>
                 </div>
                 {boost.status === 'active' && (
                   <div className="col-span-2">
-                    <p className="text-sm text-gray-600 mb-2">Time Remaining</p>
+                    <p className="text-sm text-gray-600 dark:text-muted-foreground mb-2">Time Remaining</p>
                     <CountdownTimer endDate={boost.endDate} className="text-lg" />
                   </div>
                 )}
                 {boost.status === 'active' && (
                   <div className="col-span-2">
-                    <p className="text-sm text-gray-600 mb-2">Progress</p>
+                    <p className="text-sm text-gray-600 dark:text-muted-foreground mb-2">Progress</p>
                     <BoostProgressBar
                       startDate={boost.startDate}
                       endDate={boost.endDate}
@@ -322,7 +322,7 @@ export const BoostDetail = () => {
                   </div>
                 )}
                 <div className="col-span-2">
-                  <p className="text-sm text-gray-600 mb-2">Category</p>
+                  <p className="text-sm text-gray-600 dark:text-muted-foreground mb-2">Category</p>
                   <div className="flex flex-wrap gap-2">
                     {(() => {
                       const category = boost.category || 'general';
@@ -338,7 +338,7 @@ export const BoostDetail = () => {
                       };
                       return (
                         <span
-                          className="px-3 py-1.5 bg-purple-50 text-purple-700 rounded-full text-sm font-medium border border-purple-200"
+                          className="px-3 py-1.5 bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full text-sm font-medium border border-purple-200 dark:border-purple-800"
                         >
                           {categoryLabels[category] || category.charAt(0).toUpperCase() + category.slice(1)}
                         </span>
@@ -351,7 +351,7 @@ export const BoostDetail = () => {
 
             {/* Timeline */}
             <Card className="p-6">
-              <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-6">
+              <h3 className="text-sm font-bold text-gray-900 dark:text-foreground uppercase tracking-wider mb-6">
                 Timeline
               </h3>
               <div className="relative">
@@ -429,7 +429,7 @@ export const BoostDetail = () => {
                       <div key={event.label} className="relative">
                         {/* Vertical line connecting events */}
                         {hasNext && (
-                          <div className="absolute left-[11px] top-[24px] w-0.5 h-full bg-gray-200" />
+                          <div className="absolute left-[11px] top-[24px] w-0.5 h-full bg-gray-200 dark:bg-border" />
                         )}
                         
                         {/* Event content */}
@@ -437,7 +437,7 @@ export const BoostDetail = () => {
                           {/* Icon */}
                           <div className="relative z-10 flex-shrink-0">
                             <div className={`w-6 h-6 rounded-full ${event.iconColor} flex items-center justify-center shadow-md`}>
-                              <div className="w-2.5 h-2.5 rounded-full bg-white" />
+                              <div className="w-2.5 h-2.5 rounded-full bg-white dark:bg-card" />
                             </div>
                           </div>
                           
@@ -447,10 +447,10 @@ export const BoostDetail = () => {
                             {event.isActive && (
                               <div className={`absolute left-0 right-0 -mx-6 -my-2 px-6 py-3 rounded-lg ${
                                 event.iconColor === 'bg-green-500' 
-                                  ? 'bg-green-50/50 border border-green-100/50' 
+                                  ? 'bg-green-50/50 dark:bg-green-900/20 border border-green-100/50 dark:border-green-800' 
                                   : event.iconColor === 'bg-red-500'
-                                  ? 'bg-red-50/50 border border-red-100/50'
-                                  : 'bg-gray-50/50 border border-gray-100/50'
+                                  ? 'bg-red-50/50 dark:bg-red-900/20 border border-red-100/50 dark:border-red-800'
+                                  : 'bg-gray-50/50 dark:bg-muted border border-gray-100/50 dark:border-border'
                               }`} />
                             )}
                             
@@ -458,22 +458,22 @@ export const BoostDetail = () => {
                               <p className={`font-semibold mb-1 ${
                                 event.isActive 
                                   ? event.iconColor === 'bg-green-500' 
-                                    ? 'text-green-700' 
+                                    ? 'text-green-700 dark:text-green-400' 
                                     : event.iconColor === 'bg-red-500'
-                                    ? 'text-red-700'
-                                    : 'text-gray-700'
-                                  : 'text-gray-900'
+                                    ? 'text-red-700 dark:text-red-400'
+                                    : 'text-gray-700 dark:text-foreground'
+                                  : 'text-gray-900 dark:text-foreground'
                               }`}>
                                 {event.description}
                               </p>
                               <div className="flex items-center gap-2 flex-wrap">
-                                <p className="text-sm text-gray-500 font-medium">
+                                <p className="text-sm text-gray-500 dark:text-muted-foreground font-medium">
                                   {format(new Date(event.timestamp), 'd MMM HH:mm')}
                                 </p>
                                 {timeSincePrevious && (
                                   <>
-                                    <span className="text-gray-300">•</span>
-                                    <p className="text-xs text-gray-400 font-medium">
+                                    <span className="text-gray-300 dark:text-muted-foreground/50">•</span>
+                                    <p className="text-xs text-gray-400 dark:text-muted-foreground font-medium">
                                       {timeSincePrevious} later
                                     </p>
                                   </>
@@ -492,7 +492,7 @@ export const BoostDetail = () => {
             {/* Admin Actions */}
             {(boost.status === 'pending' || boost.status === 'active') && (
               <Card className="p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-foreground mb-4">
                   Actions
                 </h3>
                 <div className="space-y-2">
@@ -501,14 +501,14 @@ export const BoostDetail = () => {
                       <button
                         onClick={handleApprove}
                         disabled={isProcessing}
-                        className="w-full px-5 py-2.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium transition-all shadow-sm flex items-center justify-center gap-2"
+                        className="w-full px-5 py-2.5 bg-gray-900 dark:bg-primary-600 text-white rounded-lg hover:bg-gray-800 dark:hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium transition-all shadow-sm flex items-center justify-center gap-2"
                       >
                         <CheckCircle className="w-4 h-4" />
                         {isProcessing ? 'Approving...' : 'Approve Boost'}
                       </button>
                       <button
                         onClick={handleReject}
-                        className="w-full px-5 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 text-sm font-medium transition-all"
+                        className="w-full px-5 py-2.5 bg-white dark:bg-card border border-gray-200 dark:border-border text-gray-700 dark:text-foreground rounded-lg hover:bg-gray-50 dark:hover:bg-muted text-sm font-medium transition-all"
                       >
                         Reject Boost
                       </button>
@@ -517,7 +517,7 @@ export const BoostDetail = () => {
                   {boost.status === 'active' && (
                     <button
                       onClick={handleCancel}
-                      className="w-full px-5 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 text-sm font-medium transition-all"
+                      className="w-full px-5 py-2.5 bg-white dark:bg-card border border-gray-200 dark:border-border text-gray-700 dark:text-foreground rounded-lg hover:bg-gray-50 dark:hover:bg-muted text-sm font-medium transition-all"
                     >
                       Cancel Boost
                     </button>
@@ -531,13 +531,13 @@ export const BoostDetail = () => {
           <div className="space-y-4">
             {/* Boost Details */}
             <Card className="p-6">
-              <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">
+              <h3 className="text-sm font-bold text-gray-900 dark:text-foreground uppercase tracking-wider mb-4">
                 Boost Details
               </h3>
               <div className="space-y-5">
                 {/* Status */}
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-tighter mb-2">
+                  <label className="block text-xs font-medium text-gray-400 dark:text-muted-foreground uppercase tracking-tighter mb-2">
                     Status
                   </label>
                   <div>{getStatusBadge(boost.status)}</div>
@@ -545,43 +545,43 @@ export const BoostDetail = () => {
 
                 {/* Total Cost */}
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-tighter mb-2">
+                  <label className="block text-xs font-medium text-gray-400 dark:text-muted-foreground uppercase tracking-tighter mb-2">
                     Total Cost
                   </label>
-                  <div className="flex items-center gap-2 text-sm font-medium text-gray-900">
-                    <DollarSign className="w-4 h-4 text-gray-500" />
+                  <div className="flex items-center gap-2 text-sm font-medium text-gray-900 dark:text-foreground">
+                    <DollarSign className="w-4 h-4 text-gray-500 dark:text-muted-foreground" />
                     ₹{boost.totalCost.toFixed(0)}
                   </div>
                 </div>
 
                 {/* Start Date */}
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-tighter mb-2">
+                  <label className="block text-xs font-medium text-gray-400 dark:text-muted-foreground uppercase tracking-tighter mb-2">
                     Start Date
                   </label>
-                  <div className="flex items-center gap-2 text-sm font-medium text-gray-900">
-                    <Calendar className="w-4 h-4 text-gray-500" />
+                  <div className="flex items-center gap-2 text-sm font-medium text-gray-900 dark:text-foreground">
+                    <Calendar className="w-4 h-4 text-gray-500 dark:text-muted-foreground" />
                     {formatDateTime(boost.startDate)}
                   </div>
                 </div>
 
                 {/* End Date */}
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-tighter mb-2">
+                  <label className="block text-xs font-medium text-gray-400 dark:text-muted-foreground uppercase tracking-tighter mb-2">
                     End Date
                   </label>
-                  <div className="flex items-center gap-2 text-sm font-medium text-gray-900">
-                    <Clock className="w-4 h-4 text-gray-500" />
+                  <div className="flex items-center gap-2 text-sm font-medium text-gray-900 dark:text-foreground">
+                    <Clock className="w-4 h-4 text-gray-500 dark:text-muted-foreground" />
                     {formatDateTime(boost.endDate)}
                   </div>
                 </div>
 
                 {/* Boost ID */}
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-tighter mb-2">
+                  <label className="block text-xs font-medium text-gray-400 dark:text-muted-foreground uppercase tracking-tighter mb-2">
                     Boost ID
                   </label>
-                  <div className="text-sm font-medium text-gray-900 font-mono break-all">
+                  <div className="text-sm font-medium text-gray-900 dark:text-foreground font-mono break-all">
                     {boost.boostId}
                   </div>
                 </div>
@@ -589,11 +589,11 @@ export const BoostDetail = () => {
                 {/* Created At */}
                 {boost.createdAt && (
                   <div>
-                    <label className="block text-xs font-medium text-gray-400 uppercase tracking-tighter mb-2">
+                    <label className="block text-xs font-medium text-gray-400 dark:text-muted-foreground uppercase tracking-tighter mb-2">
                       Created At
                     </label>
-                    <div className="flex items-center gap-2 text-sm font-medium text-gray-900">
-                      <Clock className="w-4 h-4 text-gray-500" />
+                    <div className="flex items-center gap-2 text-sm font-medium text-gray-900 dark:text-foreground">
+                      <Clock className="w-4 h-4 text-gray-500 dark:text-muted-foreground" />
                       {formatDateTime(boost.createdAt)}
                     </div>
                   </div>
@@ -602,11 +602,11 @@ export const BoostDetail = () => {
                 {/* Approved At */}
                 {boost.approvedAt && (
                   <div>
-                    <label className="block text-xs font-medium text-gray-400 uppercase tracking-tighter mb-2">
+                    <label className="block text-xs font-medium text-gray-400 dark:text-muted-foreground uppercase tracking-tighter mb-2">
                       Approved At
                     </label>
-                    <div className="flex items-center gap-2 text-sm font-medium text-gray-900">
-                      <CheckCircle className="w-4 h-4 text-gray-500" />
+                    <div className="flex items-center gap-2 text-sm font-medium text-gray-900 dark:text-foreground">
+                      <CheckCircle className="w-4 h-4 text-gray-500 dark:text-muted-foreground" />
                       {formatDateTime(boost.approvedAt)}
                     </div>
                   </div>
@@ -615,15 +615,15 @@ export const BoostDetail = () => {
                 {/* Rejected At */}
                 {boost.rejectedAt && (
                   <div>
-                    <label className="block text-xs font-medium text-gray-400 uppercase tracking-tighter mb-2">
+                    <label className="block text-xs font-medium text-gray-400 dark:text-muted-foreground uppercase tracking-tighter mb-2">
                       Rejected At
                     </label>
-                    <div className="flex items-center gap-2 text-sm font-medium text-gray-900">
-                      <XCircle className="w-4 h-4 text-gray-500" />
+                    <div className="flex items-center gap-2 text-sm font-medium text-gray-900 dark:text-foreground">
+                      <XCircle className="w-4 h-4 text-gray-500 dark:text-muted-foreground" />
                       {formatDateTime(boost.rejectedAt)}
                     </div>
                     {boost.rejectionReason && (
-                      <p className="text-xs text-gray-600 mt-1">{boost.rejectionReason}</p>
+                      <p className="text-xs text-gray-600 dark:text-muted-foreground mt-1">{boost.rejectionReason}</p>
                     )}
                   </div>
                 )}
@@ -631,15 +631,15 @@ export const BoostDetail = () => {
                 {/* Cancelled At */}
                 {boost.cancelledAt && (
                   <div>
-                    <label className="block text-xs font-medium text-gray-400 uppercase tracking-tighter mb-2">
+                    <label className="block text-xs font-medium text-gray-400 dark:text-muted-foreground uppercase tracking-tighter mb-2">
                       Cancelled At
                     </label>
-                    <div className="flex items-center gap-2 text-sm font-medium text-gray-900">
-                      <XCircle className="w-4 h-4 text-gray-500" />
+                    <div className="flex items-center gap-2 text-sm font-medium text-gray-900 dark:text-foreground">
+                      <XCircle className="w-4 h-4 text-gray-500 dark:text-muted-foreground" />
                       {formatDateTime(boost.cancelledAt)}
                     </div>
                     {boost.cancellationReason && (
-                      <p className="text-xs text-gray-600 mt-1">{boost.cancellationReason}</p>
+                      <p className="text-xs text-gray-600 dark:text-muted-foreground mt-1">{boost.cancellationReason}</p>
                     )}
                   </div>
                 )}
@@ -647,10 +647,10 @@ export const BoostDetail = () => {
                 {/* Created By Admin */}
                 {boost.createdByAdmin && (
                   <div>
-                    <label className="block text-xs font-medium text-gray-400 uppercase tracking-tighter mb-2">
+                    <label className="block text-xs font-medium text-gray-400 dark:text-muted-foreground uppercase tracking-tighter mb-2">
                       Created By
                     </label>
-                    <div className="text-sm font-medium text-gray-900">
+                    <div className="text-sm font-medium text-gray-900 dark:text-foreground">
                       Admin
                     </div>
                   </div>
@@ -661,7 +661,7 @@ export const BoostDetail = () => {
             {/* Astrologer Information */}
             {astrologer && (
               <Card className="p-6">
-                <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">
+                <h3 className="text-sm font-bold text-gray-900 dark:text-foreground uppercase tracking-wider mb-4">
                   Astrologer Information
                 </h3>
                 <div className="space-y-4">
@@ -672,38 +672,38 @@ export const BoostDetail = () => {
                     {astrologer.profilePicture ? (
                       <Avatar src={astrologer.profilePicture} alt={astrologer.name} size="md" />
                     ) : (
-                      <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
-                        <User className="w-5 h-5 text-gray-400" />
+                      <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-muted flex items-center justify-center">
+                        <User className="w-5 h-5 text-gray-400 dark:text-muted-foreground" />
                       </div>
                     )}
                     <div className="flex-1">
-                      <h4 className="font-semibold text-gray-900 group-hover:text-gray-700">{astrologer.name}</h4>
-                      <p className="text-sm text-gray-600">{astrologer.email}</p>
+                      <h4 className="font-semibold text-gray-900 dark:text-foreground group-hover:text-gray-700 dark:group-hover:text-foreground">{astrologer.name}</h4>
+                      <p className="text-sm text-gray-600 dark:text-muted-foreground">{astrologer.email}</p>
                     </div>
                   </Link>
-                  <div className="space-y-3 pt-4 border-t border-gray-100">
+                  <div className="space-y-3 pt-4 border-t border-gray-100 dark:border-border">
                     {astrologer.phone && (
-                      <div className="flex items-center gap-2 text-sm text-gray-700">
-                        <Phone className="w-4 h-4 text-gray-400" />
+                      <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-foreground">
+                        <Phone className="w-4 h-4 text-gray-400 dark:text-muted-foreground" />
                         {astrologer.phone}
                       </div>
                     )}
                     {astrologer.experience && (
-                      <div className="flex items-center gap-2 text-sm text-gray-700">
-                        <TrendingUp className="w-4 h-4 text-gray-400" />
+                      <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-foreground">
+                        <TrendingUp className="w-4 h-4 text-gray-400 dark:text-muted-foreground" />
                         {astrologer.experience} years experience
                       </div>
                     )}
                     {astrologer.ratePerMinute && (
-                      <div className="flex items-center gap-2 text-sm text-gray-700">
-                        <DollarSign className="w-4 h-4 text-gray-400" />
+                      <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-foreground">
+                        <DollarSign className="w-4 h-4 text-gray-400 dark:text-muted-foreground" />
                         ₹{astrologer.ratePerMinute}/min
                       </div>
                     )}
                   </div>
                   <button
                     onClick={() => navigate(`${ROUTES.ASTROLOGERS}/${astrologer.id}`)}
-                    className="w-full mt-4 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 text-sm font-medium transition-all"
+                    className="w-full mt-4 px-4 py-2 bg-white dark:bg-card border border-gray-200 dark:border-border text-gray-700 dark:text-foreground rounded-lg hover:bg-gray-50 dark:hover:bg-muted text-sm font-medium transition-all"
                   >
                     View Profile
                   </button>
@@ -716,17 +716,17 @@ export const BoostDetail = () => {
 
       {/* Reject Modal */}
       {showRejectModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Reject Boost</h3>
-            <p className="text-sm text-gray-600 mb-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-black/70 z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-card rounded-lg shadow-xl max-w-md w-full p-6 border dark:border-border">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-foreground mb-4">Reject Boost</h3>
+            <p className="text-sm text-gray-600 dark:text-muted-foreground mb-4">
               Please provide a reason for rejecting this boost request (optional):
             </p>
             <textarea
               value={rejectionReason}
               onChange={(e) => setRejectionReason(e.target.value)}
               placeholder="Enter rejection reason..."
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent mb-4"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-border rounded-lg bg-white dark:bg-background text-gray-900 dark:text-foreground placeholder:text-gray-400 dark:placeholder:text-muted-foreground focus:ring-2 focus:ring-gray-500 dark:focus:ring-primary-500 focus:border-transparent mb-4"
               rows={4}
             />
             <div className="flex gap-4">
@@ -735,14 +735,14 @@ export const BoostDetail = () => {
                   setShowRejectModal(false);
                   setRejectionReason('');
                 }}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-medium"
+                className="flex-1 px-4 py-2 border border-gray-300 dark:border-border rounded-lg text-gray-700 dark:text-foreground hover:bg-gray-50 dark:hover:bg-muted transition-colors font-medium"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmReject}
                 disabled={isProcessing}
-                className="flex-1 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                className="flex-1 px-4 py-2 bg-gray-900 dark:bg-primary-600 text-white rounded-lg hover:bg-gray-800 dark:hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
               >
                 Reject
               </button>
@@ -753,17 +753,17 @@ export const BoostDetail = () => {
 
       {/* Cancel Modal */}
       {showCancelModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Cancel Boost</h3>
-            <p className="text-sm text-gray-600 mb-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-black/70 z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-card rounded-lg shadow-xl max-w-md w-full p-6 border dark:border-border">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-foreground mb-4">Cancel Boost</h3>
+            <p className="text-sm text-gray-600 dark:text-muted-foreground mb-4">
               Please provide a reason for cancelling this boost:
             </p>
             <textarea
               value={cancellationReason}
               onChange={(e) => setCancellationReason(e.target.value)}
               placeholder="Enter cancellation reason..."
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent mb-4"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-border rounded-lg bg-white dark:bg-background text-gray-900 dark:text-foreground placeholder:text-gray-400 dark:placeholder:text-muted-foreground focus:ring-2 focus:ring-gray-500 dark:focus:ring-primary-500 focus:border-transparent mb-4"
               rows={4}
               required
             />
@@ -773,14 +773,14 @@ export const BoostDetail = () => {
                   setShowCancelModal(false);
                   setCancellationReason('');
                 }}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-medium"
+                className="flex-1 px-4 py-2 border border-gray-300 dark:border-border rounded-lg text-gray-700 dark:text-foreground hover:bg-gray-50 dark:hover:bg-muted transition-colors font-medium"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmCancel}
                 disabled={isProcessing || !cancellationReason.trim()}
-                className="flex-1 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                className="flex-1 px-4 py-2 bg-gray-900 dark:bg-primary-600 text-white rounded-lg hover:bg-gray-800 dark:hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
               >
                 {isProcessing ? 'Cancelling...' : 'Cancel Boost'}
               </button>
