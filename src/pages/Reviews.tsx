@@ -517,7 +517,7 @@ export const Reviews = () => {
               {paginatedReviews.map((review) => (
               <div
                 key={review._id}
-                  className="border border-gray-200 rounded-xl p-4 hover:border-blue-300 hover:shadow-sm transition-all"
+                  className="bg-white rounded-2xl p-5 border border-gray-100 hover:shadow-md hover:border-gray-200 hover:-translate-y-0.5 transition-all duration-200 ease-out shadow-sm"
                 >
                   <div className="flex items-start gap-3">
                     <input
@@ -546,13 +546,13 @@ export const Reviews = () => {
                         <div className="flex items-center gap-2">
                           {review.isVerified && <PillBadge variant="approved" label="✓" showDot={false} />}
                           {review.isPublic ? (
-                            <Eye className="w-4 h-4 text-indigo-600" />
+                            <Eye className="w-4 h-4 text-gray-600" />
                           ) : (
                             <EyeOff className="w-4 h-4 text-gray-400" />
                           )}
                           <button
                             onClick={() => setReplyingToReview(review)}
-                            className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            className="p-1.5 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                             title={review.astrologerReply ? 'Edit Reply' : 'Reply'}
                           >
                             {review.astrologerReply ? (
@@ -566,7 +566,7 @@ export const Reviews = () => {
                               setEditingReview(review);
                               setShowReviewModal(true);
                             }}
-                            className="p-1.5 text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+                            className="p-1.5 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                             title="Edit"
                           >
                             <Edit2 className="w-4 h-4" />
@@ -576,7 +576,7 @@ export const Reviews = () => {
                               setDeletingReviewId(review._id);
                               setModerationReason('');
                             }}
-                            className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            className="p-1.5 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                             title="Delete"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -596,7 +596,7 @@ export const Reviews = () => {
                           />
                           <div>
                             <p className="text-xs text-gray-500">Astrologer</p>
-                            <p className="text-sm font-medium text-gray-900 hover:text-blue-600">
+                            <p className="text-sm font-medium text-gray-900 hover:text-gray-700">
                               {review.astrologerId.name}
                             </p>
                   </div>
