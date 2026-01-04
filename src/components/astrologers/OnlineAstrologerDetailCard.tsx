@@ -53,13 +53,13 @@ export const OnlineAstrologerDetailCard = ({
     <Link
       to={`/astrologers/${astrologer._id}`}
       onClick={onClick}
-      className="group block bg-[#F8F9FA] rounded-2xl p-3 sm:p-4 transition-all duration-300 hover:shadow-md hover:-translate-y-1 border border-gray-200"
+      className="group block bg-[#F8F9FA] dark:bg-card rounded-2xl p-3 sm:p-4 transition-all duration-300 hover:shadow-md hover:-translate-y-1 border border-gray-200 dark:border-border"
     >
       {/* Top Section: Profile + Name + Message Button */}
       <div className="flex items-start gap-2 sm:gap-3 mb-3">
         {/* Profile Picture with Online Indicator */}
         <div className="relative flex-shrink-0">
-          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full overflow-hidden bg-white border border-gray-200">
+          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full overflow-hidden bg-white dark:bg-muted border border-gray-200 dark:border-border">
             {imageUrl ? (
               <img
                 src={imageUrl}
@@ -98,7 +98,7 @@ export const OnlineAstrologerDetailCard = ({
         {/* Name with Verified Badge */}
         <div className="flex-1 min-w-0 pr-2">
           <div className="flex items-center gap-1.5 mb-1">
-            <h3 className="text-sm sm:text-base font-semibold text-gray-900 truncate">
+            <h3 className="text-sm sm:text-base font-semibold text-gray-900 dark:text-foreground truncate">
               {astrologer.name}
             </h3>
             {astrologer.isVerified && (
@@ -110,15 +110,15 @@ export const OnlineAstrologerDetailCard = ({
           </div>
 
           {/* Rating and Reviews Count */}
-          <div className="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm text-gray-600 flex-wrap">
+          <div className="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm text-gray-600 dark:text-muted-foreground flex-wrap">
             <div className="flex items-center gap-0.5 sm:gap-1">
-              <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-gray-500 text-gray-500 flex-shrink-0" />
+              <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-gray-500 dark:fill-muted-foreground text-gray-500 dark:text-muted-foreground flex-shrink-0" />
               <span className="font-medium whitespace-nowrap">{astrologer.rating ? astrologer.rating.toFixed(1) : '0.0'}</span>
             </div>
-            <span className="text-gray-300 flex-shrink-0">•</span>
-            <span className="text-xs sm:text-sm font-medium text-gray-500 whitespace-nowrap">{astrologer.experience || 0}y</span>
-            <span className="text-gray-300 flex-shrink-0">•</span>
-            <span className="text-xs sm:text-sm font-medium text-gray-500 whitespace-nowrap">{formatCount(astrologer.totalReviews || astrologer.totalConsultations)}</span>
+            <span className="text-gray-300 dark:text-muted-foreground/50 flex-shrink-0">•</span>
+            <span className="text-xs sm:text-sm font-medium text-gray-500 dark:text-muted-foreground whitespace-nowrap">{astrologer.experience || 0}y</span>
+            <span className="text-gray-300 dark:text-muted-foreground/50 flex-shrink-0">•</span>
+            <span className="text-xs sm:text-sm font-medium text-gray-500 dark:text-muted-foreground whitespace-nowrap">{formatCount(astrologer.totalReviews || astrologer.totalConsultations)}</span>
           </div>
         </div>
 
@@ -145,7 +145,7 @@ export const OnlineAstrologerDetailCard = ({
             </span>
           ))}
           {astrologer.specialization.length > 3 && (
-            <span className="inline-flex items-center px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-[9px] sm:text-[10px] font-bold bg-white text-gray-500 border border-gray-200">
+            <span className="inline-flex items-center px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-[9px] sm:text-[10px] font-bold bg-white dark:bg-muted text-gray-500 dark:text-muted-foreground border border-gray-200 dark:border-border">
               +{astrologer.specialization.length - 3}
             </span>
           )}

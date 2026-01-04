@@ -2,6 +2,7 @@ import React from 'react';
 import { LucideIcon } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Card } from './Card';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export interface AreaChartCardProps {
   /** Chart data array */
@@ -39,6 +40,8 @@ export const AreaChartCard: React.FC<AreaChartCardProps> = ({
   footer,
   height = 256,
 }) => {
+  const { theme } = useTheme();
+  
   // Generate unique gradient ID based on dataKey
   const gradientId = `fill-${dataKey}`;
   
@@ -53,6 +56,9 @@ export const AreaChartCard: React.FC<AreaChartCardProps> = ({
   };
 
   const colorValue = color.startsWith('#') ? color : getColorVar(color);
+  
+  const gridColor = theme === 'dark' ? 'hsl(217.2, 32.6%, 17.5%)' : '#f0f0f0';
+  const tickColor = theme === 'dark' ? 'hsl(215, 20.2%, 65.1%)' : '#9ca3af';
 
   return (
     <Card
@@ -93,7 +99,11 @@ export const AreaChartCard: React.FC<AreaChartCardProps> = ({
                 />
               </linearGradient>
             </defs>
-            <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#f0f0f0" />
+            <CartesianGrid 
+              vertical={false} 
+              strokeDasharray="3 3" 
+              stroke={gridColor}
+            />
             <XAxis
               dataKey="label"
               tickLine={false}
@@ -101,7 +111,7 @@ export const AreaChartCard: React.FC<AreaChartCardProps> = ({
               tickMargin={10}
               height={28}
               minTickGap={12}
-              tick={{ fontSize: 12, fill: '#9ca3af' }}
+              tick={{ fontSize: 12, fill: tickColor }}
               tickFormatter={(value) => {
                 // Show abbreviated labels for better readability
                 if (typeof value === 'string' && value.length > 6) {
@@ -113,7 +123,7 @@ export const AreaChartCard: React.FC<AreaChartCardProps> = ({
             <YAxis
               tickLine={false}
               axisLine={false}
-              tick={{ fontSize: 12, fill: '#9ca3af' }}
+              tick={{ fontSize: 12, fill: tickColor }}
               tickMargin={8}
               allowDecimals={false}
               // Add a bit of headroom so peaks don't touch the top,
@@ -130,16 +140,17 @@ export const AreaChartCard: React.FC<AreaChartCardProps> = ({
             <Tooltip
               cursor={false}
               contentStyle={{
-                backgroundColor: '#fff',
-                border: '1px solid #e5e7eb',
+                backgroundColor: 'var(--card)',
+                border: '1px solid hsl(var(--border))',
                 borderRadius: '8px',
                 padding: '8px 12px',
                 boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                color: 'hsl(var(--foreground))',
               }}
               labelStyle={{ 
                 fontWeight: 600, 
                 marginBottom: '4px',
-                color: '#1f2937'
+                color: 'hsl(var(--foreground))'
               }}
               formatter={(value: number) => [value, name || dataKey]}
             />
@@ -157,7 +168,7 @@ export const AreaChartCard: React.FC<AreaChartCardProps> = ({
         </ResponsiveContainer>
       </div>
       {footer && (
-        <div className="mt-4 flex items-center justify-between pt-4 border-t border-gray-100">
+        <div className="mt-4 flex items-center justify-between pt-4 border-t border-gray-100 dark:border-border">
           {footer}
         </div>
       )}

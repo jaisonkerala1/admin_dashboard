@@ -185,7 +185,7 @@ export const Dashboard = () => {
       ) : periodStats ? (
         <div className="space-y-6">
           {/* Period Selector */}
-          <div className="border-b border-gray-200">
+          <div className="border-b border-gray-200 dark:border-border">
             <div className="flex gap-6 overflow-x-auto">
               {periodOptions.map((opt) => (
                 <button
@@ -193,8 +193,8 @@ export const Dashboard = () => {
                   onClick={() => dispatch(setPeriod(opt.key))}
                   className={`pb-3 px-1 border-b-2 whitespace-nowrap transition-colors ${
                     period === opt.key
-                      ? 'border-blue-500 text-blue-600 font-semibold'
-                      : 'border-transparent text-gray-500 hover:text-gray-700'
+                      ? 'border-blue-500 dark:border-blue-400 text-blue-600 dark:text-blue-400 font-semibold'
+                      : 'border-transparent text-gray-500 dark:text-muted-foreground hover:text-gray-700 dark:hover:text-foreground'
                   }`}
                 >
                   {opt.label}
@@ -276,17 +276,17 @@ export const Dashboard = () => {
               footer={
                 <>
                   <div>
-                    <p className="text-2xl font-bold text-gray-900">
+                    <p className="text-2xl font-bold text-gray-900 dark:text-foreground">
                       {formatNumber(periodStats.consultations)}
                     </p>
-                    <p className="text-sm text-gray-500">Total ({periodLabel})</p>
+                    <p className="text-sm text-gray-500 dark:text-muted-foreground">Total ({periodLabel})</p>
                   </div>
                   <div className="text-right">
-                    <div className="flex items-center gap-1 text-green-600">
+                    <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
                       <TrendingUp className="w-4 h-4" />
                       <span className="text-sm font-semibold">{formatNumber(periodStats.completedConsultations)} completed</span>
                     </div>
-                    <p className="text-xs text-gray-500">in period</p>
+                    <p className="text-xs text-gray-500 dark:text-muted-foreground">in period</p>
                   </div>
                 </>
               }
@@ -303,17 +303,17 @@ export const Dashboard = () => {
               footer={
                 <>
                   <div>
-                    <p className="text-2xl font-bold text-gray-900">
+                    <p className="text-2xl font-bold text-gray-900 dark:text-foreground">
                       {formatNumber(periodStats.serviceRequests)}
                     </p>
-                    <p className="text-sm text-gray-500">Total ({periodLabel})</p>
+                    <p className="text-sm text-gray-500 dark:text-muted-foreground">Total ({periodLabel})</p>
                   </div>
                   <div className="text-right">
-                    <div className="flex items-center gap-1 text-purple-600">
+                    <div className="flex items-center gap-1 text-purple-600 dark:text-purple-400">
                       <TrendingUp className="w-4 h-4" />
                       <span className="text-sm font-semibold">{formatNumber(periodStats.serviceRequests)}</span>
                     </div>
-                    <p className="text-xs text-gray-500">in period</p>
+                    <p className="text-xs text-gray-500 dark:text-muted-foreground">in period</p>
                   </div>
                 </>
               }
@@ -344,15 +344,15 @@ export const Dashboard = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className="relative">
-                      <UserCog className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />
-                      <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-500 rounded-full animate-pulse" />
+                      <UserCog className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 dark:text-green-400" />
+                      <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-500 dark:bg-green-400 rounded-full animate-pulse" />
                     </div>
-                    <span className="text-base sm:text-lg font-semibold">Currently Online</span>
-                    <span className="px-1.5 sm:px-2 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded-full">
+                    <span className="text-base sm:text-lg font-semibold dark:text-foreground">Currently Online</span>
+                    <span className="px-1.5 sm:px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-medium rounded-full">
                       {onlineAstrologers.length}
                     </span>
                   </div>
-                  <Link to={ROUTES.ASTROLOGERS} className="text-xs sm:text-sm text-primary-600 hover:text-primary-700 font-medium whitespace-nowrap">
+                  <Link to={ROUTES.ASTROLOGERS} className="text-xs sm:text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium whitespace-nowrap">
                     View All
                   </Link>
                 </div>
@@ -378,9 +378,9 @@ export const Dashboard = () => {
           {!onlineLoading && onlineAstrologers.length === 0 && (
             <Card>
               <div className="text-center py-8">
-                <UserCog className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-600">No astrologers currently online</p>
-                <Link to={ROUTES.ASTROLOGERS} className="text-sm text-primary-600 hover:text-primary-700 mt-2 inline-block">
+                <UserCog className="w-12 h-12 text-gray-300 dark:text-muted-foreground mx-auto mb-3" />
+                <p className="text-gray-600 dark:text-muted-foreground">No astrologers currently online</p>
+                <Link to={ROUTES.ASTROLOGERS} className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 mt-2 inline-block">
                   View All Astrologers
                 </Link>
               </div>

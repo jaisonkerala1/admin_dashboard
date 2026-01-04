@@ -147,5 +147,19 @@
   .animate-slideDown {
     animation: slideDown 0.2s ease-out;
   }
+
+  /* Recharts dark mode support */
+  .dark .recharts-cartesian-grid-horizontal line,
+  .dark .recharts-cartesian-grid-vertical line {
+    stroke: hsl(var(--muted));
+  }
+
+  .dark .recharts-text {
+    fill: hsl(var(--muted-foreground));
+  }
+
+  .dark .recharts-tooltip-wrapper {
+    color: hsl(var(--foreground));
+  }
 }
 
