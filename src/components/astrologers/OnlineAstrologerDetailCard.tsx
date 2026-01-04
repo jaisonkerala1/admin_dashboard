@@ -79,7 +79,7 @@ export const OnlineAstrologerDetailCard = ({
             
             {/* Fallback initials */}
             <div
-              className="initials-fallback w-full h-full bg-gradient-to-br from-orange-400 to-orange-600 dark:from-orange-500 dark:to-orange-700 flex items-center justify-center text-white font-semibold text-base sm:text-lg"
+              className="initials-fallback w-full h-full bg-gradient-to-br from-orange-400 to-orange-600 dark:from-primary-500 dark:to-primary-700 flex items-center justify-center text-white font-semibold text-base sm:text-lg"
               style={{ display: imageUrl ? 'none' : 'flex' }}
             >
               {initials}
@@ -125,7 +125,7 @@ export const OnlineAstrologerDetailCard = ({
         {/* Message Button */}
         <button
           onClick={handleMessageClick}
-          className="flex-shrink-0 bg-orange-500 dark:bg-orange-600 hover:bg-orange-600 dark:hover:bg-orange-500 text-white rounded-full px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium transition-colors flex items-center gap-1.5 sm:gap-2 shadow-sm hover:shadow-md whitespace-nowrap"
+          className="flex-shrink-0 bg-orange-500 dark:bg-primary-600 hover:bg-orange-600 dark:hover:bg-primary-700 text-white rounded-full px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium transition-colors flex items-center gap-1.5 sm:gap-2 shadow-sm hover:shadow-md whitespace-nowrap"
         >
           <MessageSquare className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
           <span className="hidden sm:inline">Message</span>
@@ -139,7 +139,7 @@ export const OnlineAstrologerDetailCard = ({
           {astrologer.specialization.slice(0, 3).map((spec: string, index: number) => (
             <span
               key={index}
-              className="inline-flex items-center px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-[9px] sm:text-[10px] uppercase tracking-wider font-bold bg-[#FFF4E5] text-orange-700 border border-orange-100"
+              className="inline-flex items-center px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-[9px] sm:text-[10px] uppercase tracking-wider font-bold bg-[#FFF4E5] dark:bg-primary-900/30 text-orange-700 dark:text-primary-400 border border-orange-100 dark:border-primary-800"
             >
               {spec}
             </span>
