@@ -242,23 +242,23 @@ export const TicketListView: React.FC = () => {
       {isLoadingTickets ? (
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+            <div key={i} className="bg-white dark:bg-card rounded-2xl p-5 border border-gray-100 dark:border-border shadow-sm">
               <div className="flex items-start gap-4">
-                <div className="w-4 h-4 bg-gray-200 rounded shimmer mt-0.5" />
+                <div className="w-4 h-4 bg-gray-200 dark:bg-muted rounded shimmer mt-0.5" />
                 <div className="flex-1 space-y-3">
                   <div className="flex items-center gap-2">
-                    <div className="w-24 h-3 bg-gray-200 rounded shimmer" />
-                    <div className="w-16 h-5 bg-gray-200 rounded-lg shimmer" />
+                    <div className="w-24 h-3 bg-gray-200 dark:bg-muted rounded shimmer" />
+                    <div className="w-16 h-5 bg-gray-200 dark:bg-muted rounded-lg shimmer" />
                   </div>
-                  <div className="w-3/4 h-4 bg-gray-200 rounded shimmer" />
-                  <div className="w-full h-3 bg-gray-200 rounded shimmer" />
-                  <div className="w-2/3 h-3 bg-gray-200 rounded shimmer" />
+                  <div className="w-3/4 h-4 bg-gray-200 dark:bg-muted rounded shimmer" />
+                  <div className="w-full h-3 bg-gray-200 dark:bg-muted rounded shimmer" />
+                  <div className="w-2/3 h-3 bg-gray-200 dark:bg-muted rounded shimmer" />
                   <div className="flex gap-2">
-                    <div className="w-20 h-5 bg-gray-200 rounded-lg shimmer" />
-                    <div className="w-16 h-5 bg-gray-200 rounded-lg shimmer" />
+                    <div className="w-20 h-5 bg-gray-200 dark:bg-muted rounded-lg shimmer" />
+                    <div className="w-16 h-5 bg-gray-200 dark:bg-muted rounded-lg shimmer" />
                   </div>
                 </div>
-                <div className="w-20 h-6 bg-gray-200 rounded-lg shimmer" />
+                <div className="w-20 h-6 bg-gray-200 dark:bg-muted rounded-lg shimmer" />
               </div>
             </div>
           ))}

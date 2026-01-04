@@ -20,7 +20,7 @@ export const SkeletonBox = ({
   };
 
   return (
-    <div style={style} className={cn('shimmer bg-gray-200', className)} />
+    <div style={style} className={cn('shimmer bg-gray-200 dark:bg-muted', className)} />
   );
 };
 
@@ -37,7 +37,7 @@ export const SkeletonCircle = ({ size, className }: SkeletonCircleProps) => {
         height: size,
         borderRadius: '50%',
       }}
-      className={cn('shimmer bg-gray-200', className)}
+      className={cn('shimmer bg-gray-200 dark:bg-muted', className)}
     />
   );
 };
@@ -81,7 +81,7 @@ interface SkeletonCardProps {
 
 export const SkeletonCard = ({ children, className }: SkeletonCardProps) => {
   return (
-    <div className={cn('bg-white rounded-xl shadow-sm border border-gray-200 p-6', className)}>
+    <div className={cn('bg-white dark:bg-card rounded-xl shadow-sm border border-gray-200 dark:border-border p-6', className)}>
       {children}
     </div>
   );

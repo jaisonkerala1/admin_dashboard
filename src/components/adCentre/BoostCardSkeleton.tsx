@@ -33,7 +33,7 @@ export const BoostCardSkeleton = () => {
         </div>
       </div>
 
-      <div className="flex gap-2 mt-4 pt-4 border-t border-gray-100">
+      <div className="flex gap-2 mt-4 pt-4 border-t border-gray-100 dark:border-border">
         <SkeletonBox width="100%" height={32} radius={6} />
         <SkeletonBox width="100%" height={32} radius={6} />
       </div>

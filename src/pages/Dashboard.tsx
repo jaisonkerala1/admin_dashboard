@@ -158,10 +158,10 @@ export const Dashboard = () => {
       {isLoading ? (
         <div className="space-y-6">
           {/* Period Selector Skeleton */}
-          <div className="border-b border-gray-200">
+          <div className="border-b border-gray-200 dark:border-border">
             <div className="flex gap-6 overflow-x-auto pb-3">
               {[1, 2, 3, 4, 5].map((i) => (
-                <div key={i} className="h-6 w-16 bg-gray-200 rounded shimmer" />
+                <div key={i} className="h-6 w-16 bg-gray-200 dark:bg-muted rounded shimmer" />
               ))}
             </div>
           </div>

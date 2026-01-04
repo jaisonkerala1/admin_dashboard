@@ -42,7 +42,7 @@ export const CommunicationOverviewSkeleton = () => {
         </div>
         
         {/* Stats row */}
-        <div className="mt-4 pt-4 border-t border-gray-100 grid grid-cols-3 gap-4">
+        <div className="mt-4 pt-4 border-t border-gray-100 dark:border-border grid grid-cols-3 gap-4">
           <div className="text-center">
             <SkeletonBox width={60} height={24} radius={6} className="mx-auto mb-2" />
             <SkeletonBox width={70} height={14} radius={4} className="mx-auto" />

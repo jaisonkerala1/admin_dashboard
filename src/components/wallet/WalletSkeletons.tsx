@@ -2,9 +2,9 @@ import { SkeletonBox, SkeletonCard, SkeletonCircle } from '@/components/common/S
 
 export const WalletHeroCardSkeleton = () => {
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+    <div className="bg-white dark:bg-card rounded-xl shadow-sm border border-gray-200 dark:border-border p-4">
       <SkeletonBox width={120} height={14} radius={4} className="mb-3" />
-      <div className="bg-gray-200 rounded-lg p-4 mb-3" style={{ aspectRatio: '2.5' }}>
+      <div className="bg-gray-200 dark:bg-muted rounded-lg p-4 mb-3" style={{ aspectRatio: '2.5' }}>
         <div className="flex items-center justify-between h-full">
           <div>
             <SkeletonBox width={100} height={10} radius={4} className="mb-1" />
@@ -24,14 +24,14 @@ export const WalletHeroCardSkeleton = () => {
 
 export const WalletQuickStatsSkeleton = () => {
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+    <div className="bg-white dark:bg-card rounded-xl shadow-sm border border-gray-200 dark:border-border p-4">
       <SkeletonBox width={120} height={14} radius={4} className="mb-3" />
       <div className="space-y-3">
         <div>
           <SkeletonBox width={80} height={10} radius={4} className="mb-1" />
           <SkeletonBox width={120} height={18} radius={4} />
         </div>
-        <div className="pt-3 border-t border-gray-100">
+        <div className="pt-3 border-t border-gray-100 dark:border-border">
           <div className="mb-2">
             <SkeletonBox width={90} height={10} radius={4} className="mb-1" />
             <SkeletonBox width={50} height={14} radius={4} />

@@ -16,7 +16,7 @@ export const TableSkeleton = ({
   return (
     <SkeletonCard className={className}>
       {/* Header skeleton */}
-      <div className="flex gap-4 mb-4 pb-3 border-b border-gray-200">
+      <div className="flex gap-4 mb-4 pb-3 border-b border-gray-200 dark:border-border">
         {showAvatar && <SkeletonBox width={40} height={16} radius={4} />}
         {Array.from({ length: columns }).map((_, index) => (
           <SkeletonBox
