@@ -7,7 +7,7 @@ import { Loader } from '@/components/common';
 interface CreateBoostModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onCreate: (data: { astrologerId: string; durationDays: number; startDate?: string }) => void;
+  onCreate: (data: { astrologerId: string; durationDays: number; startDate?: string; categories: string[] }) => void;
   isProcessing?: boolean;
 }
 
@@ -24,6 +24,18 @@ export const CreateBoostModal = ({
   const [isLoadingAstrologers, setIsLoadingAstrologers] = useState(false);
   const [durationDays, setDurationDays] = useState<number>(7);
   const [startDate, setStartDate] = useState<string>('');
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+
+  const availableCategories = [
+    { value: 'general', label: 'General', icon: '🌟' },
+    { value: 'astrology', label: 'Astrology', icon: '🔮' },
+    { value: 'tarot', label: 'Tarot', icon: '🃏' },
+    { value: 'numerology', label: 'Numerology', icon: '🔢' },
+    { value: 'palmistry', label: 'Palmistry', icon: '👋' },
+    { value: 'healing', label: 'Healing', icon: '✨' },
+    { value: 'meditation', label: 'Meditation', icon: '🧘' },
+    { value: 'spiritual', label: 'Spiritual', icon: '🙏' },
+  ];
 
   const dailyCost = 500;
   const totalCost = durationDays * dailyCost;
@@ -69,10 +81,25 @@ export const CreateBoostModal = ({
     if (!selectedAstrologer) {
       return;
     }
+    if (selectedCategories.length === 0) {
+      alert('Please select at least one category');
+      return;
+    }
     onCreate({
       astrologerId: selectedAstrologer._id,
       durationDays,
       startDate: startDate || undefined,
+      categories: selectedCategories,
+    });
+  };
+
+  const toggleCategory = (categoryValue: string) => {
+    setSelectedCategories((prev) => {
+      if (prev.includes(categoryValue)) {
+        return prev.filter((c) => c !== categoryValue);
+      } else {
+        return [...prev, categoryValue];
+      }
     });
   };
 
@@ -81,6 +108,7 @@ export const CreateBoostModal = ({
     setAstrologerSearch('');
     setDurationDays(7);
     setStartDate('');
+    setSelectedCategories([]);
     setShowAstrologerDropdown(false);
     onClose();
   };
@@ -207,6 +235,55 @@ export const CreateBoostModal = ({
             </p>
           </div>
 
+          {/* Category Selection */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Categories <span className="text-red-500">*</span>
+            </label>
+            <p className="text-xs text-gray-500 mb-3">
+              Select one or more categories to boost the profile in
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {availableCategories.map((category) => {
+                const isSelected = selectedCategories.includes(category.value);
+                return (
+                  <button
+                    key={category.value}
+                    type="button"
+                    onClick={() => toggleCategory(category.value)}
+                    disabled={isProcessing}
+                    className={`px-4 py-2 rounded-lg border-2 transition-all flex items-center gap-2 ${
+                      isSelected
+                        ? 'bg-purple-50 border-purple-500 text-purple-700'
+                        : 'bg-white border-gray-300 text-gray-700 hover:border-gray-400'
+                    } disabled:opacity-50 disabled:cursor-not-allowed`}
+                  >
+                    <span>{category.icon}</span>
+                    <span className="font-medium">{category.label}</span>
+                    {isSelected && (
+                      <svg
+                        className="w-4 h-4"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+            {selectedCategories.length === 0 && (
+              <p className="mt-2 text-xs text-red-500">
+                Please select at least one category
+              </p>
+            )}
+          </div>
+
           {/* Cost Preview */}
           <div className="bg-gray-50 rounded-lg p-4">
             <div className="flex justify-between items-center mb-2">
@@ -231,7 +308,7 @@ export const CreateBoostModal = ({
             </button>
             <button
               type="submit"
-              disabled={!selectedAstrologer || isProcessing}
+              disabled={!selectedAstrologer || isProcessing || selectedCategories.length === 0}
               className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
             >
               {isProcessing ? 'Creating...' : 'Create Boost Request'}

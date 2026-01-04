@@ -64,15 +64,19 @@ export const AdCentre = () => {
 
   // Fetch boosts when filters or page changes
   useEffect(() => {
+    const filtersWithCategory = {
+      ...filters,
+      category: selectedCategoryFilter !== 'all' ? selectedCategoryFilter : undefined,
+    };
     dispatch(
       fetchBoostsRequest({
-        filters,
+        filters: filtersWithCategory,
         page: pagination.page,
         limit: pagination.limit,
         sort: 'createdAt',
       })
     );
-  }, [dispatch, filters.status, filters.search, filters.startDateFrom, pagination.page]);
+  }, [dispatch, filters.status, filters.search, filters.startDateFrom, pagination.page, selectedCategoryFilter]);
 
   // Initialize date range on mount
   useEffect(() => {
@@ -183,7 +187,7 @@ export const AdCentre = () => {
     });
   };
 
-  const handleCreateBoost = (data: { astrologerId: string; durationDays: number; startDate?: string }) => {
+  const handleCreateBoost = (data: { astrologerId: string; durationDays: number; startDate?: string; categories: string[] }) => {
     dispatch(createBoostRequest(data));
     setShowCreateModal(false);
   };
@@ -372,6 +376,22 @@ export const AdCentre = () => {
                     </button>
                   ))}
                 </div>
+
+                {/* Category Filter */}
+                <div className="flex items-center gap-2">
+                  <label className="text-sm font-medium text-gray-700 whitespace-nowrap">Category:</label>
+                  <select
+                    value={selectedCategoryFilter}
+                    onChange={(e) => setSelectedCategoryFilter(e.target.value)}
+                    className="px-3 py-1.5 rounded-lg text-sm font-medium border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                  >
+                    {categoryOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
             </div>
           </Card>
@@ -472,6 +492,32 @@ export const AdCentre = () => {
                     <span className="text-gray-500">End:</span>
                     <span className="font-medium text-gray-700">{formatDateTime(boost.endDate)}</span>
                   </div>
+                  {boost.categories && boost.categories.length > 0 && (
+                    <div className="pt-2">
+                      <div className="flex flex-wrap gap-1">
+                        {boost.categories.map((category) => {
+                          const categoryLabels: Record<string, string> = {
+                            general: '🌟',
+                            astrology: '🔮',
+                            tarot: '🃏',
+                            numerology: '🔢',
+                            palmistry: '👋',
+                            healing: '✨',
+                            meditation: '🧘',
+                            spiritual: '🙏',
+                          };
+                          return (
+                            <span
+                              key={category}
+                              className="px-2 py-0.5 bg-purple-50 text-purple-700 rounded-full text-xs font-medium border border-purple-200"
+                            >
+                              {categoryLabels[category] || ''} {category.charAt(0).toUpperCase() + category.slice(1)}
+                            </span>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 </Card>

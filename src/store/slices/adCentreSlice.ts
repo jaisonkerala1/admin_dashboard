@@ -25,6 +25,7 @@ export interface Boost {
   cancelledAt: string | null;
   cancellationReason: string | null;
   createdByAdmin: boolean;
+  categories: string[];
 }
 
 export interface BoostDetails extends Boost {
@@ -70,6 +71,7 @@ export interface BoostFilters {
   startDateTo?: string;
   endDateFrom?: string;
   endDateTo?: string;
+  category?: string;
 }
 
 export interface BoostPagination {
@@ -245,6 +247,7 @@ const adCentreSlice = createSlice({
         astrologerId: string;
         durationDays: number;
         startDate?: string;
+        categories: string[];
       }>
     ) => {
       state.isProcessing = true;

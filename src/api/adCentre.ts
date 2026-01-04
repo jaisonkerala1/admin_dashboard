@@ -37,6 +37,7 @@ export const adCentreApi = {
     startDateTo?: string;
     endDateFrom?: string;
     endDateTo?: string;
+    category?: string;
   }): Promise<BoostsListResponse> => {
     const response = await apiClient.get('/admin/ad-centre/boosts', { params });
     return response.data;
@@ -66,6 +67,7 @@ export const adCentreApi = {
     astrologerId: string;
     durationDays: number;
     startDate?: string;
+    categories: string[];
   }): Promise<ApiResponse<Boost>> => {
     const response = await apiClient.post('/admin/ad-centre/boosts/create', data);
     return response.data;
