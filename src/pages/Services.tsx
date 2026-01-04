@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { 
@@ -10,7 +10,10 @@ import {
   Eye,
   Trash2,
   TrendingUp,
-  Tag
+  Tag,
+  Clock,
+  CheckCircle,
+  X
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { Card, Loader, EmptyState, RoundAvatar, PillBadge, ShowEntriesDropdown, StatCard, SearchBar } from '@/components/common';
@@ -28,6 +31,9 @@ import {
   ServiceFilter,
 } from '@/store/slices/servicesSlice';
 import { ROUTES } from '@/utils/constants';
+import { servicesApi, approvalApi } from '@/api';
+import { useToastContext } from '@/contexts/ToastContext';
+import type { ApprovalRequest } from '@/types/approval';
 
 const categoryLabels: Record<string, string> = {
   reiki_healing: 'Reiki Healing',
@@ -44,6 +50,7 @@ const categoryLabels: Record<string, string> = {
 
 export const Services = () => {
   const dispatch = useDispatch();
+  const toast = useToastContext();
   const { 
     services, 
     isLoading, 
@@ -55,15 +62,150 @@ export const Services = () => {
     stats 
   } = useSelector((state: RootState) => state.services);
 
+  const [pendingApprovalRequests, setPendingApprovalRequests] = useState<ApprovalRequest[]>([]);
+  const [isLoadingPending, setIsLoadingPending] = useState(false);
+  const [processingServiceId, setProcessingServiceId] = useState<string | null>(null);
+
   useEffect(() => {
     dispatch(fetchServicesRequest());
   }, [dispatch]);
 
+  // Fetch service approval requests when pending filter is active
+  useEffect(() => {
+    if (filter === 'pending') {
+      fetchPendingApprovalRequests();
+    }
+  }, [filter]);
+
+  const fetchPendingApprovalRequests = async () => {
+    setIsLoadingPending(true);
+    try {
+      const response = await approvalApi.getApprovalRequests({
+        type: 'service_approval',
+        status: 'pending',
+        page: 1,
+        limit: 100,
+      });
+      if (response.success && response.data) {
+        setPendingApprovalRequests(response.data.requests);
+      }
+    } catch (error) {
+      console.error('Failed to fetch pending approval requests:', error);
+    } finally {
+      setIsLoadingPending(false);
+    }
+  };
+
+  // Handle service approval
+  const handleApproveService = async (serviceId: string, approvalRequestId?: string) => {
+    setProcessingServiceId(serviceId);
+    try {
+      if (approvalRequestId) {
+        // Approve via approval request
+        const response = await approvalApi.approveRequest(approvalRequestId);
+        if (response.success) {
+          toast.success('Service approved successfully');
+          await fetchPendingApprovalRequests();
+          dispatch(fetchServicesRequest());
+        } else {
+          toast.error(response.message || 'Failed to approve service');
+        }
+      } else {
+        // Direct service approval
+        const response = await servicesApi.approve(serviceId);
+        if (response.success) {
+          toast.success('Service approved successfully');
+          dispatch(fetchServicesRequest());
+        } else {
+          toast.error(response.message || 'Failed to approve service');
+        }
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to approve service');
+    } finally {
+      setProcessingServiceId(null);
+    }
+  };
+
+  // Handle service rejection
+  const handleRejectService = async (serviceId: string, approvalRequestId?: string) => {
+    const reason = prompt('Enter rejection reason:');
+    if (!reason || !reason.trim()) {
+      toast.error('Rejection reason is required');
+      return;
+    }
+
+    setProcessingServiceId(serviceId);
+    try {
+      if (approvalRequestId) {
+        // Reject via approval request
+        const response = await approvalApi.rejectRequest(approvalRequestId, reason);
+        if (response.success) {
+          toast.success('Service rejected');
+          await fetchPendingApprovalRequests();
+          dispatch(fetchServicesRequest());
+        } else {
+          toast.error(response.message || 'Failed to reject service');
+        }
+      } else {
+        // Direct service rejection
+        const response = await servicesApi.reject(serviceId);
+        if (response.success) {
+          toast.success('Service rejected');
+          dispatch(fetchServicesRequest());
+        } else {
+          toast.error(response.message || 'Failed to reject service');
+        }
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to reject service');
+    } finally {
+      setProcessingServiceId(null);
+    }
+  };
+
+  // Merge services with approval requests for pending filter
+  const getServicesWithApprovalInfo = () => {
+    if (filter !== 'pending') {
+      return services;
+    }
+
+    // Create a map of astrologer IDs to approval requests
+    // For service approvals, we match by astrologerId since each astrologer can have multiple services
+    const approvalMap = new Map<string, ApprovalRequest[]>();
+    pendingApprovalRequests.forEach(req => {
+      if (!approvalMap.has(req.astrologerId)) {
+        approvalMap.set(req.astrologerId, []);
+      }
+      approvalMap.get(req.astrologerId)!.push(req);
+    });
+
+    // Merge services with their approval requests
+    // Match inactive services with approval requests from the same astrologer
+    return services.map(service => {
+      const astrologerApprovals = approvalMap.get(service.astrologerId._id) || [];
+      // For now, take the first pending approval request for this astrologer
+      // In a real scenario, the backend should include serviceId in the approval request
+      const approvalRequest = astrologerApprovals.find(req => req.requestType === 'service_approval') || null;
+      
+      return {
+        ...service,
+        approvalRequest,
+      };
+    });
+  };
+
   // Client-side filtering
-  const filteredServices = services.filter(s => {
+  const servicesWithApproval = getServicesWithApprovalInfo();
+  const filteredServices = servicesWithApproval.filter(s => {
     // Apply status filter
     if (filter === 'active' && (!s.isActive || s.isDeleted)) return false;
     if (filter === 'inactive' && (s.isActive && !s.isDeleted)) return false;
+    if (filter === 'pending') {
+      // Show services that are inactive and have pending approval request
+      if (s.isActive || s.isDeleted) return false;
+      if (!(s as any).approvalRequest) return false;
+    }
     
     // Apply search filter
     if (search) {
@@ -103,6 +245,9 @@ export const Services = () => {
 
   // Helper functions
   const getStatusBadge = (service: any) => {
+    if (filter === 'pending' && service.approvalRequest) {
+      return <PillBadge variant="pending" label="Pending Approval" showDot={false} />;
+    }
     if (!service.isActive || service.isDeleted) {
       return <PillBadge variant="inactive" label="Inactive" showDot={false} />;
     }
@@ -154,7 +299,7 @@ export const Services = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-4">
           <StatCard
             title="Total"
             value={stats.total}
@@ -169,6 +314,11 @@ export const Services = () => {
             title="Inactive"
             value={stats.inactive}
             icon={XCircle}
+          />
+          <StatCard
+            title="Pending Approval"
+            value={stats.pending || 0}
+            icon={Clock}
           />
           <StatCard
             title="Total Bookings"
@@ -195,6 +345,7 @@ export const Services = () => {
             { key: 'all', label: 'All', count: stats.total },
             { key: 'active', label: 'Active', count: stats.active },
             { key: 'inactive', label: 'Inactive', count: stats.inactive },
+            { key: 'pending', label: 'Pending Approval', count: stats.pending || 0 },
           ].map(({ key, label, count }) => (
             <button
               key={key}
@@ -245,7 +396,7 @@ export const Services = () => {
         </div>
 
         {/* Loading State */}
-        {isLoading ? (
+        {(isLoading || (filter === 'pending' && isLoadingPending)) ? (
           <div className="py-12">
             <Loader size="lg" text="Loading services..." />
           </div>
@@ -297,7 +448,7 @@ export const Services = () => {
                       <td className="px-4 py-4">
                         <Link
                           to={`${ROUTES.SERVICES}/${service._id}`}
-                          className="font-medium text-gray-900 hover:text-blue-600 transition-colors max-w-xs truncate block"
+                          className="font-medium text-gray-900 hover:text-gray-700 transition-colors max-w-xs truncate block"
                         >
                           {service.name}
                         </Link>
@@ -314,7 +465,7 @@ export const Services = () => {
                               name={service.astrologerId.name}
                               size="sm"
                             />
-                            <span className="font-medium text-gray-900 hover:text-blue-600">
+                            <span className="font-medium text-gray-900 hover:text-gray-700">
                               {service.astrologerId.name}
                             </span>
                           </Link>
@@ -353,19 +504,41 @@ export const Services = () => {
                       <td className="px-4 py-4">{getStatusBadge(service)}</td>
                       <td className="px-4 py-4">
                         <div className="flex items-center gap-2">
+                          {filter === 'pending' && (service as any).approvalRequest ? (
+                            <>
+                              <button
+                                onClick={() => handleApproveService(service._id, (service as any).approvalRequest?._id)}
+                                disabled={processingServiceId === service._id}
+                                className="p-1.5 text-green-600 hover:bg-green-50 rounded-lg transition-colors disabled:opacity-50"
+                                title="Approve"
+                              >
+                                <CheckCircle className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => handleRejectService(service._id, (service as any).approvalRequest?._id)}
+                                disabled={processingServiceId === service._id}
+                                className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+                                title="Reject"
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
+                            </>
+                          ) : null}
                           <Link
                             to={`${ROUTES.SERVICES}/${service._id}`}
-                            className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            className="p-1.5 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                             title="View Details"
                           >
                             <Eye className="w-4 h-4" />
                           </Link>
-                          <button
-                            className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                            title="Delete"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+                          {filter !== 'pending' && (
+                            <button
+                              className="p-1.5 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                              title="Delete"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -391,7 +564,7 @@ export const Services = () => {
                     <div className="flex items-center gap-3 mb-2">
                       <Link
                         to={`${ROUTES.SERVICES}/${service._id}`}
-                        className="font-semibold text-gray-900 hover:text-blue-600"
+                        className="font-semibold text-gray-900 hover:text-gray-700"
                       >
                         {service.name}
                       </Link>
@@ -405,7 +578,7 @@ export const Services = () => {
                             name={service.astrologerId.name}
                             size="sm"
                           />
-                          <span className="text-sm text-gray-600 hover:text-blue-600">
+                          <span className="text-sm text-gray-600 hover:text-gray-700">
                             {service.astrologerId.name}
                           </span>
                         </Link>
@@ -424,12 +597,34 @@ export const Services = () => {
                       {getStatusBadge(service)}
                     </div>
                   </div>
-                  <Link
-                    to={`${ROUTES.SERVICES}/${service._id}`}
-                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
-                  >
-                    <Eye className="w-4 h-4" />
-                  </Link>
+                  <div className="flex items-center gap-2">
+                    {filter === 'pending' && (service as any).approvalRequest ? (
+                      <>
+                        <button
+                          onClick={() => handleApproveService(service._id, (service as any).approvalRequest?._id)}
+                          disabled={processingServiceId === service._id}
+                          className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors disabled:opacity-50"
+                          title="Approve"
+                        >
+                          <CheckCircle className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleRejectService(service._id, (service as any).approvalRequest?._id)}
+                          disabled={processingServiceId === service._id}
+                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+                          title="Reject"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </>
+                    ) : null}
+                    <Link
+                      to={`${ROUTES.SERVICES}/${service._id}`}
+                      className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+                    >
+                      <Eye className="w-4 h-4" />
+                    </Link>
+                  </div>
                 </div>
               ))}
             </div>
@@ -455,7 +650,7 @@ export const Services = () => {
                           <div className="flex-1 min-w-0">
                             <Link
                               to={`${ROUTES.SERVICES}/${service._id}`}
-                              className="font-semibold text-base text-gray-900 truncate block hover:text-blue-600"
+                              className="font-semibold text-base text-gray-900 truncate block hover:text-gray-700"
                             >
                               {service.name}
                             </Link>
@@ -525,14 +720,37 @@ export const Services = () => {
                       </div>
                     </div>
                     
-                    {/* Footer Action */}
-                    <Link
-                      to={`${ROUTES.SERVICES}/${service._id}`}
-                      className="flex items-center justify-center gap-2 w-full px-4 py-2.5 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 active:bg-blue-200 rounded-lg transition-colors touch-manipulation"
-                    >
-                      <Eye className="w-4 h-4" />
-                      View Details
-                    </Link>
+                    {/* Footer Actions */}
+                    <div className="flex gap-2">
+                      {filter === 'pending' && (service as any).approvalRequest ? (
+                        <>
+                          <button
+                            onClick={() => handleApproveService(service._id, (service as any).approvalRequest?._id)}
+                            disabled={processingServiceId === service._id}
+                            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-green-600 hover:bg-green-700 active:bg-green-800 rounded-lg transition-colors touch-manipulation disabled:opacity-50"
+                          >
+                            <CheckCircle className="w-4 h-4" />
+                            Approve
+                          </button>
+                          <button
+                            onClick={() => handleRejectService(service._id, (service as any).approvalRequest?._id)}
+                            disabled={processingServiceId === service._id}
+                            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-red-600 hover:bg-red-700 active:bg-red-800 rounded-lg transition-colors touch-manipulation disabled:opacity-50"
+                          >
+                            <X className="w-4 h-4" />
+                            Reject
+                          </button>
+                        </>
+                      ) : (
+                        <Link
+                          to={`${ROUTES.SERVICES}/${service._id}`}
+                          className="flex items-center justify-center gap-2 w-full px-4 py-2.5 text-sm font-medium text-gray-600 bg-gray-50 hover:bg-gray-100 active:bg-gray-200 rounded-lg transition-colors touch-manipulation"
+                        >
+                          <Eye className="w-4 h-4" />
+                          View Details
+                        </Link>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}

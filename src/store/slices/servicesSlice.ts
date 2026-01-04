@@ -1,12 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Service } from '@/types';
 
-export type ServiceFilter = 'all' | 'active' | 'inactive';
+export type ServiceFilter = 'all' | 'active' | 'inactive' | 'pending';
 
 export interface ServicesStats {
   total: number;
   active: number;
   inactive: number;
+  pending: number;
   totalBookings: number;
   completedBookings: number;
   totalRevenue: number;
@@ -38,6 +39,7 @@ const initialState: ServicesState = {
     total: 0,
     active: 0,
     inactive: 0,
+    pending: 0,
     totalBookings: 0,
     completedBookings: 0,
     totalRevenue: 0,

@@ -54,6 +54,7 @@ export interface ServiceStats {
   total: number;
   active: number;
   inactive: number;
+  pending?: number;
   totalBookings: number;
   totalRevenue: number;
   averageRating: number;
