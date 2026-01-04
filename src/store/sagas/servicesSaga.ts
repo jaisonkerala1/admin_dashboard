@@ -1,6 +1,6 @@
 import { call, put, takeLatest } from 'redux-saga/effects';
 import type { SagaIterator } from 'redux-saga';
-import { servicesApi } from '@/api';
+import { servicesApi, approvalApi } from '@/api';
 import { Service } from '@/types';
 import {
   fetchServicesRequest,
@@ -27,10 +27,24 @@ function* fetchServicesSaga(): SagaIterator {
     const activeServices = services.filter(s => s.isActive && !s.isDeleted);
     const inactiveServices = services.filter(s => !s.isActive || s.isDeleted);
 
+    // Fetch pending count from approval stats
+    let pendingCount = 0;
+    try {
+      const approvalStatsResponse = yield call(approvalApi.getApprovalStats);
+      if (approvalStatsResponse.success && approvalStatsResponse.data) {
+        pendingCount = approvalStatsResponse.data.pendingServices || 0;
+      }
+    } catch (error) {
+      console.warn('Failed to fetch pending services count:', error);
+      // Fallback: count inactive services as pending (may not be accurate)
+      pendingCount = inactiveServices.length;
+    }
+
     const stats: ServicesStats = {
       total: services.length,
       active: activeServices.length,
       inactive: inactiveServices.length,
+      pending: pendingCount,
       totalBookings: services.reduce((sum, s) => sum + (s.totalBookings || 0), 0),
       completedBookings: services.reduce((sum, s) => sum + (s.completedBookings || 0), 0),
       totalRevenue: services.reduce((sum, s) => sum + (s.price * (s.completedBookings || 0)), 0),
