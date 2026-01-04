@@ -183,8 +183,8 @@ export const Reviews = () => {
       <div className="mb-8">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Reviews</h1>
-            <p className="text-gray-500 mt-1">Manage all reviews and ratings on the platform</p>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-foreground">Reviews</h1>
+            <p className="text-gray-500 dark:text-muted-foreground mt-1">Manage all reviews and ratings on the platform</p>
           </div>
           
           <div className="flex flex-col sm:flex-row gap-3">
@@ -204,7 +204,7 @@ export const Reviews = () => {
                 setEditingReview(null);
                 setShowReviewModal(true);
               }}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium whitespace-nowrap"
+              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-primary-600 dark:bg-primary-500 text-white rounded-lg hover:bg-primary-700 dark:hover:bg-primary-600 transition-colors font-medium whitespace-nowrap"
             >
               <Plus className="w-5 h-5" />
               Add Review
@@ -260,7 +260,7 @@ export const Reviews = () => {
 
       {/* Filter Tabs */}
       {isLoading ? (
-        <div className="mb-6 border-b border-gray-200">
+        <div className="mb-6 border-b border-gray-200 dark:border-border">
           <div className="flex gap-8 overflow-x-auto pb-3">
             {[1, 2, 3, 4, 5, 6, 7].map((i) => (
               <SkeletonBox key={i} width={140} height={20} radius={4} className="shimmer" />
@@ -268,7 +268,7 @@ export const Reviews = () => {
           </div>
         </div>
       ) : (
-        <div className="mb-6 border-b border-gray-200">
+        <div className="mb-6 border-b border-gray-200 dark:border-border">
           <div className="flex gap-8 overflow-x-auto">
             {[
               { key: 'all', label: 'All Reviews', count: stats.total },
@@ -284,13 +284,13 @@ export const Reviews = () => {
                 onClick={() => dispatch(setFilter(key as ReviewFilter))}
                 className={`whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                   filter === key
-                    ? 'border-blue-600 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    ? 'border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400'
+                    : 'border-transparent text-gray-500 dark:text-muted-foreground hover:text-gray-700 dark:hover:text-foreground hover:border-gray-300 dark:hover:border-border'
                 }`}
               >
                 {label}
                 <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${
-                  filter === key ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
+                  filter === key ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'bg-gray-100 dark:bg-muted text-gray-600 dark:text-muted-foreground'
                 }`}>
                   {count}
                 </span>
@@ -311,9 +311,9 @@ export const Reviews = () => {
                 if (input) input.indeterminate = isSomeSelected;
               }}
               onChange={(e) => handleSelectAll(e.target.checked)}
-              className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              className="w-4 h-4 rounded border-gray-300 dark:border-border text-blue-600 focus:ring-blue-500"
             />
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-gray-600 dark:text-muted-foreground">
               {selectedIds.length > 0 ? `${selectedIds.length} selected` : 'Select all'}
             </span>
             {selectedIds.length > 0 && (
@@ -322,7 +322,7 @@ export const Reviews = () => {
                   setModerationReason('');
                   setShowBulkDeleteModal(true);
                 }}
-                className="text-sm text-red-600 hover:text-red-700 font-medium"
+                className="text-sm text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium"
               >
                 Delete Selected
               </button>
@@ -372,7 +372,7 @@ export const Reviews = () => {
             {/* Desktop Table */}
             <div className="hidden lg:block overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50 border-y border-gray-200">
+                <thead className="bg-gray-50 dark:bg-muted border-y border-gray-200 dark:border-border">
                   <tr>
                     <th className="w-12 px-4 py-3">
                       <input
@@ -382,32 +382,32 @@ export const Reviews = () => {
                           if (input) input.indeterminate = isSomeSelected;
                         }}
                         onChange={(e) => handleSelectAll(e.target.checked)}
-                        className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        className="w-4 h-4 rounded border-gray-300 dark:border-border text-blue-600 focus:ring-blue-500"
                       />
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Client</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Astrologer</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Rating</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Review</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Date</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-muted-foreground uppercase tracking-wider">Client</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-muted-foreground uppercase tracking-wider">Astrologer</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-muted-foreground uppercase tracking-wider">Rating</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-muted-foreground uppercase tracking-wider">Review</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-muted-foreground uppercase tracking-wider">Date</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-muted-foreground uppercase tracking-wider">Status</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-muted-foreground uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y divide-gray-200 dark:divide-border">
                   {paginatedReviews.map((review) => (
-                    <tr key={review._id} className="hover:bg-gray-50 transition-colors">
+                    <tr key={review._id} className="hover:bg-gray-50 dark:hover:bg-muted transition-colors">
                       <td className="px-4 py-4">
                         <input
                           type="checkbox"
                           checked={selectedIds.includes(review._id)}
                           onChange={() => handleSelectOne(review._id)}
-                          className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          className="w-4 h-4 rounded border-gray-300 dark:border-border text-blue-600 focus:ring-blue-500"
                         />
                       </td>
                       <td className="px-4 py-4">
                         <div className="flex items-center gap-2">
-                          <p className="font-medium text-gray-900">{review.clientName}</p>
+                          <p className="font-medium text-gray-900 dark:text-foreground">{review.clientName}</p>
                           {review.isAdminCreated && (
                             <PillBadge variant="blue" label="Admin" showDot={false} />
                           )}
@@ -427,24 +427,24 @@ export const Reviews = () => {
                               name={review.astrologerId.name}
                               size="sm"
                             />
-                            <span className="font-medium text-gray-900 hover:text-gray-700">
+                            <span className="font-medium text-gray-900 dark:text-foreground hover:text-gray-700 dark:hover:text-foreground/80">
                               {review.astrologerId.name}
                             </span>
                           </Link>
                         ) : (
-                          <span className="text-gray-400 text-sm">Unknown</span>
+                          <span className="text-gray-400 dark:text-muted-foreground text-sm">Unknown</span>
                         )}
                       </td>
                       <td className="px-4 py-4">
                         <div className="flex items-center gap-2">
                           {getRatingStars(review.rating)}
-                          <span className="text-sm font-medium text-gray-900">{review.rating}</span>
+                          <span className="text-sm font-medium text-gray-900 dark:text-foreground">{review.rating}</span>
                         </div>
                       </td>
                       <td className="px-4 py-4">
-                        <p className="text-sm text-gray-900 max-w-xs truncate">{review.reviewText}</p>
+                        <p className="text-sm text-gray-900 dark:text-foreground max-w-xs truncate">{review.reviewText}</p>
                       </td>
-                      <td className="px-4 py-4 text-sm text-gray-500">
+                      <td className="px-4 py-4 text-sm text-gray-500 dark:text-muted-foreground">
                         {formatDateTime(review.customCreatedAt || review.createdAt)}
                       </td>
                       <td className="px-4 py-4">
@@ -467,7 +467,7 @@ export const Reviews = () => {
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => setReplyingToReview(review)}
-                            className="p-1.5 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                            className="p-1.5 text-gray-600 dark:text-muted-foreground hover:bg-gray-100 dark:hover:bg-muted rounded-lg transition-colors"
                             title={review.astrologerReply ? 'Edit Reply' : 'Reply'}
                           >
                             {review.astrologerReply ? (
@@ -481,7 +481,7 @@ export const Reviews = () => {
                               setEditingReview(review);
                               setShowReviewModal(true);
                             }}
-                            className="p-1.5 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                            className="p-1.5 text-gray-600 dark:text-muted-foreground hover:bg-gray-100 dark:hover:bg-muted rounded-lg transition-colors"
                             title="Edit"
                           >
                             <Edit2 className="w-4 h-4" />
@@ -491,7 +491,7 @@ export const Reviews = () => {
                               setDeletingReviewId(review._id);
                               setModerationReason('');
                             }}
-                            className="p-1.5 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                            className="p-1.5 text-gray-600 dark:text-muted-foreground hover:bg-gray-100 dark:hover:bg-muted rounded-lg transition-colors"
                             title="Delete"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -509,20 +509,20 @@ export const Reviews = () => {
               {paginatedReviews.map((review) => (
               <div
                 key={review._id}
-                  className="bg-white rounded-2xl p-5 border border-gray-100 hover:shadow-md hover:border-gray-200 hover:-translate-y-0.5 transition-all duration-200 ease-out shadow-sm"
+                  className="bg-white dark:bg-card rounded-2xl p-5 border border-gray-100 dark:border-border hover:shadow-md hover:border-gray-200 dark:hover:border-border/80 hover:-translate-y-0.5 transition-all duration-200 ease-out shadow-sm"
                 >
                   <div className="flex items-start gap-3">
                     <input
                       type="checkbox"
                       checked={selectedIds.includes(review._id)}
                       onChange={() => handleSelectOne(review._id)}
-                      className="w-4 h-4 mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      className="w-4 h-4 mt-1 rounded border-gray-300 dark:border-border text-blue-600 focus:ring-blue-500"
                     />
                     <div className="flex-1">
                 <div className="flex items-start justify-between mb-3">
                     <div>
                           <div className="flex items-center gap-2">
-                            <p className="font-semibold text-gray-900">{review.clientName}</p>
+                            <p className="font-semibold text-gray-900 dark:text-foreground">{review.clientName}</p>
                             {review.isAdminCreated && (
                               <PillBadge variant="blue" label="Admin" showDot={false} />
                             )}
@@ -532,19 +532,19 @@ export const Reviews = () => {
                           </div>
                           <div className="flex items-center gap-2 mt-1">
                             {getRatingStars(review.rating)}
-                            <span className="text-sm font-medium text-gray-700">{review.rating}</span>
+                            <span className="text-sm font-medium text-gray-700 dark:text-foreground">{review.rating}</span>
                     </div>
                   </div>
                         <div className="flex items-center gap-2">
                           {review.isVerified && <PillBadge variant="approved" label="✓" showDot={false} />}
                           {review.isPublic ? (
-                            <Eye className="w-4 h-4 text-gray-600" />
+                            <Eye className="w-4 h-4 text-gray-600 dark:text-muted-foreground" />
                           ) : (
-                            <EyeOff className="w-4 h-4 text-gray-400" />
+                            <EyeOff className="w-4 h-4 text-gray-400 dark:text-muted-foreground/70" />
                           )}
                           <button
                             onClick={() => setReplyingToReview(review)}
-                            className="p-1.5 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                            className="p-1.5 text-gray-600 dark:text-muted-foreground hover:bg-gray-100 dark:hover:bg-muted rounded-lg transition-colors"
                             title={review.astrologerReply ? 'Edit Reply' : 'Reply'}
                           >
                             {review.astrologerReply ? (
@@ -558,7 +558,7 @@ export const Reviews = () => {
                               setEditingReview(review);
                               setShowReviewModal(true);
                             }}
-                            className="p-1.5 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                            className="p-1.5 text-gray-600 dark:text-muted-foreground hover:bg-gray-100 dark:hover:bg-muted rounded-lg transition-colors"
                             title="Edit"
                           >
                             <Edit2 className="w-4 h-4" />
@@ -568,7 +568,7 @@ export const Reviews = () => {
                               setDeletingReviewId(review._id);
                               setModerationReason('');
                             }}
-                            className="p-1.5 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                            className="p-1.5 text-gray-600 dark:text-muted-foreground hover:bg-gray-100 dark:hover:bg-muted rounded-lg transition-colors"
                             title="Delete"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -587,17 +587,17 @@ export const Reviews = () => {
                             size="sm"
                           />
                           <div>
-                            <p className="text-xs text-gray-500">Astrologer</p>
-                            <p className="text-sm font-medium text-gray-900 hover:text-gray-700">
+                            <p className="text-xs text-gray-500 dark:text-muted-foreground">Astrologer</p>
+                            <p className="text-sm font-medium text-gray-900 dark:text-foreground hover:text-gray-700 dark:hover:text-foreground/80">
                               {review.astrologerId.name}
                             </p>
                   </div>
                         </Link>
                       )}
                       
-                      <p className="text-sm text-gray-700 mb-3 line-clamp-3">{review.reviewText}</p>
+                      <p className="text-sm text-gray-700 dark:text-foreground mb-3 line-clamp-3">{review.reviewText}</p>
                       
-                      <div className="flex items-center justify-between text-xs text-gray-500">
+                      <div className="flex items-center justify-between text-xs text-gray-500 dark:text-muted-foreground">
                         <span>{formatDateTime(review.customCreatedAt || review.createdAt)}</span>
                         {review.helpfulCount > 0 && (
                           <div className="flex items-center gap-1">
@@ -614,15 +614,15 @@ export const Reviews = () => {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-gray-200">
-                <p className="text-sm text-gray-600">
+              <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-gray-200 dark:border-border">
+                <p className="text-sm text-gray-600 dark:text-muted-foreground">
                   Showing {startIndex + 1}-{startIndex + reviews.length} of {stats.total} reviews
                 </p>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => dispatch(setCurrentPage(currentPage - 1))}
                     disabled={currentPage === 1}
-                    className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="px-3 py-1.5 text-sm border border-gray-300 dark:border-border rounded-lg hover:bg-gray-50 dark:hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-gray-700 dark:text-foreground"
                   >
                     Previous
                   </button>
@@ -634,14 +634,14 @@ export const Reviews = () => {
                           onClick={() => dispatch(setCurrentPage(page))}
                           className={`w-10 h-10 text-sm font-medium rounded-lg transition-colors ${
                             currentPage === page
-                              ? 'bg-blue-600 text-white'
-                              : 'text-gray-700 hover:bg-gray-100'
+                              ? 'bg-blue-600 dark:bg-primary-600 text-white'
+                              : 'text-gray-700 dark:text-foreground hover:bg-gray-100 dark:hover:bg-muted'
                           }`}
                         >
                           {page}
               </button>
                       ) : (
-                        <span key={idx} className="px-2 text-gray-400">
+                        <span key={idx} className="px-2 text-gray-400 dark:text-muted-foreground">
                           {page}
                         </span>
                       )
@@ -650,7 +650,7 @@ export const Reviews = () => {
               <button
                     onClick={() => dispatch(setCurrentPage(currentPage + 1))}
                     disabled={currentPage === totalPages}
-                    className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="px-3 py-1.5 text-sm border border-gray-300 dark:border-border rounded-lg hover:bg-gray-50 dark:hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-gray-700 dark:text-foreground"
                   >
                     Next
               </button>
@@ -700,25 +700,25 @@ export const Reviews = () => {
             
             return (
               <>
-                <p className="text-gray-600">
+                <p className="text-gray-600 dark:text-muted-foreground">
                   Are you sure you want to delete this review? This action cannot be undone.
                 </p>
                 
                 {isUserReview && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Moderation Reason <span className="text-red-500">*</span>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-2">
+                      Moderation Reason <span className="text-red-500 dark:text-red-400">*</span>
                     </label>
                     <textarea
                       value={moderationReason}
                       onChange={(e) => setModerationReason(e.target.value)}
                       placeholder="Please provide a reason for deleting this user-created review..."
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 resize-none"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 dark:bg-card dark:text-foreground resize-none"
                       rows={3}
                       maxLength={500}
                       required
                     />
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-gray-500 dark:text-muted-foreground mt-1">
                       {moderationReason.length}/500 characters
                     </p>
                   </div>
@@ -731,14 +731,14 @@ export const Reviews = () => {
                       setModerationReason('');
                     }}
                     disabled={isDeleting}
-                    className="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-6 py-2.5 border border-gray-300 dark:border-border text-gray-700 dark:text-foreground rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleDeleteReview}
                     disabled={isDeleting || (isUserReview && !moderationReason.trim())}
-                    className="px-6 py-2.5 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-6 py-2.5 bg-red-600 dark:bg-red-700 text-white rounded-lg font-medium hover:bg-red-700 dark:hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isDeleting ? 'Deleting...' : 'Delete'}
                   </button>
@@ -767,25 +767,25 @@ export const Reviews = () => {
             
             return (
               <>
-                <p className="text-gray-600">
-                  Are you sure you want to delete <span className="font-bold text-gray-900">{selectedIds.length}</span> selected reviews? This action cannot be undone.
+                <p className="text-gray-600 dark:text-muted-foreground">
+                  Are you sure you want to delete <span className="font-bold text-gray-900 dark:text-foreground">{selectedIds.length}</span> selected reviews? This action cannot be undone.
                 </p>
                 
                 {hasUserReviews && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Moderation Reason <span className="text-red-500">*</span>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-2">
+                      Moderation Reason <span className="text-red-500 dark:text-red-400">*</span>
                     </label>
                     <textarea
                       value={moderationReason}
                       onChange={(e) => setModerationReason(e.target.value)}
                       placeholder="Please provide a reason for deleting these user-created reviews..."
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 resize-none"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 dark:bg-card dark:text-foreground resize-none"
                       rows={3}
                       maxLength={500}
                       required
                     />
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-gray-500 dark:text-muted-foreground mt-1">
                       {moderationReason.length}/500 characters
                     </p>
                   </div>
@@ -798,14 +798,14 @@ export const Reviews = () => {
                       setModerationReason('');
                     }}
                     disabled={isDeleting}
-                    className="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-6 py-2.5 border border-gray-300 dark:border-border text-gray-700 dark:text-foreground rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleBulkDelete}
                     disabled={isDeleting || (hasUserReviews && !moderationReason.trim())}
-                    className="px-6 py-2.5 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-6 py-2.5 bg-red-600 dark:bg-red-700 text-white rounded-lg font-medium hover:bg-red-700 dark:hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isDeleting ? 'Deleting...' : `Delete ${selectedIds.length} Reviews`}
                   </button>

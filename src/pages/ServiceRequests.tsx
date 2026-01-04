@@ -144,8 +144,8 @@ export const ServiceRequests = () => {
       <div className="mb-8">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Service Requests</h1>
-            <p className="text-gray-500 mt-1">Manage all service requests on the platform</p>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-foreground">Service Requests</h1>
+            <p className="text-gray-500 dark:text-muted-foreground mt-1">Manage all service requests on the platform</p>
           </div>
           
           <div className="flex flex-col sm:flex-row gap-3">
@@ -162,7 +162,7 @@ export const ServiceRequests = () => {
             {/* Create Request Button */}
             <Link
               to={`${ROUTES.SERVICE_REQUESTS}/create`}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium whitespace-nowrap"
+              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 dark:bg-primary-600 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-primary-700 transition-colors font-medium whitespace-nowrap"
             >
               <Plus className="w-5 h-5" />
               Create Request
@@ -218,7 +218,7 @@ export const ServiceRequests = () => {
 
       {/* Filter Tabs */}
       {isLoading ? (
-        <div className="mb-6 border-b border-gray-200">
+        <div className="mb-6 border-b border-gray-200 dark:border-border">
           <div className="flex gap-8 overflow-x-auto pb-3">
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <SkeletonBox key={i} width={100} height={20} radius={4} className="shimmer" />
@@ -226,7 +226,7 @@ export const ServiceRequests = () => {
           </div>
         </div>
       ) : (
-        <div className="mb-6 border-b border-gray-200">
+        <div className="mb-6 border-b border-gray-200 dark:border-border">
           <div className="flex gap-8 overflow-x-auto">
             {[
               { key: 'all', label: 'All', count: stats.total },
@@ -241,13 +241,13 @@ export const ServiceRequests = () => {
                 onClick={() => dispatch(setFilter(key as ServiceRequestFilter))}
                 className={`whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                   filter === key
-                    ? 'border-blue-600 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    ? 'border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400'
+                    : 'border-transparent text-gray-500 dark:text-muted-foreground hover:text-gray-700 dark:hover:text-foreground hover:border-gray-300 dark:hover:border-border'
                 }`}
               >
                 {label}
                 <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${
-                  filter === key ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
+                  filter === key ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'bg-gray-100 dark:bg-muted text-gray-600 dark:text-muted-foreground'
                 }`}>
                   {count}
                 </span>
@@ -268,13 +268,13 @@ export const ServiceRequests = () => {
                 if (input) input.indeterminate = isSomeSelected;
               }}
               onChange={(e) => handleSelectAll(e.target.checked)}
-              className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              className="w-4 h-4 rounded border-gray-300 dark:border-border text-blue-600 focus:ring-blue-500"
             />
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-gray-600 dark:text-muted-foreground">
               {selectedIds.size > 0 ? `${selectedIds.size} selected` : 'Select all'}
             </span>
             {selectedIds.size > 0 && (
-              <button className="text-sm text-red-600 hover:text-red-700 font-medium">
+              <button className="text-sm text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium">
                 Delete Selected
               </button>
             )}
@@ -343,7 +343,7 @@ export const ServiceRequests = () => {
                           <img
                             src={getImageUrl(request.astrologerId.profilePicture) || ''}
                             alt={request.astrologerId.name}
-                            className="w-10 h-10 rounded-full object-cover border border-gray-200"
+                            className="w-10 h-10 rounded-full object-cover border border-gray-200 dark:border-border"
                             onError={(e) => {
                               e.currentTarget.style.display = 'none';
                               const fallback = e.currentTarget.nextElementSibling;
@@ -354,15 +354,15 @@ export const ServiceRequests = () => {
                           />
                         ) : null}
                         <div 
-                          className={`w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200 ${request.astrologerId?.profilePicture ? 'hidden' : ''}`}
+                          className={`w-10 h-10 rounded-full bg-gray-100 dark:bg-muted flex items-center justify-center border border-gray-200 dark:border-border ${request.astrologerId?.profilePicture ? 'hidden' : ''}`}
                         >
-                          <span className="text-gray-600 font-semibold text-sm">
+                          <span className="text-gray-600 dark:text-muted-foreground font-semibold text-sm">
                             {request.astrologerId?.name?.charAt(0).toUpperCase() || request.customerName?.charAt(0).toUpperCase() || 'U'}
                           </span>
                         </div>
                         <div>
-                          <h3 className="font-semibold text-gray-900 text-sm">{request.customerName || 'Unknown Customer'}</h3>
-                          <p className="text-xs text-gray-500">{request.customerPhone || 'No phone'}</p>
+                          <h3 className="font-semibold text-gray-900 dark:text-foreground text-sm">{request.customerName || 'Unknown Customer'}</h3>
+                          <p className="text-xs text-gray-500 dark:text-muted-foreground">{request.customerPhone || 'No phone'}</p>
                         </div>
                       </div>
                       {getStatusBadge(request.status)}
@@ -370,27 +370,27 @@ export const ServiceRequests = () => {
 
                     <div className="space-y-2 mb-4">
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-500">Service:</span>
-                        <span className="font-medium text-gray-900 truncate ml-2">{request.serviceName || 'N/A'}</span>
+                        <span className="text-gray-500 dark:text-muted-foreground">Service:</span>
+                        <span className="font-medium text-gray-900 dark:text-foreground truncate ml-2">{request.serviceName || 'N/A'}</span>
                       </div>
                       {request.astrologerId && (
                         <div className="flex justify-between text-sm">
-                          <span className="text-gray-500">Astrologer:</span>
-                          <span className="font-medium text-gray-900 truncate ml-2">{request.astrologerId.name}</span>
+                          <span className="text-gray-500 dark:text-muted-foreground">Astrologer:</span>
+                          <span className="font-medium text-gray-900 dark:text-foreground truncate ml-2">{request.astrologerId.name}</span>
                         </div>
                       )}
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-500">Price:</span>
-                        <span className="font-medium text-gray-900">{formatCurrency(request.price)}</span>
+                        <span className="text-gray-500 dark:text-muted-foreground">Price:</span>
+                        <span className="font-medium text-gray-900 dark:text-foreground">{formatCurrency(request.price)}</span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-500">Requested:</span>
-                        <span className="font-medium text-gray-900">{formatDate(request.requestedDate)}</span>
+                        <span className="text-gray-500 dark:text-muted-foreground">Requested:</span>
+                        <span className="font-medium text-gray-900 dark:text-foreground">{formatDate(request.requestedDate)}</span>
                       </div>
                       {request.requestedTime && (
                         <div className="flex justify-between text-xs">
-                          <span className="text-gray-500">Time:</span>
-                          <span className="font-medium text-gray-700">{request.requestedTime}</span>
+                          <span className="text-gray-500 dark:text-muted-foreground">Time:</span>
+                          <span className="font-medium text-gray-700 dark:text-foreground">{request.requestedTime}</span>
                         </div>
                       )}
                     </div>
@@ -403,14 +403,14 @@ export const ServiceRequests = () => {
           {totalPages > 1 && (
             <Card>
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 dark:text-muted-foreground">
                   Showing {startIndex + 1}-{Math.min(endIndex, filteredRequests.length)} of {filteredRequests.length} requests
                 </p>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => dispatch(setCurrentPage(currentPage - 1))}
                     disabled={currentPage === 1}
-                    className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="px-3 py-1.5 text-sm border border-gray-300 dark:border-border rounded-lg hover:bg-gray-50 dark:hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-gray-700 dark:text-foreground"
                   >
                     Previous
                   </button>
@@ -422,14 +422,14 @@ export const ServiceRequests = () => {
                           onClick={() => dispatch(setCurrentPage(page))}
                           className={`w-10 h-10 text-sm font-medium rounded-lg transition-colors ${
                             currentPage === page
-                              ? 'bg-blue-600 text-white'
-                              : 'text-gray-700 hover:bg-gray-100'
+                              ? 'bg-blue-600 dark:bg-primary-600 text-white'
+                              : 'text-gray-700 dark:text-foreground hover:bg-gray-100 dark:hover:bg-muted'
                           }`}
                         >
                           {page}
                         </button>
                       ) : (
-                        <span key={idx} className="px-2 text-gray-400">
+                        <span key={idx} className="px-2 text-gray-400 dark:text-muted-foreground">
                           {page}
                         </span>
                       )
@@ -438,7 +438,7 @@ export const ServiceRequests = () => {
                   <button
                     onClick={() => dispatch(setCurrentPage(currentPage + 1))}
                     disabled={currentPage === totalPages}
-                    className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="px-3 py-1.5 text-sm border border-gray-300 dark:border-border rounded-lg hover:bg-gray-50 dark:hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-gray-700 dark:text-foreground"
                   >
                     Next
                   </button>
