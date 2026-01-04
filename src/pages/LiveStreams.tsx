@@ -181,8 +181,8 @@ export const LiveStreams = () => {
       <div className="mb-8">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Live Streams</h1>
-            <p className="text-gray-500 mt-1">Monitor all live streams and replays</p>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-foreground">Live Streams</h1>
+            <p className="text-gray-500 dark:text-muted-foreground mt-1">Monitor all live streams and replays</p>
           </div>
           
           {/* Search Bar */}
@@ -244,7 +244,7 @@ export const LiveStreams = () => {
 
       {/* Filter Tabs */}
       {isLoading ? (
-        <div className="mb-6 border-b border-gray-200">
+        <div className="mb-6 border-b border-gray-200 dark:border-border">
           <div className="flex gap-8 overflow-x-auto pb-3">
             {[1, 2, 3].map((i) => (
               <SkeletonBox key={i} width={100} height={20} radius={4} className="shimmer" />
@@ -252,7 +252,7 @@ export const LiveStreams = () => {
           </div>
         </div>
       ) : (
-        <div className="mb-6 border-b border-gray-200">
+        <div className="mb-6 border-b border-gray-200 dark:border-border">
           <div className="flex gap-8 overflow-x-auto">
             {[
               { key: 'all', label: 'All', count: stats.total },
@@ -264,13 +264,13 @@ export const LiveStreams = () => {
                 onClick={() => dispatch(setFilter(key as LiveStreamFilter))}
                 className={`whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                   filter === key
-                    ? 'border-blue-600 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    ? 'border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400'
+                    : 'border-transparent text-gray-500 dark:text-muted-foreground hover:text-gray-700 dark:hover:text-foreground hover:border-gray-300 dark:hover:border-border'
                 }`}
               >
                 {label}
                 <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${
-                  filter === key ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
+                  filter === key ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'bg-gray-100 dark:bg-muted text-gray-600 dark:text-muted-foreground'
                 }`}>
                   {count}
                 </span>
@@ -301,13 +301,13 @@ export const LiveStreams = () => {
                 if (input) input.indeterminate = isSomeSelected;
               }}
               onChange={(e) => handleSelectAll(e.target.checked)}
-              className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              className="w-4 h-4 rounded border-gray-300 dark:border-border text-blue-600 focus:ring-blue-500"
             />
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-gray-600 dark:text-muted-foreground">
               {selectedIds.length > 0 ? `${selectedIds.length} selected` : 'Select all'}
             </span>
             {selectedIds.length > 0 && (
-              <button className="text-sm text-red-600 hover:text-red-700 font-medium">
+              <button className="text-sm text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium">
                 End Selected
               </button>
             )}
@@ -349,7 +349,7 @@ export const LiveStreams = () => {
             {/* Desktop Table */}
             <div className="hidden lg:block overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50 border-y border-gray-200">
+                <thead className="bg-gray-50 dark:bg-muted border-y border-gray-200 dark:border-border">
                   <tr>
                     <th className="w-12 px-4 py-3">
                       <input
@@ -359,35 +359,35 @@ export const LiveStreams = () => {
                           if (input) input.indeterminate = isSomeSelected;
                         }}
                         onChange={(e) => handleSelectAll(e.target.checked)}
-                        className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        className="w-4 h-4 rounded border-gray-300 dark:border-border text-blue-600 focus:ring-blue-500"
                       />
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Stream</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Astrologer</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Category</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Duration</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Viewers</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Engagement</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-muted-foreground uppercase tracking-wider">Stream</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-muted-foreground uppercase tracking-wider">Astrologer</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-muted-foreground uppercase tracking-wider">Category</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-muted-foreground uppercase tracking-wider">Duration</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-muted-foreground uppercase tracking-wider">Viewers</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-muted-foreground uppercase tracking-wider">Engagement</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-muted-foreground uppercase tracking-wider">Status</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-muted-foreground uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y divide-gray-200 dark:divide-border">
                   {paginatedStreams.map((stream) => (
-                    <tr key={stream._id} className="hover:bg-gray-50 transition-colors">
+                    <tr key={stream._id} className="hover:bg-gray-50 dark:hover:bg-muted transition-colors">
                       <td className="px-4 py-4">
                         <input
                           type="checkbox"
                           checked={selectedIds.includes(stream._id)}
                           onChange={() => handleSelectOne(stream._id)}
-                          className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          className="w-4 h-4 rounded border-gray-300 dark:border-border text-blue-600 focus:ring-blue-500"
                         />
                       </td>
                       <td className="px-4 py-4">
                         <div className="max-w-xs">
-                          <p className="font-medium text-gray-900 truncate">{stream.title}</p>
+                          <p className="font-medium text-gray-900 dark:text-foreground truncate">{stream.title}</p>
                           {stream.description && (
-                            <p className="text-xs text-gray-500 truncate mt-1">{stream.description}</p>
+                            <p className="text-xs text-gray-500 dark:text-muted-foreground truncate mt-1">{stream.description}</p>
                           )}
                         </div>
                       </td>
@@ -402,36 +402,36 @@ export const LiveStreams = () => {
                               name={stream.astrologerId.name}
                               size="sm"
                             />
-                            <span className="font-medium text-gray-900 hover:text-blue-600">
+                            <span className="font-medium text-gray-900 dark:text-foreground hover:text-blue-600 dark:hover:text-blue-400">
                               {stream.astrologerId.name}
                             </span>
                           </Link>
                         ) : (
-                          <span className="text-gray-400 text-sm">Unknown</span>
+                          <span className="text-gray-400 dark:text-muted-foreground text-sm">Unknown</span>
                         )}
                       </td>
                       <td className="px-4 py-4">
-                        <span className="text-sm text-gray-900">{stream.category || '-'}</span>
+                        <span className="text-sm text-gray-900 dark:text-foreground">{stream.category || '-'}</span>
                       </td>
-                      <td className="px-4 py-4 text-sm text-gray-900">
+                      <td className="px-4 py-4 text-sm text-gray-900 dark:text-foreground">
                         {formatDuration(stream.startedAt, stream.endedAt)}
                       </td>
                       <td className="px-4 py-4">
                         <div className="flex items-center gap-1 text-sm">
-                          <Users className="w-4 h-4 text-gray-400" />
-                          <span className="font-medium text-gray-900">{stream.viewerCount || 0}</span>
-                          <span className="text-gray-500 text-xs">/ {stream.peakViewerCount || 0}</span>
+                          <Users className="w-4 h-4 text-gray-400 dark:text-muted-foreground" />
+                          <span className="font-medium text-gray-900 dark:text-foreground">{stream.viewerCount || 0}</span>
+                          <span className="text-gray-500 dark:text-muted-foreground text-xs">/ {stream.peakViewerCount || 0}</span>
                         </div>
                       </td>
                       <td className="px-4 py-4">
                         <div className="flex items-center gap-3 text-sm">
                           <div className="flex items-center gap-1">
                             <Eye className="w-4 h-4 text-purple-500" />
-                            <span className="text-gray-900">{formatNumber(stream.totalViews)}</span>
+                            <span className="text-gray-900 dark:text-foreground">{formatNumber(stream.totalViews)}</span>
                           </div>
                           <div className="flex items-center gap-1">
                             <Heart className="w-4 h-4 text-pink-500" />
-                            <span className="text-gray-900">{formatNumber(stream.likes)}</span>
+                            <span className="text-gray-900 dark:text-foreground">{formatNumber(stream.likes)}</span>
                           </div>
                     </div>
                       </td>
@@ -443,7 +443,7 @@ export const LiveStreams = () => {
                               setDetailStream(stream);
                               setShowDetailModal(true);
                             }}
-                            className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            className="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
                             title="View Stream Details"
                           >
                             <Info className="w-4 h-4" />
@@ -452,14 +452,14 @@ export const LiveStreams = () => {
                             <>
                               <button
                                 onClick={() => setSelectedStream(stream)}
-                                className="flex items-center gap-1.5 px-3 py-1.5 bg-red-500 text-white text-sm font-medium rounded-lg hover:bg-red-600 transition-colors"
+                                className="flex items-center gap-1.5 px-3 py-1.5 bg-red-500 dark:bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-600 dark:hover:bg-red-700 transition-colors"
                                 title="Watch Live Stream"
                               >
                                 <Play className="w-4 h-4" />
                                 Watch
                               </button>
                               <button
-                                className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                className="p-1.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                                 title="End Stream"
                               >
                                 <Ban className="w-4 h-4" />
@@ -479,17 +479,17 @@ export const LiveStreams = () => {
               {paginatedStreams.map((stream) => (
                 <div
                   key={stream._id}
-                  className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50/30 transition-all"
+                  className="flex items-center gap-4 p-4 border border-gray-200 dark:border-border rounded-lg hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50/30 dark:hover:bg-blue-900/20 transition-all"
                 >
                   <input
                     type="checkbox"
                     checked={selectedIds.includes(stream._id)}
                     onChange={() => handleSelectOne(stream._id)}
-                    className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="w-4 h-4 rounded border-gray-300 dark:border-border text-blue-600 focus:ring-blue-500"
                   />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-3 mb-2">
-                      <p className="font-semibold text-gray-900 truncate">{stream.title}</p>
+                      <p className="font-semibold text-gray-900 dark:text-foreground truncate">{stream.title}</p>
                       {stream.astrologerId && (
                         <Link 
                           to={`${ROUTES.ASTROLOGERS}/${stream.astrologerId._id}`}
@@ -500,21 +500,21 @@ export const LiveStreams = () => {
                             name={stream.astrologerId.name}
                             size="sm"
                           />
-                          <span className="text-sm text-gray-600 hover:text-blue-600">
+                          <span className="text-sm text-gray-600 dark:text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400">
                             {stream.astrologerId.name}
                           </span>
                         </Link>
                       )}
                     </div>
                     <div className="flex flex-wrap items-center gap-3 text-sm">
-                      <span className="text-gray-600">{formatDuration(stream.startedAt, stream.endedAt)}</span>
+                      <span className="text-gray-600 dark:text-muted-foreground">{formatDuration(stream.startedAt, stream.endedAt)}</span>
                       <div className="flex items-center gap-1">
                         <Eye className="w-3.5 h-3.5 text-purple-500" />
-                        <span>{formatNumber(stream.totalViews)}</span>
+                        <span className="dark:text-foreground">{formatNumber(stream.totalViews)}</span>
                       </div>
                       <div className="flex items-center gap-1">
                         <Heart className="w-3.5 h-3.5 text-pink-500" />
-                        <span>{formatNumber(stream.likes)}</span>
+                        <span className="dark:text-foreground">{formatNumber(stream.likes)}</span>
                       </div>
                       {getStatusBadge(stream)}
                       <button
@@ -522,7 +522,7 @@ export const LiveStreams = () => {
                           setDetailStream(stream);
                           setShowDetailModal(true);
                         }}
-                        className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        className="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
                         title="View Details"
                       >
                         <Info className="w-4 h-4" />
@@ -530,7 +530,7 @@ export const LiveStreams = () => {
                       {stream.isLive && (
                         <button
                           onClick={() => setSelectedStream(stream)}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-red-500 text-white text-sm font-medium rounded-lg hover:bg-red-600 transition-colors"
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-red-500 dark:bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-600 dark:hover:bg-red-700 transition-colors"
                         >
                           <Play className="w-4 h-4" />
                           Watch
@@ -547,23 +547,23 @@ export const LiveStreams = () => {
               {paginatedStreams.map((stream) => (
                 <div
                   key={stream._id}
-                  className="border border-gray-200 rounded-xl p-4 hover:border-blue-300 hover:shadow-sm transition-all"
+                  className="border border-gray-200 dark:border-border rounded-xl p-4 hover:border-blue-300 dark:hover:border-blue-500 hover:shadow-sm transition-all bg-white dark:bg-card"
                 >
                   <div className="flex items-start gap-3 mb-3">
                     <input
                       type="checkbox"
                       checked={selectedIds.includes(stream._id)}
                       onChange={() => handleSelectOne(stream._id)}
-                      className="w-4 h-4 mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      className="w-4 h-4 mt-1 rounded border-gray-300 dark:border-border text-blue-600 focus:ring-blue-500"
                     />
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
-                        <p className="font-semibold text-gray-900">{stream.title}</p>
+                        <p className="font-semibold text-gray-900 dark:text-foreground">{stream.title}</p>
                         {getStatusBadge(stream)}
                 </div>
 
                       {stream.description && (
-                        <p className="text-sm text-gray-500 mb-3 line-clamp-2">{stream.description}</p>
+                        <p className="text-sm text-gray-500 dark:text-muted-foreground mb-3 line-clamp-2">{stream.description}</p>
                       )}
                       
                       {stream.astrologerId && (
@@ -577,8 +577,8 @@ export const LiveStreams = () => {
                       size="sm"
                     />
                     <div>
-                            <p className="text-xs text-gray-500">Hosted by</p>
-                            <p className="text-sm font-medium text-gray-900 hover:text-blue-600">
+                            <p className="text-xs text-gray-500 dark:text-muted-foreground">Hosted by</p>
+                            <p className="text-sm font-medium text-gray-900 dark:text-foreground hover:text-blue-600 dark:hover:text-blue-400">
                               {stream.astrologerId.name}
                             </p>
                           </div>
@@ -587,23 +587,23 @@ export const LiveStreams = () => {
                       
                       <div className="grid grid-cols-3 gap-3 text-sm mb-3">
                         <div>
-                          <p className="text-gray-500 text-xs mb-1">Duration</p>
-                          <p className="font-medium text-gray-900">
+                          <p className="text-gray-500 dark:text-muted-foreground text-xs mb-1">Duration</p>
+                          <p className="font-medium text-gray-900 dark:text-foreground">
                             {formatDuration(stream.startedAt, stream.endedAt)}
                           </p>
                         </div>
                         <div>
-                          <p className="text-gray-500 text-xs mb-1">Views</p>
+                          <p className="text-gray-500 dark:text-muted-foreground text-xs mb-1">Views</p>
                           <div className="flex items-center gap-1">
                             <Eye className="w-3.5 h-3.5 text-purple-500" />
-                            <span className="font-medium text-gray-900">{formatNumber(stream.totalViews)}</span>
+                            <span className="font-medium text-gray-900 dark:text-foreground">{formatNumber(stream.totalViews)}</span>
                     </div>
                   </div>
                         <div>
-                          <p className="text-gray-500 text-xs mb-1">Likes</p>
+                          <p className="text-gray-500 dark:text-muted-foreground text-xs mb-1">Likes</p>
                           <div className="flex items-center gap-1">
                             <Heart className="w-3.5 h-3.5 text-pink-500" />
-                            <span className="font-medium text-gray-900">{formatNumber(stream.likes)}</span>
+                            <span className="font-medium text-gray-900 dark:text-foreground">{formatNumber(stream.likes)}</span>
                           </div>
                     </div>
                   </div>
@@ -615,19 +615,19 @@ export const LiveStreams = () => {
                               setDetailStream(stream);
                               setShowDetailModal(true);
                             }}
-                            className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm border border-blue-200 text-blue-600 font-medium rounded-lg hover:bg-blue-50 transition-colors"
+                            className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm border border-blue-200 dark:border-blue-700 text-blue-600 dark:text-blue-400 font-medium rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
                           >
                             <Info className="w-4 h-4" />
                             Details
                           </button>
                           <button
                             onClick={() => setSelectedStream(stream)}
-                            className="flex-[2] flex items-center justify-center gap-2 px-3 py-2 text-sm bg-red-500 text-white font-medium rounded-lg hover:bg-red-600 transition-colors"
+                            className="flex-[2] flex items-center justify-center gap-2 px-3 py-2 text-sm bg-red-500 dark:bg-red-600 text-white font-medium rounded-lg hover:bg-red-600 dark:hover:bg-red-700 transition-colors"
                           >
                             <Play className="w-4 h-4" />
                             Watch Live
                           </button>
-                          <button className="px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg border border-red-200">
+                          <button className="px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
                             <Ban className="w-4 h-4" />
                           </button>
                         </div>
@@ -638,7 +638,7 @@ export const LiveStreams = () => {
                             setDetailStream(stream);
                             setShowDetailModal(true);
                           }}
-                          className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm border border-blue-200 text-blue-600 font-medium rounded-lg hover:bg-blue-50 transition-colors"
+                          className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm border border-blue-200 dark:border-blue-700 text-blue-600 dark:text-blue-400 font-medium rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
                         >
                           <Info className="w-4 h-4" />
                           View Stream Analytics
@@ -652,15 +652,15 @@ export const LiveStreams = () => {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-gray-200">
-                <p className="text-sm text-gray-600">
+              <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-gray-200 dark:border-border">
+                <p className="text-sm text-gray-600 dark:text-muted-foreground">
                   Showing {startIndex + 1}-{Math.min(endIndex, filteredStreams.length)} of {filteredStreams.length} streams
                 </p>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => dispatch(setCurrentPage(currentPage - 1))}
                     disabled={currentPage === 1}
-                    className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="px-3 py-1.5 text-sm border border-gray-300 dark:border-border rounded-lg hover:bg-gray-50 dark:hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-gray-700 dark:text-foreground"
                   >
                     Previous
                   </button>
@@ -672,14 +672,14 @@ export const LiveStreams = () => {
                           onClick={() => dispatch(setCurrentPage(page))}
                           className={`w-10 h-10 text-sm font-medium rounded-lg transition-colors ${
                             currentPage === page
-                              ? 'bg-blue-600 text-white'
-                              : 'text-gray-700 hover:bg-gray-100'
+                              ? 'bg-blue-600 dark:bg-primary-600 text-white'
+                              : 'text-gray-700 dark:text-foreground hover:bg-gray-100 dark:hover:bg-muted'
                           }`}
                         >
                           {page}
                         </button>
                       ) : (
-                        <span key={idx} className="px-2 text-gray-400">
+                        <span key={idx} className="px-2 text-gray-400 dark:text-muted-foreground">
                           {page}
                         </span>
                       )
@@ -688,7 +688,7 @@ export const LiveStreams = () => {
                   <button
                     onClick={() => dispatch(setCurrentPage(currentPage + 1))}
                     disabled={currentPage === totalPages}
-                    className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="px-3 py-1.5 text-sm border border-gray-300 dark:border-border rounded-lg hover:bg-gray-50 dark:hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-gray-700 dark:text-foreground"
                   >
                     Next
                   </button>

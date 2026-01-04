@@ -40,37 +40,38 @@ export const CommunicationTrends: React.FC = () => {
     <Card
       title={
         <div className="flex items-center gap-2">
-          <TrendingUp className="w-5 h-5 text-blue-600" />
-          <span>Communication Trends</span>
+          <TrendingUp className="w-5 h-5 text-blue-600 dark:text-primary-400" />
+          <span className="dark:text-foreground">Communication Trends</span>
         </div>
       }
     >
       <div className="h-80">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted))" />
             <XAxis
               dataKey="dateLabel"
-              tick={{ fontSize: 12 }}
-              stroke="#9ca3af"
+              tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
+              stroke="hsl(var(--muted))"
             />
             <YAxis
-              tick={{ fontSize: 12 }}
-              stroke="#9ca3af"
+              tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
+              stroke="hsl(var(--muted))"
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: '#fff',
-                border: '1px solid #e5e7eb',
+                backgroundColor: 'hsl(var(--card))',
+                border: '1px solid hsl(var(--border))',
                 borderRadius: '8px',
                 padding: '8px 12px',
               }}
-              labelStyle={{ fontWeight: 600, marginBottom: '4px' }}
+              labelStyle={{ fontWeight: 600, marginBottom: '4px', color: 'hsl(var(--muted-foreground))' }}
+              itemStyle={{ color: 'hsl(var(--foreground))' }}
               formatter={(value: number) => formatNumber(value)}
             />
             <Legend
               formatter={(value) => (
-                <span style={{ color: '#374151', fontSize: '14px' }}>{value}</span>
+                <span style={{ color: 'hsl(var(--muted-foreground))', fontSize: '14px' }}>{value}</span>
               )}
             />
             <Line

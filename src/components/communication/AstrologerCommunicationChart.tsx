@@ -50,13 +50,13 @@ export const AstrologerCommunicationChart: React.FC = () => {
       title={
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Users className="w-5 h-5 text-blue-600" />
-            <span>Communication by Astrologer</span>
+            <Users className="w-5 h-5 text-blue-600 dark:text-primary-400" />
+            <span className="dark:text-foreground">Communication by Astrologer</span>
           </div>
           <select
             value={topN}
             onChange={(e) => setTopN(Number(e.target.value))}
-            className="text-sm border border-gray-300 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="text-sm border border-gray-300 dark:border-border rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-card dark:text-foreground"
           >
             <option value={5}>Top 5</option>
             <option value={10}>Top 10</option>
@@ -69,27 +69,28 @@ export const AstrologerCommunicationChart: React.FC = () => {
       <div className="h-96">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted))" />
             <XAxis
               dataKey="name"
               angle={-45}
               textAnchor="end"
               height={100}
-              tick={{ fontSize: 12 }}
-              stroke="#9ca3af"
+              tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
+              stroke="hsl(var(--muted))"
             />
             <YAxis
-              tick={{ fontSize: 12 }}
-              stroke="#9ca3af"
+              tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
+              stroke="hsl(var(--muted))"
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: '#fff',
-                border: '1px solid #e5e7eb',
+                backgroundColor: 'hsl(var(--card))',
+                border: '1px solid hsl(var(--border))',
                 borderRadius: '8px',
                 padding: '8px 12px',
               }}
-              labelStyle={{ fontWeight: 600, marginBottom: '4px' }}
+              labelStyle={{ fontWeight: 600, marginBottom: '4px', color: 'hsl(var(--muted-foreground))' }}
+              itemStyle={{ color: 'hsl(var(--foreground))' }}
               formatter={(value: number) => formatNumber(value)}
               labelFormatter={(label, payload) => {
                 if (payload && payload[0]) {
@@ -100,7 +101,7 @@ export const AstrologerCommunicationChart: React.FC = () => {
             />
             <Legend
               formatter={(value) => (
-                <span style={{ color: '#374151', fontSize: '14px' }}>{value}</span>
+                <span style={{ color: 'hsl(var(--muted-foreground))', fontSize: '14px' }}>{value}</span>
               )}
             />
             <Bar dataKey="messages" stackId="a" fill="#3b82f6" name="Messages" />

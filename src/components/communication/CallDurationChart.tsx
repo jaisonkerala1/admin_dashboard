@@ -47,36 +47,37 @@ export const CallDurationChart: React.FC = () => {
     <Card
       title={
         <div className="flex items-center gap-2">
-          <Clock className="w-5 h-5 text-amber-600" />
-          <span>Average Call Duration by Astrologer</span>
+          <Clock className="w-5 h-5 text-amber-600 dark:text-amber-500" />
+          <span className="dark:text-foreground">Average Call Duration by Astrologer</span>
         </div>
       }
     >
       <div className="h-96">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted))" />
             <XAxis
               dataKey="name"
               angle={-45}
               textAnchor="end"
               height={100}
-              tick={{ fontSize: 12 }}
-              stroke="#9ca3af"
+              tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
+              stroke="hsl(var(--muted))"
             />
             <YAxis
-              label={{ value: 'Minutes', angle: -90, position: 'insideLeft' }}
-              tick={{ fontSize: 12 }}
-              stroke="#9ca3af"
+              label={{ value: 'Minutes', angle: -90, position: 'insideLeft', fill: 'hsl(var(--muted-foreground))' }}
+              tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
+              stroke="hsl(var(--muted))"
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: '#fff',
-                border: '1px solid #e5e7eb',
+                backgroundColor: 'hsl(var(--card))',
+                border: '1px solid hsl(var(--border))',
                 borderRadius: '8px',
                 padding: '8px 12px',
               }}
-              labelStyle={{ fontWeight: 600, marginBottom: '4px' }}
+              labelStyle={{ fontWeight: 600, marginBottom: '4px', color: 'hsl(var(--muted-foreground))' }}
+              itemStyle={{ color: 'hsl(var(--foreground))' }}
               formatter={(value: number) => `${value.toFixed(1)} min`}
               labelFormatter={(label, payload) => {
                 if (payload && payload[0]) {
@@ -87,7 +88,7 @@ export const CallDurationChart: React.FC = () => {
             />
             <Legend
               formatter={(value) => (
-                <span style={{ color: '#374151', fontSize: '14px' }}>{value}</span>
+                <span style={{ color: 'hsl(var(--muted-foreground))', fontSize: '14px' }}>{value}</span>
               )}
             />
             <Bar dataKey="voiceDuration" fill="#10b981" name="Voice Calls" />

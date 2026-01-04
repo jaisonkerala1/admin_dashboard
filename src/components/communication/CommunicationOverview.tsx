@@ -95,35 +95,37 @@ export const CommunicationOverview: React.FC = () => {
               </Pie>
               <Tooltip
                 contentStyle={{
-                  backgroundColor: '#fff',
-                  border: '1px solid #e5e7eb',
+                  backgroundColor: 'hsl(var(--card))',
+                  border: '1px solid hsl(var(--border))',
                   borderRadius: '8px',
                   padding: '8px 12px',
                 }}
+                labelStyle={{ color: 'hsl(var(--muted-foreground))' }}
+                itemStyle={{ color: 'hsl(var(--foreground))' }}
                 formatter={(value: number) => formatNumber(value)}
               />
               <Legend
                 verticalAlign="bottom"
                 height={36}
                 formatter={(value) => (
-                  <span style={{ color: '#374151', fontSize: '14px' }}>{value}</span>
+                  <span style={{ color: 'hsl(var(--muted-foreground))', fontSize: '14px' }}>{value}</span>
                 )}
               />
             </PieChart>
           </ResponsiveContainer>
         </div>
-        <div className="mt-4 pt-4 border-t border-gray-100 grid grid-cols-3 gap-4 text-center">
+        <div className="mt-4 pt-4 border-t border-gray-100 dark:border-border grid grid-cols-3 gap-4 text-center">
           <div>
-            <p className="text-2xl font-bold text-gray-900">{formatNumber(stats.totalMessages)}</p>
-            <p className="text-sm text-gray-500">Messages</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-foreground">{formatNumber(stats.totalMessages)}</p>
+            <p className="text-sm text-gray-500 dark:text-muted-foreground">Messages</p>
           </div>
           <div>
-            <p className="text-2xl font-bold text-gray-900">{formatNumber(stats.totalVoiceCalls)}</p>
-            <p className="text-sm text-gray-500">Voice Calls</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-foreground">{formatNumber(stats.totalVoiceCalls)}</p>
+            <p className="text-sm text-gray-500 dark:text-muted-foreground">Voice Calls</p>
           </div>
           <div>
-            <p className="text-2xl font-bold text-gray-900">{formatNumber(stats.totalVideoCalls)}</p>
-            <p className="text-sm text-gray-500">Video Calls</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-foreground">{formatNumber(stats.totalVideoCalls)}</p>
+            <p className="text-sm text-gray-500 dark:text-muted-foreground">Video Calls</p>
           </div>
         </div>
       </Card>

@@ -438,18 +438,18 @@ export const Communication = () => {
   }
 
   return (
-    <div className="h-[calc(100vh-4rem)] flex bg-gray-50">
+    <div className="h-[calc(100vh-4rem)] flex bg-gray-50 dark:bg-background">
       {/* Sidebar - Astrologer List */}
       <div className={`${
         selectedAstrologer ? 'hidden lg:flex' : 'flex'
-      } w-full lg:w-96 flex-col bg-white border-r border-gray-200`}>
+      } w-full lg:w-96 flex-col bg-white dark:bg-card border-r border-gray-200 dark:border-border`}>
         {/* Header */}
-        <div className="p-4 border-b border-gray-200">
+        <div className="p-4 border-b border-gray-200 dark:border-border">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-900">Communication</h2>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-foreground">Communication</h2>
             <Link
               to="/"
-              className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+              className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 dark:text-muted-foreground hover:text-indigo-600 dark:hover:text-primary-400 hover:bg-indigo-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors"
               title="Back to Dashboard"
             >
               <Home className="w-4 h-4" />
@@ -473,8 +473,8 @@ export const Communication = () => {
               onClick={() => setFilterStatus('all')}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 filterStatus === 'all'
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-indigo-600 dark:bg-primary-600 text-white'
+                  : 'bg-gray-100 dark:bg-muted text-gray-700 dark:text-foreground hover:bg-gray-200 dark:hover:bg-muted/80'
               }`}
             >
               All ({astrologers.length})
@@ -483,8 +483,8 @@ export const Communication = () => {
               onClick={() => setFilterStatus('online')}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 filterStatus === 'online'
-                  ? 'bg-green-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-green-600 dark:bg-green-700 text-white'
+                  : 'bg-gray-100 dark:bg-muted text-gray-700 dark:text-foreground hover:bg-gray-200 dark:hover:bg-muted/80'
               }`}
             >
               Online ({astrologers.filter(a => a.isOnline).length})
@@ -493,8 +493,8 @@ export const Communication = () => {
               onClick={() => setFilterStatus('offline')}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 filterStatus === 'offline'
-                  ? 'bg-gray-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-gray-600 dark:bg-gray-700 text-white'
+                  : 'bg-gray-100 dark:bg-muted text-gray-700 dark:text-foreground hover:bg-gray-200 dark:hover:bg-muted/80'
               }`}
             >
               Offline ({astrologers.filter(a => !a.isOnline).length})
@@ -509,17 +509,17 @@ export const Communication = () => {
               <Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />
             </div>
           ) : filteredAstrologers.length === 0 ? (
-            <div className="flex items-center justify-center h-full text-gray-500">
+            <div className="flex items-center justify-center h-full text-gray-500 dark:text-muted-foreground">
               <p className="text-sm">No astrologers found</p>
             </div>
           ) : (
-            <div className="divide-y divide-gray-100">
+            <div className="divide-y divide-gray-100 dark:divide-border">
               {filteredAstrologers.map((astrologer) => (
                 <button
                   key={astrologer._id}
                   onClick={() => handleSelectAstrologer(astrologer)}
-                  className={`w-full p-4 flex items-center gap-3 hover:bg-gray-50 transition-colors ${
-                    selectedAstrologer?._id === astrologer._id ? 'bg-indigo-50' : ''
+                  className={`w-full p-4 flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-muted transition-colors ${
+                    selectedAstrologer?._id === astrologer._id ? 'bg-indigo-50 dark:bg-primary-900/20' : ''
                   }`}
                 >
                   <RoundAvatar
@@ -531,12 +531,12 @@ export const Communication = () => {
                   
                   <div className="flex-1 text-left min-w-0">
                     <div className="flex items-center justify-between gap-2 mb-1">
-                      <h3 className="font-semibold text-gray-900 truncate">{astrologer.name}</h3>
+                      <h3 className="font-semibold text-gray-900 dark:text-foreground truncate">{astrologer.name}</h3>
                       {astrologer.isOnline && (
-                        <span className="text-xs text-green-600 font-medium whitespace-nowrap">● Online</span>
+                        <span className="text-xs text-green-600 dark:text-green-400 font-medium whitespace-nowrap">● Online</span>
                       )}
                     </div>
-                    <p className="text-sm text-gray-500 truncate mb-1">
+                    <p className="text-sm text-gray-500 dark:text-muted-foreground truncate mb-1">
                       {getLastMessagePreview(astrologer._id)}
                     </p>
                     <div className="flex items-center gap-2">
@@ -547,9 +547,9 @@ export const Communication = () => {
                   </div>
 
                   <div className="flex gap-1">
-                    <MessageCircle className="w-5 h-5 text-gray-400" />
+                    <MessageCircle className="w-5 h-5 text-gray-400 dark:text-muted-foreground" />
                     {(unreadCounts[astrologer._id] ?? 0) > 0 && (
-                      <span className="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-semibold text-white bg-indigo-600 rounded-full">
+                      <span className="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-semibold text-white bg-indigo-600 dark:bg-primary-600 rounded-full">
                         {unreadCounts[astrologer._id]}
                       </span>
                     )}
@@ -572,10 +572,10 @@ export const Communication = () => {
             onCall={handleCall}
           />
         ) : (
-          <div className="flex-1 flex items-center justify-center bg-white">
-            <div className="text-center text-gray-500">
-              <MessageCircle className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-              <p className="text-lg font-medium">Select an astrologer to start chatting</p>
+          <div className="flex-1 flex items-center justify-center bg-white dark:bg-background">
+            <div className="text-center text-gray-500 dark:text-muted-foreground">
+              <MessageCircle className="w-16 h-16 mx-auto mb-4 text-gray-300 dark:text-muted-foreground/50" />
+              <p className="text-lg font-medium dark:text-foreground">Select an astrologer to start chatting</p>
               <p className="text-sm mt-2">
                 Choose from the list to send messages or make calls
               </p>
