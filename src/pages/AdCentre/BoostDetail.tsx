@@ -321,6 +321,31 @@ export const BoostDetail = () => {
                     />
                   </div>
                 )}
+                <div className="col-span-2">
+                  <p className="text-sm text-gray-600 mb-2">Categories</p>
+                  <div className="flex flex-wrap gap-2">
+                    {(boost.categories && boost.categories.length > 0 ? boost.categories : ['general']).map((category: string) => {
+                      const categoryLabels: Record<string, string> = {
+                        general: '🌟 General',
+                        astrology: '🔮 Astrology',
+                        tarot: '🃏 Tarot',
+                        numerology: '🔢 Numerology',
+                        palmistry: '👋 Palmistry',
+                        healing: '✨ Healing',
+                        meditation: '🧘 Meditation',
+                        spiritual: '🙏 Spiritual',
+                      };
+                      return (
+                        <span
+                          key={category}
+                          className="px-3 py-1.5 bg-purple-50 text-purple-700 rounded-full text-sm font-medium border border-purple-200"
+                        >
+                          {categoryLabels[category] || category.charAt(0).toUpperCase() + category.slice(1)}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
             </Card>
 
