@@ -306,8 +306,8 @@ export const AstrologersList = () => {
       <div className="mb-8">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Astrologers</h1>
-            <p className="text-gray-500 mt-1">Manage all astrologers on the platform</p>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-foreground">Astrologers</h1>
+            <p className="text-gray-500 dark:text-muted-foreground mt-1">Manage all astrologers on the platform</p>
           </div>
           
           {/* Search Bar */}
@@ -354,7 +354,7 @@ export const AstrologersList = () => {
           </div>
 
       {/* Filter Tabs */}
-      <div className="mb-6 border-b border-gray-200">
+      <div className="mb-6 border-b border-gray-200 dark:border-border">
         <div className="flex gap-8 overflow-x-auto">
           {[
             { key: 'all', label: 'All', count: stats.total },
@@ -369,8 +369,8 @@ export const AstrologersList = () => {
               onClick={() => setFilter(tab.key as FilterTab)}
               className={`pb-4 px-2 border-b-2 transition-colors whitespace-nowrap ${
                 filter === tab.key
-                  ? 'border-blue-500 text-blue-600 font-semibold'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
+                  ? 'border-blue-500 dark:border-blue-400 text-blue-600 dark:text-blue-400 font-semibold'
+                  : 'border-transparent text-gray-500 dark:text-muted-foreground hover:text-gray-700 dark:hover:text-foreground'
               }`}
             >
               {tab.label} <span className="text-sm">({tab.count})</span>
@@ -394,7 +394,7 @@ export const AstrologersList = () => {
           
           {selectedIds.size > 0 && (
             <div className="flex items-center gap-3">
-              <span className="text-sm text-gray-600">{selectedIds.size} selected</span>
+              <span className="text-sm text-gray-600 dark:text-muted-foreground">{selectedIds.size} selected</span>
               <button className="btn btn-sm btn-primary">Approve</button>
               <button className="btn btn-sm btn-danger">Deactivate</button>
               <button 
@@ -423,7 +423,7 @@ export const AstrologersList = () => {
             {/* Desktop Table */}
             <div className="hidden lg:block overflow-x-auto">
             <table className="w-full">
-                <thead className="border-b border-gray-200">
+                <thead className="border-b border-gray-200 dark:border-border">
                 <tr>
                     <th className="px-4 py-3 text-left w-12">
                       <input
@@ -433,30 +433,30 @@ export const AstrologersList = () => {
                           if (input) input.indeterminate = isSomeSelected;
                         }}
                         onChange={(e) => handleSelectAll(e.target.checked)}
-                        className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        className="w-4 h-4 rounded border-gray-300 dark:border-border text-blue-600 focus:ring-blue-500"
                       />
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Name</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Contact</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Reviews</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Charges</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Specialization</th>
-                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Action</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-muted-foreground uppercase tracking-wider">Name</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-muted-foreground uppercase tracking-wider">Contact</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-muted-foreground uppercase tracking-wider">Status</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-muted-foreground uppercase tracking-wider">Reviews</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-muted-foreground uppercase tracking-wider">Charges</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-muted-foreground uppercase tracking-wider">Specialization</th>
+                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 dark:text-muted-foreground uppercase tracking-wider">Action</th>
                 </tr>
               </thead>
                 <tbody>
                   {paginatedAstrologers.map((astrologer) => (
                     <tr 
                       key={astrologer._id} 
-                      className="border-b border-gray-100 hover:bg-gray-50 transition-colors group"
+                      className="border-b border-gray-100 dark:border-border hover:bg-gray-50 dark:hover:bg-muted transition-colors group"
                     >
                       <td className="px-4 py-4">
                         <input
                           type="checkbox"
                           checked={selectedIds.has(astrologer._id)}
                           onChange={(e) => handleSelectOne(astrologer._id, e.target.checked)}
-                          className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          className="w-4 h-4 rounded border-gray-300 dark:border-border text-blue-600 focus:ring-blue-500"
                         />
                       </td>
                     <td className="px-4 py-4">
@@ -472,18 +472,18 @@ export const AstrologersList = () => {
                           />
                         <div>
                             <div className="flex items-center gap-1.5">
-                              <p className="font-semibold text-gray-900 text-base">{astrologer.name}</p>
+                              <p className="font-semibold text-gray-900 dark:text-foreground text-base">{astrologer.name}</p>
                               {astrologer.isVerified && (
                                 <BadgeCheck className="w-4 h-4 text-white fill-[#1877F2] flex-shrink-0" />
                               )}
                             </div>
-                            <p className="text-sm text-gray-500">{astrologer.name.split(' ')[0]}</p>
+                            <p className="text-sm text-gray-500 dark:text-muted-foreground">{astrologer.name.split(' ')[0]}</p>
                         </div>
                         </Link>
                     </td>
                     <td className="px-4 py-4">
-                      <p className="text-sm text-gray-900">{astrologer.email}</p>
-                      <p className="text-sm text-gray-500">{astrologer.phone}</p>
+                      <p className="text-sm text-gray-900 dark:text-foreground">{astrologer.email}</p>
+                      <p className="text-sm text-gray-500 dark:text-muted-foreground">{astrologer.phone}</p>
                     </td>
                     <td className="px-4 py-4">
                         <div className="flex flex-col gap-1.5">
@@ -496,21 +496,21 @@ export const AstrologersList = () => {
                         <div className="flex items-center gap-1.5">
                           <span className="text-lg">⭐</span>
                       <div>
-                            <p className="font-semibold text-gray-900">{(astrologer.rating || 0).toFixed(1)}</p>
-                            <p className="text-xs text-gray-500">{astrologer.totalReviews || 0} reviews</p>
+                            <p className="font-semibold text-gray-900 dark:text-foreground">{(astrologer.rating || 0).toFixed(1)}</p>
+                            <p className="text-xs text-gray-500 dark:text-muted-foreground">{astrologer.totalReviews || 0} reviews</p>
                           </div>
                       </div>
                     </td>
                     <td className="px-4 py-4">
-                        <p className="font-semibold text-gray-900">₹{astrologer.consultationCharge || 0}</p>
-                        <p className="text-xs text-gray-500">per minute</p>
+                        <p className="font-semibold text-gray-900 dark:text-foreground">₹{astrologer.consultationCharge || 0}</p>
+                        <p className="text-xs text-gray-500 dark:text-muted-foreground">per minute</p>
                       </td>
                       <td className="px-4 py-4">
                         <div>
-                          <p className="font-medium text-gray-900 text-sm">
+                          <p className="font-medium text-gray-900 dark:text-foreground text-sm">
                             {(astrologer.specialization || []).slice(0, 2).join(', ')}
                           </p>
-                          <p className="text-sm text-gray-500">{astrologer.experience} years exp</p>
+                          <p className="text-sm text-gray-500 dark:text-muted-foreground">{astrologer.experience} years exp</p>
                         </div>
                       </td>
                       <td className="px-4 py-4 text-right">
@@ -518,7 +518,7 @@ export const AstrologersList = () => {
                           {/* Communication Actions */}
                           <button
                             onClick={() => handleCommunication(astrologer, 'message')}
-                            className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                            className="p-2 text-gray-400 dark:text-muted-foreground hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors"
                             title="Send Message"
                           >
                             <MessageCircle className="w-4 h-4" />
@@ -528,8 +528,8 @@ export const AstrologersList = () => {
                             disabled={!astrologer.isOnline}
                             className={`p-2 rounded-lg transition-colors ${
                               astrologer.isOnline
-                                ? 'text-gray-400 hover:text-green-600 hover:bg-green-50'
-                                : 'text-gray-300 cursor-not-allowed'
+                                ? 'text-gray-400 dark:text-muted-foreground hover:text-green-600 dark:hover:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20'
+                                : 'text-gray-300 dark:text-muted-foreground/50 cursor-not-allowed'
                             }`}
                             title={astrologer.isOnline ? 'Voice Call' : 'Offline'}
                           >
@@ -540,8 +540,8 @@ export const AstrologersList = () => {
                             disabled={!astrologer.isOnline}
                             className={`p-2 rounded-lg transition-colors ${
                               astrologer.isOnline
-                                ? 'text-gray-400 hover:text-blue-600 hover:bg-blue-50'
-                                : 'text-gray-300 cursor-not-allowed'
+                                ? 'text-gray-400 dark:text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20'
+                                : 'text-gray-300 dark:text-muted-foreground/50 cursor-not-allowed'
                             }`}
                             title={astrologer.isOnline ? 'Video Call' : 'Offline'}
                           >
@@ -549,24 +549,24 @@ export const AstrologersList = () => {
                           </button>
                           
                           {/* Separator */}
-                          <div className="w-px h-6 bg-gray-200 mx-1" />
+                          <div className="w-px h-6 bg-gray-200 dark:bg-border mx-1" />
                           
                           {/* Standard Actions */}
                           <Link
                             to={`/astrologers/${astrologer._id}`}
-                            className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            className="p-2 text-gray-400 dark:text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
                             title="View Profile"
                           >
                             <Eye className="w-4 h-4" />
                           </Link>
                           <button
-                            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                            className="p-2 text-gray-400 dark:text-muted-foreground hover:text-gray-600 dark:hover:text-foreground hover:bg-gray-100 dark:hover:bg-muted rounded-lg transition-colors"
                             title="Edit"
                           >
                             <Edit2 className="w-4 h-4" />
                           </button>
                           <button
-                            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            className="p-2 text-gray-400 dark:text-muted-foreground hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                             title="Delete"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -582,7 +582,7 @@ export const AstrologersList = () => {
             {/* Tablet View */}
             <div className="hidden sm:block lg:hidden">
               <table className="w-full">
-                <thead className="border-b border-gray-200">
+                <thead className="border-b border-gray-200 dark:border-border">
                   <tr>
                     <th className="px-4 py-3 text-left w-12">
                       <input
@@ -592,20 +592,20 @@ export const AstrologersList = () => {
                           if (input) input.indeterminate = isSomeSelected;
                         }}
                         onChange={(e) => handleSelectAll(e.target.checked)}
-                        className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        className="w-4 h-4 rounded border-gray-300 dark:border-border text-blue-600 focus:ring-blue-500"
                       />
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Name</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Reviews</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Status</th>
-                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">Action</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-muted-foreground uppercase">Name</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-muted-foreground uppercase">Reviews</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-muted-foreground uppercase">Status</th>
+                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 dark:text-muted-foreground uppercase">Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   {paginatedAstrologers.map((astrologer) => (
                     <tr 
                       key={astrologer._id} 
-                      className="border-b border-gray-100 hover:bg-gray-50 transition-colors group"
+                      className="border-b border-gray-100 dark:border-border hover:bg-gray-50 dark:hover:bg-muted transition-colors group"
                     >
                       <td className="px-4 py-4">
                         <input
@@ -628,15 +628,15 @@ export const AstrologersList = () => {
                           />
                           <div>
                             <div className="flex items-center gap-1.5">
-                              <p className="font-semibold text-gray-900">{astrologer.name}</p>
+                              <p className="font-semibold text-gray-900 dark:text-foreground">{astrologer.name}</p>
                               {astrologer.isVerified && (
                                 <BadgeCheck className="w-4 h-4 text-white fill-[#1877F2] flex-shrink-0" />
                               )}
                             </div>
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs text-gray-500 dark:text-muted-foreground">
                               {(astrologer.specialization || []).slice(0, 1).join(', ')} • {astrologer.experience} years
                             </p>
-                            <p className="text-xs text-gray-500">₹{astrologer.consultationCharge || 0}/min</p>
+                            <p className="text-xs text-gray-500 dark:text-muted-foreground">₹{astrologer.consultationCharge || 0}/min</p>
                           </div>
                         </Link>
                     </td>
@@ -644,8 +644,8 @@ export const AstrologersList = () => {
                         <div className="flex items-center gap-1.5">
                           <span className="text-base">⭐</span>
                           <div>
-                            <p className="font-semibold text-gray-900 text-sm">{(astrologer.rating || 0).toFixed(1)}</p>
-                            <p className="text-xs text-gray-500">{astrologer.totalReviews || 0}</p>
+                            <p className="font-semibold text-gray-900 dark:text-foreground text-sm">{(astrologer.rating || 0).toFixed(1)}</p>
+                            <p className="text-xs text-gray-500 dark:text-muted-foreground">{astrologer.totalReviews || 0}</p>
                           </div>
                         </div>
                     </td>
@@ -661,23 +661,23 @@ export const AstrologersList = () => {
                           {/* Communication */}
                           <button
                             onClick={() => handleCommunication(astrologer, 'message')}
-                            className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                            className="p-2 text-gray-400 dark:text-muted-foreground hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors"
                             title="Message"
                           >
                             <MessageCircle className="w-4 h-4" />
                           </button>
                           
                           {/* Separator */}
-                          <div className="w-px h-6 bg-gray-200 mx-1" />
+                          <div className="w-px h-6 bg-gray-200 dark:bg-border mx-1" />
                           
                           {/* Standard Actions */}
                       <Link
                         to={`/astrologers/${astrologer._id}`}
-                            className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            className="p-2 text-gray-400 dark:text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
                       >
                         <Eye className="w-4 h-4" />
                       </Link>
-                          <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                          <button className="p-2 text-gray-400 dark:text-muted-foreground hover:text-gray-600 dark:hover:text-foreground hover:bg-gray-100 dark:hover:bg-muted rounded-lg transition-colors">
                             <Edit2 className="w-4 h-4" />
                           </button>
                         </div>
@@ -693,7 +693,7 @@ export const AstrologersList = () => {
               {paginatedAstrologers.map((astrologer) => (
                 <div 
                   key={astrologer._id}
-                  className="border border-gray-200 rounded-lg bg-white overflow-hidden hover:border-gray-300 active:bg-gray-50 transition-all"
+                  className="border border-gray-200 dark:border-border rounded-lg bg-white dark:bg-card overflow-hidden hover:border-gray-300 dark:hover:border-border/80 active:bg-gray-50 dark:active:bg-muted transition-all"
                 >
                   {/* Compact Header Section */}
                   <div className="p-2.5">
@@ -719,23 +719,23 @@ export const AstrologersList = () => {
                           />
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-1.5 mb-0.5">
-                              <h3 className="font-semibold text-sm text-gray-900 truncate">{astrologer.name}</h3>
+                              <h3 className="font-semibold text-sm text-gray-900 dark:text-foreground truncate">{astrologer.name}</h3>
                               {astrologer.isVerified && (
                                 <BadgeCheck className="w-3.5 h-3.5 text-white fill-[#1877F2] flex-shrink-0" />
                               )}
                               {getApprovalBadge(astrologer)}
                             </div>
                             <div className="flex items-center gap-1.5 flex-wrap mb-1">
-                              <span className="text-xs text-gray-600">⭐ {(astrologer.rating || 0).toFixed(1)}</span>
-                              <span className="text-gray-300">•</span>
-                              <span className="text-xs font-medium text-gray-900">₹{astrologer.consultationCharge || 0}/min</span>
-                              <span className="text-gray-300">•</span>
-                              <span className="text-xs text-gray-600">{astrologer.experience}y</span>
+                              <span className="text-xs text-gray-600 dark:text-muted-foreground">⭐ {(astrologer.rating || 0).toFixed(1)}</span>
+                              <span className="text-gray-300 dark:text-muted-foreground/50">•</span>
+                              <span className="text-xs font-medium text-gray-900 dark:text-foreground">₹{astrologer.consultationCharge || 0}/min</span>
+                              <span className="text-gray-300 dark:text-muted-foreground/50">•</span>
+                              <span className="text-xs text-gray-600 dark:text-muted-foreground">{astrologer.experience}y</span>
                             </div>
                             <div className="flex items-center gap-1.5 flex-wrap">
                               <PillBadge variant={getStatusVariant(astrologer)} label={getStatusLabel(astrologer)} className="text-xs" />
                               {getBoostCategoryBadge(astrologer._id)}
-                              <p className="text-xs text-gray-500 truncate">
+                              <p className="text-xs text-gray-500 dark:text-muted-foreground truncate">
                                 {(astrologer.specialization || []).slice(0, 2).join(', ')}
                               </p>
                             </div>
@@ -773,8 +773,8 @@ export const AstrologersList = () => {
 
         {/* Pagination */}
         {!isLoading && paginatedAstrologers.length > 0 && (
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-6 pt-6 border-t border-gray-200">
-            <p className="text-sm text-gray-600">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-6 pt-6 border-t border-gray-200 dark:border-border">
+            <p className="text-sm text-gray-600 dark:text-muted-foreground">
               Showing {startIndex + 1} to {Math.min(endIndex, totalEntries)} of {totalEntries} entries
             </p>
             
@@ -782,22 +782,22 @@ export const AstrologersList = () => {
               <button
                 onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
-                className="px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-foreground hover:bg-gray-100 dark:hover:bg-muted rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 &lt;
               </button>
               
               {getPaginationNumbers().map((page, index) => (
                 page === '...' ? (
-                  <span key={`ellipsis-${index}`} className="px-3 py-1.5 text-gray-500">...</span>
+                  <span key={`ellipsis-${index}`} className="px-3 py-1.5 text-gray-500 dark:text-muted-foreground">...</span>
                 ) : (
                   <button
                     key={page}
                     onClick={() => setCurrentPage(page as number)}
                     className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
                       currentPage === page
-                        ? 'bg-gray-900 text-white'
-                        : 'text-gray-700 hover:bg-gray-100'
+                        ? 'bg-gray-900 dark:bg-primary-600 text-white'
+                        : 'text-gray-700 dark:text-foreground hover:bg-gray-100 dark:hover:bg-muted'
                     }`}
                   >
                     {page}
@@ -808,7 +808,7 @@ export const AstrologersList = () => {
               <button
                 onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                 disabled={currentPage === totalPages}
-                className="px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-foreground hover:bg-gray-100 dark:hover:bg-muted rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 &gt;
               </button>
