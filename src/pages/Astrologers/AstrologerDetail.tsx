@@ -1318,6 +1318,31 @@ export const AstrologerDetail = () => {
                               <span className="text-gray-400">End:</span>
                               <span className="font-medium text-gray-600">{formatDateTime(boost.endDate)}</span>
                             </div>
+                            {boost.category && (
+                              <div className="pt-2">
+                                <div className="flex flex-wrap gap-1">
+                                  {(() => {
+                                    const categoryLabels: Record<string, string> = {
+                                      general: '🌟',
+                                      astrology: '🔮',
+                                      tarot: '🃏',
+                                      numerology: '🔢',
+                                      palmistry: '👋',
+                                      healing: '✨',
+                                      meditation: '🧘',
+                                      spiritual: '🙏',
+                                    };
+                                    return (
+                                      <span
+                                        className="px-2 py-0.5 bg-purple-50 text-purple-700 rounded-full text-xs font-medium border border-purple-200"
+                                      >
+                                        {categoryLabels[boost.category] || ''} {boost.category.charAt(0).toUpperCase() + boost.category.slice(1)}
+                                      </span>
+                                    );
+                                  })()}
+                                </div>
+                              </div>
+                            )}
                           </div>
                         </Card>
                       </div>

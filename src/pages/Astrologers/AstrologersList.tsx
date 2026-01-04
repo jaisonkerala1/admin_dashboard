@@ -31,6 +31,7 @@ export const AstrologersList = () => {
     runningAds: 0,
   });
   const [astrologersWithAds, setAstrologersWithAds] = useState<Set<string>>(new Set());
+  const [astrologerBoostCategories, setAstrologerBoostCategories] = useState<Map<string, string>>(new Map());
 
   // Fetch dashboard stats for counts
   useEffect(() => {
@@ -68,7 +69,15 @@ export const AstrologersList = () => {
           const activeBoostAstrologerIds = new Set(
             response.data.boosts.map((boost: any) => boost.astrologerId)
           );
+          // Store boost categories for each astrologer
+          const categoryMap = new Map<string, string>();
+          response.data.boosts.forEach((boost: any) => {
+            if (boost.category && boost.astrologerId) {
+              categoryMap.set(boost.astrologerId, boost.category);
+            }
+          });
           setAstrologersWithAds(activeBoostAstrologerIds);
+          setAstrologerBoostCategories(categoryMap);
           setTabCounts(prev => ({
             ...prev,
             runningAds: activeBoostAstrologerIds.size,
@@ -235,6 +244,31 @@ export const AstrologersList = () => {
       return <PillBadge variant="pending" label="Pending Approval" showDot={false} />;
     }
     return null;
+  };
+
+  const getBoostCategoryBadge = (astrologerId: string) => {
+    const category = astrologerBoostCategories.get(astrologerId);
+    if (!category) return null;
+
+    const categoryLabels: Record<string, string> = {
+      general: '🌟',
+      astrology: '🔮',
+      tarot: '🃏',
+      numerology: '🔢',
+      palmistry: '👋',
+      healing: '✨',
+      meditation: '🧘',
+      spiritual: '🙏',
+    };
+
+    return (
+      <span
+        className="px-2 py-0.5 bg-purple-50 text-purple-700 rounded-full text-xs font-medium border border-purple-200"
+        title={`Boosting in ${category.charAt(0).toUpperCase() + category.slice(1)} category`}
+      >
+        {categoryLabels[category] || ''} {category.charAt(0).toUpperCase() + category.slice(1)}
+      </span>
+    );
   };
 
   // Communication helper
@@ -455,6 +489,7 @@ export const AstrologersList = () => {
                         <div className="flex flex-col gap-1.5">
                           <PillBadge variant={getStatusVariant(astrologer)} label={getStatusLabel(astrologer)} />
                           {getApprovalBadge(astrologer)}
+                          {getBoostCategoryBadge(astrologer._id)}
                       </div>
                     </td>
                     <td className="px-4 py-4">
@@ -618,6 +653,7 @@ export const AstrologersList = () => {
                         <div className="flex flex-col gap-1.5">
                           <PillBadge variant={getStatusVariant(astrologer)} label={getStatusLabel(astrologer)} />
                           {getApprovalBadge(astrologer)}
+                          {getBoostCategoryBadge(astrologer._id)}
                         </div>
                     </td>
                     <td className="px-4 py-4 text-right">
@@ -696,8 +732,9 @@ export const AstrologersList = () => {
                               <span className="text-gray-300">•</span>
                               <span className="text-xs text-gray-600">{astrologer.experience}y</span>
                             </div>
-                            <div className="flex items-center gap-1.5">
+                            <div className="flex items-center gap-1.5 flex-wrap">
                               <PillBadge variant={getStatusVariant(astrologer)} label={getStatusLabel(astrologer)} className="text-xs" />
+                              {getBoostCategoryBadge(astrologer._id)}
                               <p className="text-xs text-gray-500 truncate">
                                 {(astrologer.specialization || []).slice(0, 2).join(', ')}
                               </p>
