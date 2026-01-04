@@ -27,14 +27,14 @@ export const CreateBoostModal = ({
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
   const availableCategories = [
-    { value: 'general', label: 'General', icon: '🌟' },
-    { value: 'astrology', label: 'Astrology', icon: '🔮' },
-    { value: 'tarot', label: 'Tarot', icon: '🃏' },
-    { value: 'numerology', label: 'Numerology', icon: '🔢' },
-    { value: 'palmistry', label: 'Palmistry', icon: '👋' },
-    { value: 'healing', label: 'Healing', icon: '✨' },
-    { value: 'meditation', label: 'Meditation', icon: '🧘' },
-    { value: 'spiritual', label: 'Spiritual', icon: '🙏' },
+    { value: 'general', label: 'General' },
+    { value: 'astrology', label: 'Astrology' },
+    { value: 'tarot', label: 'Tarot' },
+    { value: 'numerology', label: 'Numerology' },
+    { value: 'palmistry', label: 'Palmistry' },
+    { value: 'healing', label: 'Healing' },
+    { value: 'meditation', label: 'Meditation' },
+    { value: 'spiritual', label: 'Spiritual' },
   ];
 
   const dailyCost = 500;
@@ -252,27 +252,13 @@ export const CreateBoostModal = ({
                     type="button"
                     onClick={() => toggleCategory(category.value)}
                     disabled={isProcessing}
-                    className={`px-4 py-2 rounded-lg border-2 transition-all flex items-center gap-2 ${
+                    className={`px-4 py-2 rounded transition-all ${
                       isSelected
-                        ? 'bg-purple-50 border-purple-500 text-purple-700'
-                        : 'bg-white border-gray-300 text-gray-700 hover:border-gray-400'
-                    } disabled:opacity-50 disabled:cursor-not-allowed`}
+                        ? 'bg-gray-900 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    } disabled:opacity-50 disabled:cursor-not-allowed font-medium text-sm`}
                   >
-                    <span>{category.icon}</span>
-                    <span className="font-medium">{category.label}</span>
-                    {isSelected && (
-                      <svg
-                        className="w-4 h-4"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    )}
+                    {category.label}
                   </button>
                 );
               })}
