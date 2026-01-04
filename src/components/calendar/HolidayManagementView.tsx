@@ -82,11 +82,11 @@ export const HolidayManagementView: React.FC<{
 
   return (
     <div className="space-y-4">
-      <div className="p-4 rounded-xl border border-gray-200 bg-white">
+      <div className="p-4 rounded-xl border border-gray-200 dark:border-border bg-white dark:bg-card">
         <div className="flex flex-col lg:flex-row gap-3 lg:items-end lg:justify-between">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 w-full">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Astrologer</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">Astrologer</label>
               <select
                 value={selectedAstrologerId || ''}
                 onChange={(e) => {
@@ -94,7 +94,7 @@ export const HolidayManagementView: React.FC<{
                   dispatch(setSelectedAstrologer(id));
                   if (id) dispatch(fetchAstrologerAvailabilityRequest({ astrologerId: id }));
                 }}
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white"
+                className="w-full px-3 py-2 border border-gray-200 dark:border-border rounded-lg bg-white dark:bg-card text-gray-900 dark:text-foreground"
               >
                 <option value="">All astrologers</option>
                 {summaries.map((s) => (
@@ -106,35 +106,36 @@ export const HolidayManagementView: React.FC<{
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">Date</label>
               <input
                 type="date"
                 value={draft.date}
                 disabled={isSaving}
                 onChange={(e) => setDraft({ ...draft, date: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg"
+                className="w-full px-3 py-2 border border-gray-200 dark:border-border rounded-lg bg-white dark:bg-card text-gray-900 dark:text-foreground"
               />
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Reason</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">Reason</label>
               <input
                 type="text"
                 value={draft.reason}
                 disabled={isSaving}
                 onChange={(e) => setDraft({ ...draft, reason: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg"
+                className="w-full px-3 py-2 border border-gray-200 dark:border-border rounded-lg bg-white dark:bg-card text-gray-900 dark:text-foreground"
               />
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <label className="inline-flex items-center gap-2 text-sm text-gray-700">
+            <label className="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-foreground">
               <input
                 type="checkbox"
                 checked={draft.isRecurring}
                 disabled={isSaving}
                 onChange={(e) => setDraft({ ...draft, isRecurring: e.target.checked })}
+                className="border-gray-300 dark:border-border"
               />
               Recurring
             </label>
@@ -143,7 +144,7 @@ export const HolidayManagementView: React.FC<{
                 value={draft.recurringPattern || 'yearly'}
                 disabled={isSaving}
                 onChange={(e) => setDraft({ ...draft, recurringPattern: e.target.value as HolidayRecurringPattern })}
-                className="px-3 py-2 border border-gray-200 rounded-lg bg-white"
+                className="px-3 py-2 border border-gray-200 dark:border-border rounded-lg bg-white dark:bg-card text-gray-900 dark:text-foreground"
               >
                 <option value="yearly">Yearly</option>
                 <option value="monthly">Monthly</option>
@@ -154,7 +155,7 @@ export const HolidayManagementView: React.FC<{
               type="button"
               onClick={save}
               disabled={isSaving || !draft.astrologerId}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary-600 text-white font-medium hover:bg-primary-700 disabled:opacity-60 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary-600 dark:bg-primary-700 text-white font-medium hover:bg-primary-700 dark:hover:bg-primary-600 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               <Plus className="w-4 h-4" />
               Add holiday
@@ -163,7 +164,7 @@ export const HolidayManagementView: React.FC<{
         </div>
 
         {!draft.astrologerId && (
-          <div className="text-xs text-gray-500 mt-2">
+          <div className="text-xs text-gray-500 dark:text-muted-foreground mt-2">
             Tip: pick an astrologer from the dropdown to add a holiday for them.
           </div>
         )}
@@ -171,18 +172,18 @@ export const HolidayManagementView: React.FC<{
 
       <div className="space-y-3">
         {filtered.length === 0 ? (
-          <div className="p-10 text-center text-gray-500">No holidays found.</div>
+          <div className="p-10 text-center text-gray-500 dark:text-muted-foreground">No holidays found.</div>
         ) : (
           filtered.map((h) => (
-            <div key={h._id} className="p-4 rounded-xl border border-gray-200 bg-white flex items-center justify-between gap-3">
+            <div key={h._id} className="p-4 rounded-xl border border-gray-200 dark:border-border bg-white dark:bg-card flex items-center justify-between gap-3">
               <div className="flex flex-col gap-1">
-                <div className="font-semibold text-gray-900">
+                <div className="font-semibold text-gray-900 dark:text-foreground">
                   {h.astrologerName || astrologerNameById.get(h.astrologerId) || h.astrologerId}
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <HolidayBadge holiday={h} />
                   {h.isRecurring && (
-                    <span className="inline-flex items-center px-2 py-0.5 text-xs font-semibold rounded-full border bg-blue-50 text-blue-700 border-blue-200">
+                    <span className="inline-flex items-center px-2 py-0.5 text-xs font-semibold rounded-full border bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800">
                       Recurring: {h.recurringPattern || 'yearly'}
                     </span>
                   )}
@@ -191,7 +192,7 @@ export const HolidayManagementView: React.FC<{
               <button
                 type="button"
                 onClick={() => dispatch(deleteHolidayRequest({ id: h._id }))}
-                className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-red-50 hover:bg-red-100 border border-red-200 text-sm font-medium text-red-700"
+                className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 border border-red-200 dark:border-red-800 text-sm font-medium text-red-700 dark:text-red-400"
               >
                 <Trash2 className="w-4 h-4" />
                 Delete

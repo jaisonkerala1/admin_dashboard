@@ -14,13 +14,13 @@ export const WeeklyScheduleView: React.FC<{
   }, [summaries, searchTerm]);
 
   return (
-    <div className="overflow-x-auto border border-gray-200 rounded-xl bg-white">
+    <div className="overflow-x-auto border border-gray-200 dark:border-border rounded-xl bg-white dark:bg-card">
       <table className="min-w-[900px] w-full text-sm">
-        <thead className="bg-gray-50">
+        <thead className="bg-gray-50 dark:bg-muted">
           <tr>
-            <th className="text-left px-4 py-3 font-semibold text-gray-700">Astrologer</th>
+            <th className="text-left px-4 py-3 font-semibold text-gray-700 dark:text-foreground">Astrologer</th>
             {dayLabels.map((d) => (
-              <th key={d} className="text-left px-4 py-3 font-semibold text-gray-700">
+              <th key={d} className="text-left px-4 py-3 font-semibold text-gray-700 dark:text-foreground">
                 {d}
               </th>
             ))}
@@ -28,9 +28,9 @@ export const WeeklyScheduleView: React.FC<{
         </thead>
         <tbody>
           {filtered.map((s) => (
-            <tr key={s.astrologerId} className="border-t border-gray-100">
+            <tr key={s.astrologerId} className="border-t border-gray-100 dark:border-border">
               <td className="px-4 py-3">
-                <div className="font-semibold text-gray-900">{s.astrologerName}</div>
+                <div className="font-semibold text-gray-900 dark:text-foreground">{s.astrologerName}</div>
                 <div className="mt-1">
                   <AvailabilityStatusBadge status={s.isOnline ? 'available' : 'offline'} className="!text-[11px]" />
                 </div>
@@ -39,16 +39,16 @@ export const WeeklyScheduleView: React.FC<{
                 const rule = s.weeklyAvailability.find((r) => r.dayOfWeek === dayOfWeek);
                 if (!rule || !rule.isActive) {
                   return (
-                    <td key={dayOfWeek} className="px-4 py-3 text-gray-400">
+                    <td key={dayOfWeek} className="px-4 py-3 text-gray-400 dark:text-muted-foreground">
                       —
                     </td>
                   );
                 }
                 return (
                   <td key={dayOfWeek} className="px-4 py-3">
-                    <div className="font-medium text-gray-900">{rule.startTime}-{rule.endTime}</div>
+                    <div className="font-medium text-gray-900 dark:text-foreground">{rule.startTime}-{rule.endTime}</div>
                     {rule.breaks?.length > 0 && (
-                      <div className="text-xs text-gray-500 mt-0.5">
+                      <div className="text-xs text-gray-500 dark:text-muted-foreground mt-0.5">
                         Break: {rule.breaks[0].startTime}-{rule.breaks[0].endTime}
                       </div>
                     )}
@@ -59,7 +59,7 @@ export const WeeklyScheduleView: React.FC<{
           ))}
           {filtered.length === 0 && (
             <tr>
-              <td colSpan={8} className="px-4 py-10 text-center text-gray-500">
+              <td colSpan={8} className="px-4 py-10 text-center text-gray-500 dark:text-muted-foreground">
                 No astrologers match the current filters.
               </td>
             </tr>

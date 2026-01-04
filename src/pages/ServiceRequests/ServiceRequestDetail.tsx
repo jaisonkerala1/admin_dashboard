@@ -83,12 +83,12 @@ export const ServiceRequestDetail = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case SERVICE_REQUEST_STATUS.PENDING: return 'bg-yellow-100 text-yellow-700';
-      case SERVICE_REQUEST_STATUS.CONFIRMED: return 'bg-green-100 text-green-700';
-      case SERVICE_REQUEST_STATUS.IN_PROGRESS: return 'bg-blue-100 text-blue-700';
-      case SERVICE_REQUEST_STATUS.COMPLETED: return 'bg-purple-100 text-purple-700';
-      case SERVICE_REQUEST_STATUS.CANCELLED: return 'bg-gray-100 text-gray-700';
-      default: return 'bg-gray-100 text-gray-700';
+      case SERVICE_REQUEST_STATUS.PENDING: return 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400';
+      case SERVICE_REQUEST_STATUS.CONFIRMED: return 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400';
+      case SERVICE_REQUEST_STATUS.IN_PROGRESS: return 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400';
+      case SERVICE_REQUEST_STATUS.COMPLETED: return 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400';
+      case SERVICE_REQUEST_STATUS.CANCELLED: return 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300';
+      default: return 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300';
     }
   };
 
@@ -107,9 +107,9 @@ export const ServiceRequestDetail = () => {
       <MainLayout>
         <Card>
           <div className="text-center py-12">
-            <ClipboardList className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Service Request Not Found</h3>
-            <p className="text-gray-600 mb-6">The service request you're looking for doesn't exist.</p>
+            <ClipboardList className="w-16 h-16 text-gray-300 dark:text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-foreground mb-2">Service Request Not Found</h3>
+            <p className="text-gray-600 dark:text-muted-foreground mb-6">The service request you're looking for doesn't exist.</p>
             <button
               onClick={() => navigate(ROUTES.SERVICE_REQUESTS)}
               className="btn btn-primary"
@@ -130,20 +130,20 @@ export const ServiceRequestDetail = () => {
         <div className="flex items-center gap-4">
           <button
             onClick={() => navigate(ROUTES.SERVICE_REQUESTS)}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-100 dark:hover:bg-muted rounded-lg transition-colors"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-muted-foreground" />
           </button>
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-gray-500 dark:text-muted-foreground">
                 Service Request ID: <span className="font-mono">{request._id}</span>
               </span>
               <div className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(request.status)}`}>
                 {request.status.charAt(0).toUpperCase() + request.status.slice(1).replace('_', ' ')}
               </div>
             </div>
-            <h1 className="text-2xl font-bold text-gray-900">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-foreground">
               {request.serviceName}
             </h1>
           </div>
@@ -156,23 +156,23 @@ export const ServiceRequestDetail = () => {
             <Card className="p-6">
               <div className="flex items-start justify-between mb-4">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-foreground mb-2">
                     Service Information
                   </h3>
-                  <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
-                    <Package className="w-10 h-10 text-gray-400" />
+                  <div className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-muted rounded-xl">
+                    <Package className="w-10 h-10 text-gray-400 dark:text-muted-foreground" />
                     <div className="flex-1">
-                      <h4 className="font-semibold text-gray-900">
+                      <h4 className="font-semibold text-gray-900 dark:text-foreground">
                         {request.serviceName}
                       </h4>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-gray-600 dark:text-muted-foreground">
                         {request.serviceCategory}
                       </p>
                     </div>
                     {request.serviceId && (
                       <Link 
                         to={`${ROUTES.SERVICES}/${request.serviceId}`} 
-                        className="text-sm text-primary-600 font-medium hover:text-primary-700"
+                        className="text-sm text-primary-600 dark:text-primary-400 font-medium hover:text-primary-700 dark:hover:text-primary-300"
                       >
                         View Service →
                       </Link>
@@ -184,28 +184,28 @@ export const ServiceRequestDetail = () => {
 
             {/* Request Details */}
             <Card className="p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-foreground mb-4">
                 Request Details
               </h3>
               {request.specialInstructions ? (
                 <div>
-                  <p className="text-sm font-medium text-gray-700 mb-2">Special Instructions:</p>
-                  <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">{request.specialInstructions}</p>
+                  <p className="text-sm font-medium text-gray-700 dark:text-foreground mb-2">Special Instructions:</p>
+                  <p className="text-gray-700 dark:text-foreground whitespace-pre-wrap leading-relaxed">{request.specialInstructions}</p>
                 </div>
               ) : (
-                <p className="text-gray-500 italic">No special instructions provided.</p>
+                <p className="text-gray-500 dark:text-muted-foreground italic">No special instructions provided.</p>
               )}
               {request.notes && (
-                <div className="mt-4 pt-4 border-t border-gray-100">
-                  <p className="text-sm font-medium text-gray-700 mb-2">Admin Notes:</p>
-                  <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">{request.notes}</p>
+                <div className="mt-4 pt-4 border-t border-gray-100 dark:border-border">
+                  <p className="text-sm font-medium text-gray-700 dark:text-foreground mb-2">Admin Notes:</p>
+                  <p className="text-gray-700 dark:text-foreground whitespace-pre-wrap leading-relaxed">{request.notes}</p>
                 </div>
               )}
             </Card>
 
             {/* Admin Actions */}
             <Card className="p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-foreground mb-4">
                 Actions
               </h3>
               <div className="space-y-2">
@@ -213,7 +213,7 @@ export const ServiceRequestDetail = () => {
                   <button
                     onClick={() => handleUpdateStatus(SERVICE_REQUEST_STATUS.CONFIRMED)}
                     disabled={isUpdating}
-                    className="w-full px-5 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium transition-all shadow-sm flex items-center justify-center gap-2"
+                    className="w-full px-5 py-2.5 bg-primary-600 dark:bg-primary-700 text-white rounded-lg hover:bg-primary-700 dark:hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium transition-all shadow-sm flex items-center justify-center gap-2"
                   >
                     <CheckCircle className="w-4 h-4" />
                     {isUpdating ? 'Confirming...' : 'Confirm Request'}
@@ -223,7 +223,7 @@ export const ServiceRequestDetail = () => {
                   <button
                     onClick={() => handleUpdateStatus(SERVICE_REQUEST_STATUS.IN_PROGRESS)}
                     disabled={isUpdating}
-                    className="w-full px-5 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium transition-all shadow-sm flex items-center justify-center gap-2"
+                    className="w-full px-5 py-2.5 bg-primary-600 dark:bg-primary-700 text-white rounded-lg hover:bg-primary-700 dark:hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium transition-all shadow-sm flex items-center justify-center gap-2"
                   >
                     <CheckCircle className="w-4 h-4" />
                     {isUpdating ? 'Starting...' : 'Start Service'}
@@ -233,7 +233,7 @@ export const ServiceRequestDetail = () => {
                   <button
                     onClick={() => handleUpdateStatus(SERVICE_REQUEST_STATUS.COMPLETED)}
                     disabled={isUpdating}
-                    className="w-full px-5 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium transition-all shadow-sm flex items-center justify-center gap-2"
+                    className="w-full px-5 py-2.5 bg-primary-600 dark:bg-primary-700 text-white rounded-lg hover:bg-primary-700 dark:hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium transition-all shadow-sm flex items-center justify-center gap-2"
                   >
                     <CheckCircle className="w-4 h-4" />
                     {isUpdating ? 'Completing...' : 'Mark as Completed'}
@@ -242,7 +242,7 @@ export const ServiceRequestDetail = () => {
                 {(request.status === SERVICE_REQUEST_STATUS.PENDING || request.status === SERVICE_REQUEST_STATUS.CONFIRMED) && (
                   <button
                     onClick={() => setShowCancelModal(true)}
-                    className="w-full px-5 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 text-sm font-medium transition-all"
+                    className="w-full px-5 py-2.5 bg-white dark:bg-card border border-gray-200 dark:border-border text-gray-700 dark:text-foreground rounded-lg hover:bg-gray-50 dark:hover:bg-muted text-sm font-medium transition-all"
                   >
                     Cancel Request
                   </button>
@@ -255,13 +255,13 @@ export const ServiceRequestDetail = () => {
           <div className="space-y-4">
             {/* Request Details */}
             <Card className="p-6">
-              <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">
+              <h3 className="text-sm font-bold text-gray-900 dark:text-foreground uppercase tracking-wider mb-4">
                 Request Details
               </h3>
               <div className="space-y-5">
                 {/* Status */}
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-tighter mb-2">
+                  <label className="block text-xs font-medium text-gray-400 dark:text-muted-foreground uppercase tracking-tighter mb-2">
                     Status
                   </label>
                   <div className={`inline-block px-3 py-1.5 rounded-lg text-sm font-medium ${getStatusColor(request.status)}`}>
@@ -271,43 +271,43 @@ export const ServiceRequestDetail = () => {
 
                 {/* Price */}
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-tighter mb-2">
+                  <label className="block text-xs font-medium text-gray-400 dark:text-muted-foreground uppercase tracking-tighter mb-2">
                     Price
                   </label>
-                  <div className="flex items-center gap-2 text-sm font-medium text-gray-900">
-                    <DollarSign className="w-4 h-4 text-primary-500" />
+                  <div className="flex items-center gap-2 text-sm font-medium text-gray-900 dark:text-foreground">
+                    <DollarSign className="w-4 h-4 text-primary-500 dark:text-primary-400" />
                     {formatCurrency(request.price || 0, request.currency)}
                   </div>
                 </div>
 
                 {/* Requested Date */}
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-tighter mb-2">
+                  <label className="block text-xs font-medium text-gray-400 dark:text-muted-foreground uppercase tracking-tighter mb-2">
                     Requested Date
                   </label>
-                  <div className="flex items-center gap-2 text-sm font-medium text-gray-900">
-                    <Calendar className="w-4 h-4 text-primary-500" />
+                  <div className="flex items-center gap-2 text-sm font-medium text-gray-900 dark:text-foreground">
+                    <Calendar className="w-4 h-4 text-primary-500 dark:text-primary-400" />
                     {formatDateTime(request.requestedDate)}
                   </div>
                 </div>
 
                 {/* Requested Time */}
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-tighter mb-2">
+                  <label className="block text-xs font-medium text-gray-400 dark:text-muted-foreground uppercase tracking-tighter mb-2">
                     Requested Time
                   </label>
-                  <div className="flex items-center gap-2 text-sm font-medium text-gray-900">
-                    <Clock className="w-4 h-4 text-primary-500" />
+                  <div className="flex items-center gap-2 text-sm font-medium text-gray-900 dark:text-foreground">
+                    <Clock className="w-4 h-4 text-primary-500 dark:text-primary-400" />
                     {request.requestedTime}
                   </div>
                 </div>
 
                 {/* Service Request ID */}
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-tighter mb-2">
+                  <label className="block text-xs font-medium text-gray-400 dark:text-muted-foreground uppercase tracking-tighter mb-2">
                     Service Request ID
                   </label>
-                  <div className="text-sm font-medium text-gray-900 font-mono break-all">
+                  <div className="text-sm font-medium text-gray-900 dark:text-foreground font-mono break-all">
                     {request._id}
                   </div>
                 </div>
@@ -316,26 +316,26 @@ export const ServiceRequestDetail = () => {
 
             {/* Client Information */}
             <Card className="p-6">
-              <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">
+              <h3 className="text-sm font-bold text-gray-900 dark:text-foreground uppercase tracking-wider mb-4">
                 Client Information
               </h3>
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center">
-                    <User className="w-5 h-5 text-gray-400" />
+                  <div className="w-10 h-10 rounded-full bg-gray-50 dark:bg-muted border border-gray-100 dark:border-border flex items-center justify-center">
+                    <User className="w-5 h-5 text-gray-400 dark:text-muted-foreground" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="text-sm font-bold text-gray-900 truncate">
+                    <div className="text-sm font-bold text-gray-900 dark:text-foreground truncate">
                       {request.customerName}
                     </div>
                   </div>
                 </div>
                 {request.customerPhone && (
                   <div className="flex items-center gap-3 group">
-                    <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-primary-50 transition-colors">
-                      <Phone className="w-4 h-4 text-gray-400 group-hover:text-primary-500" />
+                    <div className="w-8 h-8 rounded-full bg-gray-50 dark:bg-muted flex items-center justify-center group-hover:bg-primary-50 dark:group-hover:bg-primary-900/20 transition-colors">
+                      <Phone className="w-4 h-4 text-gray-400 dark:text-muted-foreground group-hover:text-primary-500 dark:group-hover:text-primary-400" />
                     </div>
-                    <div className="text-sm text-gray-600">
+                    <div className="text-sm text-gray-600 dark:text-muted-foreground">
                       {request.customerPhone}
                     </div>
                   </div>
@@ -345,7 +345,7 @@ export const ServiceRequestDetail = () => {
 
             {/* Astrologer Information */}
             <Card className="p-6">
-              <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">
+              <h3 className="text-sm font-bold text-gray-900 dark:text-foreground uppercase tracking-wider mb-4">
                 Assigned Astrologer
               </h3>
               <div className="space-y-4">
@@ -357,20 +357,20 @@ export const ServiceRequestDetail = () => {
                     src={request.astrologerId.profilePicture}
                     name={request.astrologerId.name} 
                     size="md"
-                    className="border border-gray-100"
+                    className="border border-gray-100 dark:border-border"
                   />
                   <div className="min-w-0 flex-1">
-                    <div className="text-sm font-bold text-gray-900 truncate">
+                    <div className="text-sm font-bold text-gray-900 dark:text-foreground truncate">
                       {request.astrologerId.name}
                     </div>
-                    <div className="text-[10px] text-gray-400 font-mono truncate">
+                    <div className="text-[10px] text-gray-400 dark:text-muted-foreground font-mono truncate">
                       {request.astrologerId.email}
                     </div>
                   </div>
                 </Link>
                 <button
                   onClick={() => navigate(`${ROUTES.ASTROLOGERS}/${request.astrologerId._id}`)}
-                  className="w-full px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 text-sm font-medium transition-all"
+                  className="w-full px-4 py-2 bg-white dark:bg-card border border-gray-200 dark:border-border text-gray-700 dark:text-foreground rounded-lg hover:bg-gray-50 dark:hover:bg-muted text-sm font-medium transition-all"
                 >
                   View Profile
                 </button>
@@ -379,7 +379,7 @@ export const ServiceRequestDetail = () => {
 
             {/* Timeline */}
             <Card className="p-6">
-              <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-6">
+              <h3 className="text-sm font-bold text-gray-900 dark:text-foreground uppercase tracking-wider mb-6">
                 Timeline
               </h3>
               <div className="relative">
@@ -441,7 +441,7 @@ export const ServiceRequestDetail = () => {
                       <div key={event.label} className="relative">
                         {/* Vertical line connecting events */}
                         {hasNext && (
-                          <div className="absolute left-[11px] top-[24px] w-0.5 h-full bg-gray-200" />
+                          <div className="absolute left-[11px] top-[24px] w-0.5 h-full bg-gray-200 dark:bg-border" />
                         )}
                         
                         {/* Event content */}
@@ -449,7 +449,7 @@ export const ServiceRequestDetail = () => {
                           {/* Icon */}
                           <div className="relative z-10 flex-shrink-0">
                             <div className={`w-6 h-6 rounded-full ${event.iconColor} flex items-center justify-center shadow-md`}>
-                              <div className="w-2.5 h-2.5 rounded-full bg-white" />
+                              <div className="w-2.5 h-2.5 rounded-full bg-white dark:bg-card" />
                             </div>
                           </div>
                           
@@ -459,8 +459,8 @@ export const ServiceRequestDetail = () => {
                             {event.isActive && (
                               <div className={`absolute left-0 right-0 -mx-6 -my-2 px-6 py-3 rounded-lg ${
                                 event.iconColor === 'bg-green-500' 
-                                  ? 'bg-green-50/50 border border-green-100/50' 
-                                  : 'bg-red-50/50 border border-red-100/50'
+                                  ? 'bg-green-50/50 dark:bg-green-900/20 border border-green-100/50 dark:border-green-800/50' 
+                                  : 'bg-red-50/50 dark:bg-red-900/20 border border-red-100/50 dark:border-red-800/50'
                               }`} />
                             )}
                             
@@ -468,20 +468,20 @@ export const ServiceRequestDetail = () => {
                               <p className={`font-semibold mb-1 ${
                                 event.isActive 
                                   ? event.iconColor === 'bg-green-500' 
-                                    ? 'text-green-700' 
-                                    : 'text-red-700'
-                                  : 'text-gray-900'
+                                    ? 'text-green-700 dark:text-green-400' 
+                                    : 'text-red-700 dark:text-red-400'
+                                  : 'text-gray-900 dark:text-foreground'
                               }`}>
                                 {event.description}
                               </p>
                               <div className="flex items-center gap-2 flex-wrap">
-                                <p className="text-sm text-gray-500 font-medium">
+                                <p className="text-sm text-gray-500 dark:text-muted-foreground font-medium">
                                   {format(new Date(event.timestamp), 'd MMM HH:mm')}
                                 </p>
                                 {timeSincePrevious && (
                                   <>
-                                    <span className="text-gray-300">•</span>
-                                    <p className="text-xs text-gray-400 font-medium">
+                                    <span className="text-gray-300 dark:text-border">•</span>
+                                    <p className="text-xs text-gray-400 dark:text-muted-foreground font-medium">
                                       {timeSincePrevious} taken
                                     </p>
                                   </>
@@ -504,11 +504,11 @@ export const ServiceRequestDetail = () => {
       {showCancelModal && (
         <Modal isOpen={showCancelModal} onClose={() => setShowCancelModal(false)} title="Cancel Service Request">
           <div className="space-y-4">
-            <div className="flex items-start gap-3 p-4 bg-yellow-50 rounded-lg">
-              <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5" />
+            <div className="flex items-start gap-3 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-100 dark:border-yellow-800/50">
+              <AlertCircle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 mt-0.5" />
               <div>
-                <p className="font-medium text-yellow-900">Are you sure?</p>
-                <p className="text-sm text-yellow-700 mt-1">
+                <p className="font-medium text-yellow-900 dark:text-yellow-300">Are you sure?</p>
+                <p className="text-sm text-yellow-700 dark:text-yellow-400 mt-1">
                   This will cancel the service request. The client and astrologer will be notified.
                 </p>
               </div>
@@ -524,7 +524,7 @@ export const ServiceRequestDetail = () => {
               <button
                 onClick={handleCancel}
                 disabled={isUpdating}
-                className="btn bg-red-600 text-white hover:bg-red-700"
+                className="btn bg-red-600 dark:bg-red-700 text-white hover:bg-red-700 dark:hover:bg-red-600"
               >
                 {isUpdating ? 'Cancelling...' : 'Cancel Request'}
               </button>

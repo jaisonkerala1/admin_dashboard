@@ -18,7 +18,7 @@ export const TodayAvailabilityView: React.FC<{
 
   if (filtered.length === 0) {
     return (
-      <div className="p-10 text-center text-gray-500">
+      <div className="p-10 text-center text-gray-500 dark:text-muted-foreground">
         No astrologers match the current filters.
       </div>
     );

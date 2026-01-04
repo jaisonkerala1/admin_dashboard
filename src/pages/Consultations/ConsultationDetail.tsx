@@ -24,11 +24,11 @@ import { useToastContext } from '@/contexts/ToastContext';
 import { ROUTES } from '@/utils/constants';
 
 const statusConfig: Record<string, { label: string; color: string }> = {
-  scheduled: { label: 'Scheduled', color: 'bg-yellow-100 text-yellow-700' },
-  inProgress: { label: 'In Progress', color: 'bg-blue-100 text-blue-700' },
-  completed: { label: 'Completed', color: 'bg-green-100 text-green-700' },
-  cancelled: { label: 'Cancelled', color: 'bg-gray-100 text-gray-700' },
-  noShow: { label: 'No Show', color: 'bg-red-100 text-red-700' },
+  scheduled: { label: 'Scheduled', color: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400' },
+  inProgress: { label: 'In Progress', color: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400' },
+  completed: { label: 'Completed', color: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' },
+  cancelled: { label: 'Cancelled', color: 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300' },
+  noShow: { label: 'No Show', color: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400' },
 };
 
 const typeConfig: Record<string, { icon: any; label: string }> = {
@@ -79,8 +79,8 @@ export const ConsultationDetail = () => {
     const Icon = config.icon;
     return (
       <div className="flex items-center gap-2">
-        <Icon className="w-5 h-5 text-gray-400" />
-        <span className="text-sm font-medium text-gray-900">{config.label}</span>
+        <Icon className="w-5 h-5 text-gray-400 dark:text-muted-foreground" />
+        <span className="text-sm font-medium text-gray-900 dark:text-foreground">{config.label}</span>
       </div>
     );
   };
@@ -100,9 +100,9 @@ export const ConsultationDetail = () => {
       <MainLayout>
         <Card>
           <div className="text-center py-12">
-            <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Consultation Not Found</h3>
-            <p className="text-gray-600 mb-6">The consultation you're looking for doesn't exist.</p>
+            <Calendar className="w-16 h-16 text-gray-300 dark:text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-foreground mb-2">Consultation Not Found</h3>
+            <p className="text-gray-600 dark:text-muted-foreground mb-6">The consultation you're looking for doesn't exist.</p>
             <button
               onClick={() => navigate(ROUTES.CONSULTATIONS)}
               className="btn btn-primary"
@@ -126,20 +126,20 @@ export const ConsultationDetail = () => {
         <div className="flex items-center gap-4">
           <button
             onClick={() => navigate(ROUTES.CONSULTATIONS)}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-100 dark:hover:bg-muted rounded-lg transition-colors"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-muted-foreground" />
           </button>
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-gray-500 dark:text-muted-foreground">
                 Consultation ID: <span className="font-mono">{consultation._id}</span>
               </span>
               <div className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(status)}`}>
                 {getStatusLabel(status)}
               </div>
             </div>
-            <h1 className="text-2xl font-bold text-gray-900">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-foreground">
               Consultation - {typeConfig[consultation.type]?.label || consultation.type}
             </h1>
           </div>
@@ -152,16 +152,16 @@ export const ConsultationDetail = () => {
             <Card className="p-6">
               <div className="flex items-start justify-between mb-4">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-foreground mb-2">
                     Consultation Information
                   </h3>
-                  <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
-                    <TypeIcon className="w-10 h-10 text-gray-400" />
+                  <div className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-muted rounded-xl">
+                    <TypeIcon className="w-10 h-10 text-gray-400 dark:text-muted-foreground" />
                     <div className="flex-1">
-                      <h4 className="font-semibold text-gray-900">
+                      <h4 className="font-semibold text-gray-900 dark:text-foreground">
                         {typeConfig[consultation.type]?.label || consultation.type} Consultation
                       </h4>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-gray-600 dark:text-muted-foreground">
                         Duration: {formatDuration(consultation.duration)}
                       </p>
                     </div>
@@ -173,14 +173,14 @@ export const ConsultationDetail = () => {
             {/* Topics */}
             {consultation.consultationTopics && consultation.consultationTopics.length > 0 && (
               <Card className="p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-foreground mb-4">
                   Consultation Topics
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {consultation.consultationTopics.map((topic, idx) => (
                     <span
                       key={idx}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 text-gray-700 text-sm font-medium rounded-lg border border-gray-200"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 dark:bg-muted text-gray-700 dark:text-foreground text-sm font-medium rounded-lg border border-gray-200 dark:border-border"
                     >
                       {topic}
                     </span>
@@ -192,17 +192,17 @@ export const ConsultationDetail = () => {
             {/* Notes */}
             {consultation.notes && (
               <Card className="p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-foreground mb-4">
                   Notes
                 </h3>
-                <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">{consultation.notes}</p>
+                <p className="text-gray-700 dark:text-foreground whitespace-pre-wrap leading-relaxed">{consultation.notes}</p>
               </Card>
             )}
 
             {/* Rating & Feedback */}
             {consultation.rating && (
               <Card className="p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-foreground mb-4">
                   Client Feedback
                 </h3>
                 <div className="space-y-3">
@@ -214,17 +214,17 @@ export const ConsultationDetail = () => {
                           className={`w-5 h-5 ${
                             i < consultation.rating!
                               ? 'fill-amber-400 text-amber-400'
-                              : 'text-gray-300'
+                              : 'text-gray-300 dark:text-gray-600'
                           }`}
                         />
                       ))}
                     </div>
-                    <span className="text-sm font-semibold text-gray-900">
+                    <span className="text-sm font-semibold text-gray-900 dark:text-foreground">
                       {consultation.rating}/5
                     </span>
                   </div>
                   {consultation.feedback && (
-                    <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">{consultation.feedback}</p>
+                    <p className="text-sm text-gray-700 dark:text-foreground whitespace-pre-wrap leading-relaxed">{consultation.feedback}</p>
                   )}
                 </div>
               </Card>
@@ -232,28 +232,28 @@ export const ConsultationDetail = () => {
 
             {/* Cancellation Info */}
             {consultation.cancelledAt && (
-              <Card className="p-6 bg-red-50/50 border border-red-100">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <AlertCircle className="w-5 h-5 text-red-600" />
+              <Card className="p-6 bg-red-50/50 dark:bg-red-900/20 border border-red-100 dark:border-red-800/50">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-foreground mb-4 flex items-center gap-2">
+                  <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
                   Cancellation Details
                 </h3>
                 <div className="space-y-2 text-sm">
                   <div>
-                    <span className="text-gray-600">Cancelled At: </span>
-                    <span className="font-medium text-gray-900">
+                    <span className="text-gray-600 dark:text-muted-foreground">Cancelled At: </span>
+                    <span className="font-medium text-gray-900 dark:text-foreground">
                       {format(new Date(consultation.cancelledAt), 'MMM d, yyyy h:mm a')}
                     </span>
                   </div>
                   {consultation.cancelledBy && (
                     <div>
-                      <span className="text-gray-600">Cancelled By: </span>
-                      <span className="font-medium text-gray-900 capitalize">{consultation.cancelledBy}</span>
+                      <span className="text-gray-600 dark:text-muted-foreground">Cancelled By: </span>
+                      <span className="font-medium text-gray-900 dark:text-foreground capitalize">{consultation.cancelledBy}</span>
                     </div>
                   )}
                   {consultation.cancellationReason && (
                     <div>
-                      <span className="text-gray-600">Reason: </span>
-                      <span className="font-medium text-gray-900">{consultation.cancellationReason}</span>
+                      <span className="text-gray-600 dark:text-muted-foreground">Reason: </span>
+                      <span className="font-medium text-gray-900 dark:text-foreground">{consultation.cancellationReason}</span>
                     </div>
                   )}
                 </div>
@@ -265,13 +265,13 @@ export const ConsultationDetail = () => {
           <div className="space-y-4">
             {/* Consultation Details */}
             <Card className="p-6">
-              <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">
+              <h3 className="text-sm font-bold text-gray-900 dark:text-foreground uppercase tracking-wider mb-4">
                 Consultation Details
               </h3>
               <div className="space-y-5">
                 {/* Status */}
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-tighter mb-2">
+                  <label className="block text-xs font-medium text-gray-400 dark:text-muted-foreground uppercase tracking-tighter mb-2">
                     Status
                   </label>
                   <div className={`inline-block px-3 py-1.5 rounded-lg text-sm font-medium ${getStatusColor(status)}`}>
@@ -281,7 +281,7 @@ export const ConsultationDetail = () => {
 
                 {/* Type */}
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-tighter mb-2">
+                  <label className="block text-xs font-medium text-gray-400 dark:text-muted-foreground uppercase tracking-tighter mb-2">
                     Type
                   </label>
                   {getTypeIcon(consultation.type)}
@@ -289,43 +289,43 @@ export const ConsultationDetail = () => {
 
                 {/* Scheduled Time */}
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-tighter mb-2">
+                  <label className="block text-xs font-medium text-gray-400 dark:text-muted-foreground uppercase tracking-tighter mb-2">
                     Scheduled Time
                   </label>
-                  <div className="flex items-center gap-2 text-sm font-medium text-gray-900">
-                    <Calendar className="w-4 h-4 text-primary-500" />
+                  <div className="flex items-center gap-2 text-sm font-medium text-gray-900 dark:text-foreground">
+                    <Calendar className="w-4 h-4 text-primary-500 dark:text-primary-400" />
                     {format(new Date(consultation.scheduledTime), 'MMM d, yyyy h:mm a')}
                   </div>
                 </div>
 
                 {/* Duration */}
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-tighter mb-2">
+                  <label className="block text-xs font-medium text-gray-400 dark:text-muted-foreground uppercase tracking-tighter mb-2">
                     Duration
                   </label>
-                  <div className="flex items-center gap-2 text-sm font-medium text-gray-900">
-                    <Clock className="w-4 h-4 text-primary-500" />
+                  <div className="flex items-center gap-2 text-sm font-medium text-gray-900 dark:text-foreground">
+                    <Clock className="w-4 h-4 text-primary-500 dark:text-primary-400" />
                     {formatDuration(consultation.duration)}
                   </div>
                 </div>
 
                 {/* Amount */}
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-tighter mb-2">
+                  <label className="block text-xs font-medium text-gray-400 dark:text-muted-foreground uppercase tracking-tighter mb-2">
                     Amount
                   </label>
-                  <div className="flex items-center gap-2 text-sm font-medium text-gray-900">
-                    <DollarSign className="w-4 h-4 text-primary-500" />
+                  <div className="flex items-center gap-2 text-sm font-medium text-gray-900 dark:text-foreground">
+                    <DollarSign className="w-4 h-4 text-primary-500 dark:text-primary-400" />
                     {formatCurrency(consultation.amount, consultation.currency)}
                   </div>
                 </div>
 
                 {/* Consultation ID */}
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-tighter mb-2">
+                  <label className="block text-xs font-medium text-gray-400 dark:text-muted-foreground uppercase tracking-tighter mb-2">
                     Consultation ID
                   </label>
-                  <div className="text-sm font-medium text-gray-900 font-mono break-all">
+                  <div className="text-sm font-medium text-gray-900 dark:text-foreground font-mono break-all">
                     {consultation._id}
                   </div>
                 </div>
@@ -334,52 +334,52 @@ export const ConsultationDetail = () => {
 
             {/* Client Information */}
             <Card className="p-6">
-              <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">
+              <h3 className="text-sm font-bold text-gray-900 dark:text-foreground uppercase tracking-wider mb-4">
                 Client Information
               </h3>
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center">
-                    <User className="w-5 h-5 text-gray-400" />
+                  <div className="w-10 h-10 rounded-full bg-gray-50 dark:bg-muted border border-gray-100 dark:border-border flex items-center justify-center">
+                    <User className="w-5 h-5 text-gray-400 dark:text-muted-foreground" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="text-sm font-bold text-gray-900 truncate">
+                    <div className="text-sm font-bold text-gray-900 dark:text-foreground truncate">
                       {consultation.clientName}
                     </div>
                   </div>
                 </div>
                 {consultation.clientPhone && (
                   <div className="flex items-center gap-3 group">
-                    <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-primary-50 transition-colors">
-                      <Phone className="w-4 h-4 text-gray-400 group-hover:text-primary-500" />
+                    <div className="w-8 h-8 rounded-full bg-gray-50 dark:bg-muted flex items-center justify-center group-hover:bg-primary-50 dark:group-hover:bg-primary-900/20 transition-colors">
+                      <Phone className="w-4 h-4 text-gray-400 dark:text-muted-foreground group-hover:text-primary-500 dark:group-hover:text-primary-400" />
                     </div>
-                    <div className="text-sm text-gray-600">
+                    <div className="text-sm text-gray-600 dark:text-muted-foreground">
                       {consultation.clientPhone}
                     </div>
                   </div>
                 )}
                 {consultation.clientEmail && (
                   <div className="flex items-center gap-3 group">
-                    <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-primary-50 transition-colors">
-                      <User className="w-4 h-4 text-gray-400 group-hover:text-primary-500" />
+                    <div className="w-8 h-8 rounded-full bg-gray-50 dark:bg-muted flex items-center justify-center group-hover:bg-primary-50 dark:group-hover:bg-primary-900/20 transition-colors">
+                      <User className="w-4 h-4 text-gray-400 dark:text-muted-foreground group-hover:text-primary-500 dark:group-hover:text-primary-400" />
                     </div>
-                    <div className="text-sm text-gray-600 truncate">
+                    <div className="text-sm text-gray-600 dark:text-muted-foreground truncate">
                       {consultation.clientEmail}
                     </div>
                   </div>
                 )}
                 {(consultation.clientAge || consultation.clientGender) && (
-                  <div className="pt-3 border-t border-gray-100 space-y-2 text-sm">
+                  <div className="pt-3 border-t border-gray-100 dark:border-border space-y-2 text-sm">
                     {consultation.clientAge && (
                       <div>
-                        <span className="text-gray-500">Age: </span>
-                        <span className="font-medium text-gray-900">{consultation.clientAge} years</span>
+                        <span className="text-gray-500 dark:text-muted-foreground">Age: </span>
+                        <span className="font-medium text-gray-900 dark:text-foreground">{consultation.clientAge} years</span>
                       </div>
                     )}
                     {consultation.clientGender && (
                       <div>
-                        <span className="text-gray-500">Gender: </span>
-                        <span className="font-medium text-gray-900 capitalize">{consultation.clientGender}</span>
+                        <span className="text-gray-500 dark:text-muted-foreground">Gender: </span>
+                        <span className="font-medium text-gray-900 dark:text-foreground capitalize">{consultation.clientGender}</span>
                       </div>
                     )}
                   </div>
@@ -390,7 +390,7 @@ export const ConsultationDetail = () => {
             {/* Astrologer Information */}
             {consultation.astrologerId && (
               <Card className="p-6">
-                <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">
+                <h3 className="text-sm font-bold text-gray-900 dark:text-foreground uppercase tracking-wider mb-4">
                   Assigned Astrologer
                 </h3>
                 <div className="space-y-4">
@@ -402,20 +402,20 @@ export const ConsultationDetail = () => {
                       src={consultation.astrologerId.profilePicture}
                       name={consultation.astrologerId.name} 
                       size="md"
-                      className="border border-gray-100"
+                      className="border border-gray-100 dark:border-border"
                     />
                     <div className="min-w-0 flex-1">
-                      <div className="text-sm font-bold text-gray-900 truncate">
+                      <div className="text-sm font-bold text-gray-900 dark:text-foreground truncate">
                         {consultation.astrologerId.name}
                       </div>
-                      <div className="text-[10px] text-gray-400 font-mono truncate">
+                      <div className="text-[10px] text-gray-400 dark:text-muted-foreground font-mono truncate">
                         {consultation.astrologerId.email}
                       </div>
                     </div>
                   </Link>
                   <button
                     onClick={() => navigate(`${ROUTES.ASTROLOGERS}/${consultation.astrologerId!._id}`)}
-                    className="w-full px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 text-sm font-medium transition-all"
+                    className="w-full px-4 py-2 bg-white dark:bg-card border border-gray-200 dark:border-border text-gray-700 dark:text-foreground rounded-lg hover:bg-gray-50 dark:hover:bg-muted text-sm font-medium transition-all"
                   >
                     View Profile
                   </button>
@@ -425,7 +425,7 @@ export const ConsultationDetail = () => {
 
             {/* Timeline */}
             <Card className="p-6">
-              <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-6">
+              <h3 className="text-sm font-bold text-gray-900 dark:text-foreground uppercase tracking-wider mb-6">
                 Timeline
               </h3>
               <div className="relative">
@@ -480,7 +480,7 @@ export const ConsultationDetail = () => {
                       <div key={event.label} className="relative">
                         {/* Vertical line connecting events */}
                         {hasNext && (
-                          <div className="absolute left-[11px] top-[24px] w-0.5 h-full bg-gray-200" />
+                          <div className="absolute left-[11px] top-[24px] w-0.5 h-full bg-gray-200 dark:bg-border" />
                         )}
                         
                         {/* Event content */}
@@ -488,7 +488,7 @@ export const ConsultationDetail = () => {
                           {/* Icon */}
                           <div className="relative z-10 flex-shrink-0">
                             <div className={`w-6 h-6 rounded-full ${event.iconColor} flex items-center justify-center shadow-md`}>
-                              <div className="w-2.5 h-2.5 rounded-full bg-white" />
+                              <div className="w-2.5 h-2.5 rounded-full bg-white dark:bg-card" />
                             </div>
                           </div>
                           
@@ -496,21 +496,31 @@ export const ConsultationDetail = () => {
                           <div className={`flex-1 pt-0.5 ${event.isActive ? 'pb-4' : ''}`}>
                             {/* Active event highlight background */}
                             {event.isActive && (
-                              <div className="absolute left-0 right-0 -mx-6 -my-2 px-6 py-3 rounded-lg bg-green-50/50 border border-green-100/50" />
+                              <div className={`absolute left-0 right-0 -mx-6 -my-2 px-6 py-3 rounded-lg ${
+                                event.iconColor === 'bg-green-500' 
+                                  ? 'bg-green-50/50 dark:bg-green-900/20 border border-green-100/50 dark:border-green-800/50' 
+                                  : 'bg-red-50/50 dark:bg-red-900/20 border border-red-100/50 dark:border-red-800/50'
+                              }`} />
                             )}
                             
                             <div className="relative">
-                              <p className={`font-semibold mb-1 ${event.isActive ? 'text-green-700' : 'text-gray-900'}`}>
+                              <p className={`font-semibold mb-1 ${
+                                event.isActive 
+                                  ? event.iconColor === 'bg-green-500' 
+                                    ? 'text-green-700 dark:text-green-400' 
+                                    : 'text-red-700 dark:text-red-400'
+                                  : 'text-gray-900 dark:text-foreground'
+                              }`}>
                                 {event.description}
                               </p>
                               <div className="flex items-center gap-2 flex-wrap">
-                                <p className="text-sm text-gray-500 font-medium">
+                                <p className="text-sm text-gray-500 dark:text-muted-foreground font-medium">
                                   {format(new Date(event.timestamp), 'd MMM HH:mm')}
                                 </p>
                                 {timeSincePrevious && (
                                   <>
-                                    <span className="text-gray-300">•</span>
-                                    <p className="text-xs text-gray-400 font-medium">
+                                    <span className="text-gray-300 dark:text-border">•</span>
+                                    <p className="text-xs text-gray-400 dark:text-muted-foreground font-medium">
                                       {timeSincePrevious} taken
                                     </p>
                                   </>

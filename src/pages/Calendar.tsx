@@ -87,12 +87,12 @@ export const Calendar = () => {
   const headerAction = (
     <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
       <div className="flex items-center gap-2">
-        <label className="text-sm font-medium text-gray-700">Date</label>
+        <label className="text-sm font-medium text-gray-700 dark:text-foreground">Date</label>
         <input
           type="date"
           value={filters.date}
           onChange={(e) => dispatch(setFilters({ date: e.target.value }))}
-          className="px-3 py-2 border border-gray-200 rounded-lg bg-white"
+          className="px-3 py-2 border border-gray-200 dark:border-border rounded-lg bg-white dark:bg-card text-gray-900 dark:text-foreground"
         />
       </div>
       <div className="w-full sm:w-64">
@@ -103,11 +103,12 @@ export const Calendar = () => {
           onClear={() => dispatch(setFilters({ searchTerm: '' }))}
         />
       </div>
-      <label className="inline-flex items-center gap-2 text-sm text-gray-700">
+      <label className="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-foreground">
         <input
           type="checkbox"
           checked={filters.showOnlyAvailable}
           onChange={(e) => dispatch(setFilters({ showOnlyAvailable: e.target.checked }))}
+          className="border-gray-300 dark:border-border"
         />
         Show only available
       </label>
@@ -127,7 +128,7 @@ export const Calendar = () => {
           <Loader size="lg" text="Loading availability..." />
         </div>
       ) : error ? (
-        <div className="flex items-center gap-2 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+        <div className="flex items-center gap-2 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 rounded-lg text-red-700 dark:text-red-400">
           <AlertCircle className="w-5 h-5 flex-shrink-0" />
           <span>{error}</span>
         </div>
@@ -142,7 +143,7 @@ export const Calendar = () => {
           </div>
 
           {/* Tabs */}
-          <div className="border-b border-gray-200">
+          <div className="border-b border-gray-200 dark:border-border">
             <div className="flex gap-6 overflow-x-auto">
               {tabOptions.map((opt) => (
                 <button
@@ -150,8 +151,8 @@ export const Calendar = () => {
                   onClick={() => setTab(opt.key)}
                   className={`pb-3 px-1 border-b-2 whitespace-nowrap transition-colors inline-flex items-center gap-2 ${
                     tab === opt.key
-                      ? 'border-blue-500 text-blue-600 font-semibold'
-                      : 'border-transparent text-gray-500 hover:text-gray-700'
+                      ? 'border-blue-500 dark:border-primary-500 text-blue-600 dark:text-primary-400 font-semibold'
+                      : 'border-transparent text-gray-500 dark:text-muted-foreground hover:text-gray-700 dark:hover:text-foreground'
                   }`}
                 >
                   <opt.icon className="w-4 h-4" />

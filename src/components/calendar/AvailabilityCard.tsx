@@ -20,16 +20,16 @@ export const AvailabilityCard: React.FC<{
   const status = statusFor(summary, isHoliday);
 
   return (
-    <div className="p-4 rounded-xl border border-gray-200 bg-white hover:shadow-sm transition-shadow">
+    <div className="p-4 rounded-xl border border-gray-200 dark:border-border bg-white dark:bg-card hover:shadow-sm transition-shadow">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-3">
           <RoundAvatar name={summary.astrologerName} src={summary.profilePicture} isOnline={summary.isOnline} size="md" />
           <div>
             <div className="flex items-center gap-2">
-              <div className="font-semibold text-gray-900">{summary.astrologerName}</div>
+              <div className="font-semibold text-gray-900 dark:text-foreground">{summary.astrologerName}</div>
               <AvailabilityStatusBadge status={status} />
             </div>
-            <div className="mt-1 flex items-center gap-2 text-sm text-gray-600">
+            <div className="mt-1 flex items-center gap-2 text-sm text-gray-600 dark:text-muted-foreground">
               <Clock className="w-4 h-4" />
               {isHoliday
                 ? 'Holiday (no slots)'
@@ -43,7 +43,7 @@ export const AvailabilityCard: React.FC<{
                   <HolidayBadge key={h._id} holiday={h} />
                 ))}
                 {summary.upcomingHolidays.length > 2 && (
-                  <span className="text-xs text-gray-500">+{summary.upcomingHolidays.length - 2} more</span>
+                  <span className="text-xs text-gray-500 dark:text-muted-foreground">+{summary.upcomingHolidays.length - 2} more</span>
                 )}
               </div>
             )}
@@ -53,7 +53,7 @@ export const AvailabilityCard: React.FC<{
         <button
           type="button"
           onClick={() => onManage(summary.astrologerId)}
-          className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium bg-gray-50 hover:bg-gray-100 border border-gray-200"
+          className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium bg-gray-50 dark:bg-muted hover:bg-gray-100 dark:hover:bg-muted/80 border border-gray-200 dark:border-border text-gray-700 dark:text-foreground"
         >
           <Settings className="w-4 h-4" />
           Manage
