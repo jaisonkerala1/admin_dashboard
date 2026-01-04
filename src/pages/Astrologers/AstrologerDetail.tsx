@@ -214,12 +214,12 @@ export const AstrologerDetail = () => {
 
   const getStatusBadge = (status: string) => {
     const statusStyles: Record<string, string> = {
-      active: 'bg-gray-900 text-white',
-      pending: 'bg-gray-200 text-gray-700',
-      expired: 'bg-gray-100 text-gray-600',
-      rejected: 'bg-gray-200 text-gray-700',
-      cancelled_by_user: 'bg-gray-100 text-gray-600',
-      cancelled_by_admin: 'bg-gray-200 text-gray-700',
+      active: 'bg-gray-900 dark:bg-primary-600 text-white',
+      pending: 'bg-gray-200 dark:bg-muted text-gray-700 dark:text-foreground',
+      expired: 'bg-gray-100 dark:bg-muted text-gray-600 dark:text-muted-foreground',
+      rejected: 'bg-gray-200 dark:bg-muted text-gray-700 dark:text-foreground',
+      cancelled_by_user: 'bg-gray-100 dark:bg-muted text-gray-600 dark:text-muted-foreground',
+      cancelled_by_admin: 'bg-gray-200 dark:bg-muted text-gray-700 dark:text-foreground',
     };
     const labelMap: Record<string, string> = {
       active: 'Active',
@@ -231,8 +231,12 @@ export const AstrologerDetail = () => {
     };
     return (
       <span
-        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-          statusStyles[status] || 'bg-gray-100 text-gray-600'
+        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${
+          status === 'active' 
+            ? 'border-gray-900 dark:border-primary-600' 
+            : 'border-gray-200 dark:border-border'
+        } ${
+          statusStyles[status] || 'bg-gray-100 dark:bg-muted text-gray-600 dark:text-muted-foreground'
         }`}
       >
         {labelMap[status] || status}
@@ -383,7 +387,7 @@ export const AstrologerDetail = () => {
     return (
       <MainLayout>
         <div className="text-center py-20">
-          <p className="text-gray-500">Astrologer not found</p>
+          <p className="text-gray-500 dark:text-muted-foreground">Astrologer not found</p>
         </div>
       </MainLayout>
     );
@@ -437,7 +441,7 @@ export const AstrologerDetail = () => {
                 <Avatar src={astrologer.profilePicture} name={astrologer.name} size="3xl" />
                 {astrologer.isOnline && (
                   <div className="absolute -bottom-1 -right-1 flex items-center justify-center">
-                    <div className="w-6 h-6 bg-green-500 border-4 border-white rounded-full" />
+                    <div className="w-6 h-6 bg-green-500 border-4 border-white dark:border-card rounded-full" />
                     <div className="absolute w-6 h-6 bg-green-400 rounded-full animate-ping" />
                   </div>
                 )}
@@ -453,7 +457,7 @@ export const AstrologerDetail = () => {
 
             {/* Name with Verified Badge */}
             <div className="flex items-center justify-center gap-2 mb-3">
-              <h2 className="text-xl font-bold text-gray-900">{astrologer.name}</h2>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-foreground">{astrologer.name}</h2>
               {astrologer.isVerified && (
                 <BadgeCheck className="w-5 h-5 text-white fill-[#1877F2] flex-shrink-0" />
               )}
@@ -480,8 +484,8 @@ export const AstrologerDetail = () => {
             </button>
 
             {/* Admin Actions Section */}
-            <div className="border-t border-gray-200 pt-6 mb-6">
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">Admin Actions</p>
+            <div className="border-t border-gray-200 dark:border-border pt-6 mb-6">
+              <p className="text-xs font-semibold text-gray-500 dark:text-muted-foreground uppercase tracking-wider mb-4">Admin Actions</p>
               <div className="space-y-2">
                 {/* Approve Button */}
                 {!astrologer.isApproved && !astrologer.isSuspended && (
@@ -542,38 +546,38 @@ export const AstrologerDetail = () => {
             </div>
 
             {/* Info Fields */}
-            <div className="space-y-4 border-t border-gray-200 pt-6">
+            <div className="space-y-4 border-t border-gray-200 dark:border-border pt-6">
               <div className="flex items-start gap-3">
-                <Mail className="w-5 h-5 text-gray-400 mt-0.5" />
+                <Mail className="w-5 h-5 text-gray-400 dark:text-muted-foreground mt-0.5" />
                 <div className="flex-1">
-                  <p className="text-xs text-gray-500 mb-0.5">Email</p>
-                  <p className="text-sm font-medium text-gray-900">{astrologer.email}</p>
+                  <p className="text-xs text-gray-500 dark:text-muted-foreground mb-0.5">Email</p>
+                  <p className="text-sm font-medium text-gray-900 dark:text-foreground">{astrologer.email}</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <Phone className="w-5 h-5 text-gray-400 mt-0.5" />
+                <Phone className="w-5 h-5 text-gray-400 dark:text-muted-foreground mt-0.5" />
                 <div className="flex-1">
-                  <p className="text-xs text-gray-500 mb-0.5">Phone</p>
-                  <p className="text-sm font-medium text-gray-900">{astrologer.phone}</p>
+                  <p className="text-xs text-gray-500 dark:text-muted-foreground mb-0.5">Phone</p>
+                  <p className="text-sm font-medium text-gray-900 dark:text-foreground">{astrologer.phone}</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <Calendar className="w-5 h-5 text-gray-400 mt-0.5" />
+                <Calendar className="w-5 h-5 text-gray-400 dark:text-muted-foreground mt-0.5" />
                 <div className="flex-1">
-                  <p className="text-xs text-gray-500 mb-0.5">Joined</p>
-                  <p className="text-sm font-medium text-gray-900">{formatDateTime(astrologer.createdAt)}</p>
+                  <p className="text-xs text-gray-500 dark:text-muted-foreground mb-0.5">Joined</p>
+                  <p className="text-sm font-medium text-gray-900 dark:text-foreground">{formatDateTime(astrologer.createdAt)}</p>
                 </div>
               </div>
             </div>
 
             {/* Bio */}
             {astrologer.bio && (
-              <div className="border-t border-gray-200 pt-6 mt-6">
-                <p className="text-xs text-gray-500 mb-2 font-medium">About</p>
+              <div className="border-t border-gray-200 dark:border-border pt-6 mt-6">
+                <p className="text-xs text-gray-500 dark:text-muted-foreground mb-2 font-medium">About</p>
                 <div className="relative">
                   <p 
                     ref={bioRef}
-                    className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap break-words"
+                    className="text-sm text-gray-700 dark:text-foreground leading-relaxed whitespace-pre-wrap break-words"
                     style={{
                       maxHeight: !isBioExpanded && showBioExpandButton ? '120px' : 'none',
                       overflow: !isBioExpanded && showBioExpandButton ? 'hidden' : 'visible',
@@ -585,7 +589,7 @@ export const AstrologerDetail = () => {
                   {showBioExpandButton && (
                     <button
                       onClick={() => setIsBioExpanded(!isBioExpanded)}
-                      className="mt-2 flex items-center gap-1 text-xs font-medium text-primary-600 hover:text-primary-700 transition-colors"
+                      className="mt-2 flex items-center gap-1 text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors"
                     >
                       {isBioExpanded ? (
                         <>
@@ -606,11 +610,11 @@ export const AstrologerDetail = () => {
 
             {/* Specializations */}
             {(astrologer.specialization || []).length > 0 && (
-              <div className="border-t border-gray-200 pt-6 mt-6">
-                <p className="text-xs text-gray-500 mb-2 font-medium">Specializations</p>
+              <div className="border-t border-gray-200 dark:border-border pt-6 mt-6">
+                <p className="text-xs text-gray-500 dark:text-muted-foreground mb-2 font-medium">Specializations</p>
                 <div className="flex flex-wrap gap-1.5">
                   {(astrologer.specialization || []).map((spec, i) => (
-                    <span key={i} className="px-2 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-lg">
+                    <span key={i} className="px-2 py-1 bg-blue-50 dark:bg-primary-900/30 text-blue-700 dark:text-primary-400 text-xs font-medium rounded-lg border border-blue-100 dark:border-primary-800">
                       {spec}
                     </span>
                   ))}
@@ -620,11 +624,11 @@ export const AstrologerDetail = () => {
 
             {/* Languages */}
             {(astrologer.languages || []).length > 0 && (
-              <div className="border-t border-gray-200 pt-6 mt-6">
-                <p className="text-xs text-gray-500 mb-2 font-medium">Languages</p>
+              <div className="border-t border-gray-200 dark:border-border pt-6 mt-6">
+                <p className="text-xs text-gray-500 dark:text-muted-foreground mb-2 font-medium">Languages</p>
                 <div className="flex flex-wrap gap-1.5">
                   {(astrologer.languages || []).map((lang, i) => (
-                    <span key={i} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-lg">
+                    <span key={i} className="px-2 py-1 bg-gray-100 dark:bg-muted text-gray-700 dark:text-foreground text-xs font-medium rounded-lg border border-gray-200 dark:border-border">
                       {lang}
                     </span>
                   ))}
@@ -633,20 +637,20 @@ export const AstrologerDetail = () => {
             )}
 
             {/* Service Charges */}
-            <div className="border-t border-gray-200 pt-6 mt-6">
-              <p className="text-xs text-gray-500 mb-3 font-medium">Service Charges</p>
+            <div className="border-t border-gray-200 dark:border-border pt-6 mt-6">
+              <p className="text-xs text-gray-500 dark:text-muted-foreground mb-3 font-medium">Service Charges</p>
               <div className="space-y-2">
-                <div className="flex items-center justify-between p-2.5 bg-gray-50 rounded-lg">
-                  <span className="text-xs text-gray-600">Rate per Min</span>
-                  <span className="text-sm font-semibold text-gray-900">{formatCurrency(astrologer.consultationCharge || 0)}</span>
+                <div className="flex items-center justify-between p-2.5 bg-gray-50 dark:bg-muted rounded-lg border border-gray-100 dark:border-border">
+                  <span className="text-xs text-gray-600 dark:text-muted-foreground">Rate per Min</span>
+                  <span className="text-sm font-semibold text-gray-900 dark:text-foreground">{formatCurrency(astrologer.consultationCharge || 0)}</span>
                 </div>
-                <div className="flex items-center justify-between p-2.5 bg-gray-50 rounded-lg">
-                  <span className="text-xs text-gray-600">Call</span>
-                  <span className="text-sm font-semibold text-gray-900">{formatCurrency(astrologer.callCharge || 0)}/min</span>
+                <div className="flex items-center justify-between p-2.5 bg-gray-50 dark:bg-muted rounded-lg border border-gray-100 dark:border-border">
+                  <span className="text-xs text-gray-600 dark:text-muted-foreground">Call</span>
+                  <span className="text-sm font-semibold text-gray-900 dark:text-foreground">{formatCurrency(astrologer.callCharge || 0)}/min</span>
                 </div>
-                <div className="flex items-center justify-between p-2.5 bg-gray-50 rounded-lg">
-                  <span className="text-xs text-gray-600">Chat</span>
-                  <span className="text-sm font-semibold text-gray-900">{formatCurrency(astrologer.chatCharge || 0)}/min</span>
+                <div className="flex items-center justify-between p-2.5 bg-gray-50 dark:bg-muted rounded-lg border border-gray-100 dark:border-border">
+                  <span className="text-xs text-gray-600 dark:text-muted-foreground">Chat</span>
+                  <span className="text-sm font-semibold text-gray-900 dark:text-foreground">{formatCurrency(astrologer.chatCharge || 0)}/min</span>
                 </div>
               </div>
             </div>
@@ -656,17 +660,17 @@ export const AstrologerDetail = () => {
         {/* Right Side - Stats and Tabs */}
         <div className="lg:col-span-2 space-y-6">
           {/* Performance Metrics - Consolidated Card */}
-          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md hover:border-gray-200 transition-all duration-200 ease-out">
-            <h3 className="text-sm font-semibold text-gray-700 mb-4 uppercase tracking-wider">Performance Metrics</h3>
+          <div className="bg-white dark:bg-card rounded-2xl p-6 border border-gray-100 dark:border-border shadow-sm hover:shadow-md hover:border-gray-200 dark:hover:border-border transition-all duration-200 ease-out">
+            <h3 className="text-sm font-semibold text-gray-700 dark:text-foreground mb-4 uppercase tracking-wider">Performance Metrics</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {/* Rating */}
-              <div className="text-center p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+              <div className="text-center p-4 bg-gray-50 dark:bg-muted rounded-xl hover:bg-gray-100 dark:hover:bg-muted/80 transition-colors border border-gray-100 dark:border-border">
                 <div className="flex items-center justify-center mb-2">
                   <Star className="w-5 h-5 text-yellow-500" />
                 </div>
-                <p className="text-2xl font-bold text-gray-900 mb-1">{(astrologer.rating || 0).toFixed(1)}</p>
-                <p className="text-xs font-medium text-gray-500">Rating</p>
-                <div className="mt-2 h-1 bg-gray-200 rounded-full overflow-hidden">
+                <p className="text-2xl font-bold text-gray-900 dark:text-foreground mb-1">{(astrologer.rating || 0).toFixed(1)}</p>
+                <p className="text-xs font-medium text-gray-500 dark:text-muted-foreground">Rating</p>
+                <div className="mt-2 h-1 bg-gray-200 dark:bg-muted rounded-full overflow-hidden">
                   <div 
                     className="h-full bg-yellow-500 rounded-full" 
                     style={{ width: `${Math.min(100, ((astrologer.rating || 0) / 5) * 100)}%` }}
@@ -675,13 +679,13 @@ export const AstrologerDetail = () => {
               </div>
 
               {/* Earnings */}
-              <div className="text-center p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+              <div className="text-center p-4 bg-gray-50 dark:bg-muted rounded-xl hover:bg-gray-100 dark:hover:bg-muted/80 transition-colors border border-gray-100 dark:border-border">
                 <div className="flex items-center justify-center mb-2">
                   <DollarSign className="w-5 h-5 text-green-500" />
                 </div>
-                <p className="text-xl font-bold text-gray-900 mb-1 truncate">{formatCurrency(astrologer.totalEarnings || 0)}</p>
-                <p className="text-xs font-medium text-gray-500">Earnings</p>
-                <div className="mt-2 h-1 bg-gray-200 rounded-full overflow-hidden">
+                <p className="text-xl font-bold text-gray-900 dark:text-foreground mb-1 truncate">{formatCurrency(astrologer.totalEarnings || 0)}</p>
+                <p className="text-xs font-medium text-gray-500 dark:text-muted-foreground">Earnings</p>
+                <div className="mt-2 h-1 bg-gray-200 dark:bg-muted rounded-full overflow-hidden">
                   <div 
                     className="h-full bg-green-500 rounded-full" 
                     style={{ width: `${Math.min(100, ((astrologer.totalEarnings || 0) / Math.max(1, (astrologer.totalEarnings || 0) + 10000)) * 100)}%` }}
@@ -690,13 +694,13 @@ export const AstrologerDetail = () => {
               </div>
 
               {/* Experience */}
-              <div className="text-center p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+              <div className="text-center p-4 bg-gray-50 dark:bg-muted rounded-xl hover:bg-gray-100 dark:hover:bg-muted/80 transition-colors border border-gray-100 dark:border-border">
                 <div className="flex items-center justify-center mb-2">
                   <Clock className="w-5 h-5 text-purple-500" />
                 </div>
-                <p className="text-2xl font-bold text-gray-900 mb-1">{astrologer.experience || 0}</p>
-                <p className="text-xs font-medium text-gray-500">Years</p>
-                <div className="mt-2 h-1 bg-gray-200 rounded-full overflow-hidden">
+                <p className="text-2xl font-bold text-gray-900 dark:text-foreground mb-1">{astrologer.experience || 0}</p>
+                <p className="text-xs font-medium text-gray-500 dark:text-muted-foreground">Years</p>
+                <div className="mt-2 h-1 bg-gray-200 dark:bg-muted rounded-full overflow-hidden">
                   <div 
                     className="h-full bg-purple-500 rounded-full" 
                     style={{ width: `${Math.min(100, ((astrologer.experience || 0) / 50) * 100)}%` }}
@@ -705,13 +709,13 @@ export const AstrologerDetail = () => {
               </div>
 
               {/* Reviews */}
-              <div className="text-center p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+              <div className="text-center p-4 bg-gray-50 dark:bg-muted rounded-xl hover:bg-gray-100 dark:hover:bg-muted/80 transition-colors border border-gray-100 dark:border-border">
                 <div className="flex items-center justify-center mb-2">
                   <MessageSquare className="w-5 h-5 text-blue-500" />
                 </div>
-                <p className="text-2xl font-bold text-gray-900 mb-1">{formatNumber(astrologer.totalReviews || 0)}</p>
-                <p className="text-xs font-medium text-gray-500">Reviews</p>
-                <div className="mt-2 h-1 bg-gray-200 rounded-full overflow-hidden">
+                <p className="text-2xl font-bold text-gray-900 dark:text-foreground mb-1">{formatNumber(astrologer.totalReviews || 0)}</p>
+                <p className="text-xs font-medium text-gray-500 dark:text-muted-foreground">Reviews</p>
+                <div className="mt-2 h-1 bg-gray-200 dark:bg-muted rounded-full overflow-hidden">
                   <div 
                     className="h-full bg-blue-500 rounded-full" 
                     style={{ width: `${Math.min(100, ((astrologer.totalReviews || 0) / Math.max(1, (astrologer.totalReviews || 0) + 100)) * 100)}%` }}
@@ -733,36 +737,36 @@ export const AstrologerDetail = () => {
           {/* Unified Tabbed Section */}
           <Card>
             {/* Main Tabs Section */}
-            <div className="border-b border-gray-200 mb-6">
+            <div className="border-b border-gray-200 dark:border-border mb-6">
               <div className="flex gap-3 sm:gap-4 md:gap-6 -mb-px overflow-x-auto">
                 <button
                   onClick={() => setActiveTab('consultations')}
                   className={`pb-3 px-2 sm:px-3 md:px-4 text-xs sm:text-sm font-medium transition-colors relative whitespace-nowrap flex-shrink-0 ${
                     activeTab === 'consultations'
-                      ? 'text-gray-900'
-                      : 'text-gray-500 hover:text-gray-700'
+                      ? 'text-gray-900 dark:text-foreground'
+                      : 'text-gray-500 dark:text-muted-foreground hover:text-gray-700 dark:hover:text-foreground'
                   }`}
                 >
                   <span className="flex items-center gap-1.5">
                     Consultations
                     <span className={`px-1.5 py-0.5 text-xs font-semibold rounded-full ${
                       activeTab === 'consultations'
-                        ? 'bg-gray-900 text-white'
-                        : 'bg-gray-100 text-gray-600'
+                        ? 'bg-gray-900 dark:bg-primary-600 text-white'
+                        : 'bg-gray-100 dark:bg-muted text-gray-600 dark:text-muted-foreground'
                     }`}>
                       {consultations.length}
                     </span>
                   </span>
                   {activeTab === 'consultations' && (
-                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900" />
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900 dark:bg-primary-600" />
                   )}
                 </button>
                 <button
                   onClick={() => setActiveTab('serviceRequests')}
                   className={`pb-3 px-2 sm:px-3 md:px-4 text-xs sm:text-sm font-medium transition-colors relative whitespace-nowrap flex-shrink-0 ${
                     activeTab === 'serviceRequests'
-                      ? 'text-gray-900'
-                      : 'text-gray-500 hover:text-gray-700'
+                      ? 'text-gray-900 dark:text-foreground'
+                      : 'text-gray-500 dark:text-muted-foreground hover:text-gray-700 dark:hover:text-foreground'
                   }`}
                 >
                   <span className="flex items-center gap-1.5">
@@ -770,44 +774,44 @@ export const AstrologerDetail = () => {
                     <span className="sm:hidden">Requests</span>
                     <span className={`px-1.5 py-0.5 text-xs font-semibold rounded-full ${
                       activeTab === 'serviceRequests'
-                        ? 'bg-gray-900 text-white'
-                        : 'bg-gray-100 text-gray-600'
+                        ? 'bg-gray-900 dark:bg-primary-600 text-white'
+                        : 'bg-gray-100 dark:bg-muted text-gray-600 dark:text-muted-foreground'
                     }`}>
                       {serviceRequests.length}
                     </span>
                   </span>
                   {activeTab === 'serviceRequests' && (
-                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900" />
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900 dark:bg-primary-600" />
                   )}
                 </button>
                 <button
                   onClick={() => setActiveTab('reviews')}
                   className={`pb-3 px-2 sm:px-3 md:px-4 text-xs sm:text-sm font-medium transition-colors relative whitespace-nowrap flex-shrink-0 ${
                     activeTab === 'reviews'
-                      ? 'text-gray-900'
-                      : 'text-gray-500 hover:text-gray-700'
+                      ? 'text-gray-900 dark:text-foreground'
+                      : 'text-gray-500 dark:text-muted-foreground hover:text-gray-700 dark:hover:text-foreground'
                   }`}
                 >
                   <span className="flex items-center gap-1.5">
                     Reviews
                     <span className={`px-1.5 py-0.5 text-xs font-semibold rounded-full ${
                       activeTab === 'reviews'
-                        ? 'bg-gray-900 text-white'
-                        : 'bg-gray-100 text-gray-600'
+                        ? 'bg-gray-900 dark:bg-primary-600 text-white'
+                        : 'bg-gray-100 dark:bg-muted text-gray-600 dark:text-muted-foreground'
                     }`}>
                       {reviews.length}
                     </span>
                   </span>
                   {activeTab === 'reviews' && (
-                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900" />
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900 dark:bg-primary-600" />
                   )}
                 </button>
                 <button
                   onClick={() => setActiveTab('posts')}
                   className={`pb-3 px-2 sm:px-3 md:px-4 text-xs sm:text-sm font-medium transition-colors relative whitespace-nowrap flex-shrink-0 ${
                     activeTab === 'posts'
-                      ? 'text-gray-900'
-                      : 'text-gray-500 hover:text-gray-700'
+                      ? 'text-gray-900 dark:text-foreground'
+                      : 'text-gray-500 dark:text-muted-foreground hover:text-gray-700 dark:hover:text-foreground'
                   }`}
                 >
                   <span className="flex items-center gap-1.5">
@@ -815,14 +819,14 @@ export const AstrologerDetail = () => {
                     <span className="sm:hidden">Posts</span>
                     <span className={`px-1.5 py-0.5 text-xs font-semibold rounded-full ${
                       activeTab === 'posts'
-                        ? 'bg-gray-900 text-white'
-                        : 'bg-gray-100 text-gray-600'
+                        ? 'bg-gray-900 dark:bg-primary-600 text-white'
+                        : 'bg-gray-100 dark:bg-muted text-gray-600 dark:text-muted-foreground'
                     }`}>
                       {discussions.length}
                     </span>
                   </span>
                   {activeTab === 'posts' && (
-                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900" />
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900 dark:bg-primary-600" />
                   )}
                 </button>
               </div>
@@ -849,41 +853,41 @@ export const AstrologerDetail = () => {
                         return (
                           <div
                             key={consultation._id}
-                            className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                            className="flex items-center justify-between p-4 border border-gray-200 dark:border-border rounded-lg hover:bg-gray-50 dark:hover:bg-muted transition-colors bg-white dark:bg-card"
                           >
                             <div className="flex items-center gap-4 flex-1">
-                              <div className="text-sm font-medium text-gray-900 min-w-[60px]">
+                              <div className="text-sm font-medium text-gray-900 dark:text-foreground min-w-[60px]">
                                 {consultationDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}
                               </div>
                               <div className="flex-1">
-                                <div className="text-sm font-medium text-gray-900 capitalize">
+                                <div className="text-sm font-medium text-gray-900 dark:text-foreground capitalize">
                                   {consultation.type || 'Consultation'}
                                 </div>
-                                <div className="text-xs text-gray-500 mt-0.5">
+                                <div className="text-xs text-gray-500 dark:text-muted-foreground mt-0.5">
                                   {timeRange} - {endTimeStr}
                                 </div>
                               </div>
                               <div className="flex items-center gap-4">
                                 <div className="text-right">
-                                  <div className="text-sm font-semibold text-gray-900">
+                                  <div className="text-sm font-semibold text-gray-900 dark:text-foreground">
                                     {formatCurrency(consultation.amount || 0)}
                                   </div>
-                                  <div className="text-xs text-gray-500">
+                                  <div className="text-xs text-gray-500 dark:text-muted-foreground">
                                     {formatCurrency(astrologer.consultationCharge || 0)}/hr
                                   </div>
                                 </div>
                                 <div>
                                   {consultation.status === 'cancelled' ? (
-                                    <span className="px-2.5 py-1 bg-orange-100 text-orange-700 text-xs font-medium rounded-lg">
+                                    <span className="px-2.5 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 text-xs font-medium rounded-lg border border-orange-200 dark:border-orange-800">
                                       Cancelled
                                     </span>
                                   ) : consultation.status === 'completed' ? (
-                                    <span className="px-2.5 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-lg flex items-center gap-1">
+                                    <span className="px-2.5 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-medium rounded-lg flex items-center gap-1 border border-green-200 dark:border-green-800">
                                       <CheckCircle className="w-3 h-3" />
                                       Done
                                     </span>
                                   ) : (
-                                    <span className="px-2.5 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-lg">
+                                    <span className="px-2.5 py-1 bg-blue-100 dark:bg-primary-900/30 text-blue-700 dark:text-primary-400 text-xs font-medium rounded-lg border border-blue-200 dark:border-primary-800">
                                       Booked
                                     </span>
                                   )}
@@ -896,8 +900,8 @@ export const AstrologerDetail = () => {
                     </div>
                   ) : (
                     <div className="text-center py-8">
-                      <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                      <p className="text-gray-500">No consultations yet</p>
+                      <Calendar className="w-12 h-12 text-gray-300 dark:text-muted-foreground mx-auto mb-3" />
+                      <p className="text-gray-500 dark:text-muted-foreground">No consultations yet</p>
                     </div>
                   )}
                 </div>
@@ -917,23 +921,23 @@ export const AstrologerDetail = () => {
                         return (
                           <div
                             key={req._id}
-                            className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                            className="flex items-center justify-between p-4 border border-gray-200 dark:border-border rounded-lg hover:bg-gray-50 dark:hover:bg-muted transition-colors bg-white dark:bg-card"
                           >
                             <div className="flex items-center gap-4 flex-1">
-                              <div className="text-sm font-medium text-gray-900 min-w-[80px]">
+                              <div className="text-sm font-medium text-gray-900 dark:text-foreground min-w-[80px]">
                                 {requestDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}
                               </div>
                               <div className="flex-1">
-                                <div className="text-sm font-medium text-gray-900">
+                                <div className="text-sm font-medium text-gray-900 dark:text-foreground">
                                   {req.serviceName}
                                 </div>
-                                <div className="text-xs text-gray-500 mt-0.5">
+                                <div className="text-xs text-gray-500 dark:text-muted-foreground mt-0.5">
                                   {req.customerName}
                                 </div>
                               </div>
                               <div className="flex items-center gap-4">
                                 <div className="text-right">
-                                  <div className="text-sm font-semibold text-gray-900">
+                                  <div className="text-sm font-semibold text-gray-900 dark:text-foreground">
                                     {formatCurrency(req.price || 0)}
                                   </div>
                                 </div>
@@ -948,8 +952,8 @@ export const AstrologerDetail = () => {
                     </div>
                   ) : (
                     <div className="text-center py-8">
-                      <Package className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                      <p className="text-gray-500">No service requests yet</p>
+                      <Package className="w-12 h-12 text-gray-300 dark:text-muted-foreground mx-auto mb-3" />
+                      <p className="text-gray-500 dark:text-muted-foreground">No service requests yet</p>
                     </div>
                   )}
                 </div>
@@ -960,13 +964,13 @@ export const AstrologerDetail = () => {
               {activeTab === 'reviews' && (
               <div>
                 <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900">Reviews</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-foreground">Reviews</h3>
                   <button
                     onClick={() => {
                       setEditingReview(null);
                       setShowReviewModal(true);
                     }}
-                    className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 bg-primary-600 dark:bg-primary-600 text-white rounded-lg hover:bg-primary-700 dark:hover:bg-primary-700 transition-colors"
                   >
                     <Plus className="w-4 h-4" />
                     Add Review
@@ -984,7 +988,7 @@ export const AstrologerDetail = () => {
                       return (
                         <div
                           key={review._id}
-                          className="p-5 bg-white border border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-sm transition-all duration-200"
+                          className="p-5 bg-white dark:bg-card border border-gray-200 dark:border-border rounded-xl hover:border-gray-300 dark:hover:border-border hover:shadow-sm transition-all duration-200"
                         >
                           <div className="flex items-start gap-4">
                             <Avatar
@@ -996,7 +1000,7 @@ export const AstrologerDetail = () => {
                               <div className="flex items-start justify-between mb-3">
                                 <div className="flex-1">
                                   <div className="flex items-center gap-2 mb-1.5">
-                                    <p className="font-semibold text-gray-900 text-base">
+                                    <p className="font-semibold text-gray-900 dark:text-foreground text-base">
                                       {review.clientName || 'Anonymous'}
                                     </p>
                                     {review.isAdminCreated && (
@@ -1027,7 +1031,7 @@ export const AstrologerDetail = () => {
                                         />
                                       ))}
                                     </div>
-                                    <span className="text-xs text-gray-500">
+                                    <span className="text-xs text-gray-500 dark:text-muted-foreground">
                                       {formatDateTime(displayDate)}
                                     </span>
                                   </div>
@@ -1039,14 +1043,14 @@ export const AstrologerDetail = () => {
                                         setEditingReview(review);
                                         setShowReviewModal(true);
                                       }}
-                                      className="p-2 text-gray-600 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+                                      className="p-2 text-gray-600 dark:text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors"
                                       title="Edit review"
                                     >
                                       <Edit2 className="w-4 h-4" />
                                     </button>
                                     <button
                                       onClick={() => setDeletingReviewId(review._id)}
-                                      className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                      className="p-2 text-gray-600 dark:text-muted-foreground hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                                       title="Delete review"
                                     >
                                       <Trash2 className="w-4 h-4" />
@@ -1055,7 +1059,7 @@ export const AstrologerDetail = () => {
                                 )}
                               </div>
                               {review.reviewText && (
-                                <p className="text-sm text-gray-700 leading-relaxed mt-2">{review.reviewText}</p>
+                                <p className="text-sm text-gray-700 dark:text-foreground leading-relaxed mt-2">{review.reviewText}</p>
                               )}
                             </div>
                           </div>
@@ -1065,8 +1069,8 @@ export const AstrologerDetail = () => {
                   </div>
                 ) : (
                   <div className="text-center py-12">
-                    <MessageSquare className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                    <p className="text-gray-500 text-sm">No reviews yet</p>
+                    <MessageSquare className="w-12 h-12 text-gray-300 dark:text-muted-foreground mx-auto mb-3" />
+                    <p className="text-gray-500 dark:text-muted-foreground text-sm">No reviews yet</p>
                   </div>
                 )}
               </div>
@@ -1084,22 +1088,22 @@ export const AstrologerDetail = () => {
                     {discussions.map((discussion) => (
                       <div
                         key={discussion._id}
-                        className="p-5 bg-white border border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-sm transition-all duration-200"
+                        className="p-5 bg-white dark:bg-card border border-gray-200 dark:border-border rounded-xl hover:border-gray-300 dark:hover:border-border hover:shadow-sm transition-all duration-200"
                       >
                         <div className="flex items-start justify-between mb-3">
-                          <h4 className="font-semibold text-gray-900 text-base flex-1 pr-4">{discussion.title}</h4>
+                          <h4 className="font-semibold text-gray-900 dark:text-foreground text-base flex-1 pr-4">{discussion.title}</h4>
                           {discussion.isPinned && (
-                            <span className="px-2.5 py-1 bg-blue-50 text-blue-700 text-xs font-semibold rounded-lg flex-shrink-0">
+                            <span className="px-2.5 py-1 bg-blue-50 dark:bg-primary-900/30 text-blue-700 dark:text-primary-400 text-xs font-semibold rounded-lg flex-shrink-0 border border-blue-200 dark:border-primary-800">
                               Pinned
                             </span>
                           )}
                         </div>
                         {discussion.content && (
-                          <p className="text-sm text-gray-600 mb-4 line-clamp-2 leading-relaxed">
+                          <p className="text-sm text-gray-600 dark:text-foreground mb-4 line-clamp-2 leading-relaxed">
                             {discussion.content}
                           </p>
                         )}
-                        <div className="flex items-center gap-5 text-sm text-gray-500 pt-3 border-t border-gray-100">
+                        <div className="flex items-center gap-5 text-sm text-gray-500 dark:text-muted-foreground pt-3 border-t border-gray-100 dark:border-border">
                           <div className="flex items-center gap-1.5">
                             <ThumbsUp className="w-4 h-4" />
                             <span className="font-medium">{formatNumber(discussion.likeCount || 0)}</span>
@@ -1110,7 +1114,7 @@ export const AstrologerDetail = () => {
                           </div>
                           <span className="text-xs">{formatDateTime(discussion.createdAt)}</span>
                           {discussion.category && (
-                            <span className="ml-auto px-2.5 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-lg">
+                            <span className="ml-auto px-2.5 py-1 bg-gray-100 dark:bg-muted text-gray-700 dark:text-foreground text-xs font-medium rounded-lg border border-gray-200 dark:border-border">
                               {discussion.category}
                             </span>
                           )}
@@ -1120,8 +1124,8 @@ export const AstrologerDetail = () => {
                   </div>
                 ) : (
                   <div className="text-center py-12">
-                    <FileText className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                    <p className="text-gray-500 text-sm">No discussions posted yet</p>
+                    <FileText className="w-12 h-12 text-gray-300 dark:text-muted-foreground mx-auto mb-3" />
+                    <p className="text-gray-500 dark:text-muted-foreground text-sm">No discussions posted yet</p>
                   </div>
                 )}
               </div>
@@ -1134,9 +1138,9 @@ export const AstrologerDetail = () => {
 
       {/* Suspension Info */}
         {astrologer.isSuspended && astrologer.suspensionReason && (
-          <Card title="Suspension Details" className="border-red-200 bg-red-50">
-            <p className="text-red-800">{astrologer.suspensionReason}</p>
-            <p className="text-sm text-red-600 mt-2">
+          <Card title="Suspension Details" className="border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20">
+            <p className="text-red-800 dark:text-red-400">{astrologer.suspensionReason}</p>
+            <p className="text-sm text-red-600 dark:text-red-400 mt-2">
               Suspended on {formatDateTime(astrologer.suspendedAt!)}
             </p>
           </Card>
@@ -1145,50 +1149,50 @@ export const AstrologerDetail = () => {
         {/* Services & Ads Section */}
         <Card className="w-full mt-6">
           {/* Tab Navigation */}
-          <div className="border-b border-gray-200 mb-6">
+          <div className="border-b border-gray-200 dark:border-border mb-6">
             <div className="flex gap-3 sm:gap-4 md:gap-6 -mb-px overflow-x-auto">
               <button
                 onClick={() => setActiveSecondaryTab('services')}
                 className={`pb-3 px-2 sm:px-3 md:px-4 text-xs sm:text-sm font-medium transition-colors relative whitespace-nowrap flex-shrink-0 ${
                   activeSecondaryTab === 'services'
-                    ? 'text-gray-900'
-                    : 'text-gray-500 hover:text-gray-700'
+                    ? 'text-gray-900 dark:text-foreground'
+                    : 'text-gray-500 dark:text-muted-foreground hover:text-gray-700 dark:hover:text-foreground'
                 }`}
               >
                 <span className="flex items-center gap-1.5">
                   Services
                   <span className={`px-1.5 py-0.5 text-xs font-semibold rounded-full ${
                     activeSecondaryTab === 'services'
-                      ? 'bg-gray-900 text-white'
-                      : 'bg-gray-100 text-gray-600'
+                      ? 'bg-gray-900 dark:bg-primary-600 text-white'
+                      : 'bg-gray-100 dark:bg-muted text-gray-600 dark:text-muted-foreground'
                   }`}>
                     {services.length}
                   </span>
                 </span>
                 {activeSecondaryTab === 'services' && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900" />
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900 dark:bg-primary-600" />
                 )}
               </button>
               <button
                 onClick={() => setActiveSecondaryTab('ads')}
                 className={`pb-3 px-2 sm:px-3 md:px-4 text-xs sm:text-sm font-medium transition-colors relative whitespace-nowrap flex-shrink-0 ${
                   activeSecondaryTab === 'ads'
-                    ? 'text-gray-900'
-                    : 'text-gray-500 hover:text-gray-700'
+                    ? 'text-gray-900 dark:text-foreground'
+                    : 'text-gray-500 dark:text-muted-foreground hover:text-gray-700 dark:hover:text-foreground'
                 }`}
               >
                 <span className="flex items-center gap-1.5">
                   Ads
                   <span className={`px-1.5 py-0.5 text-xs font-semibold rounded-full ${
                     activeSecondaryTab === 'ads'
-                      ? 'bg-gray-900 text-white'
-                      : 'bg-gray-100 text-gray-600'
+                      ? 'bg-gray-900 dark:bg-primary-600 text-white'
+                      : 'bg-gray-100 dark:bg-muted text-gray-600 dark:text-muted-foreground'
                   }`}>
                     {boosts.length}
                   </span>
                 </span>
                 {activeSecondaryTab === 'ads' && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900" />
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900 dark:bg-primary-600" />
                 )}
               </button>
             </div>
@@ -1208,29 +1212,29 @@ export const AstrologerDetail = () => {
                     {services.map((service) => (
                       <div
                         key={service._id}
-                        className="p-4 bg-white border border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-md transition-all duration-200"
+                        className="p-4 bg-white dark:bg-card border border-gray-200 dark:border-border rounded-xl hover:border-gray-300 dark:hover:border-border hover:shadow-md transition-all duration-200"
                       >
                         <div className="flex items-start justify-between mb-3">
-                          <h4 className="font-semibold text-gray-900 text-base">{service.name}</h4>
+                          <h4 className="font-semibold text-gray-900 dark:text-foreground text-base">{service.name}</h4>
                           <StatusBadge status={getServiceStatus(service)} />
                         </div>
                         {service.description && (
-                          <p className="text-sm text-gray-600 mb-3 line-clamp-2 leading-relaxed">
+                          <p className="text-sm text-gray-600 dark:text-foreground mb-3 line-clamp-2 leading-relaxed">
                             {service.description}
                           </p>
                         )}
-                        <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                        <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-border">
                           <div className="flex flex-col gap-1">
-                            <span className="text-base font-bold text-gray-900">
+                            <span className="text-base font-bold text-gray-900 dark:text-foreground">
                               {formatCurrency(service.price)}
                             </span>
                             {service.duration && (
-                              <span className="text-xs text-gray-500">
+                              <span className="text-xs text-gray-500 dark:text-muted-foreground">
                                 {service.duration} mins
                               </span>
                             )}
                           </div>
-                          <span className="px-2.5 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-lg">
+                          <span className="px-2.5 py-1 bg-gray-100 dark:bg-muted text-gray-700 dark:text-foreground text-xs font-medium rounded-lg border border-gray-200 dark:border-border">
                             {service.category}
                           </span>
                         </div>
@@ -1239,8 +1243,8 @@ export const AstrologerDetail = () => {
                   </div>
                 ) : (
                   <div className="text-center py-12">
-                    <Package className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                    <p className="text-gray-500 text-sm">No services offered yet</p>
+                    <Package className="w-12 h-12 text-gray-300 dark:text-muted-foreground mx-auto mb-3" />
+                    <p className="text-gray-500 dark:text-muted-foreground text-sm">No services offered yet</p>
                   </div>
                 )}
               </div>
@@ -1268,7 +1272,7 @@ export const AstrologerDetail = () => {
                                 <img
                                   src={getImageUrl(boost.astrologerAvatar) || ''}
                                   alt={boost.astrologerName}
-                                  className="w-10 h-10 rounded-full object-cover border border-gray-200"
+                                  className="w-10 h-10 rounded-full object-cover border border-gray-200 dark:border-border"
                                   onError={(e) => {
                                     e.currentTarget.style.display = 'none';
                                     const fallback = e.currentTarget.nextElementSibling;
@@ -1279,15 +1283,15 @@ export const AstrologerDetail = () => {
                                 />
                               ) : null}
                               <div 
-                                className={`w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200 ${boost.astrologerAvatar ? 'hidden' : ''}`}
+                                className={`w-10 h-10 rounded-full bg-gray-100 dark:bg-muted flex items-center justify-center border border-gray-200 dark:border-border ${boost.astrologerAvatar ? 'hidden' : ''}`}
                               >
-                                <span className="text-gray-600 font-semibold text-sm">
+                                <span className="text-gray-600 dark:text-foreground font-semibold text-sm">
                                   {boost.astrologerName?.charAt(0).toUpperCase() || 'A'}
                                 </span>
                               </div>
                               <div className="min-w-0 flex-1">
-                                <h3 className="font-semibold text-gray-900 text-sm truncate">{boost.astrologerName || 'Unknown'}</h3>
-                                <p className="text-xs text-gray-500 truncate">ID: {boost.boostId}</p>
+                                <h3 className="font-semibold text-gray-900 dark:text-foreground text-sm truncate">{boost.astrologerName || 'Unknown'}</h3>
+                                <p className="text-xs text-gray-500 dark:text-muted-foreground truncate">ID: {boost.boostId}</p>
                               </div>
                             </div>
                             {getStatusBadge(boost.status)}
@@ -1295,28 +1299,28 @@ export const AstrologerDetail = () => {
 
                           <div className="space-y-2.5 mb-4">
                             <div className="flex justify-between text-sm">
-                              <span className="text-gray-500">Duration:</span>
-                              <span className="font-medium text-gray-900">{boost.durationDays} days</span>
+                              <span className="text-gray-500 dark:text-muted-foreground">Duration:</span>
+                              <span className="font-medium text-gray-900 dark:text-foreground">{boost.durationDays} days</span>
                             </div>
                             {boost.status === 'active' && (
                               <div className="flex justify-between text-sm items-center">
-                                <span className="text-gray-500">Remaining:</span>
+                                <span className="text-gray-500 dark:text-muted-foreground">Remaining:</span>
                                 <CountdownTimer endDate={boost.endDate} className="text-xs font-medium" />
                               </div>
                             )}
                             <div className="flex justify-between text-sm">
-                              <span className="text-gray-500">Cost:</span>
-                              <span className="font-medium text-gray-900">
+                              <span className="text-gray-500 dark:text-muted-foreground">Cost:</span>
+                              <span className="font-medium text-gray-900 dark:text-foreground">
                                 ₹{boost.totalCost?.toFixed(0) || '0'}
                               </span>
                             </div>
-                            <div className="flex justify-between text-xs pt-2 border-t border-gray-100">
-                              <span className="text-gray-400">Start:</span>
-                              <span className="font-medium text-gray-600">{formatDateTime(boost.startDate)}</span>
+                            <div className="flex justify-between text-xs pt-2 border-t border-gray-100 dark:border-border">
+                              <span className="text-gray-400 dark:text-muted-foreground">Start:</span>
+                              <span className="font-medium text-gray-600 dark:text-foreground">{formatDateTime(boost.startDate)}</span>
                             </div>
                             <div className="flex justify-between text-xs">
-                              <span className="text-gray-400">End:</span>
-                              <span className="font-medium text-gray-600">{formatDateTime(boost.endDate)}</span>
+                              <span className="text-gray-400 dark:text-muted-foreground">End:</span>
+                              <span className="font-medium text-gray-600 dark:text-foreground">{formatDateTime(boost.endDate)}</span>
                             </div>
                             {boost.category && (
                               <div className="pt-2">
@@ -1334,7 +1338,7 @@ export const AstrologerDetail = () => {
                                     };
                                     return (
                                       <span
-                                        className="px-2 py-0.5 bg-purple-50 text-purple-700 rounded-full text-xs font-medium border border-purple-200"
+                                        className="px-2 py-0.5 bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded-full text-xs font-medium border border-purple-200 dark:border-purple-800"
                                       >
                                         {categoryLabels[boost.category] || ''} {boost.category.charAt(0).toUpperCase() + boost.category.slice(1)}
                                       </span>
@@ -1350,8 +1354,8 @@ export const AstrologerDetail = () => {
                   </div>
                 ) : (
                   <div className="text-center py-12">
-                    <Zap className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                    <p className="text-gray-500 text-sm">No active ads for this astrologer</p>
+                    <Zap className="w-12 h-12 text-gray-300 dark:text-muted-foreground mx-auto mb-3" />
+                    <p className="text-gray-500 dark:text-muted-foreground text-sm">No active ads for this astrologer</p>
                   </div>
                 )}
               </div>
@@ -1366,13 +1370,13 @@ export const AstrologerDetail = () => {
         title="Suspend Astrologer"
       >
         <div className="space-y-4">
-          <p className="text-gray-600">
-            Please provide a reason for suspending <strong>{astrologer.name}</strong>:
+          <p className="text-gray-600 dark:text-foreground">
+            Please provide a reason for suspending <strong className="text-gray-900 dark:text-foreground">{astrologer.name}</strong>:
           </p>
           <textarea
             value={suspensionReason}
             onChange={(e) => setSuspensionReason(e.target.value)}
-            className="input min-h-[120px] resize-none"
+            className="input min-h-[120px] resize-none dark:bg-card dark:border-border dark:text-foreground"
             placeholder="Enter suspension reason..."
           />
           <div className="flex gap-3 justify-end">
@@ -1412,19 +1416,19 @@ export const AstrologerDetail = () => {
         title="Delete Review"
       >
         <div className="space-y-4">
-          <p className="text-gray-600">
+          <p className="text-gray-600 dark:text-foreground">
             Are you sure you want to delete this review? This action cannot be undone.
           </p>
           <div className="flex gap-3 justify-end">
             <button
               onClick={() => setDeletingReviewId(null)}
-              className="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50"
+              className="px-6 py-2.5 border border-gray-300 dark:border-border text-gray-700 dark:text-foreground rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-muted"
             >
               Cancel
             </button>
             <button
               onClick={handleDeleteReview}
-              className="px-6 py-2.5 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700"
+              className="px-6 py-2.5 bg-red-600 dark:bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 dark:hover:bg-red-700"
             >
               Delete
             </button>
