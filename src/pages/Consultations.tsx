@@ -45,10 +45,10 @@ const statusConfig = {
 
 // Type icons and labels
 const typeConfig = {
-  phone: { icon: Phone, label: 'Phone', color: 'text-blue-600 bg-blue-50' },
-  video: { icon: Video, label: 'Video', color: 'text-purple-600 bg-purple-50' },
-  chat: { icon: MessageCircle, label: 'Chat', color: 'text-green-600 bg-green-50' },
-  inPerson: { icon: MapPin, label: 'In Person', color: 'text-orange-600 bg-orange-50' },
+  phone: { icon: Phone, label: 'Phone', color: 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800' },
+  video: { icon: Video, label: 'Video', color: 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30 border border-purple-200 dark:border-purple-800' },
+  chat: { icon: MessageCircle, label: 'Chat', color: 'text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800' },
+  inPerson: { icon: MapPin, label: 'In Person', color: 'text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-800' },
 };
 
 export const Consultations = () => {
@@ -485,7 +485,7 @@ export const Consultations = () => {
                   {/* Details Grid */}
                   <div className="p-3 bg-gray-50/30 dark:bg-muted/30">
                     <div className="grid grid-cols-2 gap-3 mb-3">
-                      <div className="bg-white dark:bg-card p-2.5 rounded-lg border border-gray-100 dark:border-border">
+                      <div className="bg-white dark:bg-card p-2.5 rounded-lg border border-gray-100 dark:border-border hover:border-gray-200 dark:hover:border-border transition-colors">
                         <p className="text-gray-500 dark:text-muted-foreground text-xs mb-1">Scheduled</p>
                         <p className="font-semibold text-sm text-gray-900 dark:text-foreground">
                           {new Date(consultation.scheduledTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
@@ -494,7 +494,7 @@ export const Consultations = () => {
                           {new Date(consultation.scheduledTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </p>
                       </div>
-                      <div className="bg-white dark:bg-card p-2.5 rounded-lg border border-gray-100 dark:border-border">
+                      <div className="bg-white dark:bg-card p-2.5 rounded-lg border border-gray-100 dark:border-border hover:border-gray-200 dark:hover:border-border transition-colors">
                         <p className="text-gray-500 dark:text-muted-foreground text-xs mb-1">Type & Duration</p>
                         <div className="flex items-center gap-1.5 mb-1">
                           {getTypeIcon(consultation.type)}

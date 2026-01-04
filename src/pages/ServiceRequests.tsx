@@ -356,7 +356,7 @@ export const ServiceRequests = () => {
                         <div 
                           className={`w-10 h-10 rounded-full bg-gray-100 dark:bg-muted flex items-center justify-center border border-gray-200 dark:border-border ${request.astrologerId?.profilePicture ? 'hidden' : ''}`}
                         >
-                          <span className="text-gray-600 dark:text-muted-foreground font-semibold text-sm">
+                          <span className="text-gray-600 dark:text-foreground font-semibold text-sm">
                             {request.astrologerId?.name?.charAt(0).toUpperCase() || request.customerName?.charAt(0).toUpperCase() || 'U'}
                           </span>
                         </div>
