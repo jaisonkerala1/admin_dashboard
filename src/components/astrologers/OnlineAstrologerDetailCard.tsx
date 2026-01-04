@@ -79,7 +79,7 @@ export const OnlineAstrologerDetailCard = ({
             
             {/* Fallback initials */}
             <div
-              className="initials-fallback w-full h-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-semibold text-base sm:text-lg"
+              className="initials-fallback w-full h-full bg-gradient-to-br from-orange-400 to-orange-600 dark:from-orange-500 dark:to-orange-700 flex items-center justify-center text-white font-semibold text-base sm:text-lg"
               style={{ display: imageUrl ? 'none' : 'flex' }}
             >
               {initials}
@@ -88,7 +88,7 @@ export const OnlineAstrologerDetailCard = ({
 
           {/* Green Online Indicator */}
           <div 
-            className="absolute bottom-0 right-0 w-3 h-3 sm:w-3.5 sm:h-3.5 bg-green-500 rounded-full border-2 border-white"
+            className="absolute bottom-0 right-0 w-3 h-3 sm:w-3.5 sm:h-3.5 bg-green-500 rounded-full border-2 border-white dark:border-card"
             style={{
               boxShadow: '0 1px 3px rgba(34, 197, 94, 0.4)',
             }}
@@ -125,7 +125,7 @@ export const OnlineAstrologerDetailCard = ({
         {/* Message Button */}
         <button
           onClick={handleMessageClick}
-          className="flex-shrink-0 bg-orange-500 hover:bg-orange-600 text-white rounded-full px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium transition-colors flex items-center gap-1.5 sm:gap-2 shadow-sm hover:shadow-md whitespace-nowrap"
+          className="flex-shrink-0 bg-orange-500 dark:bg-orange-600 hover:bg-orange-600 dark:hover:bg-orange-500 text-white rounded-full px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium transition-colors flex items-center gap-1.5 sm:gap-2 shadow-sm hover:shadow-md whitespace-nowrap"
         >
           <MessageSquare className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
           <span className="hidden sm:inline">Message</span>

@@ -25,4 +25,5 @@ export { AstrologerRankings } from './Rankings';
 export { SearchResults } from './Search/SearchResults';
 export { AdCentre } from './AdCentre';
 export { BoostDetail } from './AdCentre/BoostDetail';
+export { Settings } from './Settings';
 

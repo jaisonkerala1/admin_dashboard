@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, KeyboardEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Bell, Menu, LogOut, User, Settings, ChevronDown, Loader2 } from 'lucide-react';
-import { Avatar, SearchBar, ThemeToggle } from '@/components/common';
+import { Avatar, SearchBar } from '@/components/common';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { useToastContext } from '@/contexts/ToastContext';
 import { cn } from '@/utils/helpers';
@@ -168,9 +168,6 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
 
         {/* Right section */}
         <div className="flex items-center gap-2 lg:gap-4 ml-2 lg:ml-0">
-          {/* Theme Toggle */}
-          <ThemeToggle />
-
           {/* Notifications */}
           <Link 
             to={ROUTES.NOTIFICATIONS}
@@ -232,14 +229,14 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
                 </Link>
                 
                 <Link
-                  to="/settings"
+                  to={ROUTES.SETTINGS}
                   className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-foreground hover:bg-gray-50 dark:hover:bg-muted transition-colors focus:outline-none focus:bg-gray-50 dark:focus:bg-muted"
                   onClick={() => setIsProfileOpen(false)}
                   role="menuitem"
                   tabIndex={0}
                 >
                   <Settings className="w-4 h-4 text-gray-400 dark:text-muted-foreground" aria-hidden="true" />
-                  System Settings
+                  Settings
                 </Link>
 
                 <div className="h-px bg-gray-100 dark:bg-border my-1" role="separator" />
