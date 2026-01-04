@@ -128,7 +128,7 @@ export const Support = () => {
           )}
 
           {/* Tabs */}
-          <div className="mb-6 border-b border-gray-200">
+          <div className="mb-6 border-b border-gray-200 dark:border-border">
             <nav className="flex gap-1">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
@@ -139,14 +139,14 @@ export const Support = () => {
                     onClick={() => handleTabChange(tab.id, tab.path)}
                     className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-all ${
                       isActive
-                        ? 'border-blue-500 text-blue-600'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                        ? 'border-blue-500 dark:border-blue-400 text-blue-600 dark:text-blue-400'
+                        : 'border-transparent text-gray-500 dark:text-muted-foreground hover:text-gray-700 dark:hover:text-foreground hover:border-gray-300 dark:hover:border-border'
                     }`}
                   >
                     <Icon className="w-4 h-4" />
                     {tab.name}
                     {tab.id === 'tickets' && stats && stats.openTickets > 0 && (
-                      <span className="ml-1.5 px-2 py-0.5 text-xs font-semibold rounded-full bg-blue-100 text-blue-600">
+                      <span className="ml-1.5 px-2 py-0.5 text-xs font-semibold rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
                         {stats.openTickets}
                       </span>
                     )}

@@ -81,7 +81,7 @@ export const TicketListView: React.FC = () => {
   return (
     <div className="space-y-4">
       {/* Search and Filter Bar */}
-      <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
+      <div className="bg-white dark:bg-card rounded-2xl p-4 border border-gray-100 dark:border-border shadow-sm">
         <div className="flex flex-col lg:flex-row gap-3">
           {/* Search */}
           <div className="flex-1">
@@ -104,8 +104,8 @@ export const TicketListView: React.FC = () => {
             onClick={() => setShowFilters(!showFilters)}
             className={`flex items-center gap-2 px-4 py-2.5 border rounded-xl text-sm font-medium transition-all ${
               showFilters
-                ? 'bg-blue-50 border-blue-200 text-blue-700'
-                : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300'
+                ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700 text-blue-700 dark:text-blue-400'
+                : 'bg-white dark:bg-card border-gray-200 dark:border-border text-gray-700 dark:text-foreground hover:bg-gray-50 dark:hover:bg-muted hover:border-gray-300 dark:hover:border-border/80'
             }`}
           >
             <Filter className="w-4 h-4" />
@@ -115,16 +115,16 @@ export const TicketListView: React.FC = () => {
 
         {/* Filter Options */}
         {showFilters && (
-          <div className="mt-4 pt-4 border-t border-gray-100 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="mt-4 pt-4 border-t border-gray-100 dark:border-border grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Status Filter */}
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1.5">
+              <label className="block text-xs font-medium text-gray-600 dark:text-muted-foreground mb-1.5">
                 Status
               </label>
               <select
                 value={filters.status || 'all'}
                 onChange={(e) => handleFilterChange('status', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-200 rounded-xl bg-white text-gray-900 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="w-full px-3 py-2 border border-gray-200 dark:border-border rounded-xl bg-white dark:bg-card text-gray-900 dark:text-foreground text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               >
                 <option value="all">All Statuses</option>
                 <option value="open">Open</option>
@@ -136,13 +136,13 @@ export const TicketListView: React.FC = () => {
 
             {/* Priority Filter */}
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1.5">
+              <label className="block text-xs font-medium text-gray-600 dark:text-muted-foreground mb-1.5">
                 Priority
               </label>
               <select
                 value={filters.priority || 'all'}
                 onChange={(e) => handleFilterChange('priority', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-200 rounded-xl bg-white text-gray-900 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="w-full px-3 py-2 border border-gray-200 dark:border-border rounded-xl bg-white dark:bg-card text-gray-900 dark:text-foreground text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               >
                 <option value="all">All Priorities</option>
                 <option value="Urgent">Urgent</option>
@@ -154,13 +154,13 @@ export const TicketListView: React.FC = () => {
 
             {/* Category Filter */}
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1.5">
+              <label className="block text-xs font-medium text-gray-600 dark:text-muted-foreground mb-1.5">
                 Category
               </label>
               <select
                 value={filters.category || 'all'}
                 onChange={(e) => handleFilterChange('category', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-200 rounded-xl bg-white text-gray-900 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="w-full px-3 py-2 border border-gray-200 dark:border-border rounded-xl bg-white dark:bg-card text-gray-900 dark:text-foreground text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               >
                 <option value="all">All Categories</option>
                 <option value="Account Issues">Account Issues</option>
@@ -176,13 +176,13 @@ export const TicketListView: React.FC = () => {
 
             {/* Assigned To Filter */}
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1.5">
+              <label className="block text-xs font-medium text-gray-600 dark:text-muted-foreground mb-1.5">
                 Assigned To
               </label>
               <select
                 value={filters.assignedTo || 'all'}
                 onChange={(e) => handleFilterChange('assignedTo', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-200 rounded-xl bg-white text-gray-900 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="w-full px-3 py-2 border border-gray-200 dark:border-border rounded-xl bg-white dark:bg-card text-gray-900 dark:text-foreground text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               >
                 <option value="all">All Tickets</option>
                 <option value="me">Assigned to Me</option>
@@ -195,15 +195,15 @@ export const TicketListView: React.FC = () => {
 
       {/* Bulk Actions Bar */}
       {selectedTicketIds.length > 0 && (
-        <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4">
+        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-2xl p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <span className="text-sm font-medium text-gray-700">
+              <span className="text-sm font-medium text-gray-700 dark:text-foreground">
                 {selectedTicketIds.length} ticket{selectedTicketIds.length > 1 ? 's' : ''} selected
               </span>
               <button
                 onClick={() => dispatch(clearSelection())}
-                className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors"
+                className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors"
               >
                 Clear
               </button>
@@ -211,7 +211,7 @@ export const TicketListView: React.FC = () => {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setShowBulkActions(!showBulkActions)}
-                className="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors text-sm font-medium"
+                className="px-4 py-2 bg-blue-600 dark:bg-primary-600 text-white rounded-xl hover:bg-blue-700 dark:hover:bg-primary-700 transition-colors text-sm font-medium"
               >
                 Bulk Actions
               </button>
@@ -219,16 +219,16 @@ export const TicketListView: React.FC = () => {
           </div>
 
           {showBulkActions && (
-            <div className="mt-3 pt-3 border-t border-blue-200 flex flex-wrap gap-2">
+            <div className="mt-3 pt-3 border-t border-blue-200 dark:border-blue-800 flex flex-wrap gap-2">
               <button
                 onClick={() => handleBulkAction('close')}
-                className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-card border border-gray-200 dark:border-border rounded-xl text-sm text-gray-700 dark:text-foreground hover:bg-gray-50 dark:hover:bg-muted transition-colors"
               >
                 <CheckCircle className="w-4 h-4" />
                 Close Tickets
               </button>
               <button
-                className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-card border border-gray-200 dark:border-border rounded-xl text-sm text-gray-700 dark:text-foreground hover:bg-gray-50 dark:hover:bg-muted transition-colors"
               >
                 <UserPlus className="w-4 h-4" />
                 Assign
@@ -264,13 +264,13 @@ export const TicketListView: React.FC = () => {
           ))}
         </div>
       ) : error ? (
-        <div className="bg-white rounded-2xl p-8 text-center border border-gray-100 shadow-sm">
-          <XCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          <p className="text-red-600">{error}</p>
+        <div className="bg-white dark:bg-card rounded-2xl p-8 text-center border border-gray-100 dark:border-border shadow-sm">
+          <XCircle className="w-12 h-12 text-red-500 dark:text-red-400 mx-auto mb-4" />
+          <p className="text-red-600 dark:text-red-400">{error}</p>
         </div>
       ) : tickets.length === 0 ? (
-        <div className="bg-white rounded-2xl p-8 text-center border border-gray-100 shadow-sm">
-          <p className="text-gray-500">No tickets found</p>
+        <div className="bg-white dark:bg-card rounded-2xl p-8 text-center border border-gray-100 dark:border-border shadow-sm">
+          <p className="text-gray-500 dark:text-muted-foreground">No tickets found</p>
         </div>
       ) : (
         <>
@@ -278,7 +278,7 @@ export const TicketListView: React.FC = () => {
           <div className="flex items-center gap-3 px-1">
             <button
               onClick={handleSelectAll}
-              className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 transition-colors font-medium"
+              className="flex items-center gap-2 text-sm text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground transition-colors font-medium"
             >
               {allSelected ? (
                 <CheckSquare className="w-4 h-4" />
@@ -305,9 +305,9 @@ export const TicketListView: React.FC = () => {
 
           {/* Pagination */}
           {pagination.totalPages > 1 && (
-            <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
+            <div className="bg-white dark:bg-card rounded-2xl p-4 border border-gray-100 dark:border-border shadow-sm">
               <div className="flex items-center justify-between">
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-gray-600 dark:text-muted-foreground">
                   Showing {(pagination.currentPage - 1) * pagination.itemsPerPage + 1} to{' '}
                   {Math.min(
                     pagination.currentPage * pagination.itemsPerPage,
@@ -319,17 +319,17 @@ export const TicketListView: React.FC = () => {
                   <button
                     onClick={() => handlePageChange(pagination.currentPage - 1)}
                     disabled={pagination.currentPage === 1}
-                    className="p-2 rounded-xl border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+                    className="p-2 rounded-xl border border-gray-200 dark:border-border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-muted transition-colors text-gray-700 dark:text-foreground"
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </button>
-                  <span className="text-sm text-gray-700 font-medium px-2">
+                  <span className="text-sm text-gray-700 dark:text-foreground font-medium px-2">
                     Page {pagination.currentPage} of {pagination.totalPages}
                   </span>
                   <button
                     onClick={() => handlePageChange(pagination.currentPage + 1)}
                     disabled={pagination.currentPage === pagination.totalPages}
-                    className="p-2 rounded-xl border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+                    className="p-2 rounded-xl border border-gray-200 dark:border-border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-muted transition-colors text-gray-700 dark:text-foreground"
                   >
                     <ChevronRight className="w-4 h-4" />
                   </button>

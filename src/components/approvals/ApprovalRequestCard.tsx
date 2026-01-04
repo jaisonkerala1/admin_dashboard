@@ -25,8 +25,8 @@ export const ApprovalRequestCard: React.FC<ApprovalRequestCardProps> = ({ reques
                 className="w-12 h-12 rounded-full object-cover"
               />
             ) : (
-              <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
-                <User className="w-6 h-6 text-gray-500" />
+              <div className="w-12 h-12 rounded-full bg-gray-200 dark:bg-muted flex items-center justify-center">
+                <User className="w-6 h-6 text-gray-500 dark:text-muted-foreground" />
               </div>
             )}
           </div>
@@ -35,12 +35,12 @@ export const ApprovalRequestCard: React.FC<ApprovalRequestCardProps> = ({ reques
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2 mb-2">
               <div className="flex-1 min-w-0">
-                <h3 className="text-base font-semibold text-gray-900 truncate">
+                <h3 className="text-base font-semibold text-gray-900 dark:text-foreground truncate">
                   {request.astrologerName}
                 </h3>
-                <p className="text-sm text-gray-500 truncate">{request.astrologerEmail}</p>
+                <p className="text-sm text-gray-500 dark:text-muted-foreground truncate">{request.astrologerEmail}</p>
               </div>
-              <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0" />
+              <ChevronRight className="w-5 h-5 text-gray-400 dark:text-muted-foreground flex-shrink-0" />
             </div>
 
             {/* Badges */}
@@ -50,7 +50,7 @@ export const ApprovalRequestCard: React.FC<ApprovalRequestCardProps> = ({ reques
             </div>
 
             {/* Details */}
-            <div className="flex items-center gap-4 text-sm text-gray-600 flex-wrap">
+            <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-muted-foreground flex-wrap">
               <div className="flex items-center gap-1">
                 <Briefcase className="w-4 h-4" />
                 <span>{request.astrologerData.experience} yrs exp</span>
@@ -76,7 +76,7 @@ export const ApprovalRequestCard: React.FC<ApprovalRequestCardProps> = ({ reques
             </div>
 
             {/* Submission time */}
-            <div className="mt-2 text-xs text-gray-500">
+            <div className="mt-2 text-xs text-gray-500 dark:text-muted-foreground">
               Submitted {formatDistanceToNow(new Date(request.submittedAt), { addSuffix: true })}
             </div>
           </div>

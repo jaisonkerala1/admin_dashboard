@@ -36,8 +36,8 @@ export const TicketCard: React.FC<TicketCardProps> = ({
       onClick={onClick}
     >
       <div
-        className={`bg-white rounded-2xl p-5 border border-gray-100 shadow-sm transition-all duration-200 hover:shadow-md hover:border-gray-200 hover:-translate-y-0.5 ${
-          isSelected ? 'ring-2 ring-blue-500' : ''
+        className={`bg-white dark:bg-card rounded-2xl p-5 border border-gray-100 dark:border-border shadow-sm transition-all duration-200 hover:shadow-md hover:border-gray-200 dark:hover:border-border/80 hover:-translate-y-0.5 ${
+          isSelected ? 'ring-2 ring-blue-500 dark:ring-primary-500' : ''
         }`}
       >
         <div className="flex items-start gap-4">
@@ -48,7 +48,7 @@ export const TicketCard: React.FC<TicketCardProps> = ({
                 type="checkbox"
                 checked={isSelected}
                 onChange={handleCheckboxChange}
-                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                className="w-4 h-4 text-blue-600 border-gray-300 dark:border-border rounded focus:ring-blue-500 focus:ring-2"
                 onClick={(e) => e.stopPropagation()}
               />
             </div>
@@ -60,12 +60,12 @@ export const TicketCard: React.FC<TicketCardProps> = ({
             <div className="flex items-start justify-between gap-3 mb-3">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1.5">
-                  <span className="text-xs font-mono text-gray-500">
+                  <span className="text-xs font-mono text-gray-500 dark:text-muted-foreground">
                     {ticket.ticketNumber}
                   </span>
                   <TicketPriorityBadge priority={ticket.priority} showIcon={false} />
                 </div>
-                <h3 className="text-base font-semibold text-gray-900 truncate mb-1">
+                <h3 className="text-base font-semibold text-gray-900 dark:text-foreground truncate mb-1">
                   {ticket.title}
                 </h3>
               </div>
@@ -73,12 +73,12 @@ export const TicketCard: React.FC<TicketCardProps> = ({
             </div>
 
             {/* Description */}
-            <p className="text-sm text-gray-600 line-clamp-2 mb-3">
+            <p className="text-sm text-gray-600 dark:text-muted-foreground line-clamp-2 mb-3">
               {ticket.description}
             </p>
 
             {/* Meta Info */}
-            <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500">
+            <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500 dark:text-muted-foreground">
               <TicketCategoryBadge category={ticket.category} />
               
               <div className="flex items-center gap-1.5">
@@ -101,10 +101,10 @@ export const TicketCard: React.FC<TicketCardProps> = ({
 
             {/* Assigned To */}
             {ticket.assignedToName && (
-              <div className="mt-3 pt-3 border-t border-gray-100">
-                <span className="text-xs text-gray-500">
+              <div className="mt-3 pt-3 border-t border-gray-100 dark:border-border">
+                <span className="text-xs text-gray-500 dark:text-muted-foreground">
                   Assigned to:{' '}
-                  <span className="font-medium text-gray-700">
+                  <span className="font-medium text-gray-700 dark:text-foreground">
                     {ticket.assignedToName}
                   </span>
                 </span>

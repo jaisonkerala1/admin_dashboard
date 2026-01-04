@@ -210,9 +210,9 @@ export const Approvals = () => {
         subtitle="Review and manage astrologer approval requests"
         action={
           pendingCount > 0 ? (
-            <div className="flex items-center gap-2 px-4 py-2 bg-orange-50 border border-orange-200 rounded-lg">
-              <Bell className="w-5 h-5 text-orange-600" />
-              <span className="text-sm font-medium text-orange-700">
+            <div className="flex items-center gap-2 px-4 py-2 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg">
+              <Bell className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+              <span className="text-sm font-medium text-orange-700 dark:text-orange-400">
                 {pendingCount} Pending
               </span>
             </div>
@@ -229,7 +229,7 @@ export const Approvals = () => {
       <ApprovalFilterBar filters={filters} onFiltersChange={(f) => dispatch(setFilters(f))} />
 
       {/* Tabs */}
-      <div className="mb-6 border-b border-gray-200">
+      <div className="mb-6 border-b border-gray-200 dark:border-border">
         <div className="flex gap-6 overflow-x-auto">
           {tabs.map((tab) => {
             const Icon = tab.icon;
@@ -240,8 +240,8 @@ export const Approvals = () => {
                 onClick={() => setActiveTab(tab.id)}
                 className={`pb-3 px-1 border-b-2 whitespace-nowrap transition-colors flex items-center gap-2 ${
                   isActive
-                    ? 'border-blue-500 text-blue-600 font-semibold'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                    ? 'border-blue-500 dark:border-blue-400 text-blue-600 dark:text-blue-400 font-semibold'
+                    : 'border-transparent text-gray-500 dark:text-muted-foreground hover:text-gray-700 dark:hover:text-foreground'
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -254,8 +254,8 @@ export const Approvals = () => {
 
       {/* Error Message */}
       {error && (
-        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-sm text-red-700">{error}</p>
+        <div className="mb-4 p-4 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 rounded-lg">
+          <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
         </div>
       )}
 
@@ -268,8 +268,8 @@ export const Approvals = () => {
           </div>
         ) : pendingBoosts.length === 0 ? (
           <div className="text-center py-12">
-            <Zap className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-            <p className="text-gray-500">No pending boost requests found</p>
+            <Zap className="w-12 h-12 text-gray-300 dark:text-muted-foreground/50 mx-auto mb-3" />
+            <p className="text-gray-500 dark:text-muted-foreground">No pending boost requests found</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -286,7 +286,7 @@ export const Approvals = () => {
                         <img
                           src={getImageUrl(boost.astrologerAvatar) || ''}
                           alt={boost.astrologerName}
-                          className="w-10 h-10 rounded-full object-cover border border-gray-200"
+                          className="w-10 h-10 rounded-full object-cover border border-gray-200 dark:border-border"
                           onError={(e) => {
                             e.currentTarget.style.display = 'none';
                             const fallback = e.currentTarget.nextElementSibling;
@@ -297,15 +297,15 @@ export const Approvals = () => {
                         />
                       ) : null}
                       <div
-                        className={`w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200 ${boost.astrologerAvatar ? 'hidden' : ''}`}
+                        className={`w-10 h-10 rounded-full bg-gray-100 dark:bg-muted flex items-center justify-center border border-gray-200 dark:border-border ${boost.astrologerAvatar ? 'hidden' : ''}`}
                       >
-                        <span className="text-gray-600 font-semibold text-sm">
+                        <span className="text-gray-600 dark:text-muted-foreground font-semibold text-sm">
                           {boost.astrologerName.charAt(0).toUpperCase()}
                         </span>
                       </div>
                       <div>
-                        <h3 className="font-semibold text-gray-900 text-sm">{boost.astrologerName}</h3>
-                        <p className="text-xs text-gray-500">{boost.astrologerPhone}</p>
+                        <h3 className="font-semibold text-gray-900 dark:text-foreground text-sm">{boost.astrologerName}</h3>
+                        <p className="text-xs text-gray-500 dark:text-muted-foreground">{boost.astrologerPhone}</p>
                       </div>
                     </div>
                     {getStatusBadge(boost.status)}
@@ -313,31 +313,31 @@ export const Approvals = () => {
 
                   <div className="space-y-2 mb-4">
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-500">Duration:</span>
-                      <span className="font-medium text-gray-900">{boost.durationDays} days</span>
+                      <span className="text-gray-500 dark:text-muted-foreground">Duration:</span>
+                      <span className="font-medium text-gray-900 dark:text-foreground">{boost.durationDays} days</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-500">Cost:</span>
-                      <span className="font-medium text-gray-900">₹{boost.totalCost.toFixed(0)}</span>
+                      <span className="text-gray-500 dark:text-muted-foreground">Cost:</span>
+                      <span className="font-medium text-gray-900 dark:text-foreground">₹{boost.totalCost.toFixed(0)}</span>
                     </div>
                     <div className="flex justify-between text-xs">
-                      <span className="text-gray-500">Start:</span>
-                      <span className="font-medium text-gray-700">{formatDateTime(boost.startDate)}</span>
+                      <span className="text-gray-500 dark:text-muted-foreground">Start:</span>
+                      <span className="font-medium text-gray-700 dark:text-foreground">{formatDateTime(boost.startDate)}</span>
                     </div>
                     <div className="flex justify-between text-xs">
-                      <span className="text-gray-500">End:</span>
-                      <span className="font-medium text-gray-700">{formatDateTime(boost.endDate)}</span>
+                      <span className="text-gray-500 dark:text-muted-foreground">End:</span>
+                      <span className="font-medium text-gray-700 dark:text-foreground">{formatDateTime(boost.endDate)}</span>
                     </div>
                   </div>
 
-                  <div className="flex gap-2 pt-4 border-t border-gray-200">
+                  <div className="flex gap-2 pt-4 border-t border-gray-200 dark:border-border">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         handleBoostApprove(boost.boostId);
                       }}
                       disabled={isProcessingBoost}
-                      className="flex-1 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium transition-colors"
+                      className="flex-1 px-3 py-2 bg-green-600 dark:bg-green-700 text-white rounded-lg hover:bg-green-700 dark:hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium transition-colors"
                     >
                       Approve
                     </button>
@@ -350,7 +350,7 @@ export const Approvals = () => {
                         }
                       }}
                       disabled={isProcessingBoost}
-                      className="flex-1 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium transition-colors"
+                      className="flex-1 px-3 py-2 bg-red-600 dark:bg-red-700 text-white rounded-lg hover:bg-red-700 dark:hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium transition-colors"
                     >
                       Reject
                     </button>
@@ -368,7 +368,7 @@ export const Approvals = () => {
           </div>
         ) : requests.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-500">No approval requests found</p>
+            <p className="text-gray-500 dark:text-muted-foreground">No approval requests found</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -390,11 +390,11 @@ export const Approvals = () => {
                     }
                   }}
                   disabled={pagination.page === 1}
-                  className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                  className="px-4 py-2 border border-gray-300 dark:border-border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-muted text-gray-700 dark:text-foreground transition-colors"
                 >
                   Previous
                 </button>
-                <span className="px-4 py-2 text-sm text-gray-700">
+                <span className="px-4 py-2 text-sm text-gray-700 dark:text-foreground">
                   Page {pagination.page} of {Math.ceil(pagination.total / pagination.limit)}
                 </span>
                 <button
@@ -404,7 +404,7 @@ export const Approvals = () => {
                     }
                   }}
                   disabled={pagination.page >= Math.ceil(pagination.total / pagination.limit)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                  className="px-4 py-2 border border-gray-300 dark:border-border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-muted text-gray-700 dark:text-foreground transition-colors"
                 >
                   Next
                 </button>

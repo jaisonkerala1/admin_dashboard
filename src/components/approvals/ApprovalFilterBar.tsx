@@ -54,7 +54,7 @@ export const ApprovalFilterBar: React.FC<ApprovalFilterBarProps> = ({
       <select
         value={filters.type}
         onChange={(e) => onFiltersChange({ type: e.target.value as ApprovalRequestType | 'all' })}
-        className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+        className="px-4 py-2 border border-gray-300 dark:border-border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-card text-gray-900 dark:text-foreground"
       >
         {typeOptions.map((option) => (
           <option key={option.value} value={option.value}>
@@ -67,7 +67,7 @@ export const ApprovalFilterBar: React.FC<ApprovalFilterBarProps> = ({
       <select
         value={filters.status}
         onChange={(e) => onFiltersChange({ status: e.target.value as ApprovalStatus | 'all' })}
-        className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+        className="px-4 py-2 border border-gray-300 dark:border-border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-card text-gray-900 dark:text-foreground"
       >
         {statusOptions.map((option) => (
           <option key={option.value} value={option.value}>
@@ -80,7 +80,7 @@ export const ApprovalFilterBar: React.FC<ApprovalFilterBarProps> = ({
       {hasActiveFilters && (
         <button
           onClick={clearFilters}
-          className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2 text-gray-700 whitespace-nowrap"
+          className="px-4 py-2 border border-gray-300 dark:border-border rounded-lg hover:bg-gray-50 dark:hover:bg-muted flex items-center gap-2 text-gray-700 dark:text-foreground whitespace-nowrap transition-colors"
         >
           <X className="w-4 h-4" />
           Clear
