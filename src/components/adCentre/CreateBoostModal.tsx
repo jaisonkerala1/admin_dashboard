@@ -7,7 +7,7 @@ import { Loader } from '@/components/common';
 interface CreateBoostModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onCreate: (data: { astrologerId: string; durationDays: number; startDate?: string; categories: string[] }) => void;
+  onCreate: (data: { astrologerId: string; durationDays: number; startDate?: string; category: string }) => void;
   isProcessing?: boolean;
 }
 
@@ -24,7 +24,7 @@ export const CreateBoostModal = ({
   const [isLoadingAstrologers, setIsLoadingAstrologers] = useState(false);
   const [durationDays, setDurationDays] = useState<number>(7);
   const [startDate, setStartDate] = useState<string>('');
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
 
   const availableCategories = [
     { value: 'general', label: 'General' },
@@ -81,26 +81,20 @@ export const CreateBoostModal = ({
     if (!selectedAstrologer) {
       return;
     }
-    if (selectedCategories.length === 0) {
-      alert('Please select at least one category');
+    if (!selectedCategory) {
+      alert('Please select a category');
       return;
     }
     onCreate({
       astrologerId: selectedAstrologer._id,
       durationDays,
       startDate: startDate || undefined,
-      categories: selectedCategories,
+      category: selectedCategory,
     });
   };
 
-  const toggleCategory = (categoryValue: string) => {
-    setSelectedCategories((prev) => {
-      if (prev.includes(categoryValue)) {
-        return prev.filter((c) => c !== categoryValue);
-      } else {
-        return [...prev, categoryValue];
-      }
-    });
+  const selectCategory = (categoryValue: string) => {
+    setSelectedCategory(categoryValue);
   };
 
   const handleClose = () => {
@@ -238,34 +232,43 @@ export const CreateBoostModal = ({
           {/* Category Selection */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Categories <span className="text-red-500">*</span>
+              Category <span className="text-red-500">*</span>
             </label>
             <p className="text-xs text-gray-500 mb-3">
-              Select one or more categories to boost the profile in
+              Select the category to boost the profile in
             </p>
             <div className="flex flex-wrap gap-2">
               {availableCategories.map((category) => {
-                const isSelected = selectedCategories.includes(category.value);
+                const isSelected = selectedCategory === category.value;
                 return (
                   <button
                     key={category.value}
                     type="button"
-                    onClick={() => toggleCategory(category.value)}
+                    onClick={() => selectCategory(category.value)}
                     disabled={isProcessing}
-                    className={`px-4 py-2 rounded transition-all ${
+                    className={`px-4 py-2 rounded transition-all flex items-center gap-2 ${
                       isSelected
                         ? 'bg-gray-900 text-white'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     } disabled:opacity-50 disabled:cursor-not-allowed font-medium text-sm`}
                   >
+                    <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                      isSelected
+                        ? 'border-white bg-white'
+                        : 'border-gray-400'
+                    }`}>
+                      {isSelected && (
+                        <div className="w-2 h-2 rounded-full bg-gray-900"></div>
+                      )}
+                    </div>
                     {category.label}
                   </button>
                 );
               })}
             </div>
-            {selectedCategories.length === 0 && (
+            {!selectedCategory && (
               <p className="mt-2 text-xs text-red-500">
-                Please select at least one category
+                Please select a category
               </p>
             )}
           </div>

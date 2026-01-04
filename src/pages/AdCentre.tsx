@@ -200,7 +200,7 @@ export const AdCentre = () => {
     });
   };
 
-  const handleCreateBoost = (data: { astrologerId: string; durationDays: number; startDate?: string; categories: string[] }) => {
+  const handleCreateBoost = (data: { astrologerId: string; durationDays: number; startDate?: string; category: string }) => {
     dispatch(createBoostRequest(data));
     setShowCreateModal(false);
   };
@@ -505,10 +505,10 @@ export const AdCentre = () => {
                     <span className="text-gray-500">End:</span>
                     <span className="font-medium text-gray-700">{formatDateTime(boost.endDate)}</span>
                   </div>
-                  {boost.categories && boost.categories.length > 0 && (
+                  {boost.category && (
                     <div className="pt-2">
                       <div className="flex flex-wrap gap-1">
-                        {boost.categories.map((category) => {
+                        {(() => {
                           const categoryLabels: Record<string, string> = {
                             general: '🌟',
                             astrology: '🔮',
@@ -521,13 +521,12 @@ export const AdCentre = () => {
                           };
                           return (
                             <span
-                              key={category}
                               className="px-2 py-0.5 bg-purple-50 text-purple-700 rounded-full text-xs font-medium border border-purple-200"
                             >
-                              {categoryLabels[category] || ''} {category.charAt(0).toUpperCase() + category.slice(1)}
+                              {categoryLabels[boost.category] || ''} {boost.category.charAt(0).toUpperCase() + boost.category.slice(1)}
                             </span>
                           );
-                        })}
+                        })()}
                       </div>
                     </div>
                   )}
