@@ -47,7 +47,20 @@ export const AdCentre = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [lastSyncAction, setLastSyncAction] = useState<'sync' | 'create' | 'cancel' | null>(null);
   const [selectedDateRange, setSelectedDateRange] = useState<string>('all');
+  const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>('all');
   const { success: toastSuccess, error: toastError } = useToastContext();
+
+  const categoryOptions = [
+    { value: 'all', label: 'All Categories' },
+    { value: 'general', label: '🌟 General' },
+    { value: 'astrology', label: '🔮 Astrology' },
+    { value: 'tarot', label: '🃏 Tarot' },
+    { value: 'numerology', label: '🔢 Numerology' },
+    { value: 'palmistry', label: '👋 Palmistry' },
+    { value: 'healing', label: '✨ Healing' },
+    { value: 'meditation', label: '🧘 Meditation' },
+    { value: 'spiritual', label: '🙏 Spiritual' },
+  ];
 
   // Fetch statistics on mount
   useEffect(() => {
@@ -385,7 +398,7 @@ export const AdCentre = () => {
                     onChange={(e) => setSelectedCategoryFilter(e.target.value)}
                     className="px-3 py-1.5 rounded-lg text-sm font-medium border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                   >
-                    {categoryOptions.map((option) => (
+                    {categoryOptions.map((option: { value: string; label: string }) => (
                       <option key={option.value} value={option.value}>
                         {option.label}
                       </option>

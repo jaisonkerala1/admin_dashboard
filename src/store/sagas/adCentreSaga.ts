@@ -153,6 +153,7 @@ function* createBoostSaga(
     astrologerId: string;
     durationDays: number;
     startDate?: string;
+    categories: string[];
   }>
 ): SagaIterator {
   try {
