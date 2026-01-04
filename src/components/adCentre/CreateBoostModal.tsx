@@ -102,7 +102,7 @@ export const CreateBoostModal = ({
     setAstrologerSearch('');
     setDurationDays(7);
     setStartDate('');
-    setSelectedCategories([]);
+    setSelectedCategory('');
     setShowAstrologerDropdown(false);
     onClose();
   };
@@ -297,7 +297,7 @@ export const CreateBoostModal = ({
             </button>
             <button
               type="submit"
-              disabled={!selectedAstrologer || isProcessing || selectedCategories.length === 0}
+              disabled={!selectedAstrologer || isProcessing || !selectedCategory}
               className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
             >
               {isProcessing ? 'Creating...' : 'Create Boost Request'}
