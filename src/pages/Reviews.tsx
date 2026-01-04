@@ -238,29 +238,21 @@ export const Reviews = () => {
               title="Needs Reply"
               value={stats.needsReply}
               icon={MessageSquare}
-              iconColor="text-amber-600"
-              iconBgColor="bg-amber-50"
             />
             <StatCard
               title="Pending Moderation"
               value={stats.pendingModeration}
               icon={Shield}
-              iconColor="text-orange-600"
-              iconBgColor="bg-orange-50"
             />
             <StatCard
               title="Public"
               value={stats.public}
               icon={Eye}
-              iconColor="text-green-600"
-              iconBgColor="bg-green-50"
             />
             <StatCard
               title="Negative"
               value={stats.negative}
               icon={Star}
-              iconColor="text-red-600"
-              iconBgColor="bg-red-50"
             />
           </div>
         )}
@@ -435,7 +427,7 @@ export const Reviews = () => {
                               name={review.astrologerId.name}
                               size="sm"
                             />
-                            <span className="font-medium text-gray-900 hover:text-blue-600">
+                            <span className="font-medium text-gray-900 hover:text-gray-700">
                               {review.astrologerId.name}
                             </span>
                           </Link>
@@ -475,7 +467,7 @@ export const Reviews = () => {
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => setReplyingToReview(review)}
-                            className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            className="p-1.5 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                             title={review.astrologerReply ? 'Edit Reply' : 'Reply'}
                           >
                             {review.astrologerReply ? (
@@ -489,7 +481,7 @@ export const Reviews = () => {
                               setEditingReview(review);
                               setShowReviewModal(true);
                             }}
-                            className="p-1.5 text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+                            className="p-1.5 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                             title="Edit"
                           >
                             <Edit2 className="w-4 h-4" />
@@ -499,7 +491,7 @@ export const Reviews = () => {
                               setDeletingReviewId(review._id);
                               setModerationReason('');
                             }}
-                            className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            className="p-1.5 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                             title="Delete"
                           >
                             <Trash2 className="w-4 h-4" />
